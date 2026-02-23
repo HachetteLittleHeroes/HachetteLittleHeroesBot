@@ -336,13 +336,38 @@
         }
 
         function updatePage() {
-            const img = document.getElementById('current-page');
-            const counter = document.getElementById('page-counter');
-            zoomScale = 1;
-            img.style.transform = `scale(${zoomScale})`;
-            
-            img.src = `otveti/t${currentVol}/${currentPage}.jpg`;
-            counter.innerText = `${currentPage} / ${maxPages}`;
+    const img = document.getElementById('current-page');
+    const counter = document.getElementById('page-counter');
+    
+    zoomScale = 1;
+    img.style.transform = `scale(${zoomScale})`;
+    
+    const basePath = `otveti/t${currentVol}/${currentPage}`;
+    
+    // Список расширений для проверки
+    const extensions = ['.jpg', '.jpeg', '.png', '.JPG', '.PNG'];
+    let extIndex = 0;
+
+    // Функция-помощник для попытки загрузки
+    function tryLoad() {
+        img.src = basePath + extensions[extIndex];
+    }
+
+    // Если картинка не загрузилась, пробуем следующее расширение
+    img.onerror = function() {
+        extIndex++;
+        if (extIndex < extensions.length) {
+            tryLoad();
+        } else {
+            console.error("Файл не найден ни в одном из форматов");
+            // Можно поставить картинку-заглушку, если файла совсем нет
+            this.src = 'img/not_found.png'; 
+            this.onerror = null; 
+        }
+    };
+
+    tryLoad(); // Запускаем первую попытку
+    counter.innerText = `${currentPage} / ${maxPages}`;
 
             // Предзагрузка следующей
             if (currentPage < maxPages) {
