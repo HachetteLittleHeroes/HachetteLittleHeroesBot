@@ -114,10 +114,13 @@
         }
 
         function openFile(path) {
-            // Формируем полную ссылку для открытия
-            const fullUrl = 'https://hachettelittleheroes.github.io/' + path;
-            tg.openLink(fullUrl);
-        }
+    const baseUrl = 'https://hachettelittleheroes.github.io/';
+    const fileUrl = baseUrl + path;
+    // Используем просмотрщик Google поверх вашей ссылки
+    const googleViewerUrl = 'https://docs.google.com/viewer?url=' + encodeURIComponent(fileUrl) + '&embedded=true';
+    
+    tg.openLink(googleViewerUrl);
+}
 
         function sendOrder(name) {
             tg.showConfirm(`Оформить заказ на ${name}?`, (confirm) => {
