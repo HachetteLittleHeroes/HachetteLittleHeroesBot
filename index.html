@@ -5,98 +5,381 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root { --bg: #ffffff; --text: #000; --accent: #007aff; --secondary: #f2f2f7; }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; overflow-x: hidden; }
-        
-        /* Главная страница */
-        .container { padding: 15px; padding-bottom: 80px; }
-        .header { font-size: 28px; font-weight: 800; margin-bottom: 20px; }
+        /* Используем системные цвета Telegram */
+        :root {
+            --bg: var(--tg-theme-bg-color, #ffffff);
+            --text: var(--tg-theme-text-color, #000000);
+            --accent: var(--tg-theme-button-color, #007aff);
+            --secondary: var(--tg-theme-secondary-bg-color, #f2f2f7);
+            --gray: #8e8e93;
+        }
+
+        body { 
+            font-family: -apple-system, sans-serif; 
+            background: var(--bg); 
+            color: var(--text); 
+            margin: 0; 
+            padding-bottom: 80px;
+            overflow-x: hidden;
+        }
+
+        .header { padding: 20px 15px; font-size: 26px; font-weight: 800; }
+        .page { display: none; padding: 0 15px; }
+        .page.active { display: block; }
+
+        /* Сетка томов */
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .card { background: var(--secondary); border-radius: 20px; overflow: hidden; text-align: center; border: 0.5px solid rgba(0,0,0,0.1); }
-        .card img { width: 100%; height: 200px; object-fit: cover; }
-        .card-label { padding: 10px; font-weight: 600; font-size: 14px; }
+        .card { background: var(--secondary); border-radius: 18px; overflow: hidden; border: 0.5px solid rgba(0,0,0,0.1); }
+        .card img { width: 100%; height: 180px; object-fit: cover; }
+        .card-label { padding: 10px; font-weight: 600; font-size: 14px; text-align: center; }
 
-        /* РЕЖИМ КНИГИ (Слайдер) */
-        #viewer { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 1000; }
-        .viewer-header { position: absolute; top: 0; width: 100%; padding: 20px; box-sizing: border-box; display: flex; justify-content: space-between; color: #fff; z-index: 1001; background: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent); }
-        .close-btn { background: none; border: none; color: #fff; font-size: 18px; font-weight: bold; }
-        
-        .slider-container { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
-        .slide-img { max-width: 100%; max-height: 90vh; transition: transform 0.3s ease; user-select: none; }
+        /* Режим книги (Фон в цвет темы) */
+        #viewer { 
+            display: none; 
+            position: fixed; 
+            top: 0; left: 0; 
+            width: 100vw; height: 100vh; 
+            background: var(--bg); 
+            z-index: 1000; 
+        }
+        .viewer-header { 
+            position: absolute; top: 0; width: 100%; 
+            padding: 15px; display: flex; 
+            justify-content: space-between; align-items: center;
+            z-index: 1001; background: var(--bg);
+            border-bottom: 0.5px solid rgba(0,0,0,0.1);
+        }
+        .close-btn { background: var(--accent); color: #fff; border: none; padding: 6px 12px; border-radius: 8px; font-weight: 600; }
 
-        /* Навигация (кнопки внизу для лика) */
-        .nav { position: fixed; bottom: 0; width: 100%; height: 65px; background: #fff; display: flex; border-top: 0.5px solid #ccc; }
-        .nav-btn { flex: 1; border: none; background: none; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 10px; color: #8e8e93; }
+        .slider-container { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .slide-img { max-width: 95%; max-height: 80vh; transition: transform 0.1s ease-out; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+
+        /* Элементы списков (Палитры и Магазин) */
+        .row-item { background: var(--secondary); padding: 15px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .row-info strong { display: block; font-size: 16px; }
+        .row-info span { font-size: 12px; color: var(--gray); }
+
+        /* Навигация */
+        .nav { position: fixed; bottom: 0; width: 100%; height: 70px; background: var(--bg); display: flex; border-top: 0.5px solid rgba(0,0,0,0.1); z-index: 999; }
+        .nav-btn { flex: 1; border: none; background: none; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 10px; color: var(--gray); }
+        .nav-btn.active { color: var(--accent); }
+        .nav-icon { font-size: 22px; margin-bottom: 4px; }
     </style>
 </head>
 <body>
 
-    <div id="main-ui" class="container">
+    <div id="answers" class="page active">
         <div class="header">Ответы</div>
         <div class="grid">
             <div class="card" onclick="startBook(1, 26)">
-                <img src="img/LGC11.png">
+                <img src="img/t1.png">
                 <div class="card-label">Les Grands Classiques tome 11</div>
             </div>
+            <div class="card" onclick="startBook(2, 26)">
+                <img src="img/t2.png">
+                <div class="card-label">Les Grands Classiques tome 3</div>
             </div>
+            <div class="card" onclick="startBook(3, 26)">
+                <img src="img/t3.png">
+                <div class="card-label">Vitraux tome 2</div>
+            </div>
+            <div class="card" onclick="startBook(4, 26)">
+                <img src="img/t4.png">
+                <div class="card-label">Trompe L'oeil Babies</div>
+            </div>
+            <div class="card" onclick="startBook(5, 11)">
+                <img src="img/t5.png">
+                <div class="card-label">Trompe L'oeil Grand Bloc</div>
+            </div>
+            <div class="card" onclick="startBook(6, 10)">
+                <img src="img/t6.png">
+                <div class="card-label">Stitch Au numero</div>
+            </div>
+            <div class="card" onclick="startBook(7, 26)">
+                <img src="img/t7.png">
+                <div class="card-label">Sous L'Ocean</div>
+            </div>
+            <div class="card" onclick="startBook(8, 26)">
+                <img src="img/t8.png">
+                <div class="card-label">Saisons</div>
+            </div>
+            <div class="card" onclick="startBook(9, 10)">
+                <img src="img/t9.png">
+                <div class="card-label">Romantasy</div>
+            </div>
+            <div class="card" onclick="startBook(10, 26)">
+                <img src="img/t10.png">
+                <div class="card-label">Princesses tome 1</div>
+            </div>
+            <div class="card" onclick="startBook(11, 26)">
+                <img src="img/t11.png">
+                <div class="card-label">Princesses tome 2</div>
+            </div>
+            <div class="card" onclick="startBook(12, 26)">
+                <img src="img/t12.png">
+                <div class="card-label">Princes&Heros</div>
+            </div>
+            <div class="card" onclick="startBook(13, 26)">
+                <img src="img/t13.png">
+                <div class="card-label">Portraits De Famille</div>
+            </div>
+            <div class="card" onclick="startBook(14, 26)">
+                <img src="img/t14.png">
+                <div class="card-label">Pokemon</div>
+            </div>
+            <div class="card" onclick="startBook(15, 26)">
+                <img src="img/t15.png">
+                <div class="card-label">Pixar</div>
+            </div>
+            <div class="card" onclick="startBook(16, 26)">
+                <img src="img/t16.png">
+                <div class="card-label">Petites Princesses</div>
+            </div>
+            <div class="card" onclick="startBook(17, 26)">
+                <img src="img/t17.png">
+                <div class="card-label">Petites Betes</div>
+            </div>
+            <div class="card" onclick="startBook(18, 26)">
+                <img src="img/t18.png">
+                <div class="card-label">Mondes Fantastiques</div>
+            </div>
+            <div class="card" onclick="startBook(19, 26)">
+                <img src="img/t19.png">
+                <div class="card-label">Mickey, Donald&Co</div>
+            </div>
+            <div class="card" onclick="startBook(20, 26)">
+                <img src="img/t20.png">
+                <div class="card-label">Mechants</div>
+            </div>
+            <div class="card" onclick="startBook(21, 26)">
+                <img src="img/t21.png">
+                <div class="card-label">Marsupilami</div>
+            </div>
+            <div class="card" onclick="startBook(22, 26)">
+                <img src="img/t22.png">
+                <div class="card-label">Love Stories</div>
+            </div>
+            <div class="card" onclick="startBook(23, 26)">
+                <img src="img/t23.png">
+                <div class="card-label">Looney Tunes tome 3s</div>
+            </div>
+            <div class="card" onclick="startBook(24, 26)">
+                <img src="img/t24.png">
+                <div class="card-label">Lilo Et Stitch</div>
+            </div>
+            <div class="card" onclick="startBook(25, 26)">
+                <img src="img/t25.png">
+                <div class="card-label">Les Grands Classiques Special Debutants tome 1</div>
+            </div>
+            <div class="card" onclick="startBook(26, 26)">
+                <img src="img/t26.png">
+                <div class="card-label">Les Grands Classiques Special Debutants tome 2</div>
+            </div>
+            <div class="card" onclick="startBook(27, 26)">
+                <img src="img/t27.png">
+                <div class="card-label">Les Grands Classiques Au numero</div>
+            </div>
+            <div class="card" onclick="startBook(28, 9)">
+                <img src="img/t28.png">
+                <div class="card-label">La Petite Sirene</div>
+            </div>
+             <div class="card" onclick="startBook(29, 26)">
+                <img src="img/t29.png">
+                <div class="card-label">Les Schtroumpfs tome 1</div>
+            </div>
+            <div class="card" onclick="startBook(30, 26)">
+                <img src="img/t30.png">
+                <div class="card-label">Les Schtroumpfs tome 2</div>
+            </div>
+            <div class="card" onclick="startBook(31, 26)">
+                <img src="img/t31.png">
+                <div class="card-label">L'age Glace</div>
+            </div>
+            <div class="card" onclick="startBook(32, 26)">
+                <img src="img/t32.png">
+                <div class="card-label">Hiver</div>
+            </div>
+            <div class="card" onclick="startBook(33, 26)">
+                <img src="img/t33.png">
+                <div class="card-label">Heros&Mechants La Battle</div>
+            </div>
+            <div class="card" onclick="startBook(34, 10)">
+                <img src="img/t34.png">
+                <div class="card-label">Grands Classiques Grand Bloc</div>
+            </div>
+            <div class="card" onclick="startBook(35, 26)">
+                <img src="img/t35.png">
+                <div class="card-label">Les Grands Classiques Coliector</div>
+            </div>
+            <div class="card" onclick="startBook(36, 26)">
+                <img src="img/t36.png">
+                <div class="card-label">Girl Power</div>
+            </div>
+            <div class="card" onclick="startBook(37, 26)">
+                <img src="img/t37.png">
+                <div class="card-label">Fees, Sorciers Et Magiciens</div>
+            </div>
+            <div class="card" onclick="startBook(38, 26)">
+                <img src="img/t38.png">
+                <div class="card-label">Famille</div>
+            </div>
+            <div class="card" onclick="startBook(39, 10)">
+                <img src="img/t39.png">
+                <div class="card-label">Escapades Merveilleuses Douce France</div>
+            </div>
+            <div class="card" onclick="startBook(40, 26)">
+                <img src="img/t40.png">
+                <div class="card-label">Chiots&Chiens</div>
+            </div>
+            <div class="card" onclick="startBook(41, 14)">
+                <img src="img/t41.png">
+                <div class="card-label">Chevaux</div>
+            </div>
+            <div class="card" onclick="startBook(42, 9)">
+                <img src="img/t42.png">
+                <div class="card-label">Bisounours</div>
+            </div>
+            <div class="card" onclick="startBook(43, 26)">
+                <img src="img/t43.png">
+                <div class="card-label">Best Of Pixar</div>
+            </div>
+            <div class="card" onclick="startBook(44, 26)">
+                <img src="img/t44.png">
+                <div class="card-label">Best Of Les Grands Classiques</div>
+            </div>
+             <div class="card" onclick="startBook(45, 26)">
+                <img src="img/t45.png">
+                <div class="card-label">La Belle Et La Bete</div>
+            </div>
+             <div class="card" onclick="startBook(46, 26)">
+                <img src="img/t46.png">
+                <div class="card-label">Bestiaire</div>
+            </div>
+             <div class="card" onclick="startBook(47, 26)">
+                <img src="img/t47.png">
+                <div class="card-label">Best Of Heroines</div>
+            </div>
+            </div>
+    </div>
+
+    <div id="palettes" class="page">
+        <div class="header">Палитры</div>
+        <div class="row-item">
+            <div class="row-info">
+                <strong>Arrtx 80 цветов</strong>
+                <span>Таблица соответствия</span>
+            </div>
+            <button class="close-btn" onclick="tg.openLink('https://hachettelittleheroes.github.io/palitri/arrtx_80.pdf')">Открыть</button>
+        </div>
+    </div>
+
+    <div id="shop" class="page">
+        <div class="header">Наличие</div>
+        <div class="row-item">
+            <div class="row-info">
+                <strong>Маркеры Arrtx 80</strong>
+                <span style="color: #34c759;">В наличии: 5 шт.</span>
+            </div>
+            <button class="close-btn" onclick="sendOrder('Arrtx 80')">Купить</button>
+        </div>
     </div>
 
     <div id="viewer">
         <div class="viewer-header">
-            <button class="close-btn" onclick="closeBook()">✕ Закрыть</button>
-            <div id="page-counter">1 / 26</div>
+            <button class="close-btn" onclick="closeBook()">Назад</button>
+            <div id="page-counter" style="font-weight: bold;">1 / 25</div>
         </div>
-        <div class="slider-container" id="slider" ontouchstart="handleTouchStart(event)" ontouchend="handleTouchEnd(event)">
+        <div class="slider-container" id="slider" ontouchstart="handleTouchStart(event)" ontouchmove="handleTouchMove(event)" ontouchend="handleTouchEnd(event)">
             <img src="" id="current-page" class="slide-img">
         </div>
     </div>
 
+    <nav class="nav">
+        <button id="btn-answers" class="nav-btn active" onclick="tab('answers')"><span class="nav-icon">📚</span>Ответы</button>
+        <button id="btn-palettes" class="nav-btn" onclick="tab('palettes')"><span class="nav-icon">🎨</span>Палитры</button>
+        <button id="btn-shop" class="nav-btn" onclick="tab('shop')"><span class="nav-icon">🛒</span>Наличие</button>
+    </nav>
+
     <script>
         const tg = window.Telegram.WebApp;
+        tg.expand();
+
         let currentVol = 1;
         let currentPage = 1;
         let maxPages = 1;
         let touchStartX = 0;
+        let zoomScale = 1;
+        let lastDist = 0;
 
+        // Переключение вкладок
+        function tab(id) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.getElementById('btn-' + id).classList.add('active');
+            tg.HapticFeedback.selectionChanged();
+        }
+
+        // Режим книги
         function startBook(volId, count) {
             currentVol = volId;
             maxPages = count;
             currentPage = 1;
-            document.getElementById('main-ui').style.display = 'none';
             document.getElementById('viewer').style.display = 'block';
             updatePage();
             tg.HapticFeedback.impactOccurred('medium');
         }
 
         function closeBook() {
-            document.getElementById('main-ui').style.display = 'block';
             document.getElementById('viewer').style.display = 'none';
+            zoomScale = 1;
         }
 
         function updatePage() {
             const img = document.getElementById('current-page');
             const counter = document.getElementById('page-counter');
-            // Путь: otveti/t1/1.jpg
+            zoomScale = 1;
+            img.style.transform = `scale(${zoomScale})`;
+            
             img.src = `otveti/t${currentVol}/${currentPage}.jpg`;
             counter.innerText = `${currentPage} / ${maxPages}`;
+
+            // Предзагрузка следующей
+            if (currentPage < maxPages) {
+                new Image().src = `otveti/t${currentVol}/${currentPage + 1}.jpg`;
+            }
         }
 
-        // ОБРАБОТКА СВАЙПОВ
-        function handleTouchStart(e) { touchStartX = e.changedTouches[0].screenX; }
-        
-        function handleTouchEnd(e) {
-            let touchEndX = e.changedTouches[0].screenX;
-            let diff = touchStartX - touchEndX;
+        // Обработка касаний (Зум и Свайп)
+        function handleTouchStart(e) {
+            if (e.touches.length === 1) touchStartX = e.touches[0].screenX;
+            if (e.touches.length === 2) lastDist = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
+        }
 
-            if (Math.abs(diff) > 50) { // Если свайп достаточно длинный
-                if (diff > 0 && currentPage < maxPages) {
-                    currentPage++; // Свайп влево -> след. страница
-                } else if (diff < 0 && currentPage > 1) {
-                    currentPage--; // Свайп вправо -> пред. страница
-                }
+        function handleTouchMove(e) {
+            if (e.touches.length === 2) {
+                const dist = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
+                zoomScale = Math.min(Math.max(1, zoomScale * (dist / lastDist)), 4);
+                document.getElementById('current-page').style.transform = `scale(${zoomScale})`;
+                lastDist = dist;
+            }
+        }
+
+        function handleTouchEnd(e) {
+            if (zoomScale > 1) return;
+            let diff = touchStartX - e.changedTouches[0].screenX;
+            if (Math.abs(diff) > 60) {
+                if (diff > 0 && currentPage < maxPages) currentPage++;
+                else if (diff < 0 && currentPage > 1) currentPage--;
                 updatePage();
                 tg.HapticFeedback.selectionChanged();
             }
+        }
+
+        function sendOrder(item) {
+            tg.showConfirm(`Вы хотите заказать ${item}?`, (ok) => {
+                if (ok) tg.sendData(JSON.stringify({action: "order", item: item}));
+            });
         }
     </script>
 </body>
