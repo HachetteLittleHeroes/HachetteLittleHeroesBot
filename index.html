@@ -270,13 +270,12 @@
             });
         }
 
-     async function loadMarkers() {
+        async function loadMarkers() {
             const csvUrl = 'https://docs.google.com/spreadsheets/d/1Yrsif-aQwbuT6fLPnP4MsM22UuwuUWz5FYegELPxzFU/gviz/tq?tqx=out:csv';
             try {
                 const response = await fetch(csvUrl);
                 const text = await response.text();
                 
-                // Разбиваем текст на строки
                 const rows = text.split('\n').map(row => row.split(',').map(cell => cell.replace(/"/g, '').trim()));
                 let tempMarkers = [];
 
@@ -285,10 +284,7 @@
                         let num = row[i];
                         let count = row[i+1];
 
-                        // УЛУЧШЕННАЯ ПРОВЕРКА:
-                        // 1. Номер не пустой
-                        // 2. Это число
-                        // 3. Номер больше 10 (чтобы не цеплять случайные цифры количества как номера)
+                        // Фильтр: номер должен быть числом и больше 10
                         if (num && !isNaN(num) && num !== "" && parseInt(num) > 10) {
                             tempMarkers.push({ 
                                 number: num, 
@@ -298,18 +294,11 @@
                     }
                 });
 
-                // Убираем дубликаты, если они случайно попали
+                // Убираем дубликаты
                 markersData = tempMarkers.filter((v, i, a) => a.findIndex(t => (t.number === v.number)) === i);
-                
                 renderMarkers(markersData);
             } catch (e) {
                 console.error("Ошибка загрузки:", e);
-                document.getElementById('markersList').innerHTML = "Ошибка загрузки данных";
-            }
-        }
-                markersData = tempMarkers;
-                renderMarkers(markersData);
-            } catch (e) {
                 document.getElementById('markersList').innerHTML = "Ошибка загрузки данных";
             }
         }
