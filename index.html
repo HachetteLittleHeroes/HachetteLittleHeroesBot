@@ -219,21 +219,31 @@
         }
 
         function checkout() {
-            try {
-                tg.showAlert("Спасибо за заказ!");
-                if (cart.length === 0) {
-                    tg.showAlert("Добавьте товары в корзину!");
-                    return;
-                }
-                const orderText = cart.map(i => `${i.type} ${i.name} (${i.qty} шт.)`).join('\n');
-                // Эта команда закрывает Mini App и отправляет данные боту
-                tg.sendData(JSON.stringify({
-                    action: "order", 
-                    details: orderText
-                }));
-            } catch (e) {
-                alert("Ошибка при отправке заказа: " + e.message);
-            }
+    try {
+        // 1. Проверяем корзину
+        if (cart.length === 0) {
+            tg.showAlert("Корзина пуста!");
+            return;
+        }
+
+        // 2. Формируем текст
+        const orderText = cart.map(i => `${i.type} ${i.name} (${i.qty} шт.)`).join('\n');
+        
+        // 3. Пытаемся отправить данные
+        // ВНИМАНИЕ: Если вы зашли НЕ через кнопку меню, это не сработает
+        tg.sendData(JSON.stringify({
+            action: "order", 
+            details: orderText
+        }));
+
+        // 4. Дополнительный метод закрытия (на всякий случай)
+        tg.close(); 
+
+    } catch (e) {
+        // Если что-то пойдет не так, вы увидите это на экране
+        alert("Ошибка в функции checkout: " + e.message);
+    }
+}
         }
 
         function tab(id) {
