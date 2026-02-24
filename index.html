@@ -30,10 +30,11 @@
         .buy-btn { background: var(--accent); color: var(--accent-text); border: none; padding: 12px; font-weight: bold; cursor: pointer; width: 100%; }
         .btn-qty { background: var(--accent); color: var(--accent-text); border: none; width: 35px; height: 35px; border-radius: 10px; font-weight: bold; font-size: 20px; }
 
-        /* Маркеры */
-        .row-item { background: var(--card-bg); padding: 15px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        /* Элементы списка (Маркеры и Палитры) */
+        .row-item { background: var(--card-bg); padding: 15px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border: 0.5px solid rgba(128,128,128,0.1); }
         .marker-num { font-weight: 800; font-size: 18px; color: var(--text); }
         .stock-badge { font-size: 13px; font-weight: bold; margin-top: 4px; display: block; }
+        .category-title { margin: 20px 0 10px; font-size: 14px; color: var(--gray); text-transform: uppercase; font-weight: bold; }
 
         /* Навигация */
         .nav { position: fixed; bottom: 0; width: 100%; height: 75px; background: var(--bg); display: flex; border-top: 0.5px solid rgba(128,128,128,0.3); z-index: 999; }
@@ -58,7 +59,31 @@
 
     <div id="palettes" class="page">
         <div class="header">Палитры</div>
-        <div id="palettesList"></div> </div>
+        
+        <div class="category-title">GuangNa</div>
+        <div class="row-item">
+            <span>GuangNa 120</span>
+            <button class="buy-btn" style="width:auto; border-radius:8px; padding: 8px 15px;" onclick="tg.openLink('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/guangna120.pdf')">PDF</button>
+        </div>
+        <div class="row-item">
+            <span>GuangNa 168</span>
+            <button class="buy-btn" style="width:auto; border-radius:8px; padding: 8px 15px;" onclick="tg.openLink('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/guangna168.pdf')">PDF</button>
+        </div>
+        <div class="row-item">
+            <span>GuangNa 240</span>
+            <button class="buy-btn" style="width:auto; border-radius:8px; padding: 8px 15px;" onclick="tg.openLink('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/guangna240.pdf')">PDF</button>
+        </div>
+        <div class="row-item">
+            <span>GuangNa 360</span>
+            <button class="buy-btn" style="width:auto; border-radius:8px; padding: 8px 15px;" onclick="tg.openLink('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/guangna360.pdf')">PDF</button>
+        </div>
+
+        <div class="category-title">Другие</div>
+        <div class="row-item">
+            <span>Tooli-Art</span>
+            <button class="buy-btn" style="width:auto; border-radius:8px; padding: 8px 15px;" onclick="tg.openLink('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/tooliart.pdf')">PDF</button>
+        </div>
+    </div>
 
     <div id="shop" class="page">
         <div class="header">Маркеры</div>
@@ -224,7 +249,6 @@
             if (id === 'cart') renderCart();
         }
 
-        // --- ЛОГИКА ПРОСМОТРА С ИСПРАВЛЕНИЕМ ФОРМАТОВ ---
         let currentVol, currentPage, maxPages, touchStartX;
         
         function startBook(v, m) {
