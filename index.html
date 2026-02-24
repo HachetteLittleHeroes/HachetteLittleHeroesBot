@@ -210,31 +210,35 @@
             renderCart(); updateUI();
         }
 
-       function checkout() {
-    // Проверяем, что в корзине что-то есть
+     function checkout() {
+    // 1. Проверяем корзину
     if (cart.length === 0) {
-        alert("Корзина пуста!");
+        tg.showAlert("Корзина пуста!");
         return;
     }
 
-    // Формируем ОДНУ СТРОКУ текста
-    let orderDetails = "Мой заказ:\n";
+    // 2. Формируем текст заказа
+    let orderDetails = "🛍 НОВЫЙ ЗАКАЗ:\n";
     cart.forEach(item => {
-        orderDetails += `- ${item.name} (${item.price} руб.)\n`;
+        // У тебя в объекте item нет свойства price, 
+        // поэтому выводим тип, название и количество
+        orderDetails += `▪️ ${item.type} ${item.name} — ${item.qty} шт.\n`;
     });
 
-    // Важно: Telegram принимает ТОЛЬКО строку
-    const dataToSend = JSON.stringify({ details: orderDetails });
+    // 3. Упаковываем в объект и превращаем в СТРОКУ
+    const dataToSend = JSON.stringify({
+        details: orderDetails
+    });
 
-    console.log("Отправляем данные:", dataToSend);
-    
-    // САМА ОТПРАВКА
-    tg.sendData(dataToSend); 
-    
-    // Закрываем приложение
-    tg.close();
+    // 4. Отправляем в Telegram
+    try {
+        tg.sendData(dataToSend);
+        // 5. Закрываем приложение
+        tg.close();
+    } catch (e) {
+        alert("Ошибка отправки: " + e.message);
+    }
 }
-        }
 
         function tab(id) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
