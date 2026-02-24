@@ -123,21 +123,24 @@
     
     <div class="row-item">
         <div class="row-info"><strong>GuangNa 120</strong><span>Палитра цветов</span></div>
-        <button class="close-btn" onclick="tg.openLink('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/guangna120.pdf', {try_instant_view: false})">Открыть</button>
+        <button class="close-btn" onclick="openPdf('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/guangna120.pdf')">Открыть</button>
     </div>
 
     <div class="row-item">
         <div class="row-info"><strong>GuangNa 168</strong><span>Палитра цветов</span></div>
-        <button class="close-btn" onclick="tg.openLink('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/guangna168.pdf', {try_instant_view: false})">Открыть</button>
+        <button class="close-btn" onclick="openPdf('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/guangna168.pdf')">Открыть</button>
+    </div>
+    
     </div>
 
-    <div class="cat-title">Другие бренды</div>
-
-    <div class="row-item">
-        <div class="row-info"><strong>Grasp 168</strong><span>Палитра цветов</span></div>
-        <button class="close-btn" onclick="tg.openLink('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/grasp168.pdf', {try_instant_view: false})">Открыть</button>
-    </div>
-</div>
+<script>
+    // Добавь эту функцию в свой блок <script>
+    function openPdf(url) {
+        // Метод openLink с параметром try_instant_view: true 
+        // часто заставляет Telegram открывать PDF во внутреннем плеере
+        tg.openLink(url, {try_instant_view: true});
+    }
+</script>
 
     <div id="shop" class="page">
         <div class="header">Наличие</div>
