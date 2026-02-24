@@ -15,48 +15,53 @@
             --card-bg: var(--tg-theme-secondary-bg-color, #f1f1f1);
         }
 
-        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 100px; }
-        .header { padding: 20px 15px; font-size: 22px; font-weight: 800; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 100px; overflow-x: hidden; }
+        .header { padding: 20px 15px; font-size: 24px; font-weight: 800; }
         .page { display: none; padding: 0 15px; }
         .page.active { display: block; }
 
-        /* Сетка книг */
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .card { background: var(--card-bg); border-radius: 15px; overflow: hidden; border: 0.5px solid rgba(128,128,128,0.2); display: flex; flex-direction: column; }
-        .card img { width: 100%; height: 140px; object-fit: cover; }
-        .card-label { padding: 8px; font-weight: 600; font-size: 12px; text-align: center; flex-grow: 1; color: var(--text); }
+        /* Книги */
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .card { background: var(--card-bg); border-radius: 18px; overflow: hidden; border: 0.5px solid rgba(128,128,128,0.2); display: flex; flex-direction: column; }
+        .card img { width: 100%; height: 180px; object-fit: cover; cursor: pointer; }
+        .card-label { padding: 10px; font-weight: 600; font-size: 14px; text-align: center; flex-grow: 1; }
         
-        .buy-btn { background: var(--accent); color: var(--accent-text); border: none; padding: 10px; font-weight: bold; cursor: pointer; width: 100%; font-size: 12px; }
-        .buy-btn:disabled { background: var(--gray); opacity: 0.4; cursor: not-allowed; }
+        /* Кнопки */
+        .buy-btn { background: var(--accent); color: var(--accent-text); border: none; padding: 12px; font-weight: bold; cursor: pointer; width: 100%; }
+        .btn-qty { background: var(--accent); color: var(--accent-text); border: none; width: 35px; height: 35px; border-radius: 10px; font-weight: bold; font-size: 20px; }
 
-        /* Список маркеров */
-        .row-item { background: var(--card-bg); padding: 12px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-        .marker-info { display: flex; flex-direction: column; }
-        .marker-num { font-weight: 800; color: var(--text); font-size: 16px; }
-        .marker-stock { font-size: 11px; color: var(--gray); }
-
-        .counter { display: flex; align-items: center; gap: 8px; }
-        .btn-qty { background: var(--accent); color: var(--accent-text); border: none; width: 28px; height: 28px; border-radius: 6px; font-weight: bold; }
+        /* Маркеры */
+        .row-item { background: var(--card-bg); padding: 15px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .marker-num { font-weight: 800; font-size: 18px; color: var(--text); }
+        .stock-badge { font-size: 13px; font-weight: bold; margin-top: 4px; display: block; }
 
         /* Навигация */
-        .nav { position: fixed; bottom: 0; width: 100%; height: 70px; background: var(--bg); display: flex; border-top: 0.5px solid rgba(128,128,128,0.3); z-index: 999; }
-        .nav-btn { flex: 1; border: none; background: none; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 10px; color: var(--gray); }
+        .nav { position: fixed; bottom: 0; width: 100%; height: 75px; background: var(--bg); display: flex; border-top: 0.5px solid rgba(128,128,128,0.3); z-index: 999; }
+        .nav-btn { flex: 1; border: none; background: none; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 11px; color: var(--gray); }
         .nav-btn.active { color: var(--accent); }
-        .badge { position: absolute; top: 8px; right: 20%; background: #ff3b30; color: white; border-radius: 10px; padding: 2px 6px; font-size: 10px; }
+        .nav-icon { font-size: 22px; margin-bottom: 4px; }
+        .badge { position: absolute; top: 8px; right: 12%; background: #ff3b30; color: white; border-radius: 10px; padding: 2px 7px; font-size: 11px; }
 
+        /* Viewer */
         #viewer { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--bg); z-index: 1000; }
-        input { width: 100%; padding: 12px; border-radius: 10px; border: none; background: var(--secondary); color: var(--text); margin-bottom: 10px; box-sizing: border-box; }
+        .viewer-header { padding: 15px; display: flex; justify-content: space-between; align-items: center; background: var(--bg); border-bottom: 0.5px solid rgba(128,128,128,0.2); }
+        
+        input { width: 100%; padding: 14px; border-radius: 12px; border: none; background: var(--secondary); color: var(--text); margin-bottom: 15px; box-sizing: border-box; }
     </style>
 </head>
 <body>
 
     <div id="answers" class="page active">
-        <div class="header">Коллекция (47 томов)</div>
+        <div class="header">Ответы</div>
         <div class="grid" id="booksGrid"></div>
     </div>
 
+    <div id="palettes" class="page">
+        <div class="header">Палитры</div>
+        <div id="palettesList"></div> </div>
+
     <div id="shop" class="page">
-        <div class="header">Маркеры GuangNa</div>
+        <div class="header">Маркеры</div>
         <input type="text" id="markerSearch" placeholder="Поиск номера..." oninput="filterMarkers()">
         <div id="markersList"></div>
     </div>
@@ -64,31 +69,35 @@
     <div id="cart" class="page">
         <div class="header">Корзина</div>
         <div id="cartList"></div>
-        <div id="cartTotal" style="padding: 20px; font-weight: bold; text-align: right;"></div>
-        <button id="mainOrderBtn" class="buy-btn" style="border-radius: 12px; padding: 15px; display: none;" onclick="checkout()">Отправить заказ</button>
+        <button id="mainOrderBtn" class="buy-btn" style="border-radius: 15px; padding: 18px; margin-top:20px; display: none;" onclick="checkout()">Оформить заказ</button>
     </div>
 
     <div id="viewer">
-        <div style="padding: 15px; display: flex; justify-content: space-between;"><button class="buy-btn" style="width:auto" onclick="closeBook()">Закрыть</button><div id="page-counter"></div></div>
+        <div class="viewer-header">
+            <button class="buy-btn" style="width:auto; border-radius:8px; padding: 8px 15px;" onclick="closeBook()">Назад</button>
+            <div id="page-counter" style="font-weight:bold;"></div>
+        </div>
         <div style="height: 80vh; display: flex; align-items: center; justify-content: center;" ontouchstart="handleTouchStart(event)" ontouchend="handleTouchEnd(event)">
-            <img src="" id="current-page" style="max-width: 95%; max-height: 100%;">
+            <img src="" id="current-page" style="max-width: 95%; max-height: 100%; border-radius:12px;">
         </div>
     </div>
 
     <nav class="nav">
-        <button id="btn-answers" class="nav-btn active" onclick="tab('answers')">📚<br>Ответы</button>
-        <button id="btn-shop" class="nav-btn" onclick="tab('shop')">🖍️<br>Магазин</button>
-        <button id="btn-cart" class="nav-btn" onclick="tab('cart')">🛒<br>Корзина<span id="cartBadge" class="badge" style="display:none">0</span></button>
+        <button id="btn-answers" class="nav-btn active" onclick="tab('answers')"><span class="nav-icon">📚</span>Ответы</button>
+        <button id="btn-palettes" class="nav-btn" onclick="tab('palettes')"><span class="nav-icon">🎨</span>Палитры</button>
+        <button id="btn-shop" class="nav-btn" onclick="tab('shop')"><span class="nav-icon">🖍️</span>Маркеры</button>
+        <button id="btn-cart" class="nav-btn" onclick="tab('cart')">
+            <span class="nav-icon">🛒</span>Корзина
+            <span id="cartBadge" class="badge" style="display:none">0</span>
+        </button>
     </nav>
 
     <script>
         const tg = window.Telegram.WebApp;
         let markersData = [], cart = [];
-        const availableVolumes = [1, 2, 9]; // Тома, которые можно купить (t1, t2, t9)
 
-        // Генерируем названия для всех 47 томов
         const bookNames = [
-            "L.G. Classiques t11", "L.G. Classiques t3", "Vitraux t2", "Trompe L'oeil Babies", 
+            "Classiques t11", "Classiques t3", "Vitraux t2", "Trompe L'oeil Babies", 
             "Trompe L'oeil G.B.", "Stitch Au numero", "Sous L'Ocean", "Saisons", "Romantasy", 
             "Princesses t1", "Princesses t2", "Princes&Heros", "Portraits Famille", "Pokemon", 
             "Pixar", "Petites Princesses", "Petites Betes", "Mondes Fantastiques", "Mickey&Co", 
@@ -103,16 +112,11 @@
             const grid = document.getElementById('booksGrid');
             grid.innerHTML = bookNames.map((name, i) => {
                 const id = i + 1;
-                const isAvailable = availableVolumes.includes(id);
-                const inCart = cart.find(item => item.key === 'Том-'+id);
                 return `
                 <div class="card">
                     <img src="img/t${id}.png" onclick="startBook(${id}, 26)">
                     <div class="card-label">${name}</div>
-                    ${isAvailable 
-                        ? `<button class="buy-btn" ${inCart ? 'disabled' : ''} onclick="addToCart('Том', '${name}', ${id}, 1)">
-                            ${inCart ? 'В корзине' : 'Купить (1 шт)'}</button>`
-                        : `<div style="padding:10px; font-size:10px; color:var(--gray); text-align:center">Нет в наличии</div>`}
+                    <button class="buy-btn" onclick="addToCart('Том', '${name}', ${id}, 99)">В корзину</button>
                 </div>`;
             }).join('');
         }
@@ -146,30 +150,30 @@
                 const itemInCart = cart.find(c => c.key === 'Маркер-'+m.number);
                 const currentQty = itemInCart ? itemInCart.qty : 0;
                 const canAdd = currentQty < m.stock;
+                let color = m.stock >= 2 ? "#34c759" : (m.stock === 1 ? "#ff9500" : "#ff3b30");
+                let text = m.stock >= 1 ? `В наличии: ${m.stock} шт.` : "Нет в наличии";
 
                 return `
                 <div class="row-item">
-                    <div class="marker-info">
+                    <div>
                         <span class="marker-num">№ ${m.number}</span>
-                        <span class="marker-stock">В наличии: ${m.stock} шт.</span>
+                        <span class="stock-badge" style="color:${color}">${text}</span>
                     </div>
                     <div class="counter">
-                        ${m.stock > 0 
-                            ? `<button class="btn-qty" ${!canAdd ? 'style="opacity:0.3"' : ''} onclick="addToCart('Маркер', '${m.number}', ${m.number}, ${m.stock})">+</button>` 
-                            : '<span style="color:#ff3b30; font-size:11px;">Нет</span>'}
+                        ${m.stock > 0 ? `<button class="btn-qty" ${!canAdd ? 'style="opacity:0.3"' : ''} onclick="addToCart('Маркер', '${m.number}', ${m.number}, ${m.stock})">+</button>` : ''}
                     </div>
                 </div>`;
             }).join('');
         }
 
-        function addToCart(type, name, id, maxStock) {
+        function addToCart(type, name, id, max) {
             const key = type + '-' + id;
             const existing = cart.find(i => i.key === key);
             if (existing) {
-                if (existing.qty < maxStock) existing.qty++;
-                else { tg.showAlert("Больше нет в наличии!"); return; }
+                if (existing.qty < max) existing.qty++;
+                else { tg.showAlert("Больше нет!"); return; }
             } else {
-                cart.push({ key, type, name, id, qty: 1, max: maxStock });
+                cart.push({ key, type, name, id, qty: 1, max });
             }
             updateUI();
             if(type === 'Маркер') renderMarkers(markersData);
@@ -182,7 +186,6 @@
             badge.innerText = total;
             badge.style.display = total > 0 ? 'block' : 'none';
             document.getElementById('mainOrderBtn').style.display = total > 0 ? 'block' : 'none';
-            renderBooks();
         }
 
         function renderCart() {
@@ -193,7 +196,7 @@
                     <div><b>${item.type === 'Маркер' ? '№ ' : ''}${item.name}</b></div>
                     <div class="counter">
                         <button class="btn-qty" onclick="changeQty(${index}, -1)">-</button>
-                        <span>${item.qty}</span>
+                        <span style="font-weight:bold; min-width:20px; text-align:center">${item.qty}</span>
                         <button class="btn-qty" onclick="changeQty(${index}, 1)">+</button>
                     </div>
                 </div>`).join('');
@@ -201,11 +204,10 @@
 
         function changeQty(index, delta) {
             const item = cart[index];
-            if (delta > 0 && item.qty >= item.max) { tg.showAlert("Это максимум!"); return; }
+            if (delta > 0 && item.qty >= item.max) return;
             item.qty += delta;
             if (item.qty <= 0) cart.splice(index, 1);
-            renderCart();
-            updateUI();
+            renderCart(); updateUI();
         }
 
         function checkout() {
@@ -222,14 +224,36 @@
             if (id === 'cart') renderCart();
         }
 
-        // Базовый просмотрщик (оставил как был)
+        // --- ЛОГИКА ПРОСМОТРА С ИСПРАВЛЕНИЕМ ФОРМАТОВ ---
         let currentVol, currentPage, maxPages, touchStartX;
-        function startBook(v, m) { currentVol=v; maxPages=m; currentPage=1; document.getElementById('viewer').style.display='block'; updatePage(); }
-        function closeBook() { document.getElementById('viewer').style.display='none'; }
-        function updatePage() {
-            document.getElementById('current-page').src = `otveti/t${currentVol}/${currentPage}.jpg`;
-            document.getElementById('page-counter').innerText = `${currentPage} / ${maxPages}`;
+        
+        function startBook(v, m) {
+            currentVol = v; maxPages = m; currentPage = 1;
+            document.getElementById('viewer').style.display = 'block';
+            updatePage();
         }
+
+        function closeBook() { document.getElementById('viewer').style.display = 'none'; }
+
+        function updatePage() {
+            const img = document.getElementById('current-page');
+            const counter = document.getElementById('page-counter');
+            const formats = ['.jpg', '.png', '.jpeg', '.JPG', '.PNG'];
+            let fIndex = 0;
+
+            function tryLoad() {
+                img.src = `otveti/t${currentVol}/${currentPage}${formats[fIndex]}`;
+            }
+
+            img.onerror = () => {
+                fIndex++;
+                if (fIndex < formats.length) tryLoad();
+            };
+
+            tryLoad();
+            counter.innerText = `${currentPage} / ${maxPages}`;
+        }
+
         function handleTouchStart(e) { touchStartX = e.touches[0].screenX; }
         function handleTouchEnd(e) {
             let diff = touchStartX - e.changedTouches[0].screenX;
