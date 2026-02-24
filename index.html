@@ -131,13 +131,28 @@
         <div class="row-item"><div class="row-info"><strong>Tooli-Art</strong><span>Палитра цветов</span></div><button class="close-btn" onclick="openPdf('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/tooliart.pdf')">Открыть</button></div>
         <div class="row-item"><div class="row-info"><strong>Zibeef 240</strong><span>Палитра цветов</span></div><button class="close-btn" onclick="openPdf('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/zibeef240.pdf')">Открыть</button></div>
     </div>
-    <div id="shop" class="page">
-        <div class="header">Наличие</div>
-        <div class="row-item">
-            <div class="row-info"><strong>Маркеры Arrtx 80</strong><span style="color: #34c759;">В наличии: 5 шт.</span></div>
-            <button class="close-btn" onclick="sendOrder('Arrtx 80')">Купить</button>
+  <div id="shop" class="page">
+    <div class="header">Магазин</div>
+
+    <div class="cat-title">Купить маркеры GuangNa</div>
+    <div class="row-item" style="flex-direction: column; gap: 10px;">
+        <input type="text" id="markerSearch" placeholder="Введите номер маркера..." 
+               style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--gray); background: var(--bg); color: var(--text); box-sizing: border-box;"
+               oninput="filterMarkers()">
+        
+        <div id="markersList" style="width: 100%; max-height: 400px; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; background: rgba(0,0,0,0.03); border-radius: 10px; padding: 5px;">
+            <div style="text-align: center; color: var(--gray); padding: 20px;">Загрузка наличия...</div>
         </div>
+        
+        <button class="close-btn" style="width: 100%;" onclick="sendOrder('Заказ маркеров поштучно')">Оформить заказ</button>
     </div>
+
+    <div class="cat-title">Купить раскраски</div>
+    <div class="row-item">
+        <div class="row-info"><strong>Hachette Heroes</strong><span>Тома в наличии</span></div>
+        <button class="close-btn" onclick="tab('answers')">Выбрать</button>
+    </div>
+</div>
 
     <div id="viewer">
         <div class="viewer-header">
@@ -277,6 +292,75 @@ function openPdf(url) {
             tg.showConfirm(`Вы хотите заказать ${item}?`, (ok) => {
                 if (ok) tg.sendData(JSON.stringify({action: "order", item: item}));
             });
+            let markersData = [];
+
+async function loadMarkers() {
+    const csvUrl = 'https://docs.google.com/spreadsheets/d/1Yrsif-aQwbuT6fLPnP4MsM22UuwuUWz5FYegELPxzFU/gviz/tq?tqx=out:csv';
+    
+    try {
+        const response = await fetch(csvUrl);
+        const text = await response.text();
+        
+        // Разбиваем CSV на строки и ячейки
+        const rows = text.split('\n').map(row => row.split(',').map(cell => cell.replace(/"/g, '').trim()));
+        let tempMarkers = [];
+
+        rows.forEach(row => {
+            // Проходим по строке парами: ячейка i (номер), ячейка i+1 (кол-во)
+            for (let i = 0; i < row.length; i += 2) {
+                let num = row[i];
+                let count = row[i+1];
+                
+                // Если в ячейке номер (состоит из цифр)
+                if (num && !isNaN(num) && num !== "") {
+                    tempMarkers.push({ number: num, count: count || "0" });
+                }
+            }
+        });
+
+        markersData = tempMarkers;
+        renderMarkers(markersData);
+    } catch (e) {
+        document.getElementById('markersList').innerHTML = "Ошибка загрузки данных";
+    }
+}
+
+function renderMarkers(data) {
+    const list = document.getElementById('markersList');
+    if (data.length === 0) {
+        list.innerHTML = '<div style="padding:10px; color:var(--gray); text-align:center;">Ничего не найдено</div>';
+        return;
+    }
+    
+    // Сортируем по номеру
+    data.sort((a, b) => parseInt(a.number) - parseInt(b.number));
+
+    list.innerHTML = data.map(m => `
+        <div style="display: flex; justify-content: space-between; padding: 10px; border-bottom: 0.5px solid rgba(0,0,0,0.05); align-items: center; background: white; border-radius: 8px; margin-bottom: 2px;">
+            <span style="font-weight: bold; font-size: 16px;">№ ${m.number}</span>
+            <span style="color: ${parseInt(m.count) > 0 ? '#34c759' : '#ff3b30'}; font-weight: 500;">
+                ${parseInt(m.count) > 0 ? 'В наличии: ' + m.count : 'Нет в наличии'}
+            </span>
+        </div>
+    `).join('');
+}
+
+function filterMarkers() {
+    const query = document.getElementById('markerSearch').value.toLowerCase();
+    const filtered = markersData.filter(m => m.number.includes(query));
+    renderMarkers(filtered);
+}
+
+// Измени функцию tab, чтобы она вызывала загрузку
+function tab(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.getElementById('btn-' + id).classList.add('active');
+    
+    if (id === 'shop') loadMarkers();
+    tg.HapticFeedback.selectionChanged();
+}
         }
     </script>
 </body>
