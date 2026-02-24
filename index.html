@@ -210,11 +210,30 @@
             renderCart(); updateUI();
         }
 
-        function checkout() {
-            if (cart.length === 0) return;
-            const orderText = cart.map(i => `${i.type} ${i.name} (${i.qty} шт.)`).join('\n');
-            tg.sendData(JSON.stringify({action: "order", details: orderText}));
-            tg.close();
+       function checkout() {
+    // Проверяем, что в корзине что-то есть
+    if (cart.length === 0) {
+        alert("Корзина пуста!");
+        return;
+    }
+
+    // Формируем ОДНУ СТРОКУ текста
+    let orderDetails = "Мой заказ:\n";
+    cart.forEach(item => {
+        orderDetails += `- ${item.name} (${item.price} руб.)\n`;
+    });
+
+    // Важно: Telegram принимает ТОЛЬКО строку
+    const dataToSend = JSON.stringify({ details: orderDetails });
+
+    console.log("Отправляем данные:", dataToSend);
+    
+    // САМА ОТПРАВКА
+    tg.sendData(dataToSend); 
+    
+    // Закрываем приложение
+    tg.close();
+}
         }
 
         function tab(id) {
