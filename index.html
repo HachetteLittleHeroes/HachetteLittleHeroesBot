@@ -342,32 +342,32 @@
     zoomScale = 1;
     img.style.transform = `scale(${zoomScale})`;
     
+    // Используем чистый относительный путь. 
+    // Это заставит Telegram искать картинку прямо внутри твоего репозитория.
     const basePath = `otveti/t${currentVol}/${currentPage}`;
     
-    // Список расширений для проверки
-    const extensions = ['.jpg', '.jpeg', '.png', '.JPG', '.PNG'];
-    let extIndex = 0;
+    // Пробуем форматы по очереди
+    const formats = ['.jpg', '.jpeg', '.png', '.JPG', '.PNG'];
+    let fIndex = 0;
 
-    // Функция-помощник для попытки загрузки
     function tryLoad() {
-        img.src = basePath + extensions[extIndex];
+        // Добавляем случайный параметр, чтобы победить кэш Telegram
+        img.src = basePath + formats[fIndex] + '?v=' + Math.floor(Math.random() * 1000);
     }
 
-    // Если картинка не загрузилась, пробуем следующее расширение
     img.onerror = function() {
-        extIndex++;
-        if (extIndex < extensions.length) {
+        fIndex++;
+        if (fIndex < formats.length) {
             tryLoad();
         } else {
-            console.error("Файл не найден ни в одном из форматов");
-            // Можно поставить картинку-заглушку, если файла совсем нет
-            this.src = 'img/not_found.png'; 
-            this.onerror = null; 
+            console.error("Не удалось найти файл в томе " + currentVol);
+            this.onerror = null;
         }
     };
 
-    tryLoad(); // Запускаем первую попытку
+    tryLoad();
     counter.innerText = `${currentPage} / ${maxPages}`;
+}
 
             // Предзагрузка следующей
             if (currentPage < maxPages) {
