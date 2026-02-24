@@ -25,6 +25,7 @@
         .header { padding: 20px 15px; font-size: 26px; font-weight: 800; }
         .page { display: none; padding: 0 15px; }
         .page.active { display: block; }
+        .cat-title { margin: 15px 0 10px; font-weight: bold; color: var(--gray); font-size: 14px; text-transform: uppercase; }
 
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .card { background: var(--secondary); border-radius: 18px; overflow: hidden; border: 0.5px solid rgba(0,0,0,0.1); cursor: pointer; }
@@ -46,7 +47,7 @@
             z-index: 1001; background: var(--bg);
             border-bottom: 0.5px solid rgba(0,0,0,0.1);
         }
-        .close-btn { background: var(--accent); color: #fff; border: none; padding: 6px 12px; border-radius: 8px; font-weight: 600; }
+        .close-btn { background: var(--accent); color: #fff; border: none; padding: 6px 12px; border-radius: 8px; font-weight: 600; cursor: pointer; }
 
         .slider-container { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; }
         .slide-img { max-width: 95%; max-height: 80vh; transition: transform 0.1s ease-out; box-shadow: 0 5px 15px rgba(0,0,0,0.1); touch-action: none;}
@@ -59,6 +60,8 @@
         .nav-btn { flex: 1; border: none; background: none; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 10px; color: var(--gray); cursor: pointer; }
         .nav-btn.active { color: var(--accent); }
         .nav-icon { font-size: 22px; margin-bottom: 4px; }
+        
+        #markersList div { transition: background 0.2s; }
     </style>
 </head>
 <body>
@@ -116,9 +119,8 @@
         </div>
     </div>
 
-<div id="palettes" class="page">
+    <div id="palettes" class="page">
         <div class="header">Палитры</div>
-        
         <div class="cat-title">GuangNa</div>
         <div class="row-item"><div class="row-info"><strong>GuangNa 120</strong><span>Палитра цветов</span></div><button class="close-btn" onclick="openPdf('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/guangna120.pdf')">Открыть</button></div>
         <div class="row-item"><div class="row-info"><strong>GuangNa 168</strong><span>Палитра цветов</span></div><button class="close-btn" onclick="openPdf('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/guangna168.pdf')">Открыть</button></div>
@@ -131,28 +133,28 @@
         <div class="row-item"><div class="row-info"><strong>Tooli-Art</strong><span>Палитра цветов</span></div><button class="close-btn" onclick="openPdf('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/tooliart.pdf')">Открыть</button></div>
         <div class="row-item"><div class="row-info"><strong>Zibeef 240</strong><span>Палитра цветов</span></div><button class="close-btn" onclick="openPdf('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/zibeef240.pdf')">Открыть</button></div>
     </div>
-  <div id="shop" class="page">
-    <div class="header">Магазин</div>
 
-    <div class="cat-title">Купить маркеры GuangNa</div>
-    <div class="row-item" style="flex-direction: column; gap: 10px;">
-        <input type="text" id="markerSearch" placeholder="Введите номер маркера..." 
-               style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--gray); background: var(--bg); color: var(--text); box-sizing: border-box;"
-               oninput="filterMarkers()">
-        
-        <div id="markersList" style="width: 100%; max-height: 400px; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; background: rgba(0,0,0,0.03); border-radius: 10px; padding: 5px;">
-            <div style="text-align: center; color: var(--gray); padding: 20px;">Загрузка наличия...</div>
+    <div id="shop" class="page">
+        <div class="header">Магазин</div>
+        <div class="cat-title">Купить маркеры GuangNa</div>
+        <div class="row-item" style="flex-direction: column; gap: 10px;">
+            <input type="text" id="markerSearch" placeholder="Введите номер маркера..." 
+                   style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--gray); background: var(--bg); color: var(--text); box-sizing: border-box;"
+                   oninput="filterMarkers()">
+            
+            <div id="markersList" style="width: 100%; max-height: 400px; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; background: rgba(0,0,0,0.03); border-radius: 10px; padding: 5px;">
+                <div style="text-align: center; color: var(--gray); padding: 20px;">Загрузка наличия...</div>
+            </div>
+            
+            <button class="close-btn" style="width: 100%; padding: 15px;" onclick="sendOrder('Заказ маркеров поштучно')">Оформить заказ</button>
         </div>
-        
-        <button class="close-btn" style="width: 100%;" onclick="sendOrder('Заказ маркеров поштучно')">Оформить заказ</button>
-    </div>
 
-    <div class="cat-title">Купить раскраски</div>
-    <div class="row-item">
-        <div class="row-info"><strong>Hachette Heroes</strong><span>Тома в наличии</span></div>
-        <button class="close-btn" onclick="tab('answers')">Выбрать</button>
+        <div class="cat-title">Купить раскраски</div>
+        <div class="row-item">
+            <div class="row-info"><strong>Hachette Heroes</strong><span>Тома в наличии</span></div>
+            <button class="close-btn" onclick="tab('answers')">Выбрать</button>
+        </div>
     </div>
-</div>
 
     <div id="viewer">
         <div class="viewer-header">
@@ -167,7 +169,7 @@
     <nav class="nav">
         <button id="btn-answers" class="nav-btn active" onclick="tab('answers')"><span class="nav-icon">📚</span>Ответы</button>
         <button id="btn-palettes" class="nav-btn" onclick="tab('palettes')"><span class="nav-icon">🎨</span>Палитры</button>
-        <button id="btn-shop" class="nav-btn" onclick="tab('shop')"><span class="nav-icon">🛒</span>Наличие</button>
+        <button id="btn-shop" class="nav-btn" onclick="tab('shop')"><span class="nav-icon">🛒</span>Магазин</button>
     </nav>
 
     <script>
@@ -180,12 +182,15 @@
         let touchStartX = 0;
         let zoomScale = 1;
         let lastDist = 0;
+        let markersData = [];
 
         function tab(id) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             document.getElementById('btn-' + id).classList.add('active');
+            
+            if (id === 'shop') loadMarkers();
             tg.HapticFeedback.selectionChanged();
         }
 
@@ -203,10 +208,11 @@
             zoomScale = 1;
             document.getElementById('current-page').style.transform = `scale(1)`;
         }
-function openPdf(url) {
-            // Пытаемся открыть внутри, но если система решит иначе - откроет в браузере
+
+        function openPdf(url) {
             tg.openLink(url, {try_instant_view: true});
         }
+
         function updatePage() {
             const img = document.getElementById('current-page');
             const counter = document.getElementById('page-counter');
@@ -222,145 +228,93 @@ function openPdf(url) {
                 if (fIndex < formats.length) {
                     this.src = basePath + formats[fIndex] + '?v=' + Math.floor(Math.random() * 1000);
                 } else {
-                    console.error("Not found");
                     this.onerror = null;
                 }
             };
 
             img.src = basePath + formats[0] + '?v=' + Math.floor(Math.random() * 1000);
             counter.innerText = `${currentPage} / ${maxPages}`;
-            
-            // Предзагрузка следующей (тихо в фоне)
-            if (currentPage < maxPages) {
-                new Image().src = `otveti/t${currentVol}/${currentPage + 1}.jpg`;
-            }
         }
 
-        let touchEndX = 0;
-
         function handleTouchStart(e) {
-            // Если увеличили картинку, свайп не работает, чтобы можно было двигать фото
             if (zoomScale > 1) return;
-            
-            if (e.touches.length === 1) {
-                touchStartX = e.touches[0].screenX;
-            }
-            if (e.touches.length === 2) {
-                lastDist = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
-            }
+            if (e.touches.length === 1) touchStartX = e.touches[0].screenX;
+            if (e.touches.length === 2) lastDist = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
         }
 
         function handleTouchMove(e) {
-            // Зум двумя пальцами
             if (e.touches.length === 2) {
                 const dist = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
                 zoomScale = Math.min(Math.max(1, zoomScale * (dist / lastDist)), 4);
                 document.getElementById('current-page').style.transform = `scale(${zoomScale})`;
                 lastDist = dist;
-                if (e.cancelable) e.preventDefault(); // Запрещаем прокрутку при зуме
-            }
-            
-            // Если листаем (один палец) и картинка не увеличена
-            if (e.touches.length === 1 && zoomScale === 1) {
-                touchEndX = e.touches[0].screenX;
-                // Если движение явно горизонтальное — блокируем вертикальный скролл
-                if (Math.abs(touchStartX - touchEndX) > 10) {
-                    if (e.cancelable) e.preventDefault();
-                }
+                if (e.cancelable) e.preventDefault();
             }
         }
 
         function handleTouchEnd(e) {
             if (zoomScale > 1) return;
-            
             let diff = touchStartX - e.changedTouches[0].screenX;
-            
-            // Уменьшили порог до 40 для легкости
             if (Math.abs(diff) > 40) {
                 if (diff > 0 && currentPage < maxPages) {
-                    currentPage++;
-                    updatePage();
-                    tg.HapticFeedback.impactOccurred('light'); // Легкая вибрация при перелистывании
+                    currentPage++; updatePage(); tg.HapticFeedback.impactOccurred('light');
                 } else if (diff < 0 && currentPage > 1) {
-                    currentPage--;
-                    updatePage();
-                    tg.HapticFeedback.impactOccurred('light');
+                    currentPage--; updatePage(); tg.HapticFeedback.impactOccurred('light');
                 }
             }
         }
+
         function sendOrder(item) {
-            tg.showConfirm(`Вы хотите заказать ${item}?`, (ok) => {
+            tg.showConfirm(`Вы хотите отправить запрос на ${item}?`, (ok) => {
                 if (ok) tg.sendData(JSON.stringify({action: "order", item: item}));
             });
-            let markersData = [];
+        }
 
-async function loadMarkers() {
-    const csvUrl = 'https://docs.google.com/spreadsheets/d/1Yrsif-aQwbuT6fLPnP4MsM22UuwuUWz5FYegELPxzFU/gviz/tq?tqx=out:csv';
-    
-    try {
-        const response = await fetch(csvUrl);
-        const text = await response.text();
-        
-        // Разбиваем CSV на строки и ячейки
-        const rows = text.split('\n').map(row => row.split(',').map(cell => cell.replace(/"/g, '').trim()));
-        let tempMarkers = [];
+        async function loadMarkers() {
+            const csvUrl = 'https://docs.google.com/spreadsheets/d/1Yrsif-aQwbuT6fLPnP4MsM22UuwuUWz5FYegELPxzFU/gviz/tq?tqx=out:csv';
+            try {
+                const response = await fetch(csvUrl);
+                const text = await response.text();
+                const rows = text.split('\n').map(row => row.split(',').map(cell => cell.replace(/"/g, '').trim()));
+                let tempMarkers = [];
 
-        rows.forEach(row => {
-            // Проходим по строке парами: ячейка i (номер), ячейка i+1 (кол-во)
-            for (let i = 0; i < row.length; i += 2) {
-                let num = row[i];
-                let count = row[i+1];
-                
-                // Если в ячейке номер (состоит из цифр)
-                if (num && !isNaN(num) && num !== "") {
-                    tempMarkers.push({ number: num, count: count || "0" });
-                }
+                rows.forEach(row => {
+                    for (let i = 0; i < row.length; i += 2) {
+                        let num = row[i];
+                        let count = row[i+1];
+                        if (num && !isNaN(num) && num !== "") {
+                            tempMarkers.push({ number: num, count: count || "0" });
+                        }
+                    }
+                });
+                markersData = tempMarkers;
+                renderMarkers(markersData);
+            } catch (e) {
+                document.getElementById('markersList').innerHTML = "Ошибка загрузки данных";
             }
-        });
+        }
 
-        markersData = tempMarkers;
-        renderMarkers(markersData);
-    } catch (e) {
-        document.getElementById('markersList').innerHTML = "Ошибка загрузки данных";
-    }
-}
+        function renderMarkers(data) {
+            const list = document.getElementById('markersList');
+            if (data.length === 0) {
+                list.innerHTML = '<div style="padding:10px; color:var(--gray); text-align:center;">Ничего не найдено</div>';
+                return;
+            }
+            data.sort((a, b) => parseInt(a.number) - parseInt(b.number));
+            list.innerHTML = data.map(m => `
+                <div style="display: flex; justify-content: space-between; padding: 10px; border-bottom: 0.5px solid rgba(0,0,0,0.05); align-items: center; background: white; border-radius: 8px; margin-bottom: 2px;">
+                    <span style="font-weight: bold; font-size: 16px;">№ ${m.number}</span>
+                    <span style="color: ${parseInt(m.count) > 0 ? '#34c759' : '#ff3b30'}; font-weight: 500;">
+                        ${parseInt(m.count) > 0 ? 'В наличии: ' + m.count : 'Нет в наличии'}
+                    </span>
+                </div>
+            `).join('');
+        }
 
-function renderMarkers(data) {
-    const list = document.getElementById('markersList');
-    if (data.length === 0) {
-        list.innerHTML = '<div style="padding:10px; color:var(--gray); text-align:center;">Ничего не найдено</div>';
-        return;
-    }
-    
-    // Сортируем по номеру
-    data.sort((a, b) => parseInt(a.number) - parseInt(b.number));
-
-    list.innerHTML = data.map(m => `
-        <div style="display: flex; justify-content: space-between; padding: 10px; border-bottom: 0.5px solid rgba(0,0,0,0.05); align-items: center; background: white; border-radius: 8px; margin-bottom: 2px;">
-            <span style="font-weight: bold; font-size: 16px;">№ ${m.number}</span>
-            <span style="color: ${parseInt(m.count) > 0 ? '#34c759' : '#ff3b30'}; font-weight: 500;">
-                ${parseInt(m.count) > 0 ? 'В наличии: ' + m.count : 'Нет в наличии'}
-            </span>
-        </div>
-    `).join('');
-}
-
-function filterMarkers() {
-    const query = document.getElementById('markerSearch').value.toLowerCase();
-    const filtered = markersData.filter(m => m.number.includes(query));
-    renderMarkers(filtered);
-}
-
-// Измени функцию tab, чтобы она вызывала загрузку
-function tab(id) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    document.getElementById('btn-' + id).classList.add('active');
-    
-    if (id === 'shop') loadMarkers();
-    tg.HapticFeedback.selectionChanged();
-}
+        function filterMarkers() {
+            const query = document.getElementById('markerSearch').value.toLowerCase();
+            const filtered = markersData.filter(m => m.number.includes(query));
+            renderMarkers(filtered);
         }
     </script>
 </body>
