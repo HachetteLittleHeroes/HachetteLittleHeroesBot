@@ -49,7 +49,7 @@
         .close-btn { background: var(--accent); color: #fff; border: none; padding: 6px 12px; border-radius: 8px; font-weight: 600; }
 
         .slider-container { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        .slide-img { max-width: 95%; max-height: 80vh; transition: transform 0.1s ease-out; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .slide-img { max-width: 95%; max-height: 80vh; transition: transform 0.1s ease-out; box-shadow: 0 5px 15px rgba(0,0,0,0.1); touch-action: none;}
 
         .row-item { background: var(--secondary); padding: 15px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .row-info strong { display: block; font-size: 16px; }
@@ -211,31 +211,58 @@
             }
         }
 
+        let touchEndX = 0;
+
         function handleTouchStart(e) {
-            if (e.touches.length === 1) touchStartX = e.touches[0].screenX;
-            if (e.touches.length === 2) lastDist = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
+            // Если увеличили картинку, свайп не работает, чтобы можно было двигать фото
+            if (zoomScale > 1) return;
+            
+            if (e.touches.length === 1) {
+                touchStartX = e.touches[0].screenX;
+            }
+            if (e.touches.length === 2) {
+                lastDist = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
+            }
         }
 
         function handleTouchMove(e) {
+            // Зум двумя пальцами
             if (e.touches.length === 2) {
                 const dist = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
                 zoomScale = Math.min(Math.max(1, zoomScale * (dist / lastDist)), 4);
                 document.getElementById('current-page').style.transform = `scale(${zoomScale})`;
                 lastDist = dist;
+                if (e.cancelable) e.preventDefault(); // Запрещаем прокрутку при зуме
+            }
+            
+            // Если листаем (один палец) и картинка не увеличена
+            if (e.touches.length === 1 && zoomScale === 1) {
+                touchEndX = e.touches[0].screenX;
+                // Если движение явно горизонтальное — блокируем вертикальный скролл
+                if (Math.abs(touchStartX - touchEndX) > 10) {
+                    if (e.cancelable) e.preventDefault();
+                }
             }
         }
 
         function handleTouchEnd(e) {
             if (zoomScale > 1) return;
+            
             let diff = touchStartX - e.changedTouches[0].screenX;
-            if (Math.abs(diff) > 60) {
-                if (diff > 0 && currentPage < maxPages) currentPage++;
-                else if (diff < 0 && currentPage > 1) currentPage--;
-                updatePage();
-                tg.HapticFeedback.selectionChanged();
+            
+            // Уменьшили порог до 40 для легкости
+            if (Math.abs(diff) > 40) {
+                if (diff > 0 && currentPage < maxPages) {
+                    currentPage++;
+                    updatePage();
+                    tg.HapticFeedback.impactOccurred('light'); // Легкая вибрация при перелистывании
+                } else if (diff < 0 && currentPage > 1) {
+                    currentPage--;
+                    updatePage();
+                    tg.HapticFeedback.impactOccurred('light');
+                }
             }
         }
-
         function sendOrder(item) {
             tg.showConfirm(`Вы хотите заказать ${item}?`, (ok) => {
                 if (ok) tg.sendData(JSON.stringify({action: "order", item: item}));
