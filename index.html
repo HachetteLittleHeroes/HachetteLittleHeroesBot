@@ -220,6 +220,7 @@
 
         function checkout() {
             try {
+                tg.showAlert("Кнопка нажата!");
                 if (cart.length === 0) {
                     tg.showAlert("Добавьте товары в корзину!");
                     return;
