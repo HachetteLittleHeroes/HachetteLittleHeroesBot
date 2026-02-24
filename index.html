@@ -9,8 +9,10 @@
             --bg: var(--tg-theme-bg-color, #ffffff);
             --text: var(--tg-theme-text-color, #000000);
             --accent: var(--tg-theme-button-color, #007aff);
+            --accent-text: var(--tg-theme-button-text-color, #ffffff);
             --secondary: var(--tg-theme-secondary-bg-color, #f2f2f7);
             --gray: #8e8e93;
+            --card-bg: var(--tg-theme-secondary-bg-color, #f1f1f1);
         }
 
         body { 
@@ -18,254 +20,132 @@
             background: var(--bg); 
             color: var(--text); 
             margin: 0; 
-            padding-bottom: 80px;
-            overflow-x: hidden;
+            padding-bottom: 100px;
         }
 
-        .header { padding: 20px 15px; font-size: 26px; font-weight: 800; }
+        .header { padding: 20px 15px; font-size: 24px; font-weight: 800; display: flex; justify-content: space-between; align-items: center; }
         .page { display: none; padding: 0 15px; }
         .page.active { display: block; }
-        .cat-title { margin: 15px 0 10px; font-weight: bold; color: var(--gray); font-size: 14px; text-transform: uppercase; }
 
+        /* Сетка книг */
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .card { background: var(--secondary); border-radius: 18px; overflow: hidden; border: 0.5px solid rgba(0,0,0,0.1); cursor: pointer; }
-        .card img { width: 100%; height: 180px; object-fit: cover; }
-        .card-label { padding: 10px; font-weight: 600; font-size: 14px; text-align: center; }
+        .card { background: var(--card-bg); border-radius: 18px; overflow: hidden; border: 0.5px solid rgba(128,128,128,0.2); display: flex; flex-direction: column; }
+        .card img { width: 100%; height: 160px; object-fit: cover; cursor: pointer; }
+        .card-label { padding: 10px; font-weight: 600; font-size: 13px; text-align: center; flex-grow: 1; color: var(--text); }
+        
+        /* Кнопки */
+        .buy-btn { background: var(--accent); color: var(--accent-text); border: none; padding: 10px; font-weight: bold; cursor: pointer; width: 100%; }
+        .buy-btn:disabled { background: var(--gray); opacity: 0.5; }
 
-        #viewer { 
-            display: none; 
-            position: fixed; 
-            top: 0; left: 0; 
-            width: 100vw; height: 100vh; 
-            background: var(--bg); 
-            z-index: 1000; 
+        /* Список маркеров */
+        .row-item { 
+            background: var(--card-bg); 
+            padding: 15px; 
+            border-radius: 15px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 8px; 
         }
-        .viewer-header { 
-            position: absolute; top: 0; width: 100%; 
-            padding: 15px; display: flex; box-sizing: border-box;
-            justify-content: space-between; align-items: center;
-            z-index: 1001; background: var(--bg);
-            border-bottom: 0.5px solid rgba(0,0,0,0.1);
+        .marker-num { font-weight: 800; color: var(--text); font-size: 18px; }
+
+        /* Корзина и счетчики */
+        .counter { display: flex; align-items: center; gap: 12px; }
+        .btn-qty { 
+            background: var(--accent); 
+            color: var(--accent-text); 
+            border: none; 
+            width: 30px; height: 30px; 
+            border-radius: 8px; 
+            font-weight: bold; 
+            font-size: 18px;
         }
-        .close-btn { background: var(--accent); color: #fff; border: none; padding: 6px 12px; border-radius: 8px; font-weight: 600; cursor: pointer; }
 
-        .slider-container { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        .slide-img { max-width: 95%; max-height: 80vh; transition: transform 0.1s ease-out; box-shadow: 0 5px 15px rgba(0,0,0,0.1); touch-action: none;}
-
-        .row-item { background: var(--secondary); padding: 15px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .row-info strong { display: block; font-size: 16px; }
-        .row-info span { font-size: 12px; color: var(--gray); }
-
-        .nav { position: fixed; bottom: 0; width: 100%; height: 70px; background: var(--bg); display: flex; border-top: 0.5px solid rgba(0,0,0,0.1); z-index: 999; }
-        .nav-btn { flex: 1; border: none; background: none; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 10px; color: var(--gray); cursor: pointer; }
+        /* Навигация */
+        .nav { position: fixed; bottom: 0; width: 100%; height: 75px; background: var(--bg); display: flex; border-top: 0.5px solid rgba(128,128,128,0.3); z-index: 999; }
+        .nav-btn { flex: 1; border: none; background: none; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 11px; color: var(--gray); transition: 0.2s; }
         .nav-btn.active { color: var(--accent); }
         .nav-icon { font-size: 22px; margin-bottom: 4px; }
+        .badge { position: absolute; top: 8px; right: 20%; background: #ff3b30; color: white; border-radius: 10px; padding: 2px 7px; font-size: 11px; font-weight: bold; }
+
+        /* Просмотрщик */
+        #viewer { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--bg); z-index: 1000; }
+        
+        input { 
+            width: 100%; padding: 12px; border-radius: 12px; border: none; 
+            background: var(--secondary); color: var(--text); margin-bottom: 15px; box-sizing: border-box; 
+        }
     </style>
 </head>
 <body>
 
     <div id="answers" class="page active">
-        <div class="header">Ответы</div>
-        <div class="grid">
-            <div class="card" onclick="startBook(1, 26)"><img src="img/t1.png"><div class="card-label">Les Grands Classiques tome 11</div></div>
-            <div class="card" onclick="startBook(2, 26)"><img src="img/t2.png"><div class="card-label">Les Grands Classiques tome 3</div></div>
-            <div class="card" onclick="startBook(3, 26)"><img src="img/t3.png"><div class="card-label">Vitraux tome 2</div></div>
-            <div class="card" onclick="startBook(4, 26)"><img src="img/t4.png"><div class="card-label">Trompe L'oeil Babies</div></div>
-            <div class="card" onclick="startBook(5, 11)"><img src="img/t5.png"><div class="card-label">Trompe L'oeil Grand Bloc</div></div>
-            <div class="card" onclick="startBook(6, 10)"><img src="img/t6.png"><div class="card-label">Stitch Au numero</div></div>
-            <div class="card" onclick="startBook(7, 26)"><img src="img/t7.png"><div class="card-label">Sous L'Ocean</div></div>
-            <div class="card" onclick="startBook(8, 26)"><img src="img/t8.png"><div class="card-label">Saisons</div></div>
-            <div class="card" onclick="startBook(9, 10)"><img src="img/t9.png"><div class="card-label">Romantasy</div></div>
-            <div class="card" onclick="startBook(10, 26)"><img src="img/t10.png"><div class="card-label">Princesses tome 1</div></div>
-            <div class="card" onclick="startBook(11, 26)"><img src="img/t11.png"><div class="card-label">Princesses tome 2</div></div>
-            <div class="card" onclick="startBook(12, 26)"><img src="img/t12.png"><div class="card-label">Princes&Heros</div></div>
-            <div class="card" onclick="startBook(13, 26)"><img src="img/t13.png"><div class="card-label">Portraits De Famille</div></div>
-            <div class="card" onclick="startBook(14, 26)"><img src="img/t14.png"><div class="card-label">Pokemon</div></div>
-            <div class="card" onclick="startBook(15, 26)"><img src="img/t15.png"><div class="card-label">Pixar</div></div>
-            <div class="card" onclick="startBook(16, 26)"><img src="img/t16.png"><div class="card-label">Petites Princesses</div></div>
-            <div class="card" onclick="startBook(17, 26)"><img src="img/t17.png"><div class="card-label">Petites Betes</div></div>
-            <div class="card" onclick="startBook(18, 26)"><img src="img/t18.png"><div class="card-label">Mondes Fantastiques</div></div>
-            <div class="card" onclick="startBook(19, 26)"><img src="img/t19.png"><div class="card-label">Mickey, Donald&Co</div></div>
-            <div class="card" onclick="startBook(20, 26)"><img src="img/t20.png"><div class="card-label">Mechants</div></div>
-            <div class="card" onclick="startBook(21, 26)"><img src="img/t21.png"><div class="card-label">Marsupilami</div></div>
-            <div class="card" onclick="startBook(22, 26)"><img src="img/t22.png"><div class="card-label">Love Stories</div></div>
-            <div class="card" onclick="startBook(23, 26)"><img src="img/t23.png"><div class="card-label">Looney Tunes tome 3s</div></div>
-            <div class="card" onclick="startBook(24, 26)"><img src="img/t24.png"><div class="card-label">Lilo Et Stitch</div></div>
-            <div class="card" onclick="startBook(25, 26)"><img src="img/t25.png"><div class="card-label">Debutants tome 1</div></div>
-            <div class="card" onclick="startBook(26, 26)"><img src="img/t26.png"><div class="card-label">Debutants tome 2</div></div>
-            <div class="card" onclick="startBook(27, 26)"><img src="img/t27.png"><div class="card-label">Au numero</div></div>
-            <div class="card" onclick="startBook(28, 9)"><img src="img/t28.png"><div class="card-label">La Petite Sirene</div></div>
-            <div class="card" onclick="startBook(29, 26)"><img src="img/t29.png"><div class="card-label">Les Schtroumpfs 1</div></div>
-            <div class="card" onclick="startBook(30, 26)"><img src="img/t30.png"><div class="card-label">Les Schtroumpfs 2</div></div>
-            <div class="card" onclick="startBook(31, 26)"><img src="img/t31.png"><div class="card-label">L'age Glace</div></div>
-            <div class="card" onclick="startBook(32, 26)"><img src="img/t32.png"><div class="card-label">Hiver</div></div>
-            <div class="card" onclick="startBook(33, 26)"><img src="img/t33.png"><div class="card-label">Heros&Mechants</div></div>
-            <div class="card" onclick="startBook(34, 10)"><img src="img/t34.png"><div class="card-label">Grand Bloc</div></div>
-            <div class="card" onclick="startBook(35, 26)"><img src="img/t35.png"><div class="card-label">Coliector</div></div>
-            <div class="card" onclick="startBook(36, 26)"><img src="img/t36.png"><div class="card-label">Girl Power</div></div>
-            <div class="card" onclick="startBook(37, 26)"><img src="img/t37.png"><div class="card-label">Fees&Sorciers</div></div>
-            <div class="card" onclick="startBook(38, 26)"><img src="img/t38.png"><div class="card-label">Famille</div></div>
-            <div class="card" onclick="startBook(39, 10)"><img src="img/t39.png"><div class="card-label">Douce France</div></div>
-            <div class="card" onclick="startBook(40, 26)"><img src="img/t40.png"><div class="card-label">Chiots&Chiens</div></div>
-            <div class="card" onclick="startBook(41, 14)"><img src="img/t41.png"><div class="card-label">Chevaux</div></div>
-            <div class="card" onclick="startBook(42, 9)"><img src="img/t42.png"><div class="card-label">Bisounours</div></div>
-            <div class="card" onclick="startBook(43, 26)"><img src="img/t43.png"><div class="card-label">Best Of Pixar</div></div>
-            <div class="card" onclick="startBook(44, 26)"><img src="img/t44.png"><div class="card-label">Best Of Grands Classiques</div></div>
-            <div class="card" onclick="startBook(45, 26)"><img src="img/t45.png"><div class="card-label">La Belle Et La Bete</div></div>
-            <div class="card" onclick="startBook(46, 26)"><img src="img/t46.png"><div class="card-label">Bestiaire</div></div>
-            <div class="card" onclick="startBook(47, 26)"><img src="img/t47.png"><div class="card-label">Best Of Heroines</div></div>
-        </div>
-    </div>
-
-    <div id="palettes" class="page">
-        <div class="header">Палитры</div>
-        <div class="cat-title">GuangNa</div>
-        <div class="row-item"><div class="row-info"><strong>GuangNa 120</strong><span>Палитра цветов</span></div><button class="close-btn" onclick="openPdf('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/guangna120.pdf')">Открыть</button></div>
-        <div class="row-item"><div class="row-info"><strong>GuangNa 168</strong><span>Палитра цветов</span></div><button class="close-btn" onclick="openPdf('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/guangna168.pdf')">Открыть</button></div>
-        <div class="row-item"><div class="row-info"><strong>GuangNa 240</strong><span>Палитра цветов</span></div><button class="close-btn" onclick="openPdf('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/guangna240.pdf')">Открыть</button></div>
-        <div class="row-item"><div class="row-info"><strong>GuangNa 288</strong><span>Палитра цветов</span></div><button class="close-btn" onclick="openPdf('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/guangna288.pdf')">Открыть</button></div>
-        <div class="row-item"><div class="row-info"><strong>GuangNa 360</strong><span>Палитра цветов</span></div><button class="close-btn" onclick="openPdf('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/guangna360.pdf')">Открыть</button></div>
-        
-        <div class="cat-title">Другие бренды</div>
-        <div class="row-item"><div class="row-info"><strong>Grasp 168</strong><span>Палитра цветов</span></div><button class="close-btn" onclick="openPdf('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/grasp168.pdf')">Открыть</button></div>
-        <div class="row-item"><div class="row-info"><strong>Tooli-Art</strong><span>Палитра цветов</span></div><button class="close-btn" onclick="openPdf('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/tooliart.pdf')">Открыть</button></div>
-        <div class="row-item"><div class="row-info"><strong>Zibeef 240</strong><span>Палитра цветов</span></div><button class="close-btn" onclick="openPdf('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/zibeef240.pdf')">Открыть</button></div>
+        <div class="header">Коллекции</div>
+        <div class="grid" id="booksGrid"></div>
     </div>
 
     <div id="shop" class="page">
-        <div class="header">Магазин</div>
-        <div class="cat-title">Купить маркеры GuangNa</div>
-        <div class="row-item" style="flex-direction: column; gap: 10px;">
-            <input type="text" id="markerSearch" placeholder="Введите номер маркера..." 
-                   style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--gray); background: var(--bg); color: var(--text); box-sizing: border-box;"
-                   oninput="filterMarkers()">
-            
-            <div id="markersList" style="width: 100%; max-height: 400px; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; background: rgba(0,0,0,0.03); border-radius: 10px; padding: 5px;">
-                <div style="text-align: center; color: var(--gray); padding: 20px;">Загрузка наличия...</div>
-            </div>
-            
-            <button class="close-btn" style="width: 100%; padding: 15px;" onclick="sendOrder('Заказ маркеров поштучно')">Оформить заказ</button>
-        </div>
+        <div class="header">Маркеры GuangNa</div>
+        <input type="text" id="markerSearch" placeholder="Поиск по номеру..." oninput="filterMarkers()">
+        <div id="markersList"></div>
+    </div>
 
-        <div class="cat-title">Купить раскраски</div>
-        <div class="row-item">
-            <div class="row-info"><strong>Hachette Heroes</strong><span>Тома в наличии</span></div>
-            <button class="close-btn" onclick="tab('answers')">Выбрать</button>
-        </div>
+    <div id="cart" class="page">
+        <div class="header">Ваш заказ</div>
+        <div id="cartList"></div>
+        <div id="cartTotal" style="padding: 20px 0; font-weight: bold; font-size: 18px; text-align: right;"></div>
+        <button id="mainOrderBtn" class="buy-btn" style="border-radius: 15px; padding: 18px; display: none;" onclick="checkout()">
+            Оформить заказ
+        </button>
     </div>
 
     <div id="viewer">
-        <div class="viewer-header">
-            <button class="close-btn" onclick="closeBook()">Назад</button>
-            <div id="page-counter" style="font-weight: bold;">1 / 1</div>
+        <div style="padding: 15px; display: flex; justify-content: space-between; align-items: center;">
+            <button class="buy-btn" style="width: auto; border-radius: 8px;" onclick="closeBook()">Назад</button>
+            <div id="page-counter" style="font-weight: bold;"></div>
         </div>
-        <div class="slider-container" id="slider" ontouchstart="handleTouchStart(event)" ontouchmove="handleTouchMove(event)" ontouchend="handleTouchEnd(event)">
-            <img src="" id="current-page" class="slide-img">
+        <div style="height: 80vh; display: flex; align-items: center; justify-content: center;" ontouchstart="handleTouchStart(event)" ontouchend="handleTouchEnd(event)">
+            <img src="" id="current-page" style="max-width: 95%; max-height: 100%; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
         </div>
     </div>
 
     <nav class="nav">
-        <button id="btn-answers" class="nav-btn active" onclick="tab('answers')"><span class="nav-icon">📚</span>Ответы</button>
-        <button id="btn-palettes" class="nav-btn" onclick="tab('palettes')"><span class="nav-icon">🎨</span>Палитры</button>
-        <button id="btn-shop" class="nav-btn" onclick="tab('shop')"><span class="nav-icon">🛒</span>Магазин</button>
+        <button id="btn-answers" class="nav-btn active" onclick="tab('answers')"><span class="nav-icon">📚</span>Книги</button>
+        <button id="btn-shop" class="nav-btn" onclick="tab('shop')"><span class="nav-icon">🖍️</span>Маркеры</button>
+        <button id="btn-cart" class="nav-btn" onclick="tab('cart')">
+            <span class="nav-icon">🛒</span>Корзина
+            <span id="cartBadge" class="badge" style="display:none">0</span>
+        </button>
     </nav>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
+        tg.ready();
 
-        let currentVol = 1;
-        let currentPage = 1;
-        let maxPages = 1;
-        let touchStartX = 0;
-        let zoomScale = 1;
-        let lastDist = 0;
         let markersData = [];
+        let cart = [];
+        const availableVolumes = [1, 2, 9]; // Только эти тома можно купить
 
-        function tab(id) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            document.getElementById('btn-' + id).classList.add('active');
-            
-            if (id === 'shop') loadMarkers();
-            tg.HapticFeedback.selectionChanged();
-        }
+        const allBooks = [
+            {id: 1, name: "Classiques tome 11", pages: 26},
+            {id: 2, name: "Classiques tome 3", pages: 26},
+            {id: 3, name: "Vitraux tome 2", pages: 26},
+            {id: 9, name: "Romantasy", pages: 10},
+            {id: 10, name: "Princesses tome 1", pages: 26}
+        ];
 
-        function startBook(volId, count) {
-            currentVol = volId;
-            maxPages = count;
-            currentPage = 1;
-            document.getElementById('viewer').style.display = 'block';
-            updatePage();
-            tg.HapticFeedback.impactOccurred('medium');
-        }
-
-        function closeBook() {
-            document.getElementById('viewer').style.display = 'none';
-            zoomScale = 1;
-            document.getElementById('current-page').style.transform = `scale(1)`;
-        }
-
-        function openPdf(url) {
-            tg.openLink(url, {try_instant_view: true});
-        }
-
-        function updatePage() {
-            const img = document.getElementById('current-page');
-            const counter = document.getElementById('page-counter');
-            zoomScale = 1;
-            img.style.transform = `scale(1)`;
-            
-            const basePath = `otveti/t${currentVol}/${currentPage}`;
-            const formats = ['.jpg', '.jpeg', '.png', '.JPG', '.PNG', '.JPEG'];
-            let fIndex = 0;
-
-            img.onerror = function() {
-                fIndex++;
-                if (fIndex < formats.length) {
-                    this.src = basePath + formats[fIndex] + '?v=' + Math.floor(Math.random() * 1000);
-                } else {
-                    this.onerror = null;
-                }
-            };
-
-            img.src = basePath + formats[0] + '?v=' + Math.floor(Math.random() * 1000);
-            counter.innerText = `${currentPage} / ${maxPages}`;
-        }
-
-        function handleTouchStart(e) {
-            if (zoomScale > 1) return;
-            if (e.touches.length === 1) touchStartX = e.touches[0].screenX;
-            if (e.touches.length === 2) lastDist = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
-        }
-
-        function handleTouchMove(e) {
-            if (e.touches.length === 2) {
-                const dist = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
-                zoomScale = Math.min(Math.max(1, zoomScale * (dist / lastDist)), 4);
-                document.getElementById('current-page').style.transform = `scale(${zoomScale})`;
-                lastDist = dist;
-                if (e.cancelable) e.preventDefault();
-            }
-        }
-
-        function handleTouchEnd(e) {
-            if (zoomScale > 1) return;
-            let diff = touchStartX - e.changedTouches[0].screenX;
-            if (Math.abs(diff) > 40) {
-                if (diff > 0 && currentPage < maxPages) {
-                    currentPage++; updatePage(); tg.HapticFeedback.impactOccurred('light');
-                } else if (diff < 0 && currentPage > 1) {
-                    currentPage--; updatePage(); tg.HapticFeedback.impactOccurred('light');
-                }
-            }
-        }
-
-        function sendOrder(item) {
-            tg.showConfirm(`Вы хотите отправить запрос на ${item}?`, (ok) => {
-                if (ok) tg.sendData(JSON.stringify({action: "order", item: item}));
-            });
+        function renderBooks() {
+            const grid = document.getElementById('booksGrid');
+            grid.innerHTML = allBooks.map(b => `
+                <div class="card">
+                    <img src="img/t${b.id}.png" onclick="startBook(${b.id}, ${b.pages})">
+                    <div class="card-label">${b.name}</div>
+                    ${availableVolumes.includes(b.id) 
+                        ? `<button class="buy-btn" onclick="addToCart('Том', '${b.name}', ${b.id})">В корзину</button>`
+                        : `<div style="text-align:center; font-size:11px; padding:10px; color:var(--gray)">Ожидается</div>`}
+                </div>
+            `).join('');
         }
 
         async function loadMarkers() {
@@ -273,66 +153,133 @@
             try {
                 const response = await fetch(csvUrl);
                 const text = await response.text();
-                
                 const rows = text.split('\n').map(row => row.split(',').map(cell => cell.replace(/"/g, '').trim()));
-                let tempMarkers = [];
-
+                let temp = [];
                 rows.forEach(row => {
-                    // Используем шаг 2, но проверяем ячейки более гибко
                     for (let i = 0; i < row.length; i++) {
                         let num = row[i];
-                        
-                        // Если это число и оно похоже на номер маркера (>10)
                         if (num && !isNaN(num) && parseInt(num) > 10) {
-                            // Ищем количество в следующей НЕПУСТОЙ ячейке
-                            let count = "0";
-                            if (row[i+1] !== "" && row[i+1] !== undefined) {
-                                count = row[i+1];
-                            } else if (row[i+2] !== "" && row[i+2] !== undefined) {
-                                count = row[i+2];
-                            }
-
-                            tempMarkers.push({ 
-                                number: num, 
-                                count: (!isNaN(count)) ? count : "0" 
-                            });
-                            // Пропускаем ячейку с количеством, чтобы не считать её за номер
-                            i++; 
+                            let count = row[i+1] || row[i+2] || "0";
+                            temp.push({ number: num, count: parseInt(count) });
+                            i++;
                         }
                     }
                 });
-
-                // Фильтруем дубликаты
-                markersData = tempMarkers.filter((v, i, a) => a.findIndex(t => (t.number === v.number)) === i);
+                markersData = temp.filter((v, i, a) => a.findIndex(t => (t.number === v.number)) === i);
                 renderMarkers(markersData);
-            } catch (e) {
-                console.error("Ошибка загрузки:", e);
-                document.getElementById('markersList').innerHTML = "Ошибка загрузки данных";
-            }
+            } catch (e) { console.error(e); }
         }
 
         function renderMarkers(data) {
             const list = document.getElementById('markersList');
-            if (data.length === 0) {
-                list.innerHTML = '<div style="padding:10px; color:var(--gray); text-align:center;">Ничего не найдено</div>';
-                return;
-            }
-            data.sort((a, b) => parseInt(a.number) - parseInt(b.number));
+            data.sort((a,b) => a.number - b.number);
             list.innerHTML = data.map(m => `
-                <div style="display: flex; justify-content: space-between; padding: 10px; border-bottom: 0.5px solid rgba(0,0,0,0.05); align-items: center; background: white; border-radius: 8px; margin-bottom: 2px;">
-                    <span style="font-weight: bold; font-size: 16px;">№ ${m.number}</span>
-                    <span style="color: ${parseInt(m.count) > 0 ? '#34c759' : '#ff3b30'}; font-weight: 500;">
-                        ${parseInt(m.count) > 0 ? 'В наличии: ' + m.count : 'Нет в наличии'}
-                    </span>
+                <div class="row-item">
+                    <span class="marker-num">№ ${m.number}</span>
+                    <div class="counter">
+                        ${m.count > 0 
+                            ? `<button class="btn-qty" onclick="addToCart('Маркер', '${m.number}', ${m.number})">+</button>` 
+                            : '<span style="color:#ff3b30; font-size:12px; font-weight:bold;">Закончился</span>'}
+                    </div>
                 </div>
             `).join('');
         }
 
-        function filterMarkers() {
-            const query = document.getElementById('markerSearch').value.toLowerCase();
-            const filtered = markersData.filter(m => m.number.includes(query));
-            renderMarkers(filtered);
+        function addToCart(type, name, id) {
+            const key = type + '-' + id;
+            const existing = cart.find(i => i.key === key);
+            if (existing) {
+                existing.qty++;
+            } else {
+                cart.push({ key, type, name, id, qty: 1 });
+            }
+            updateUI();
+            tg.HapticFeedback.impactOccurred('light');
         }
+
+        function updateUI() {
+            const totalItems = cart.reduce((sum, i) => sum + i.qty, 0);
+            const badge = document.getElementById('cartBadge');
+            badge.innerText = totalItems;
+            badge.style.display = totalItems > 0 ? 'block' : 'none';
+            document.getElementById('mainOrderBtn').style.display = totalItems > 0 ? 'block' : 'none';
+        }
+
+        function renderCart() {
+            const list = document.getElementById('cartList');
+            if (cart.length === 0) {
+                list.innerHTML = '<div style="text-align:center; padding:50px; color:var(--gray)">Корзина пуста</div>';
+                return;
+            }
+            list.innerHTML = cart.map((item, index) => `
+                <div class="row-item">
+                    <div>
+                        <div style="font-size:12px; color:var(--gray)">${item.type}</div>
+                        <div style="font-weight:bold; color:var(--text)">${item.type === 'Маркер' ? '№ ' : ''}${item.name}</div>
+                    </div>
+                    <div class="counter">
+                        <button class="btn-qty" onclick="changeQty(${index}, -1)">-</button>
+                        <span style="min-width:20px; text-align:center; font-weight:bold; color:var(--text)">${item.qty}</span>
+                        <button class="btn-qty" onclick="changeQty(${index}, 1)">+</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function changeQty(index, delta) {
+            cart[index].qty += delta;
+            if (cart[index].qty <= 0) cart.splice(index, 1);
+            renderCart();
+            updateUI();
+        }
+
+        function checkout() {
+            if (cart.length === 0) return;
+            tg.showConfirm("Отправить заказ администратору?", (ok) => {
+                if (ok) {
+                    const orderText = cart.map(i => `${i.type} ${i.name} — ${i.qty} шт.`).join('\n');
+                    const data = {
+                        action: "new_order",
+                        items: orderText,
+                        total_count: cart.reduce((sum, i) => sum + i.qty, 0)
+                    };
+                    tg.sendData(JSON.stringify(data));
+                }
+            });
+        }
+
+        function tab(id) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.getElementById('btn-' + id).classList.add('active');
+            if (id === 'shop' && markersData.length === 0) loadMarkers();
+            if (id === 'cart') renderCart();
+            tg.HapticFeedback.selectionChanged();
+        }
+
+        // --- Логика просмотрщика ---
+        let currentVol, currentPage, maxPages, touchStartX;
+        function startBook(v, m) { currentVol=v; maxPages=m; currentPage=1; document.getElementById('viewer').style.display='block'; updatePage(); }
+        function closeBook() { document.getElementById('viewer').style.display='none'; }
+        function updatePage() {
+            const img = document.getElementById('current-page');
+            img.src = `otveti/t${currentVol}/${currentPage}.jpg`;
+            document.getElementById('page-counter').innerText = `${currentPage} / ${maxPages}`;
+        }
+        function handleTouchStart(e) { touchStartX = e.touches[0].screenX; }
+        function handleTouchEnd(e) {
+            let diff = touchStartX - e.changedTouches[0].screenX;
+            if (diff > 50 && currentPage < maxPages) { currentPage++; updatePage(); }
+            if (diff < -50 && currentPage > 1) { currentPage--; updatePage(); }
+        }
+
+        function filterMarkers() {
+            const q = document.getElementById('markerSearch').value;
+            renderMarkers(markersData.filter(m => m.number.includes(q)));
+        }
+
+        renderBooks();
     </script>
 </body>
 </html>
