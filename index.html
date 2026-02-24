@@ -15,152 +15,121 @@
             --card-bg: var(--tg-theme-secondary-bg-color, #f1f1f1);
         }
 
-        body { 
-            font-family: -apple-system, sans-serif; 
-            background: var(--bg); 
-            color: var(--text); 
-            margin: 0; 
-            padding-bottom: 100px;
-        }
-
-        .header { padding: 20px 15px; font-size: 24px; font-weight: 800; display: flex; justify-content: space-between; align-items: center; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 100px; }
+        .header { padding: 20px 15px; font-size: 22px; font-weight: 800; }
         .page { display: none; padding: 0 15px; }
         .page.active { display: block; }
 
         /* Сетка книг */
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .card { background: var(--card-bg); border-radius: 18px; overflow: hidden; border: 0.5px solid rgba(128,128,128,0.2); display: flex; flex-direction: column; }
-        .card img { width: 100%; height: 160px; object-fit: cover; cursor: pointer; }
-        .card-label { padding: 10px; font-weight: 600; font-size: 13px; text-align: center; flex-grow: 1; color: var(--text); }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .card { background: var(--card-bg); border-radius: 15px; overflow: hidden; border: 0.5px solid rgba(128,128,128,0.2); display: flex; flex-direction: column; }
+        .card img { width: 100%; height: 140px; object-fit: cover; }
+        .card-label { padding: 8px; font-weight: 600; font-size: 12px; text-align: center; flex-grow: 1; color: var(--text); }
         
-        /* Кнопки */
-        .buy-btn { background: var(--accent); color: var(--accent-text); border: none; padding: 10px; font-weight: bold; cursor: pointer; width: 100%; }
-        .buy-btn:disabled { background: var(--gray); opacity: 0.5; }
+        .buy-btn { background: var(--accent); color: var(--accent-text); border: none; padding: 10px; font-weight: bold; cursor: pointer; width: 100%; font-size: 12px; }
+        .buy-btn:disabled { background: var(--gray); opacity: 0.4; cursor: not-allowed; }
 
         /* Список маркеров */
-        .row-item { 
-            background: var(--card-bg); 
-            padding: 15px; 
-            border-radius: 15px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            margin-bottom: 8px; 
-        }
-        .marker-num { font-weight: 800; color: var(--text); font-size: 18px; }
+        .row-item { background: var(--card-bg); padding: 12px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        .marker-info { display: flex; flex-direction: column; }
+        .marker-num { font-weight: 800; color: var(--text); font-size: 16px; }
+        .marker-stock { font-size: 11px; color: var(--gray); }
 
-        /* Корзина и счетчики */
-        .counter { display: flex; align-items: center; gap: 12px; }
-        .btn-qty { 
-            background: var(--accent); 
-            color: var(--accent-text); 
-            border: none; 
-            width: 30px; height: 30px; 
-            border-radius: 8px; 
-            font-weight: bold; 
-            font-size: 18px;
-        }
+        .counter { display: flex; align-items: center; gap: 8px; }
+        .btn-qty { background: var(--accent); color: var(--accent-text); border: none; width: 28px; height: 28px; border-radius: 6px; font-weight: bold; }
 
         /* Навигация */
-        .nav { position: fixed; bottom: 0; width: 100%; height: 75px; background: var(--bg); display: flex; border-top: 0.5px solid rgba(128,128,128,0.3); z-index: 999; }
-        .nav-btn { flex: 1; border: none; background: none; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 11px; color: var(--gray); transition: 0.2s; }
+        .nav { position: fixed; bottom: 0; width: 100%; height: 70px; background: var(--bg); display: flex; border-top: 0.5px solid rgba(128,128,128,0.3); z-index: 999; }
+        .nav-btn { flex: 1; border: none; background: none; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 10px; color: var(--gray); }
         .nav-btn.active { color: var(--accent); }
-        .nav-icon { font-size: 22px; margin-bottom: 4px; }
-        .badge { position: absolute; top: 8px; right: 20%; background: #ff3b30; color: white; border-radius: 10px; padding: 2px 7px; font-size: 11px; font-weight: bold; }
+        .badge { position: absolute; top: 8px; right: 20%; background: #ff3b30; color: white; border-radius: 10px; padding: 2px 6px; font-size: 10px; }
 
-        /* Просмотрщик */
         #viewer { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--bg); z-index: 1000; }
-        
-        input { 
-            width: 100%; padding: 12px; border-radius: 12px; border: none; 
-            background: var(--secondary); color: var(--text); margin-bottom: 15px; box-sizing: border-box; 
-        }
+        input { width: 100%; padding: 12px; border-radius: 10px; border: none; background: var(--secondary); color: var(--text); margin-bottom: 10px; box-sizing: border-box; }
     </style>
 </head>
 <body>
 
     <div id="answers" class="page active">
-        <div class="header">Коллекции</div>
+        <div class="header">Коллекция (47 томов)</div>
         <div class="grid" id="booksGrid"></div>
     </div>
 
     <div id="shop" class="page">
         <div class="header">Маркеры GuangNa</div>
-        <input type="text" id="markerSearch" placeholder="Поиск по номеру..." oninput="filterMarkers()">
+        <input type="text" id="markerSearch" placeholder="Поиск номера..." oninput="filterMarkers()">
         <div id="markersList"></div>
     </div>
 
     <div id="cart" class="page">
-        <div class="header">Ваш заказ</div>
+        <div class="header">Корзина</div>
         <div id="cartList"></div>
-        <div id="cartTotal" style="padding: 20px 0; font-weight: bold; font-size: 18px; text-align: right;"></div>
-        <button id="mainOrderBtn" class="buy-btn" style="border-radius: 15px; padding: 18px; display: none;" onclick="checkout()">
-            Оформить заказ
-        </button>
+        <div id="cartTotal" style="padding: 20px; font-weight: bold; text-align: right;"></div>
+        <button id="mainOrderBtn" class="buy-btn" style="border-radius: 12px; padding: 15px; display: none;" onclick="checkout()">Отправить заказ</button>
     </div>
 
     <div id="viewer">
-        <div style="padding: 15px; display: flex; justify-content: space-between; align-items: center;">
-            <button class="buy-btn" style="width: auto; border-radius: 8px;" onclick="closeBook()">Назад</button>
-            <div id="page-counter" style="font-weight: bold;"></div>
-        </div>
+        <div style="padding: 15px; display: flex; justify-content: space-between;"><button class="buy-btn" style="width:auto" onclick="closeBook()">Закрыть</button><div id="page-counter"></div></div>
         <div style="height: 80vh; display: flex; align-items: center; justify-content: center;" ontouchstart="handleTouchStart(event)" ontouchend="handleTouchEnd(event)">
-            <img src="" id="current-page" style="max-width: 95%; max-height: 100%; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+            <img src="" id="current-page" style="max-width: 95%; max-height: 100%;">
         </div>
     </div>
 
     <nav class="nav">
-        <button id="btn-answers" class="nav-btn active" onclick="tab('answers')"><span class="nav-icon">📚</span>Книги</button>
-        <button id="btn-shop" class="nav-btn" onclick="tab('shop')"><span class="nav-icon">🖍️</span>Маркеры</button>
-        <button id="btn-cart" class="nav-btn" onclick="tab('cart')">
-            <span class="nav-icon">🛒</span>Корзина
-            <span id="cartBadge" class="badge" style="display:none">0</span>
-        </button>
+        <button id="btn-answers" class="nav-btn active" onclick="tab('answers')">📚<br>Ответы</button>
+        <button id="btn-shop" class="nav-btn" onclick="tab('shop')">🖍️<br>Магазин</button>
+        <button id="btn-cart" class="nav-btn" onclick="tab('cart')">🛒<br>Корзина<span id="cartBadge" class="badge" style="display:none">0</span></button>
     </nav>
 
     <script>
         const tg = window.Telegram.WebApp;
-        tg.expand();
-        tg.ready();
+        let markersData = [], cart = [];
+        const availableVolumes = [1, 2, 9]; // Тома, которые можно купить (t1, t2, t9)
 
-        let markersData = [];
-        let cart = [];
-        const availableVolumes = [1, 2, 9]; // Только эти тома можно купить
-
-        const allBooks = [
-            {id: 1, name: "Classiques tome 11", pages: 26},
-            {id: 2, name: "Classiques tome 3", pages: 26},
-            {id: 3, name: "Vitraux tome 2", pages: 26},
-            {id: 9, name: "Romantasy", pages: 10},
-            {id: 10, name: "Princesses tome 1", pages: 26}
+        // Генерируем названия для всех 47 томов
+        const bookNames = [
+            "L.G. Classiques t11", "L.G. Classiques t3", "Vitraux t2", "Trompe L'oeil Babies", 
+            "Trompe L'oeil G.B.", "Stitch Au numero", "Sous L'Ocean", "Saisons", "Romantasy", 
+            "Princesses t1", "Princesses t2", "Princes&Heros", "Portraits Famille", "Pokemon", 
+            "Pixar", "Petites Princesses", "Petites Betes", "Mondes Fantastiques", "Mickey&Co", 
+            "Mechants", "Marsupilami", "Love Stories", "Looney Tunes t3", "Lilo Et Stitch", 
+            "Debutants t1", "Debutants t2", "Au numero", "La Petite Sirene", "Schtroumpfs 1", 
+            "Schtroumpfs 2", "L'age Glace", "Hiver", "Heros&Mechants", "Grand Bloc", "Coliector", 
+            "Girl Power", "Fees&Sorciers", "Famille", "Douce France", "Chiots&Chiens", "Chevaux", 
+            "Bisounours", "Best Of Pixar", "Best Of G.C.", "Belle Et La Bete", "Bestiaire", "Best Of Heroines"
         ];
 
         function renderBooks() {
             const grid = document.getElementById('booksGrid');
-            grid.innerHTML = allBooks.map(b => `
+            grid.innerHTML = bookNames.map((name, i) => {
+                const id = i + 1;
+                const isAvailable = availableVolumes.includes(id);
+                const inCart = cart.find(item => item.key === 'Том-'+id);
+                return `
                 <div class="card">
-                    <img src="img/t${b.id}.png" onclick="startBook(${b.id}, ${b.pages})">
-                    <div class="card-label">${b.name}</div>
-                    ${availableVolumes.includes(b.id) 
-                        ? `<button class="buy-btn" onclick="addToCart('Том', '${b.name}', ${b.id})">В корзину</button>`
-                        : `<div style="text-align:center; font-size:11px; padding:10px; color:var(--gray)">Ожидается</div>`}
-                </div>
-            `).join('');
+                    <img src="img/t${id}.png" onclick="startBook(${id}, 26)">
+                    <div class="card-label">${name}</div>
+                    ${isAvailable 
+                        ? `<button class="buy-btn" ${inCart ? 'disabled' : ''} onclick="addToCart('Том', '${name}', ${id}, 1)">
+                            ${inCart ? 'В корзине' : 'Купить (1 шт)'}</button>`
+                        : `<div style="padding:10px; font-size:10px; color:var(--gray); text-align:center">Нет в наличии</div>`}
+                </div>`;
+            }).join('');
         }
 
         async function loadMarkers() {
             const csvUrl = 'https://docs.google.com/spreadsheets/d/1Yrsif-aQwbuT6fLPnP4MsM22UuwuUWz5FYegELPxzFU/gviz/tq?tqx=out:csv';
             try {
-                const response = await fetch(csvUrl);
-                const text = await response.text();
-                const rows = text.split('\n').map(row => row.split(',').map(cell => cell.replace(/"/g, '').trim()));
+                const res = await fetch(csvUrl);
+                const text = await res.text();
+                const rows = text.split('\n').map(r => r.split(',').map(c => c.replace(/"/g, '').trim()));
                 let temp = [];
                 rows.forEach(row => {
                     for (let i = 0; i < row.length; i++) {
                         let num = row[i];
                         if (num && !isNaN(num) && parseInt(num) > 10) {
-                            let count = row[i+1] || row[i+2] || "0";
-                            temp.push({ number: num, count: parseInt(count) });
+                            let stock = parseInt(row[i+1] || row[i+2] || "0");
+                            temp.push({ number: num, stock: stock });
                             i++;
                         }
                     }
@@ -173,79 +142,75 @@
         function renderMarkers(data) {
             const list = document.getElementById('markersList');
             data.sort((a,b) => a.number - b.number);
-            list.innerHTML = data.map(m => `
+            list.innerHTML = data.map(m => {
+                const itemInCart = cart.find(c => c.key === 'Маркер-'+m.number);
+                const currentQty = itemInCart ? itemInCart.qty : 0;
+                const canAdd = currentQty < m.stock;
+
+                return `
                 <div class="row-item">
-                    <span class="marker-num">№ ${m.number}</span>
-                    <div class="counter">
-                        ${m.count > 0 
-                            ? `<button class="btn-qty" onclick="addToCart('Маркер', '${m.number}', ${m.number})">+</button>` 
-                            : '<span style="color:#ff3b30; font-size:12px; font-weight:bold;">Закончился</span>'}
+                    <div class="marker-info">
+                        <span class="marker-num">№ ${m.number}</span>
+                        <span class="marker-stock">В наличии: ${m.stock} шт.</span>
                     </div>
-                </div>
-            `).join('');
+                    <div class="counter">
+                        ${m.stock > 0 
+                            ? `<button class="btn-qty" ${!canAdd ? 'style="opacity:0.3"' : ''} onclick="addToCart('Маркер', '${m.number}', ${m.number}, ${m.stock})">+</button>` 
+                            : '<span style="color:#ff3b30; font-size:11px;">Нет</span>'}
+                    </div>
+                </div>`;
+            }).join('');
         }
 
-        function addToCart(type, name, id) {
+        function addToCart(type, name, id, maxStock) {
             const key = type + '-' + id;
             const existing = cart.find(i => i.key === key);
             if (existing) {
-                existing.qty++;
+                if (existing.qty < maxStock) existing.qty++;
+                else { tg.showAlert("Больше нет в наличии!"); return; }
             } else {
-                cart.push({ key, type, name, id, qty: 1 });
+                cart.push({ key, type, name, id, qty: 1, max: maxStock });
             }
             updateUI();
+            if(type === 'Маркер') renderMarkers(markersData);
             tg.HapticFeedback.impactOccurred('light');
         }
 
         function updateUI() {
-            const totalItems = cart.reduce((sum, i) => sum + i.qty, 0);
+            const total = cart.reduce((sum, i) => sum + i.qty, 0);
             const badge = document.getElementById('cartBadge');
-            badge.innerText = totalItems;
-            badge.style.display = totalItems > 0 ? 'block' : 'none';
-            document.getElementById('mainOrderBtn').style.display = totalItems > 0 ? 'block' : 'none';
+            badge.innerText = total;
+            badge.style.display = total > 0 ? 'block' : 'none';
+            document.getElementById('mainOrderBtn').style.display = total > 0 ? 'block' : 'none';
+            renderBooks();
         }
 
         function renderCart() {
             const list = document.getElementById('cartList');
-            if (cart.length === 0) {
-                list.innerHTML = '<div style="text-align:center; padding:50px; color:var(--gray)">Корзина пуста</div>';
-                return;
-            }
+            if (cart.length === 0) { list.innerHTML = '<div style="text-align:center; padding:50px; color:var(--gray)">Пусто</div>'; return; }
             list.innerHTML = cart.map((item, index) => `
                 <div class="row-item">
-                    <div>
-                        <div style="font-size:12px; color:var(--gray)">${item.type}</div>
-                        <div style="font-weight:bold; color:var(--text)">${item.type === 'Маркер' ? '№ ' : ''}${item.name}</div>
-                    </div>
+                    <div><b>${item.type === 'Маркер' ? '№ ' : ''}${item.name}</b></div>
                     <div class="counter">
                         <button class="btn-qty" onclick="changeQty(${index}, -1)">-</button>
-                        <span style="min-width:20px; text-align:center; font-weight:bold; color:var(--text)">${item.qty}</span>
+                        <span>${item.qty}</span>
                         <button class="btn-qty" onclick="changeQty(${index}, 1)">+</button>
                     </div>
-                </div>
-            `).join('');
+                </div>`).join('');
         }
 
         function changeQty(index, delta) {
-            cart[index].qty += delta;
-            if (cart[index].qty <= 0) cart.splice(index, 1);
+            const item = cart[index];
+            if (delta > 0 && item.qty >= item.max) { tg.showAlert("Это максимум!"); return; }
+            item.qty += delta;
+            if (item.qty <= 0) cart.splice(index, 1);
             renderCart();
             updateUI();
         }
 
         function checkout() {
-            if (cart.length === 0) return;
-            tg.showConfirm("Отправить заказ администратору?", (ok) => {
-                if (ok) {
-                    const orderText = cart.map(i => `${i.type} ${i.name} — ${i.qty} шт.`).join('\n');
-                    const data = {
-                        action: "new_order",
-                        items: orderText,
-                        total_count: cart.reduce((sum, i) => sum + i.qty, 0)
-                    };
-                    tg.sendData(JSON.stringify(data));
-                }
-            });
+            const orderText = cart.map(i => `${i.type} ${i.name} (${i.qty} шт.)`).join('\n');
+            tg.sendData(JSON.stringify({action: "order", details: orderText}));
         }
 
         function tab(id) {
@@ -253,18 +218,16 @@
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             document.getElementById('btn-' + id).classList.add('active');
-            if (id === 'shop' && markersData.length === 0) loadMarkers();
+            if (id === 'shop') loadMarkers();
             if (id === 'cart') renderCart();
-            tg.HapticFeedback.selectionChanged();
         }
 
-        // --- Логика просмотрщика ---
+        // Базовый просмотрщик (оставил как был)
         let currentVol, currentPage, maxPages, touchStartX;
         function startBook(v, m) { currentVol=v; maxPages=m; currentPage=1; document.getElementById('viewer').style.display='block'; updatePage(); }
         function closeBook() { document.getElementById('viewer').style.display='none'; }
         function updatePage() {
-            const img = document.getElementById('current-page');
-            img.src = `otveti/t${currentVol}/${currentPage}.jpg`;
+            document.getElementById('current-page').src = `otveti/t${currentVol}/${currentPage}.jpg`;
             document.getElementById('page-counter').innerText = `${currentPage} / ${maxPages}`;
         }
         function handleTouchStart(e) { touchStartX = e.touches[0].screenX; }
