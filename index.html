@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        /* Используем системные цвета Telegram */
         :root {
             --bg: var(--tg-theme-bg-color, #ffffff);
             --text: var(--tg-theme-text-color, #000000);
@@ -27,13 +26,11 @@
         .page { display: none; padding: 0 15px; }
         .page.active { display: block; }
 
-        /* Сетка томов */
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .card { background: var(--secondary); border-radius: 18px; overflow: hidden; border: 0.5px solid rgba(0,0,0,0.1); }
+        .card { background: var(--secondary); border-radius: 18px; overflow: hidden; border: 0.5px solid rgba(0,0,0,0.1); cursor: pointer; }
         .card img { width: 100%; height: 180px; object-fit: cover; }
         .card-label { padding: 10px; font-weight: 600; font-size: 14px; text-align: center; }
 
-        /* Режим книги (Фон в цвет темы) */
         #viewer { 
             display: none; 
             position: fixed; 
@@ -44,7 +41,7 @@
         }
         .viewer-header { 
             position: absolute; top: 0; width: 100%; 
-            padding: 15px; display: flex; 
+            padding: 15px; display: flex; box-sizing: border-box;
             justify-content: space-between; align-items: center;
             z-index: 1001; background: var(--bg);
             border-bottom: 0.5px solid rgba(0,0,0,0.1);
@@ -54,14 +51,12 @@
         .slider-container { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; }
         .slide-img { max-width: 95%; max-height: 80vh; transition: transform 0.1s ease-out; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
 
-        /* Элементы списков (Палитры и Магазин) */
         .row-item { background: var(--secondary); padding: 15px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .row-info strong { display: block; font-size: 16px; }
         .row-info span { font-size: 12px; color: var(--gray); }
 
-        /* Навигация */
         .nav { position: fixed; bottom: 0; width: 100%; height: 70px; background: var(--bg); display: flex; border-top: 0.5px solid rgba(0,0,0,0.1); z-index: 999; }
-        .nav-btn { flex: 1; border: none; background: none; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 10px; color: var(--gray); }
+        .nav-btn { flex: 1; border: none; background: none; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 10px; color: var(--gray); cursor: pointer; }
         .nav-btn.active { color: var(--accent); }
         .nav-icon { font-size: 22px; margin-bottom: 4px; }
     </style>
@@ -71,204 +66,60 @@
     <div id="answers" class="page active">
         <div class="header">Ответы</div>
         <div class="grid">
-            <div class="card" onclick="startBook(1, 26)">
-                <img src="img/t1.png">
-                <div class="card-label">Les Grands Classiques tome 11</div>
-            </div>
-            <div class="card" onclick="startBook(2, 26)">
-                <img src="img/t2.png">
-                <div class="card-label">Les Grands Classiques tome 3</div>
-            </div>
-            <div class="card" onclick="startBook(3, 26)">
-                <img src="img/t3.png">
-                <div class="card-label">Vitraux tome 2</div>
-            </div>
-            <div class="card" onclick="startBook(4, 26)">
-                <img src="img/t4.png">
-                <div class="card-label">Trompe L'oeil Babies</div>
-            </div>
-            <div class="card" onclick="startBook(5, 11)">
-                <img src="img/t5.png">
-                <div class="card-label">Trompe L'oeil Grand Bloc</div>
-            </div>
-            <div class="card" onclick="startBook(6, 10)">
-                <img src="img/t6.png">
-                <div class="card-label">Stitch Au numero</div>
-            </div>
-            <div class="card" onclick="startBook(7, 26)">
-                <img src="img/t7.png">
-                <div class="card-label">Sous L'Ocean</div>
-            </div>
-            <div class="card" onclick="startBook(8, 26)">
-                <img src="img/t8.png">
-                <div class="card-label">Saisons</div>
-            </div>
-            <div class="card" onclick="startBook(9, 10)">
-                <img src="img/t9.png">
-                <div class="card-label">Romantasy</div>
-            </div>
-            <div class="card" onclick="startBook(10, 26)">
-                <img src="img/t10.png">
-                <div class="card-label">Princesses tome 1</div>
-            </div>
-            <div class="card" onclick="startBook(11, 26)">
-                <img src="img/t11.png">
-                <div class="card-label">Princesses tome 2</div>
-            </div>
-            <div class="card" onclick="startBook(12, 26)">
-                <img src="img/t12.png">
-                <div class="card-label">Princes&Heros</div>
-            </div>
-            <div class="card" onclick="startBook(13, 26)">
-                <img src="img/t13.png">
-                <div class="card-label">Portraits De Famille</div>
-            </div>
-            <div class="card" onclick="startBook(14, 26)">
-                <img src="img/t14.png">
-                <div class="card-label">Pokemon</div>
-            </div>
-            <div class="card" onclick="startBook(15, 26)">
-                <img src="img/t15.png">
-                <div class="card-label">Pixar</div>
-            </div>
-            <div class="card" onclick="startBook(16, 26)">
-                <img src="img/t16.png">
-                <div class="card-label">Petites Princesses</div>
-            </div>
-            <div class="card" onclick="startBook(17, 26)">
-                <img src="img/t17.png">
-                <div class="card-label">Petites Betes</div>
-            </div>
-            <div class="card" onclick="startBook(18, 26)">
-                <img src="img/t18.png">
-                <div class="card-label">Mondes Fantastiques</div>
-            </div>
-            <div class="card" onclick="startBook(19, 26)">
-                <img src="img/t19.png">
-                <div class="card-label">Mickey, Donald&Co</div>
-            </div>
-            <div class="card" onclick="startBook(20, 26)">
-                <img src="img/t20.png">
-                <div class="card-label">Mechants</div>
-            </div>
-            <div class="card" onclick="startBook(21, 26)">
-                <img src="img/t21.png">
-                <div class="card-label">Marsupilami</div>
-            </div>
-            <div class="card" onclick="startBook(22, 26)">
-                <img src="img/t22.png">
-                <div class="card-label">Love Stories</div>
-            </div>
-            <div class="card" onclick="startBook(23, 26)">
-                <img src="img/t23.png">
-                <div class="card-label">Looney Tunes tome 3s</div>
-            </div>
-            <div class="card" onclick="startBook(24, 26)">
-                <img src="img/t24.png">
-                <div class="card-label">Lilo Et Stitch</div>
-            </div>
-            <div class="card" onclick="startBook(25, 26)">
-                <img src="img/t25.png">
-                <div class="card-label">Les Grands Classiques Special Debutants tome 1</div>
-            </div>
-            <div class="card" onclick="startBook(26, 26)">
-                <img src="img/t26.png">
-                <div class="card-label">Les Grands Classiques Special Debutants tome 2</div>
-            </div>
-            <div class="card" onclick="startBook(27, 26)">
-                <img src="img/t27.png">
-                <div class="card-label">Les Grands Classiques Au numero</div>
-            </div>
-            <div class="card" onclick="startBook(28, 9)">
-                <img src="img/t28.png">
-                <div class="card-label">La Petite Sirene</div>
-            </div>
-             <div class="card" onclick="startBook(29, 26)">
-                <img src="img/t29.png">
-                <div class="card-label">Les Schtroumpfs tome 1</div>
-            </div>
-            <div class="card" onclick="startBook(30, 26)">
-                <img src="img/t30.png">
-                <div class="card-label">Les Schtroumpfs tome 2</div>
-            </div>
-            <div class="card" onclick="startBook(31, 26)">
-                <img src="img/t31.png">
-                <div class="card-label">L'age Glace</div>
-            </div>
-            <div class="card" onclick="startBook(32, 26)">
-                <img src="img/t32.png">
-                <div class="card-label">Hiver</div>
-            </div>
-            <div class="card" onclick="startBook(33, 26)">
-                <img src="img/t33.png">
-                <div class="card-label">Heros&Mechants La Battle</div>
-            </div>
-            <div class="card" onclick="startBook(34, 10)">
-                <img src="img/t34.png">
-                <div class="card-label">Grands Classiques Grand Bloc</div>
-            </div>
-            <div class="card" onclick="startBook(35, 26)">
-                <img src="img/t35.png">
-                <div class="card-label">Les Grands Classiques Coliector</div>
-            </div>
-            <div class="card" onclick="startBook(36, 26)">
-                <img src="img/t36.png">
-                <div class="card-label">Girl Power</div>
-            </div>
-            <div class="card" onclick="startBook(37, 26)">
-                <img src="img/t37.png">
-                <div class="card-label">Fees, Sorciers Et Magiciens</div>
-            </div>
-            <div class="card" onclick="startBook(38, 26)">
-                <img src="img/t38.png">
-                <div class="card-label">Famille</div>
-            </div>
-            <div class="card" onclick="startBook(39, 10)">
-                <img src="img/t39.png">
-                <div class="card-label">Escapades Merveilleuses Douce France</div>
-            </div>
-            <div class="card" onclick="startBook(40, 26)">
-                <img src="img/t40.png">
-                <div class="card-label">Chiots&Chiens</div>
-            </div>
-            <div class="card" onclick="startBook(41, 14)">
-                <img src="img/t41.png">
-                <div class="card-label">Chevaux</div>
-            </div>
-            <div class="card" onclick="startBook(42, 9)">
-                <img src="img/t42.png">
-                <div class="card-label">Bisounours</div>
-            </div>
-            <div class="card" onclick="startBook(43, 26)">
-                <img src="img/t43.png">
-                <div class="card-label">Best Of Pixar</div>
-            </div>
-            <div class="card" onclick="startBook(44, 26)">
-                <img src="img/t44.png">
-                <div class="card-label">Best Of Les Grands Classiques</div>
-            </div>
-             <div class="card" onclick="startBook(45, 26)">
-                <img src="img/t45.png">
-                <div class="card-label">La Belle Et La Bete</div>
-            </div>
-             <div class="card" onclick="startBook(46, 26)">
-                <img src="img/t46.png">
-                <div class="card-label">Bestiaire</div>
-            </div>
-             <div class="card" onclick="startBook(47, 26)">
-                <img src="img/t47.png">
-                <div class="card-label">Best Of Heroines</div>
-            </div>
-            </div>
+            <div class="card" onclick="startBook(1, 26)"><img src="img/t1.png"><div class="card-label">Les Grands Classiques tome 11</div></div>
+            <div class="card" onclick="startBook(2, 26)"><img src="img/t2.png"><div class="card-label">Les Grands Classiques tome 3</div></div>
+            <div class="card" onclick="startBook(3, 26)"><img src="img/t3.png"><div class="card-label">Vitraux tome 2</div></div>
+            <div class="card" onclick="startBook(4, 26)"><img src="img/t4.png"><div class="card-label">Trompe L'oeil Babies</div></div>
+            <div class="card" onclick="startBook(5, 11)"><img src="img/t5.png"><div class="card-label">Trompe L'oeil Grand Bloc</div></div>
+            <div class="card" onclick="startBook(6, 10)"><img src="img/t6.png"><div class="card-label">Stitch Au numero</div></div>
+            <div class="card" onclick="startBook(7, 26)"><img src="img/t7.png"><div class="card-label">Sous L'Ocean</div></div>
+            <div class="card" onclick="startBook(8, 26)"><img src="img/t8.png"><div class="card-label">Saisons</div></div>
+            <div class="card" onclick="startBook(9, 10)"><img src="img/t9.png"><div class="card-label">Romantasy</div></div>
+            <div class="card" onclick="startBook(10, 26)"><img src="img/t10.png"><div class="card-label">Princesses tome 1</div></div>
+            <div class="card" onclick="startBook(11, 26)"><img src="img/t11.png"><div class="card-label">Princesses tome 2</div></div>
+            <div class="card" onclick="startBook(12, 26)"><img src="img/t12.png"><div class="card-label">Princes&Heros</div></div>
+            <div class="card" onclick="startBook(13, 26)"><img src="img/t13.png"><div class="card-label">Portraits De Famille</div></div>
+            <div class="card" onclick="startBook(14, 26)"><img src="img/t14.png"><div class="card-label">Pokemon</div></div>
+            <div class="card" onclick="startBook(15, 26)"><img src="img/t15.png"><div class="card-label">Pixar</div></div>
+            <div class="card" onclick="startBook(16, 26)"><img src="img/t16.png"><div class="card-label">Petites Princesses</div></div>
+            <div class="card" onclick="startBook(17, 26)"><img src="img/t17.png"><div class="card-label">Petites Betes</div></div>
+            <div class="card" onclick="startBook(18, 26)"><img src="img/t18.png"><div class="card-label">Mondes Fantastiques</div></div>
+            <div class="card" onclick="startBook(19, 26)"><img src="img/t19.png"><div class="card-label">Mickey, Donald&Co</div></div>
+            <div class="card" onclick="startBook(20, 26)"><img src="img/t20.png"><div class="card-label">Mechants</div></div>
+            <div class="card" onclick="startBook(21, 26)"><img src="img/t21.png"><div class="card-label">Marsupilami</div></div>
+            <div class="card" onclick="startBook(22, 26)"><img src="img/t22.png"><div class="card-label">Love Stories</div></div>
+            <div class="card" onclick="startBook(23, 26)"><img src="img/t23.png"><div class="card-label">Looney Tunes tome 3s</div></div>
+            <div class="card" onclick="startBook(24, 26)"><img src="img/t24.png"><div class="card-label">Lilo Et Stitch</div></div>
+            <div class="card" onclick="startBook(25, 26)"><img src="img/t25.png"><div class="card-label">Debutants tome 1</div></div>
+            <div class="card" onclick="startBook(26, 26)"><img src="img/t26.png"><div class="card-label">Debutants tome 2</div></div>
+            <div class="card" onclick="startBook(27, 26)"><img src="img/t27.png"><div class="card-label">Au numero</div></div>
+            <div class="card" onclick="startBook(28, 9)"><img src="img/t28.png"><div class="card-label">La Petite Sirene</div></div>
+            <div class="card" onclick="startBook(29, 26)"><img src="img/t29.png"><div class="card-label">Les Schtroumpfs 1</div></div>
+            <div class="card" onclick="startBook(30, 26)"><img src="img/t30.png"><div class="card-label">Les Schtroumpfs 2</div></div>
+            <div class="card" onclick="startBook(31, 26)"><img src="img/t31.png"><div class="card-label">L'age Glace</div></div>
+            <div class="card" onclick="startBook(32, 26)"><img src="img/t32.png"><div class="card-label">Hiver</div></div>
+            <div class="card" onclick="startBook(33, 26)"><img src="img/t33.png"><div class="card-label">Heros&Mechants</div></div>
+            <div class="card" onclick="startBook(34, 10)"><img src="img/t34.png"><div class="card-label">Grand Bloc</div></div>
+            <div class="card" onclick="startBook(35, 26)"><img src="img/t35.png"><div class="card-label">Coliector</div></div>
+            <div class="card" onclick="startBook(36, 26)"><img src="img/t36.png"><div class="card-label">Girl Power</div></div>
+            <div class="card" onclick="startBook(37, 26)"><img src="img/t37.png"><div class="card-label">Fees&Sorciers</div></div>
+            <div class="card" onclick="startBook(38, 26)"><img src="img/t38.png"><div class="card-label">Famille</div></div>
+            <div class="card" onclick="startBook(39, 10)"><img src="img/t39.png"><div class="card-label">Douce France</div></div>
+            <div class="card" onclick="startBook(40, 26)"><img src="img/t40.png"><div class="card-label">Chiots&Chiens</div></div>
+            <div class="card" onclick="startBook(41, 14)"><img src="img/t41.png"><div class="card-label">Chevaux</div></div>
+            <div class="card" onclick="startBook(42, 9)"><img src="img/t42.png"><div class="card-label">Bisounours</div></div>
+            <div class="card" onclick="startBook(43, 26)"><img src="img/t43.png"><div class="card-label">Best Of Pixar</div></div>
+            <div class="card" onclick="startBook(44, 26)"><img src="img/t44.png"><div class="card-label">Best Of Grands Classiques</div></div>
+            <div class="card" onclick="startBook(45, 26)"><img src="img/t45.png"><div class="card-label">La Belle Et La Bete</div></div>
+            <div class="card" onclick="startBook(46, 26)"><img src="img/t46.png"><div class="card-label">Bestiaire</div></div>
+            <div class="card" onclick="startBook(47, 26)"><img src="img/t47.png"><div class="card-label">Best Of Heroines</div></div>
+        </div>
     </div>
 
     <div id="palettes" class="page">
         <div class="header">Палитры</div>
         <div class="row-item">
-            <div class="row-info">
-                <strong>Arrtx 80 цветов</strong>
-                <span>Таблица соответствия</span>
-            </div>
+            <div class="row-info"><strong>Arrtx 80 цветов</strong><span>Таблица соответствия</span></div>
             <button class="close-btn" onclick="tg.openLink('https://hachettelittleheroes.github.io/palitri/arrtx_80.pdf')">Открыть</button>
         </div>
     </div>
@@ -276,10 +127,7 @@
     <div id="shop" class="page">
         <div class="header">Наличие</div>
         <div class="row-item">
-            <div class="row-info">
-                <strong>Маркеры Arrtx 80</strong>
-                <span style="color: #34c759;">В наличии: 5 шт.</span>
-            </div>
+            <div class="row-info"><strong>Маркеры Arrtx 80</strong><span style="color: #34c759;">В наличии: 5 шт.</span></div>
             <button class="close-btn" onclick="sendOrder('Arrtx 80')">Купить</button>
         </div>
     </div>
@@ -287,7 +135,7 @@
     <div id="viewer">
         <div class="viewer-header">
             <button class="close-btn" onclick="closeBook()">Назад</button>
-            <div id="page-counter" style="font-weight: bold;">1 / 25</div>
+            <div id="page-counter" style="font-weight: bold;">1 / 1</div>
         </div>
         <div class="slider-container" id="slider" ontouchstart="handleTouchStart(event)" ontouchmove="handleTouchMove(event)" ontouchend="handleTouchEnd(event)">
             <img src="" id="current-page" class="slide-img">
@@ -311,7 +159,6 @@
         let zoomScale = 1;
         let lastDist = 0;
 
-        // Переключение вкладок
         function tab(id) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -320,7 +167,6 @@
             tg.HapticFeedback.selectionChanged();
         }
 
-        // Режим книги
         function startBook(volId, count) {
             currentVol = volId;
             maxPages = count;
@@ -333,49 +179,38 @@
         function closeBook() {
             document.getElementById('viewer').style.display = 'none';
             zoomScale = 1;
+            document.getElementById('current-page').style.transform = `scale(1)`;
         }
 
         function updatePage() {
-    const img = document.getElementById('current-page');
-    const counter = document.getElementById('page-counter');
-    
-    zoomScale = 1;
-    img.style.transform = `scale(${zoomScale})`;
-    
-    // Используем чистый относительный путь. 
-    // Это заставит Telegram искать картинку прямо внутри твоего репозитория.
-    const basePath = `otveti/t${currentVol}/${currentPage}`;
-    
-    // Пробуем форматы по очереди
-    const formats = ['.jpg', '.jpeg', '.png', '.JPG', '.PNG'];
-    let fIndex = 0;
+            const img = document.getElementById('current-page');
+            const counter = document.getElementById('page-counter');
+            zoomScale = 1;
+            img.style.transform = `scale(1)`;
+            
+            const basePath = `otveti/t${currentVol}/${currentPage}`;
+            const formats = ['.jpg', '.jpeg', '.png', '.JPG', '.PNG', '.JPEG'];
+            let fIndex = 0;
 
-    function tryLoad() {
-        // Добавляем случайный параметр, чтобы победить кэш Telegram
-        img.src = basePath + formats[fIndex] + '?v=' + Math.floor(Math.random() * 1000);
-    }
+            img.onerror = function() {
+                fIndex++;
+                if (fIndex < formats.length) {
+                    this.src = basePath + formats[fIndex] + '?v=' + Math.floor(Math.random() * 1000);
+                } else {
+                    console.error("Not found");
+                    this.onerror = null;
+                }
+            };
 
-    img.onerror = function() {
-        fIndex++;
-        if (fIndex < formats.length) {
-            tryLoad();
-        } else {
-            console.error("Не удалось найти файл в томе " + currentVol);
-            this.onerror = null;
-        }
-    };
-
-    tryLoad();
-    counter.innerText = `${currentPage} / ${maxPages}`;
-}
-
-            // Предзагрузка следующей
+            img.src = basePath + formats[0] + '?v=' + Math.floor(Math.random() * 1000);
+            counter.innerText = `${currentPage} / ${maxPages}`;
+            
+            // Предзагрузка следующей (тихо в фоне)
             if (currentPage < maxPages) {
                 new Image().src = `otveti/t${currentVol}/${currentPage + 1}.jpg`;
             }
         }
 
-        // Обработка касаний (Зум и Свайп)
         function handleTouchStart(e) {
             if (e.touches.length === 1) touchStartX = e.touches[0].screenX;
             if (e.touches.length === 2) lastDist = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
