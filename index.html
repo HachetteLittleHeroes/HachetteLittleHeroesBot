@@ -30,7 +30,6 @@
         .buy-btn { background: var(--accent); color: var(--accent-text); border: none; padding: 12px; font-weight: bold; cursor: pointer; width: 100%; }
         .btn-qty { background: var(--accent); color: var(--accent-text); border: none; width: 35px; height: 35px; border-radius: 10px; font-weight: bold; font-size: 20px; }
 
-        /* Элементы списка (Маркеры и Палитры) */
         .row-item { background: var(--card-bg); padding: 15px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border: 0.5px solid rgba(128,128,128,0.1); }
         .marker-num { font-weight: 800; font-size: 18px; color: var(--text); }
         .stock-badge { font-size: 13px; font-weight: bold; margin-top: 4px; display: block; }
@@ -43,7 +42,6 @@
         .nav-icon { font-size: 22px; margin-bottom: 4px; }
         .badge { position: absolute; top: 8px; right: 12%; background: #ff3b30; color: white; border-radius: 10px; padding: 2px 7px; font-size: 11px; }
 
-        /* Viewer */
         #viewer { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--bg); z-index: 1000; }
         .viewer-header { padding: 15px; display: flex; justify-content: space-between; align-items: center; background: var(--bg); border-bottom: 0.5px solid rgba(128,128,128,0.2); }
         
@@ -59,30 +57,11 @@
 
     <div id="palettes" class="page">
         <div class="header">Палитры</div>
-        
         <div class="category-title">GuangNa</div>
-        <div class="row-item">
-            <span>GuangNa 120</span>
-            <button class="buy-btn" style="width:auto; border-radius:8px; padding: 8px 15px;" onclick="tg.openLink('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/guangna120.pdf')">PDF</button>
-        </div>
-        <div class="row-item">
-            <span>GuangNa 168</span>
-            <button class="buy-btn" style="width:auto; border-radius:8px; padding: 8px 15px;" onclick="tg.openLink('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/guangna168.pdf')">PDF</button>
-        </div>
-        <div class="row-item">
-            <span>GuangNa 240</span>
-            <button class="buy-btn" style="width:auto; border-radius:8px; padding: 8px 15px;" onclick="tg.openLink('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/guangna240.pdf')">PDF</button>
-        </div>
-        <div class="row-item">
-            <span>GuangNa 360</span>
-            <button class="buy-btn" style="width:auto; border-radius:8px; padding: 8px 15px;" onclick="tg.openLink('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/guangna360.pdf')">PDF</button>
-        </div>
-
-        <div class="category-title">Другие</div>
-        <div class="row-item">
-            <span>Tooli-Art</span>
-            <button class="buy-btn" style="width:auto; border-radius:8px; padding: 8px 15px;" onclick="tg.openLink('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/tooliart.pdf')">PDF</button>
-        </div>
+        <div class="row-item"><span>GuangNa 120</span><button class="buy-btn" style="width:auto; border-radius:8px; padding: 8px 15px;" onclick="tg.openLink('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/guangna120.pdf')">PDF</button></div>
+        <div class="row-item"><span>GuangNa 168</span><button class="buy-btn" style="width:auto; border-radius:8px; padding: 8px 15px;" onclick="tg.openLink('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/guangna168.pdf')">PDF</button></div>
+        <div class="row-item"><span>GuangNa 240</span><button class="buy-btn" style="width:auto; border-radius:8px; padding: 8px 15px;" onclick="tg.openLink('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/guangna240.pdf')">PDF</button></div>
+        <div class="row-item"><span>GuangNa 360</span><button class="buy-btn" style="width:auto; border-radius:8px; padding: 8px 15px;" onclick="tg.openLink('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/guangna360.pdf')">PDF</button></div>
     </div>
 
     <div id="shop" class="page">
@@ -118,7 +97,11 @@
     </nav>
 
     <script>
+        // Инициализация Telegram WebApp
         const tg = window.Telegram.WebApp;
+        tg.ready();
+        tg.expand();
+
         let markersData = [], cart = [];
 
         const bookNames = [
@@ -196,7 +179,7 @@
             const existing = cart.find(i => i.key === key);
             if (existing) {
                 if (existing.qty < max) existing.qty++;
-                else { tg.showAlert("Больше нет!"); return; }
+                else { tg.showAlert("Больше нет в наличии!"); return; }
             } else {
                 cart.push({ key, type, name, id, qty: 1, max });
             }
@@ -215,13 +198,13 @@
 
         function renderCart() {
             const list = document.getElementById('cartList');
-            if (cart.length === 0) { list.innerHTML = '<div style="text-align:center; padding:50px; color:var(--gray)">Пусто</div>'; return; }
+            if (cart.length === 0) { list.innerHTML = '<div style="text-align:center; padding:50px; color:var(--gray)">Корзина пуста</div>'; return; }
             list.innerHTML = cart.map((item, index) => `
                 <div class="row-item">
                     <div><b>${item.type === 'Маркер' ? '№ ' : ''}${item.name}</b></div>
                     <div class="counter">
                         <button class="btn-qty" onclick="changeQty(${index}, -1)">-</button>
-                        <span style="font-weight:bold; min-width:20px; text-align:center">${item.qty}</span>
+                        <span style="font-weight:bold; min-width:20px; text-align:center; margin: 0 10px">${item.qty}</span>
                         <button class="btn-qty" onclick="changeQty(${index}, 1)">+</button>
                     </div>
                 </div>`).join('');
@@ -236,8 +219,20 @@
         }
 
         function checkout() {
-            const orderText = cart.map(i => `${i.type} ${i.name} (${i.qty} шт.)`).join('\n');
-            tg.sendData(JSON.stringify({action: "order", details: orderText}));
+            try {
+                if (cart.length === 0) {
+                    tg.showAlert("Добавьте товары в корзину!");
+                    return;
+                }
+                const orderText = cart.map(i => `${i.type} ${i.name} (${i.qty} шт.)`).join('\n');
+                // Эта команда закрывает Mini App и отправляет данные боту
+                tg.sendData(JSON.stringify({
+                    action: "order", 
+                    details: orderText
+                }));
+            } catch (e) {
+                alert("Ошибка при отправке заказа: " + e.message);
+            }
         }
 
         function tab(id) {
@@ -286,7 +281,7 @@
         }
 
         function filterMarkers() {
-            const q = document.getElementById('markerSearch').value;
+            const q = document.getElementById('markerSearch').value.toLowerCase();
             renderMarkers(markersData.filter(m => m.number.includes(q)));
         }
 
