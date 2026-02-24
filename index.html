@@ -270,11 +270,13 @@
             });
         }
 
-        async function loadMarkers() {
+     async function loadMarkers() {
             const csvUrl = 'https://docs.google.com/spreadsheets/d/1Yrsif-aQwbuT6fLPnP4MsM22UuwuUWz5FYegELPxzFU/gviz/tq?tqx=out:csv';
             try {
                 const response = await fetch(csvUrl);
                 const text = await response.text();
+                
+                // Разбиваем текст на строки
                 const rows = text.split('\n').map(row => row.split(',').map(cell => cell.replace(/"/g, '').trim()));
                 let tempMarkers = [];
 
@@ -282,11 +284,29 @@
                     for (let i = 0; i < row.length; i += 2) {
                         let num = row[i];
                         let count = row[i+1];
-                        if (num && !isNaN(num) && num !== "") {
-                            tempMarkers.push({ number: num, count: count || "0" });
+
+                        // УЛУЧШЕННАЯ ПРОВЕРКА:
+                        // 1. Номер не пустой
+                        // 2. Это число
+                        // 3. Номер больше 10 (чтобы не цеплять случайные цифры количества как номера)
+                        if (num && !isNaN(num) && num !== "" && parseInt(num) > 10) {
+                            tempMarkers.push({ 
+                                number: num, 
+                                count: (count && !isNaN(count)) ? count : "0" 
+                            });
                         }
                     }
                 });
+
+                // Убираем дубликаты, если они случайно попали
+                markersData = tempMarkers.filter((v, i, a) => a.findIndex(t => (t.number === v.number)) === i);
+                
+                renderMarkers(markersData);
+            } catch (e) {
+                console.error("Ошибка загрузки:", e);
+                document.getElementById('markersList').innerHTML = "Ошибка загрузки данных";
+            }
+        }
                 markersData = tempMarkers;
                 renderMarkers(markersData);
             } catch (e) {
