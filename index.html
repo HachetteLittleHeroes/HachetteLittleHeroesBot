@@ -117,31 +117,20 @@
     </div>
 
 <div id="palettes" class="page">
-    <div class="header">Палитры</div>
-    
-    <div class="cat-title">GuangNa</div>
-    
-    <div class="row-item">
-        <div class="row-info"><strong>GuangNa 120</strong><span>Палитра цветов</span></div>
-        <button class="close-btn" onclick="openPdf('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/guangna120.pdf')">Открыть</button>
+        <div class="header">Палитры</div>
+        
+        <div class="cat-title">GuangNa</div>
+        <div class="row-item"><div class="row-info"><strong>GuangNa 120</strong><span>Палитра цветов</span></div><button class="close-btn" onclick="openPdf('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/guangna120.pdf')">Открыть</button></div>
+        <div class="row-item"><div class="row-info"><strong>GuangNa 168</strong><span>Палитра цветов</span></div><button class="close-btn" onclick="openPdf('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/guangna168.pdf')">Открыть</button></div>
+        <div class="row-item"><div class="row-info"><strong>GuangNa 240</strong><span>Палитра цветов</span></div><button class="close-btn" onclick="openPdf('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/guangna240.pdf')">Открыть</button></div>
+        <div class="row-item"><div class="row-info"><strong>GuangNa 288</strong><span>Палитра цветов</span></div><button class="close-btn" onclick="openPdf('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/guangna288.pdf')">Открыть</button></div>
+        <div class="row-item"><div class="row-info"><strong>GuangNa 360</strong><span>Палитра цветов</span></div><button class="close-btn" onclick="openPdf('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/guangna360.pdf')">Открыть</button></div>
+        
+        <div class="cat-title">Другие бренды</div>
+        <div class="row-item"><div class="row-info"><strong>Grasp 168</strong><span>Палитра цветов</span></div><button class="close-btn" onclick="openPdf('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/grasp168.pdf')">Открыть</button></div>
+        <div class="row-item"><div class="row-info"><strong>Tooli-Art</strong><span>Палитра цветов</span></div><button class="close-btn" onclick="openPdf('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/tooli-art.pdf')">Открыть</button></div>
+        <div class="row-item"><div class="row-info"><strong>Zibeef 240</strong><span>Палитра цветов</span></div><button class="close-btn" onclick="openPdf('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/zibeef240.pdf')">Открыть</button></div>
     </div>
-
-    <div class="row-item">
-        <div class="row-info"><strong>GuangNa 168</strong><span>Палитра цветов</span></div>
-        <button class="close-btn" onclick="openPdf('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/guangna168.pdf')">Открыть</button>
-    </div>
-    
-    </div>
-
-<script>
-    // Добавь эту функцию в свой блок <script>
-    function openPdf(url) {
-        // Метод openLink с параметром try_instant_view: true 
-        // часто заставляет Telegram открывать PDF во внутреннем плеере
-        tg.openLink(url, {try_instant_view: true});
-    }
-</script>
-
     <div id="shop" class="page">
         <div class="header">Наличие</div>
         <div class="row-item">
@@ -199,7 +188,10 @@
             zoomScale = 1;
             document.getElementById('current-page').style.transform = `scale(1)`;
         }
-
+function openPdf(url) {
+            // Пытаемся открыть внутри, но если система решит иначе - откроет в браузере
+            tg.openLink(url, {try_instant_view: true});
+        }
         function updatePage() {
             const img = document.getElementById('current-page');
             const counter = document.getElementById('page-counter');
