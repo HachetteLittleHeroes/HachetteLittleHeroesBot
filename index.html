@@ -66,10 +66,14 @@
     </div>
 
     <div id="shop" class="page">
-        <div class="header">Маркеры</div>
-        <input type="text" id="markerSearch" placeholder="Поиск номера..." oninput="filterMarkers()">
-        <div id="markersList"></div>
+    <div class="header">Маркеры</div>
+    <div class="category-title" style="margin-top: 0; display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px;">
+        <span>GuangNa</span>
+        <span style="color: var(--accent); text-transform: none; font-size: 15px;">75 руб./шт.</span>
     </div>
+    <input type="text" id="markerSearch" placeholder="Поиск номера..." oninput="filterMarkers()">
+    <div id="markersList"></div>
+</div>
 
     <div id="cart" class="page">
         <div class="header">Корзина</div>
@@ -156,14 +160,14 @@
             } catch (e) { console.error(e); }
         }
 
-       function renderMarkers(data) {
+      function renderMarkers(data) {
     const list = document.getElementById('markersList');
     data.sort((a, b) => a.number - b.number);
     list.innerHTML = data.map(m => {
         const itemInCart = cart.find(c => c.key === 'Маркер-' + m.number);
         const currentQty = itemInCart ? itemInCart.qty : 0;
         const canAdd = currentQty < m.stock;
-        const markerPrice = 75; // ЦЕНА ЗА МАРКЕР
+        const markerPrice = 75; 
         
         let color = m.stock >= 2 ? "#34c759" : (m.stock === 1 ? "#ff9500" : "#ff3b30");
         let text = m.stock >= 1 ? `В наличии: ${m.stock} шт.` : "Нет в наличии";
@@ -173,7 +177,6 @@
             <div>
                 <span class="marker-num">№ ${m.number}</span>
                 <span class="stock-badge" style="color:${color}">${text}</span>
-                <div style="font-size: 12px; color: var(--accent); font-weight: bold; margin-top: 2px;">${markerPrice} руб./шт.</div>
             </div>
             <div class="counter">
                 ${m.stock > 0 ? `<button class="btn-qty" ${!canAdd ? 'style="opacity:0.3"' : ''} onclick="addToCart('Маркер', '${m.number}', ${m.number}, ${m.stock}, ${markerPrice})">+</button>` : ''}
@@ -204,20 +207,22 @@
             document.getElementById('mainOrderBtn').style.display = total > 0 ? 'block' : 'none';
         }
 
-        function renderCart() {
-            const list = document.getElementById('cartList');
-            if (cart.length === 0) { list.innerHTML = '<div style="text-align:center; padding:50px; color:var(--gray)">Корзина пуста</div>'; return; }
-            list.innerHTML = cart.map((item, index) => `
-                <div class="row-item">
-                    <div><b>${item.type === 'Маркер' ? '№ ' : ''}${item.name}</b></div>
-                    <div class="counter">
-                        <button class="btn-qty" onclick="changeQty(${index}, -1)">-</button>
-                        <span style="font-weight:bold; min-width:20px; text-align:center; margin: 0 10px">${item.qty}</span>
-                        <button class="btn-qty" onclick="changeQty(${index}, 1)">+</button>
-                    </div>
-                </div>`).join('');
-        }
-
+       function renderCart() {
+    const list = document.getElementById('cartList');
+    if (cart.length === 0) { list.innerHTML = '<div style="text-align:center; padding:50px; color:var(--gray)">Корзина пуста</div>'; return; }
+    list.innerHTML = cart.map((item, index) => `
+        <div class="row-item">
+            <div>
+                <b>${item.type === 'Маркер' ? '№ ' : ''}${item.name}</b>
+                <div style="font-size:12px; color:var(--gray)">${item.price} руб./шт.</div>
+            </div>
+            <div class="counter">
+                <button class="btn-qty" onclick="changeQty(${index}, -1)">-</button>
+                <span style="font-weight:bold; min-width:20px; text-align:center; margin: 0 10px">${item.qty}</span>
+                <button class="btn-qty" onclick="changeQty(${index}, 1)">+</button>
+            </div>
+        </div>`).join('');
+}
         function changeQty(index, delta) {
             const item = cart[index];
             if (delta > 0 && item.qty >= item.max) return;
