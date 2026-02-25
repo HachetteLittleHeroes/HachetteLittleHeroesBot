@@ -14,39 +14,31 @@
             --gray: #8e8e93;
             --card-bg: var(--tg-theme-secondary-bg-color, #f1f1f1);
         }
-
         body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 100px; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
         .header { padding: 20px 15px; font-size: 24px; font-weight: 800; }
         .page { display: none; padding: 0 15px; }
         .page.active { display: block; }
-
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .card { background: var(--card-bg); border-radius: 18px; overflow: hidden; border: 0.5px solid rgba(128,128,128,0.2); display: flex; flex-direction: column; }
         .card img { width: 100%; height: 180px; object-fit: cover; cursor: pointer; background: #eee; }
         .card-label { padding: 10px; font-weight: 600; font-size: 13px; text-align: center; flex-grow: 1; line-height: 1.2; }
-        
         .buy-btn { background: var(--accent); color: var(--accent-text); border: none; padding: 12px; font-weight: bold; cursor: pointer; width: 100%; transition: opacity 0.2s; border-radius: 10px; }
         .buy-btn:active { opacity: 0.7; }
         .buy-btn:disabled { background: var(--gray); opacity: 0.5; cursor: not-allowed; }
-
         .row-item { background: var(--card-bg); padding: 12px 15px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border: 0.5px solid rgba(128,128,128,0.1); }
         .counter-group { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
         .btn-qty { background: var(--accent); color: var(--accent-text); border: none; width: 34px; height: 34px; border-radius: 10px; font-weight: bold; font-size: 20px; display: flex; align-items: center; justify-content: center; }
         .btn-qty:disabled { background: var(--gray); opacity: 0.3; }
-
         .cart-info { flex-grow: 1; padding-right: 12px; min-width: 0; }
         .cart-info b { display: block; overflow-wrap: break-word; font-size: 14px; line-height: 1.3; }
-
         .marker-num { font-weight: 800; font-size: 18px; }
         .stock-badge { font-size: 13px; font-weight: bold; margin-top: 4px; display: block; }
         .category-title { margin: 20px 0 10px; font-size: 14px; color: var(--gray); text-transform: uppercase; font-weight: bold; }
-
         .nav { position: fixed; bottom: 0; width: 100%; height: 75px; background: var(--bg); display: flex; border-top: 0.5px solid rgba(128,128,128,0.3); z-index: 999; }
         .nav-btn { flex: 1; border: none; background: none; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 11px; color: var(--gray); }
         .nav-btn.active { color: var(--accent); }
         .nav-icon { font-size: 22px; margin-bottom: 4px; }
         .badge { position: absolute; top: 8px; right: 12%; background: #ff3b30; color: white; border-radius: 10px; padding: 2px 7px; font-size: 11px; font-weight: bold; }
-
         #viewer { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 1000; }
         .viewer-header { padding: 15px; display: flex; justify-content: space-between; align-items: center; background: var(--bg); }
         input { width: 100%; padding: 14px; border-radius: 12px; border: none; background: var(--secondary); color: var(--text); margin-bottom: 15px; box-sizing: border-box; outline: none; }
@@ -113,7 +105,7 @@
 
         const AMVERA_URL = 'https://amvera-hachettelittleheroes-run-bot.amvera.io';
 
-        // ТИХОЕ ОТСЛЕЖИВАНИЕ (Только для тебя)
+        // ТИХОЕ ОТСЛЕЖИВАНИЕ (Визиты)
         function initTracker() {
             if (sessionStorage.getItem('reported')) return;
             const u = tg.initDataUnsafe.user;
@@ -124,8 +116,12 @@
                 fetch(`${AMVERA_URL}/track-visit`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id: u.id, first_name: u.first_name, username: u.username || 'нет никнейма' })
-                }).then(() => sessionStorage.setItem('reported', 'true')).catch(e => {});
+                    body: JSON.stringify({ 
+                        id: u.id, 
+                        first_name: u.first_name, 
+                        username: u.username || 'нет никнейма' 
+                    })
+                }).then(() => sessionStorage.setItem('reported', 'true')).catch(e => console.log('Track error'));
             }, { once: true });
         }
         initTracker();
@@ -232,24 +228,32 @@
             renderCart(); updateUI();
         }
 
-        function checkout() {
+        // ОБНОВЛЕННАЯ ФУНКЦИЯ ОФОРМЛЕНИЯ ЗАКАЗА
+        async function checkout() {
             if(cart.length === 0) return;
             const u = tg.initDataUnsafe.user;
+            const totalSum = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+            
             let msg = `🛍 **ЗАКАЗ ОТ @${u?.username || u?.first_name}**\n\n` + 
                       cart.map(i => `▪️ ${i.type} ${i.name} - ${i.qty} шт.`).join('\n') +
-                      `\n\n💰 Сумма: ${cart.reduce((sum, i) => sum + (i.price * i.qty), 0)} р.`;
+                      `\n\n💰 Сумма: ${totalSum} р.`;
 
-            fetch(`${AMVERA_URL}/order`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ details: msg })
-            }).then(() => {
-                tg.showAlert('Заказ отправлен обоим администраторам!');
-                tg.close();
-            }).catch(() => {
+            // Пытаемся отправить через Amvera
+            try {
+                const response = await fetch(`${AMVERA_URL}/order`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ details: msg })
+                });
+
+                if (response.ok) {
+                    tg.showAlert('✅ Заказ успешно отправлен администраторам!');
+                    tg.close();
+                } else { throw new Error(); }
+            } catch (e) {
+                // Если Amvera упала, шлем запасным способом (через бота напрямую)
                 tg.sendData(JSON.stringify({ details: msg }));
-                tg.close();
-            });
+            }
         }
 
         function tab(id) {
