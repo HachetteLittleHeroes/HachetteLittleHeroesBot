@@ -61,6 +61,8 @@
         <div class="row-item"><span>GuangNa 360</span><button class="buy-btn" style="width:auto; border-radius:8px; padding: 8px 15px;" onclick="tg.openLink('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/guangna360.pdf')">PDF</button></div>
         <div class="category-title">Другие</div>
         <div class="row-item"><span>Tooli-Art</span><button class="buy-btn" style="width:auto; border-radius:8px; padding: 8px 15px;" onclick="tg.openLink('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/tooliart.pdf')">PDF</button></div>
+        <div class="row-item"><span>Grasp 168</span><button class="buy-btn" style="width:auto; border-radius:8px; padding: 8px 15px;" onclick="tg.openLink('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/grasp168.pdf')">PDF</button></div>
+        <div class="row-item"><span>Zibeef 240</span><button class="buy-btn" style="width:auto; border-radius:8px; padding: 8px 15px;" onclick="tg.openLink('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/zibeef240.pdf')">PDF</button></div>
     </div>
 
     <div id="shop" class="page">
@@ -114,18 +116,23 @@
             "Bisounours", "Best Of Pixar", "Best Of G.C.", "Belle Et La Bete", "Bestiaire", "Best Of Heroines"
         ];
 
-        function renderBooks() {
-            const grid = document.getElementById('booksGrid');
-            grid.innerHTML = bookNames.map((name, i) => {
-                const id = i + 1;
-                return `
-                <div class="card">
-                    <img src="img/t${id}.png" onclick="startBook(${id}, 26)">
-                    <div class="card-label">${name}</div>
-                    <button class="buy-btn" onclick="addToCart('Том', '${name}', ${id}, 99)">В корзину</button>
-                </div>`;
-            }).join('');
-        }
+      function renderBooks() {
+    const grid = document.getElementById('booksGrid');
+    grid.innerHTML = bookNames.map((name, i) => {
+        const id = i + 1;
+        const price = 2890; // Цена за книгу
+        return `
+        <div class="card">
+            <img src="img/t${id}.png" onclick="startBook(${id}, 26)">
+            <div class="card-label">
+                ${name}<br>
+                <span style="color:var(--accent); font-weight:bold;">${price} руб.</span><br>
+                <small style="color:var(--gray);">📦 Под заказ</small>
+            </div>
+            <button class="buy-btn" onclick="addToCart('Раскраска', '${name}', ${id}, 99, ${price})">В корзину</button>
+        </div>`;
+    }).join('');
+}
 
         async function loadMarkers() {
             const csvUrl = 'https://docs.google.com/spreadsheets/d/1Yrsif-aQwbuT6fLPnP4MsM22UuwuUWz5FYegELPxzFU/gviz/tq?tqx=out:csv';
@@ -149,36 +156,45 @@
             } catch (e) { console.error(e); }
         }
 
-        function renderMarkers(data) {
-            const list = document.getElementById('markersList');
-            data.sort((a,b) => a.number - b.number);
-            list.innerHTML = data.map(m => {
-                const itemInCart = cart.find(c => c.key === 'Маркер-'+m.number);
-                const currentQty = itemInCart ? itemInCart.qty : 0;
-                const canAdd = currentQty < m.stock;
-                let color = m.stock >= 2 ? "#34c759" : (m.stock === 1 ? "#ff9500" : "#ff3b30");
-                let text = m.stock >= 1 ? `В наличии: ${m.stock} шт.` : "Нет в наличии";
-                return `
-                <div class="row-item">
-                    <div><span class="marker-num">№ ${m.number}</span><span class="stock-badge" style="color:${color}">${text}</span></div>
-                    <div class="counter">${m.stock > 0 ? `<button class="btn-qty" ${!canAdd ? 'style="opacity:0.3"' : ''} onclick="addToCart('Маркер', '${m.number}', ${m.number}, ${m.stock})">+</button>` : ''}</div>
-                </div>`;
-            }).join('');
-        }
+       function renderMarkers(data) {
+    const list = document.getElementById('markersList');
+    data.sort((a, b) => a.number - b.number);
+    list.innerHTML = data.map(m => {
+        const itemInCart = cart.find(c => c.key === 'Маркер-' + m.number);
+        const currentQty = itemInCart ? itemInCart.qty : 0;
+        const canAdd = currentQty < m.stock;
+        const markerPrice = 75; // ЦЕНА ЗА МАРКЕР
+        
+        let color = m.stock >= 2 ? "#34c759" : (m.stock === 1 ? "#ff9500" : "#ff3b30");
+        let text = m.stock >= 1 ? `В наличии: ${m.stock} шт.` : "Нет в наличии";
+        
+        return `
+        <div class="row-item">
+            <div>
+                <span class="marker-num">№ ${m.number}</span>
+                <span class="stock-badge" style="color:${color}">${text}</span>
+                <div style="font-size: 12px; color: var(--accent); font-weight: bold; margin-top: 2px;">${markerPrice} руб./шт.</div>
+            </div>
+            <div class="counter">
+                ${m.stock > 0 ? `<button class="btn-qty" ${!canAdd ? 'style="opacity:0.3"' : ''} onclick="addToCart('Маркер', '${m.number}', ${m.number}, ${m.stock}, ${markerPrice})">+</button>` : ''}
+            </div>
+        </div>`;
+    }).join('');
+}
 
-        function addToCart(type, name, id, max) {
-            const key = type + '-' + id;
-            const existing = cart.find(i => i.key === key);
-            if (existing) {
-                if (existing.qty < max) existing.qty++;
-                else { tg.showAlert("Больше нет в наличии!"); return; }
-            } else {
-                cart.push({ key, type, name, id, qty: 1, max });
-            }
-            updateUI();
-            if(type === 'Маркер') renderMarkers(markersData);
-            tg.HapticFeedback.impactOccurred('light');
-        }
+        function addToCart(type, name, id, max, price = 0) {
+    const key = type + '-' + id;
+    const existing = cart.find(i => i.key === key);
+    if (existing) {
+        if (existing.qty < max) existing.qty++;
+        else { tg.showAlert("Больше нет в наличии!"); return; }
+    } else {
+        cart.push({ key, type, name, id, qty: 1, max, price: price });
+    }
+    updateUI();
+    if(type === 'Маркер') renderMarkers(markersData);
+    tg.HapticFeedback.impactOccurred('light');
+}
 
         function updateUI() {
             const total = cart.reduce((sum, i) => sum + i.qty, 0);
@@ -210,36 +226,33 @@
             renderCart(); updateUI();
         }
 
-     function checkout() {
-    // 1. Проверяем корзину
-    if (cart.length === 0) {
-        tg.showAlert("Корзина пуста!");
-        return;
-    }
+   function checkout() {
+    if (cart.length === 0) return;
 
-    // 2. Формируем текст заказа
-    let orderDetails = "🛍 НОВЫЙ ЗАКАЗ:\n";
+    let orderDetails = "🛍 **ДЕТАЛИ ЗАКАЗА:**\n";
+    let totalSum = 0;
+    let hasPreorder = false;
+
     cart.forEach(item => {
-        // У тебя в объекте item нет свойства price, 
-        // поэтому выводим тип, название и количество
-        orderDetails += `▪️ ${item.type} ${item.name} — ${item.qty} шт.\n`;
+        const itemSum = item.price * item.qty;
+        totalSum += itemSum;
+        
+        // Пометка, если в корзине есть раскраски (они под заказ)
+        if (item.type === 'Раскраска') hasPreorder = true;
+        
+        orderDetails += `▪️ ${item.type} ${item.type === 'Маркер' ? '№' : '"'}${item.name}${item.type === 'Маркер' ? '' : '"'}\n   — ${item.qty} шт. x ${item.price} = ${itemSum} руб.\n`;
     });
 
-    // 3. Упаковываем в объект и превращаем в СТРОКУ
-    const dataToSend = JSON.stringify({
-        details: orderDetails
-    });
-
-    // 4. Отправляем в Telegram
-    try {
-        tg.sendData(dataToSend);
-        // 5. Закрываем приложение
-        tg.close();
-    } catch (e) {
-        alert("Ошибка отправки: " + e.message);
+    orderDetails += `\n💰 **ИТОГО К ОПЛАТЕ: ${totalSum} руб.**`;
+    
+    if (hasPreorder) {
+        orderDetails += `\n\n⚠️ *Примечание: Раскраски везутся ПОД ЗАКАЗ.*`;
     }
-}
 
+    const dataToSend = JSON.stringify({ details: orderDetails });
+    tg.sendData(dataToSend);
+    tg.close();
+}
         function tab(id) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
