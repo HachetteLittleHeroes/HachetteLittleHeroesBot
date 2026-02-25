@@ -111,15 +111,15 @@
         let markersData = [], cart = [], markersLoaded = false;
 
         const bookNames = [
-            "Classiques t11", "Classiques t3", "Vitraux t2", "Trompe L'oeil Babies", 
-            "Trompe L'oeil G.B.", "Stitch Au numero", "Sous L'Ocean", "Saisons", "Romantasy", 
-            "Princesses t1", "Princesses t2", "Princes&Heros", "Portraits Famille", "Pokemon", 
-            "Pixar", "Petites Princesses", "Petites Betes", "Mondes Fantastiques", "Mickey&Co", 
-            "Mechants", "Marsupilami", "Love Stories", "Looney Tunes t3", "Lilo Et Stitch", 
-            "Debutants t1", "Debutants t2", "Au numero", "La Petite Sirene", "Schtroumpfs 1", 
-            "Schtroumpfs 2", "L'age Glace", "Hiver", "Heros&Mechants", "Grand Bloc", "Coliector", 
-            "Girl Power", "Fees&Sorciers", "Famille", "Douce France", "Chiots&Chiens", "Chevaux", 
-            "Bisounours", "Best Of Pixar", "Best Of G.C.", "Belle Et La Bete", "Bestiaire", "Best Of Heroines"
+            "Les Grands Classiques tome 11", "Les Grands Classiques tome 3", "Vitraux tome 22", "Trompe L'oeil Babies", 
+            "Trompe L'oeil Grand Bloc", "Stitch Au numero", "Sous L'Ocean", "Saisons", "Romantasy", 
+            "Princesses tome 1", "Princesses tome 2", "Princes&Heros", "Portraits De Famille", "Pokemon", 
+            "Pixar", "Petites Princesses", "Petites Betes", "Mondes Fantastiques", "Mickey, Donald&Co", 
+            "Mechants", "Marsupilami", "Love Stories", "Looney Tunes tome 3", "Lilo Et Stitch", 
+            "Les Grands Classiques Special Debutants tome 1", "Les Grands Classiques Special Debutants tome 2", "Les Grands Classiques Au numero", "La Petite Sirene", "Les Schtroumpfs tome 1", 
+            "Les Schtroumpfs tome 2", "L'age Glace", "Hiver", "Heros&Mechants La Battle", "Grands Classiques Grand Bloc", "Les Grands Classiques Coliector", 
+            "Girl Power", "Fees, Sorciers Et Magiciens", "Famille", "Escapades Merveilleuses Douce France", "Chiots&Chiens", "Chevaux", 
+            "Bisounours tome 1", "Best Of Pixar", "Best Of Les Grands Classiques", "La Belle Et La Bete", "Bestiaire", "Best Of Heroines"
         ];
 
         function renderBooks(list = bookNames) {
@@ -303,19 +303,29 @@
 
         function closeBook() { document.getElementById('viewer').style.display = 'none'; }
 
-        function updatePage() {
-            const img = document.getElementById('current-page');
-            const counter = document.getElementById('page-counter');
-            img.style.opacity = "0.3";
-            const formats = ['.jpg', '.png', '.jpeg', '.JPG', '.PNG'];
-            let fIndex = 0;
-            function tryLoad() { img.src = `otveti/t${currentVol}/${currentPage}${formats[fIndex]}`; }
-            img.onload = () => { img.style.opacity = "1"; };
-            img.onerror = () => { fIndex++; if (fIndex < formats.length) tryLoad(); };
-            tryLoad();
-            counter.innerText = `${currentPage} / ${maxPages}`;
-        }
+       function updatePage() {
+    const img = document.getElementById('current-page');
+    const counter = document.getElementById('page-counter');
+    
+    // Убрали img.style.opacity = "0.3"
+    
+    const formats = ['.jpg', '.png', '.jpeg', '.JPG', '.PNG'];
+    let fIndex = 0;
 
+    function tryLoad() {
+        img.src = `otveti/t${currentVol}/${currentPage}${formats[fIndex]}`;
+    }
+
+    // Убрали img.onload = () => { img.style.opacity = "1"; }
+    
+    img.onerror = () => {
+        fIndex++;
+        if (fIndex < formats.length) tryLoad();
+    };
+
+    tryLoad();
+    counter.innerText = `${currentPage} / ${maxPages}`;
+}
         function handleTouchStart(e) {
             touchStartX = e.touches[0].screenX;
             touchStartY = e.touches[0].screenY;
