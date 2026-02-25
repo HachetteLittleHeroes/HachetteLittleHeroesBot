@@ -14,35 +14,36 @@
             --gray: #8e8e93;
             --card-bg: var(--tg-theme-secondary-bg-color, #f1f1f1);
         }
+
         body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 100px; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
         .header { padding: 20px 15px; font-size: 24px; font-weight: 800; }
         .page { display: none; padding: 0 15px; }
         .page.active { display: block; }
+
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .card { background: var(--card-bg); border-radius: 18px; overflow: hidden; border: 0.5px solid rgba(128,128,128,0.2); display: flex; flex-direction: column; }
         .card img { width: 100%; height: 180px; object-fit: cover; cursor: pointer; background: #eee; }
-        .card-label { padding: 10px; font-weight: 600; font-size: 13px; text-align: center; flex-grow: 1; line-height: 1.2; }
-        .buy-btn { background: var(--accent); color: var(--accent-text); border: none; padding: 12px; font-weight: bold; cursor: pointer; width: 100%; transition: opacity 0.2s; border-radius: 10px; }
+        .card-label { padding: 10px; font-weight: 600; font-size: 14px; text-align: center; flex-grow: 1; }
+        
+        .buy-btn { background: var(--accent); color: var(--accent-text); border: none; padding: 12px; font-weight: bold; cursor: pointer; width: 100%; transition: opacity 0.2s; }
         .buy-btn:active { opacity: 0.7; }
-        .buy-btn:disabled { background: var(--gray); opacity: 0.5; cursor: not-allowed; }
-        .row-item { background: var(--card-bg); padding: 12px 15px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border: 0.5px solid rgba(128,128,128,0.1); }
-        .counter-group { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
-        .btn-qty { background: var(--accent); color: var(--accent-text); border: none; width: 34px; height: 34px; border-radius: 10px; font-weight: bold; font-size: 20px; display: flex; align-items: center; justify-content: center; }
-        .btn-qty:disabled { background: var(--gray); opacity: 0.3; }
-        .cart-info { flex-grow: 1; padding-right: 12px; min-width: 0; }
-        .cart-info b { display: block; overflow-wrap: break-word; font-size: 14px; line-height: 1.3; }
-        .marker-num { font-weight: 800; font-size: 18px; }
+        .btn-qty { background: var(--accent); color: var(--accent-text); border: none; width: 35px; height: 35px; border-radius: 10px; font-weight: bold; font-size: 20px; }
+
+        .row-item { background: var(--card-bg); padding: 15px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border: 0.5px solid rgba(128,128,128,0.1); }
+        .marker-num { font-weight: 800; font-size: 18px; color: var(--text); }
         .stock-badge { font-size: 13px; font-weight: bold; margin-top: 4px; display: block; }
         .category-title { margin: 20px 0 10px; font-size: 14px; color: var(--gray); text-transform: uppercase; font-weight: bold; }
+
         .nav { position: fixed; bottom: 0; width: 100%; height: 75px; background: var(--bg); display: flex; border-top: 0.5px solid rgba(128,128,128,0.3); z-index: 999; }
         .nav-btn { flex: 1; border: none; background: none; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 11px; color: var(--gray); }
         .nav-btn.active { color: var(--accent); }
         .nav-icon { font-size: 22px; margin-bottom: 4px; }
-        .badge { position: absolute; top: 8px; right: 12%; background: #ff3b30; color: white; border-radius: 10px; padding: 2px 7px; font-size: 11px; font-weight: bold; }
+        .badge { position: absolute; top: 8px; right: 12%; background: #ff3b30; color: white; border-radius: 10px; padding: 2px 7px; font-size: 11px; }
+
         #viewer { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 1000; }
-        .viewer-header { padding: 15px; display: flex; justify-content: space-between; align-items: center; background: var(--bg); }
+        .viewer-header { padding: 15px; display: flex; justify-content: space-between; align-items: center; background: var(--bg); border-bottom: 0.5px solid rgba(128,128,128,0.2); }
+        
         input { width: 100%; padding: 14px; border-radius: 12px; border: none; background: var(--secondary); color: var(--text); margin-bottom: 15px; box-sizing: border-box; outline: none; }
-        .total-row { margin-top: 15px; padding: 10px 5px; border-top: 1px solid rgba(128,128,128,0.2); display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 18px; }
     </style>
 </head>
 <body>
@@ -56,19 +57,22 @@
     <div id="palettes" class="page">
         <div class="header">Палитры</div>
         <div class="category-title">GuangNa</div>
-        <div class="row-item"><span>GuangNa 120</span><button class="buy-btn" style="width:auto; padding: 8px 15px;" onclick="tg.openLink('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/guangna120.pdf')">PDF</button></div>
-        <div class="row-item"><span>GuangNa 168</span><button class="buy-btn" style="width:auto; padding: 8px 15px;" onclick="tg.openLink('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/guangna168.pdf')">PDF</button></div>
-        <div class="row-item"><span>GuangNa 240</span><button class="buy-btn" style="width:auto; padding: 8px 15px;" onclick="tg.openLink('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/guangna240.pdf')">PDF</button></div>
-        <div class="row-item"><span>GuangNa 360</span><button class="buy-btn" style="width:auto; padding: 8px 15px;" onclick="tg.openLink('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/guangna360.pdf')">PDF</button></div>
+        <div class="row-item"><span>GuangNa 120</span><button class="buy-btn" style="width:auto; border-radius:8px; padding: 8px 15px;" onclick="tg.openLink('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/guangna120.pdf')">PDF</button></div>
+        <div class="row-item"><span>GuangNa 168</span><button class="buy-btn" style="width:auto; border-radius:8px; padding: 8px 15px;" onclick="tg.openLink('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/guangna168.pdf')">PDF</button></div>
+        <div class="row-item"><span>GuangNa 240</span><button class="buy-btn" style="width:auto; border-radius:8px; padding: 8px 15px;" onclick="tg.openLink('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/guangna240.pdf')">PDF</button></div>
+        <div class="row-item"><span>GuangNa 360</span><button class="buy-btn" style="width:auto; border-radius:8px; padding: 8px 15px;" onclick="tg.openLink('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/guangna360.pdf')">PDF</button></div>
         <div class="category-title">Другие</div>
-        <div class="row-item"><span>Tooli-Art</span><button class="buy-btn" style="width:auto; padding: 8px 15px;" onclick="tg.openLink('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/tooliart.pdf')">PDF</button></div>
-        <div class="row-item"><span>Grasp 168</span><button class="buy-btn" style="width:auto; padding: 8px 15px;" onclick="tg.openLink('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/grasp168.pdf')">PDF</button></div>
-        <div class="row-item"><span>Zibeef 240</span><button class="buy-btn" style="width:auto; padding: 8px 15px;" onclick="tg.openLink('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/zibeef240.pdf')">PDF</button></div>
+        <div class="row-item"><span>Tooli-Art</span><button class="buy-btn" style="width:auto; border-radius:8px; padding: 8px 15px;" onclick="tg.openLink('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/tooliart.pdf')">PDF</button></div>
+        <div class="row-item"><span>Grasp 168</span><button class="buy-btn" style="width:auto; border-radius:8px; padding: 8px 15px;" onclick="tg.openLink('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/grasp168.pdf')">PDF</button></div>
+        <div class="row-item"><span>Zibeef 240</span><button class="buy-btn" style="width:auto; border-radius:8px; padding: 8px 15px;" onclick="tg.openLink('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/zibeef240.pdf')">PDF</button></div>
     </div>
 
     <div id="shop" class="page">
         <div class="header">Маркеры</div>
-        <div class="category-title" style="display: flex; justify-content: space-between;"><span>GuangNa</span><span>75 руб/шт.</span></div>
+        <div class="category-title" style="margin-top: 0; display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px;">
+            <span>GuangNa</span>
+            <span style="color: var(--accent); text-transform: none; font-size: 15px;">75 руб./шт.</span>
+        </div>
         <input type="text" id="markerSearch" placeholder="Поиск номера..." oninput="filterMarkers()">
         <div id="markersList"></div>
     </div>
@@ -76,13 +80,13 @@
     <div id="cart" class="page">
         <div class="header">Корзина</div>
         <div id="cartList"></div>
-        <button id="mainOrderBtn" class="buy-btn" style="padding: 18px; margin-top:10px; width:100%; font-size:16px; display: none;" onclick="checkout()">Оформить заказ</button>
+        <button id="mainOrderBtn" class="buy-btn" style="border-radius: 15px; padding: 18px; margin-top:20px; display: none;" onclick="checkout()">Оформить заказ</button>
     </div>
 
     <div id="viewer">
         <div class="viewer-header">
-            <button class="buy-btn" style="width:auto; padding: 8px 15px;" onclick="closeBook()">Назад</button>
-            <div id="page-counter" style="font-weight:bold;"></div>
+            <button class="buy-btn" style="width:auto; border-radius:8px; padding: 8px 15px;" onclick="closeBook()">Назад</button>
+            <div id="page-counter" style="color:var(--text); font-weight:bold;"></div>
         </div>
         <div id="viewer-content" style="height: 85vh; display: flex; align-items: center; justify-content: center; overflow: hidden; touch-action: none;" ontouchstart="handleTouchStart(event)" ontouchend="handleTouchEnd(event)">
             <img src="" id="current-page" style="max-width: 100%; max-height: 100%; object-fit: contain;">
@@ -101,59 +105,73 @@
 
     <script>
         const tg = window.Telegram.WebApp;
-        tg.ready(); tg.expand();
+        tg.ready();
+        tg.expand();
 
-        const AMVERA_URL = 'https://amvera-hachettelittleheroes-run-bot.amvera.io';
+        const STATS_URL = 'https://script.google.com/macros/s/AKfycbwNzGJlazpBtq9gtnGkF7c6zMoSh-gnse4XkL6GWEaIirV0mF8ZliIw48HT6A7oV4cqyw/exec';
 
-        // ТИХОЕ ОТСЛЕЖИВАНИЕ (Визиты)
-        function initTracker() {
-            if (sessionStorage.getItem('reported')) return;
-            const u = tg.initDataUnsafe.user;
-            if (!u) return;
-
-            document.body.addEventListener('click', function track() {
-                document.body.removeEventListener('click', track);
-                fetch(`${AMVERA_URL}/track-visit`, {
+        function sendStats() {
+            const user = tg.initDataUnsafe.user;
+            if (user) {
+                fetch(STATS_URL, {
                     method: 'POST',
+                    mode: 'no-cors', 
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        id: u.id, 
-                        first_name: u.first_name, 
-                        username: u.username || 'нет никнейма' 
+                    body: JSON.stringify({
+                        id: user.id,
+                        first_name: user.first_name || "",
+                        last_name: user.last_name || "",
+                        username: user.username || ""
                     })
-                }).then(() => sessionStorage.setItem('reported', 'true')).catch(e => console.log('Track error'));
-            }, { once: true });
+                }).catch(e => console.log('Stats error:', e));
+            }
         }
-        initTracker();
+        sendStats();
 
         let markersData = [], cart = [], markersLoaded = false;
 
         const bookNames = [
             "Les Grands Classiques tome 11", "Les Grands Classiques tome 3", "Vitraux tome 2", "Trompe L'oeil Babies", 
-            "Trompe L'oeil Grands Blocs", "Stitch Au numero", "Sous L'Ocean", "Saisons", "Romantasy", 
-            "Princesses tome 1", "Princesses tome 2", "Princes & Heros", "Portraits de Famille", "Pokemon", 
-            "Pixar", "Petites Princesses", "Petites Betes", "Mondes Fantastiques", "Mickey & Co", 
+            "Trompe L'oeil Grand Bloc", "Stitch Au numero", "Sous L'Ocean", "Saisons", "Romantasy", 
+            "Princesses tome 1", "Princesses tome 2", "Princes&Heros", "Portraits De Famille", "Pokemon", 
+            "Pixar", "Petites Princesses", "Petites Betes", "Mondes Fantastiques", "Mickey, Donald&Co", 
             "Mechants", "Marsupilami", "Love Stories", "Looney Tunes tome 3", "Lilo Et Stitch", 
-            "Debutants tome 1", "Debutants tome 2", "Au numero", "La Petite Sirene", "Schtroumpfs 1", 
-            "Schtroumpfs 2", "L'age de Glace", "Hiver", "Heros & Mechants", "Grand Bloc", "Coliector", 
-            "Girl Power", "Fees & Sorciers", "Famille", "Douce France", "Chiots & Chiens", "Chevaux", 
-            "Bisounours", "Best Of Pixar", "Best Of Grands Classiques", "Belle Et La Bete", "Bestiaire", "Best Of Heroines"
+            "Les Grands Classiques Special Debutants tome 1", "Les Grands Classiques Special Debutants tome 2", "Les Grands Classiques Au numero", "La Petite Sirene", "Les Schtroumpfs tome 1", 
+            "Les Schtroumpfs tome 2", "L'age Glace", "Hiver", "Heros&Mechants La Battle", "Grands Classiques Grand Bloc", "Les Grands Classiques Coliector", 
+            "Girl Power", "Fees, Sorciers Et Magiciens", "Famille", "Escapades Merveilleuses Douce France", "Chiots&Chiens", "Chevaux", 
+            "Bisounours tome 1", "Best Of Pixar", "Best Of Les Grands Classiques", "La Belle Et La Bete", "Bestiaire", "Best Of Heroines"
         ];
 
         function renderBooks(list = bookNames) {
             const grid = document.getElementById('booksGrid');
             grid.innerHTML = list.map((name) => {
                 const originalId = bookNames.indexOf(name) + 1;
-                return `<div class="card">
+                const price = 2890; 
+                const safeName = name.replace(/'/g, "\\'");
+                const itemInCart = cart.find(c => c.key === 'Раскраска-' + originalId);
+                const btnText = itemInCart ? `В корзине: ${itemInCart.qty}` : 'В корзину';
+                
+                return `
+                <div class="card">
                     <img src="img/t${originalId}.png" onclick="startBook(${originalId}, 26)">
-                    <div class="card-label">${name}<br><b style="color:var(--accent)">2890 р.</b></div>
-                    <button class="buy-btn" onclick="addToCart('Раскраска', '${name.replace(/'/g, "")}', ${originalId}, 99, 2890)">В корзину</button>
+                    <div class="card-label">
+                        ${name}<br>
+                        <span style="color:var(--accent); font-weight:bold;">${price} руб.</span><br>
+                        <small style="color:var(--gray);">📦 Под заказ</small>
+                    </div>
+                    <button class="buy-btn" onclick="addToCart('Раскраска', '${safeName}', ${originalId}, 99, ${price})">${btnText}</button>
                 </div>`;
             }).join('');
         }
 
+        function filterBooks() {
+            const query = document.getElementById('bookSearch').value.toLowerCase();
+            const filtered = bookNames.filter(name => name.toLowerCase().includes(query));
+            renderBooks(filtered);
+        }
+
         async function loadMarkers() {
-            if (markersLoaded) { renderMarkers(markersData); return; }
+            if (markersLoaded) return;
             const csvUrl = 'https://docs.google.com/spreadsheets/d/1Yrsif-aQwbuT6fLPnP4MsM22UuwuUWz5FYegELPxzFU/gviz/tq?tqx=out:csv';
             try {
                 const res = await fetch(csvUrl);
@@ -180,103 +198,162 @@
             const list = document.getElementById('markersList');
             data.sort((a, b) => a.number - b.number);
             list.innerHTML = data.map(m => {
-                const item = cart.find(c => c.key === 'Маркер-' + m.number);
-                const canAdd = (item ? item.qty : 0) < m.stock;
+                const itemInCart = cart.find(c => c.key === 'Маркер-' + m.number);
+                const currentQty = itemInCart ? itemInCart.qty : 0;
+                const canAdd = currentQty < m.stock;
+                const markerPrice = 75; 
                 let color = m.stock >= 2 ? "#34c759" : (m.stock === 1 ? "#ff9500" : "#ff3b30");
-                return `<div class="row-item">
-                    <div><span class="marker-num">№ ${m.number}</span><span class="stock-badge" style="color:${color}">${m.stock>0?'В наличии: '+m.stock+' шт.':'Нет в наличии'}</span></div>
-                    <button class="btn-qty" ${!canAdd?'disabled':''} onclick="addToCart('Маркер', '${m.number}', ${m.number}, ${m.stock}, 75)">+</button>
+                let text = m.stock >= 1 ? `В наличии: ${m.stock} шт.` : "Нет в наличии";
+                let btnLabel = currentQty > 0 ? `+ (${currentQty})` : '+';
+                return `
+                <div class="row-item">
+                    <div>
+                        <span class="marker-num">№ ${m.number}</span>
+                        <span class="stock-badge" style="color:${color}">${text}</span>
+                    </div>
+                    <div class="counter">
+                        ${m.stock > 0 ? `<button class="btn-qty" ${!canAdd ? 'style="opacity:0.3"' : ''} onclick="addToCart('Маркер', '${m.number}', ${m.number}, ${m.stock}, ${markerPrice})">${btnLabel}</button>` : ''}
+                    </div>
                 </div>`;
             }).join('');
         }
 
-        function addToCart(type, name, id, max, price) {
+        function addToCart(type, name, id, max, price = 0) {
             const key = type + '-' + id;
-            const item = cart.find(i => i.key === key);
-            if (item) { if (item.qty < max) item.qty++; else return; }
-            else { cart.push({ key, type, name, id, qty: 1, max, price }); }
+            const existing = cart.find(i => i.key === key);
+            if (existing) {
+                if (existing.qty < max) existing.qty++;
+                else { tg.showAlert("Больше нет в наличии!"); return; }
+            } else {
+                cart.push({ key, type, name, id, qty: 1, max, price: price });
+            }
             updateUI();
             if(type === 'Маркер') renderMarkers(markersData);
+            if(type === 'Раскраска') filterBooks();
             tg.HapticFeedback.impactOccurred('light');
         }
 
         function updateUI() {
             const total = cart.reduce((sum, i) => sum + i.qty, 0);
             const badge = document.getElementById('cartBadge');
-            badge.innerText = total; badge.style.display = total > 0 ? 'block' : 'none';
+            badge.innerText = total;
+            badge.style.display = total > 0 ? 'block' : 'none';
             document.getElementById('mainOrderBtn').style.display = total > 0 ? 'block' : 'none';
         }
 
         function renderCart() {
             const list = document.getElementById('cartList');
-            if (cart.length === 0) { list.innerHTML = '<div style="text-align:center; padding:50px; color:var(--gray)">Корзина пуста</div>'; return; }
+            if (cart.length === 0) { 
+                list.innerHTML = '<div style="text-align:center; padding:50px; color:var(--gray)">Корзина пуста</div>'; 
+                return; 
+            }
             const totalSum = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-            list.innerHTML = cart.map((item, idx) => `
+            let html = cart.map((item, index) => `
                 <div class="row-item">
-                    <div class="cart-info"><b>${item.type==='Маркер'?'№ ':''}${item.name}</b><small style="color:var(--gray)">${item.price} р/шт.</small></div>
-                    <div class="counter-group">
-                        <button class="btn-qty" onclick="changeQty(${idx}, -1)">-</button>
-                        <span style="font-weight:bold; min-width:20px; text-align:center;">${item.qty}</span>
-                        <button class="btn-qty" ${item.qty>=item.max?'disabled':''} onclick="changeQty(${idx}, 1)">+</button>
+                    <div>
+                        <b>${item.type === 'Маркер' ? '№ ' : ''}${item.name}</b>
+                        <div style="font-size:12px; color:var(--gray)">${item.price} руб./шт.</div>
                     </div>
-                </div>`).join('') + `<div class="total-row"><span>Итого:</span><span>${totalSum} руб.</span></div>`;
+                    <div class="counter">
+                        <button class="btn-qty" onclick="changeQty(${index}, -1)">-</button>
+                        <span style="font-weight:bold; min-width:20px; text-align:center; margin: 0 10px">${item.qty}</span>
+                        <button class="btn-qty" onclick="changeQty(${index}, 1)">+</button>
+                    </div>
+                </div>`).join('');
+            html += `<div style="margin-top:20px; padding:15px; background:var(--secondary); border-radius:15px; text-align:right;">
+                        <span style="color:var(--gray); font-size:14px;">Итого к оплате:</span>
+                        <div style="font-size:20px; font-weight:800; color:var(--accent);">${totalSum} руб.</div>
+                     </div>`;
+            list.innerHTML = html;
         }
 
-        function changeQty(idx, delta) {
-            cart[idx].qty += delta;
-            if (cart[idx].qty <= 0) cart.splice(idx, 1);
-            renderCart(); updateUI();
+        function changeQty(index, delta) {
+            const item = cart[index];
+            if (delta > 0 && item.qty >= item.max) return;
+            item.qty += delta;
+            if (item.qty <= 0) cart.splice(index, 1);
+            renderCart(); 
+            updateUI();
+            filterBooks();
         }
-function checkout() {
-    if(cart.length === 0) return;
-    
-    const totalSum = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
-    
-    // Формируем только список товаров и сумму
-    let msg = `🛒 **Список товаров:**\n` + 
-              cart.map(i => `▪️ ${i.type} ${i.name} - ${i.qty} шт.`).join('\n') +
-              `\n\n💰 **Сумма:** ${totalSum} р.`;
 
-    // Отправляем в Telegram. Бот на Amvera сам увидит, кто это прислал.
-    tg.sendData(JSON.stringify({ details: msg }));
-    tg.close();
-}
+        function checkout() {
+            if (cart.length === 0) return;
+            let totalSum = 0, hasPreorder = false;
+            let orderDetails = "🛍 **ДЕТАЛИ ЗАКАЗА:**\n";
+            cart.forEach(item => {
+                const itemSum = item.price * item.qty;
+                totalSum += itemSum;
+                if (item.type === 'Раскраска') hasPreorder = true;
+                orderDetails += `▪️ ${item.type} ${item.type === 'Маркер' ? '№' : '"'}${item.name}${item.type === 'Маркер' ? '' : '"'}\n   — ${item.qty} шт. x ${item.price} = ${itemSum} руб.\n`;
+            });
+            orderDetails += `\n💰 **ИТОГО К ОПЛАТЕ: ${totalSum} руб.**`;
+            if (hasPreorder) {
+                tg.showConfirm("В вашем заказе есть раскраски (ПОД ЗАКАЗ). Оформить?", (confirm) => {
+                    if (confirm) sendOrder(orderDetails);
+                });
+            } else {
+                sendOrder(orderDetails);
+            }
+        }
+
+        function sendOrder(text) {
+            tg.sendData(JSON.stringify({ details: text }));
+            tg.close();
+        }
+
         function tab(id) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             document.getElementById('btn-' + id).classList.add('active');
-            if (id === 'shop') loadMarkers(); else if (id === 'cart') renderCart();
+            if (id === 'shop') loadMarkers();
+            if (id === 'cart') renderCart();
         }
 
-        let currentVol, currentPage, maxPages, touchStartX;
-        function startBook(v, m) { currentVol = v; maxPages = m; currentPage = 1; document.getElementById('viewer').style.display = 'block'; updatePage(); }
+        let currentVol, currentPage, maxPages, touchStartX, touchStartY;
+        
+        function startBook(v, m) {
+            currentVol = v; maxPages = m; currentPage = 1;
+            document.getElementById('viewer').style.display = 'block';
+            updatePage();
+        }
+
         function closeBook() { document.getElementById('viewer').style.display = 'none'; }
+
         function updatePage() {
             const img = document.getElementById('current-page');
+            const counter = document.getElementById('page-counter');
             const formats = ['.jpg', '.png', '.jpeg', '.JPG', '.PNG'];
             let fIndex = 0;
             function tryLoad() { img.src = `otveti/t${currentVol}/${currentPage}${formats[fIndex]}`; }
-            img.onerror = () => { fIndex++; if (fIndex < formats.length) tryLoad(); };
+            img.onerror = () => {
+                fIndex++;
+                if (fIndex < formats.length) tryLoad();
+            };
             tryLoad();
-            document.getElementById('page-counter').innerText = `${currentPage} / ${maxPages}`;
+            counter.innerText = `${currentPage} / ${maxPages}`;
         }
-        function handleTouchStart(e) { touchStartX = e.touches[0].screenX; }
+
+        function handleTouchStart(e) {
+            touchStartX = e.touches[0].screenX;
+            touchStartY = e.touches[0].screenY;
+        }
+
         function handleTouchEnd(e) {
-            let diff = touchStartX - e.changedTouches[0].screenX;
-            if (Math.abs(diff) > 50) {
-                if (diff > 0 && currentPage < maxPages) { currentPage++; updatePage(); }
-                else if (diff < 0 && currentPage > 1) { currentPage--; updatePage(); }
+            let diffX = touchStartX - e.changedTouches[0].screenX;
+            let diffY = touchStartY - e.changedTouches[0].screenY;
+            if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 40) {
+                if (diffX > 0 && currentPage < maxPages) { currentPage++; updatePage(); }
+                else if (diffX < 0 && currentPage > 1) { currentPage--; updatePage(); }
             }
         }
-        function filterBooks() {
-            const q = document.getElementById('bookSearch').value.toLowerCase();
-            renderBooks(bookNames.filter(n => n.toLowerCase().includes(q)));
-        }
+
         function filterMarkers() {
             const q = document.getElementById('markerSearch').value.toLowerCase();
             renderMarkers(markersData.filter(m => m.number.includes(q)));
         }
+
         renderBooks();
     </script>
 </body>
