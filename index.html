@@ -103,16 +103,17 @@
         </button>
     </nav>
 
-    <script>
+   <script>
         const tg = window.Telegram.WebApp;
         tg.ready();
         tg.expand();
 
-        const STATS_URL = 'https://script.google.com/macros/s/AKfycbwNzGJlazpBtq9gtnGkF7c6zMoSh-gnse4XkL6GWEaIirV0mF8ZliIw48HT6A7oV4cqyw/exec';
+        // --- ВОТ СЮДА ВСТАВЛЯЕМ КОД СТАТИСТИКИ ---
+        const STATS_URL = 'ТВОЯ_ССЫЛКА_ИЗ_GOOGLE_APPS_SCRIPT';
 
         function sendStats() {
             const user = tg.initDataUnsafe.user;
-            if (user) {
+            if (user && STATS_URL !== 'ТВОЯ_ССЫЛКА_ИЗ_GOOGLE_APPS_SCRIPT') {
                 fetch(STATS_URL, {
                     method: 'POST',
                     mode: 'no-cors', 
@@ -126,9 +127,12 @@
                 }).catch(e => console.log('Stats error:', e));
             }
         }
-        sendStats();
+
+        sendStats(); // Запускаем отправку при входе
+        // --- КОНЕЦ БЛОКА СТАТИСТИКИ ---
 
         let markersData = [], cart = [], markersLoaded = false;
+        // Дальше идет остальной твой код (bookNames и т.д.)
 
         const bookNames = [
             "Les Grands Classiques tome 11", "Les Grands Classiques tome 3", "Vitraux tome 2", "Trompe L'oeil Babies", 
