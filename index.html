@@ -103,12 +103,11 @@
         </button>
     </nav>
 
-   <script>
+    <script>
         const tg = window.Telegram.WebApp;
         tg.ready();
         tg.expand();
 
-        // --- ВОТ ЭТОТ БЛОК ВСТАВЛЯЕМ СЮДА ---
         const STATS_URL = 'https://script.google.com/macros/s/AKfycbwNzGJlazpBtq9gtnGkF7c6zMoSh-gnse4XkL6GWEaIirV0mF8ZliIw48HT6A7oV4cqyw/exec';
 
         function sendStats() {
@@ -127,11 +126,7 @@
                 }).catch(e => console.log('Stats error:', e));
             }
         }
-        sendStats(); // Запускаем сбор данных
-        // --- КОНЕЦ БЛОКА СТАТИСТИКИ ---
-
-        let markersData = [], cart = [], markersLoaded = false;
-        // ... дальше идет остальной твой код (bookNames и т.д.)
+        sendStats();
 
         let markersData = [], cart = [], markersLoaded = false;
 
@@ -176,7 +171,7 @@
         }
 
         async function loadMarkers() {
-            if (markersLoaded) return; // Не грузим повторно
+            if (markersLoaded) return;
             const csvUrl = 'https://docs.google.com/spreadsheets/d/1Yrsif-aQwbuT6fLPnP4MsM22UuwuUWz5FYegELPxzFU/gviz/tq?tqx=out:csv';
             try {
                 const res = await fetch(csvUrl);
@@ -207,11 +202,9 @@
                 const currentQty = itemInCart ? itemInCart.qty : 0;
                 const canAdd = currentQty < m.stock;
                 const markerPrice = 75; 
-                
                 let color = m.stock >= 2 ? "#34c759" : (m.stock === 1 ? "#ff9500" : "#ff3b30");
                 let text = m.stock >= 1 ? `В наличии: ${m.stock} шт.` : "Нет в наличии";
                 let btnLabel = currentQty > 0 ? `+ (${currentQty})` : '+';
-                
                 return `
                 <div class="row-item">
                     <div>
@@ -236,7 +229,7 @@
             }
             updateUI();
             if(type === 'Маркер') renderMarkers(markersData);
-            if(type === 'Раскраска') filterBooks(); // Обновляем текст кнопки
+            if(type === 'Раскраска') filterBooks();
             tg.HapticFeedback.impactOccurred('light');
         }
 
@@ -281,7 +274,7 @@
             if (item.qty <= 0) cart.splice(index, 1);
             renderCart(); 
             updateUI();
-            filterBooks(); // На случай если удалили книгу из корзины
+            filterBooks();
         }
 
         function checkout() {
@@ -296,7 +289,7 @@
             });
             orderDetails += `\n💰 **ИТОГО К ОПЛАТЕ: ${totalSum} руб.**`;
             if (hasPreorder) {
-                tg.showConfirm("В вашем заказе есть раскраски. Обратите внимание: они везутся ПОД ЗАКАЗ. Оформить заказ?", (confirm) => {
+                tg.showConfirm("В вашем заказе есть раскраски (ПОД ЗАКАЗ). Оформить?", (confirm) => {
                     if (confirm) sendOrder(orderDetails);
                 });
             } else {
@@ -328,29 +321,20 @@
 
         function closeBook() { document.getElementById('viewer').style.display = 'none'; }
 
-       function updatePage() {
-    const img = document.getElementById('current-page');
-    const counter = document.getElementById('page-counter');
-    
-    // Убрали img.style.opacity = "0.3"
-    
-    const formats = ['.jpg', '.png', '.jpeg', '.JPG', '.PNG'];
-    let fIndex = 0;
+        function updatePage() {
+            const img = document.getElementById('current-page');
+            const counter = document.getElementById('page-counter');
+            const formats = ['.jpg', '.png', '.jpeg', '.JPG', '.PNG'];
+            let fIndex = 0;
+            function tryLoad() { img.src = `otveti/t${currentVol}/${currentPage}${formats[fIndex]}`; }
+            img.onerror = () => {
+                fIndex++;
+                if (fIndex < formats.length) tryLoad();
+            };
+            tryLoad();
+            counter.innerText = `${currentPage} / ${maxPages}`;
+        }
 
-    function tryLoad() {
-        img.src = `otveti/t${currentVol}/${currentPage}${formats[fIndex]}`;
-    }
-
-    // Убрали img.onload = () => { img.style.opacity = "1"; }
-    
-    img.onerror = () => {
-        fIndex++;
-        if (fIndex < formats.length) tryLoad();
-    };
-
-    tryLoad();
-    counter.innerText = `${currentPage} / ${maxPages}`;
-}
         function handleTouchStart(e) {
             touchStartX = e.touches[0].screenX;
             touchStartY = e.touches[0].screenY;
