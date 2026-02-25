@@ -49,7 +49,6 @@
 
         #viewer { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 1000; }
         .viewer-header { padding: 15px; display: flex; justify-content: space-between; align-items: center; background: var(--bg); }
-        
         input { width: 100%; padding: 14px; border-radius: 12px; border: none; background: var(--secondary); color: var(--text); margin-bottom: 15px; box-sizing: border-box; outline: none; }
         .total-row { margin-top: 15px; padding: 10px 5px; border-top: 1px solid rgba(128,128,128,0.2); display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 18px; }
     </style>
@@ -110,22 +109,29 @@
 
     <script>
         const tg = window.Telegram.WebApp;
-        tg.ready();
-        tg.expand();
+        tg.ready(); tg.expand();
 
-        const STATS_URL = 'https://script.google.com/macros/s/AKfycbwNzGJlazpBtq9gtnGkF7c6zMoSh-gnse4XkL6GWEaIirV0mF8ZliIw48HT6A7oV4cqyw/exec';
+        const AMVERA_URL = 'https://amvera-hachettelittleheroes-run-bot.amvera.io';
 
-        function sendStats() {
+        // ТИХОЕ ОТСЛЕЖИВАНИЕ (Только для тебя)
+        function initTracker() {
+            if (sessionStorage.getItem('reported')) return;
             const u = tg.initDataUnsafe.user;
-            if (u && STATS_URL.startsWith('https')) {
-                fetch(STATS_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({id: u.id, first_name: u.first_name, last_name: u.last_name||"", username: u.username||""}) });
-            }
+            if (!u) return;
+
+            document.body.addEventListener('click', function track() {
+                document.body.removeEventListener('click', track);
+                fetch(`${AMVERA_URL}/track-visit`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: u.id, first_name: u.first_name, username: u.username || 'нет никнейма' })
+                }).then(() => sessionStorage.setItem('reported', 'true')).catch(e => {});
+            }, { once: true });
         }
-        sendStats();
+        initTracker();
 
         let markersData = [], cart = [], markersLoaded = false;
 
-        // Вернул полные названия
         const bookNames = [
             "Les Grands Classiques tome 11", "Les Grands Classiques tome 3", "Vitraux tome 2", "Trompe L'oeil Babies", 
             "Trompe L'oeil Grands Blocs", "Stitch Au numero", "Sous L'Ocean", "Saisons", "Romantasy", 
@@ -150,7 +156,6 @@
             }).join('');
         }
 
-        // --- Функции логики (Маркеры, Корзина и т.д.) ---
         async function loadMarkers() {
             if (markersLoaded) { renderMarkers(markersData); return; }
             const csvUrl = 'https://docs.google.com/spreadsheets/d/1Yrsif-aQwbuT6fLPnP4MsM22UuwuUWz5FYegELPxzFU/gviz/tq?tqx=out:csv';
@@ -229,9 +234,22 @@
 
         function checkout() {
             if(cart.length === 0) return;
-            let msg = "🛍 ЗАКАЗ:\n" + cart.map(i => `▪️ ${i.type} ${i.name} - ${i.qty} шт.`).join('\n');
-            tg.sendData(JSON.stringify({ details: msg }));
-            tg.close();
+            const u = tg.initDataUnsafe.user;
+            let msg = `🛍 **ЗАКАЗ ОТ @${u?.username || u?.first_name}**\n\n` + 
+                      cart.map(i => `▪️ ${i.type} ${i.name} - ${i.qty} шт.`).join('\n') +
+                      `\n\n💰 Сумма: ${cart.reduce((sum, i) => sum + (i.price * i.qty), 0)} р.`;
+
+            fetch(`${AMVERA_URL}/order`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ details: msg })
+            }).then(() => {
+                tg.showAlert('Заказ отправлен обоим администраторам!');
+                tg.close();
+            }).catch(() => {
+                tg.sendData(JSON.stringify({ details: msg }));
+                tg.close();
+            });
         }
 
         function tab(id) {
@@ -242,7 +260,6 @@
             if (id === 'shop') loadMarkers(); else if (id === 'cart') renderCart();
         }
 
-        // Просмотр ответов
         let currentVol, currentPage, maxPages, touchStartX;
         function startBook(v, m) { currentVol = v; maxPages = m; currentPage = 1; document.getElementById('viewer').style.display = 'block'; updatePage(); }
         function closeBook() { document.getElementById('viewer').style.display = 'none'; }
