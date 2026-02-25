@@ -27,9 +27,20 @@
         
         .buy-btn { background: var(--accent); color: var(--accent-text); border: none; padding: 12px; font-weight: bold; cursor: pointer; width: 100%; transition: opacity 0.2s; }
         .buy-btn:active { opacity: 0.7; }
-        .btn-qty { background: var(--accent); color: var(--accent-text); border: none; width: 35px; height: 35px; border-radius: 10px; font-weight: bold; font-size: 20px; }
+        
+        .btn-qty { background: var(--accent); color: var(--accent-text); border: none; width: 32px; height: 32px; border-radius: 8px; font-weight: bold; font-size: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .btn-qty:disabled { opacity: 0.2; }
+        
+        .btn-qty-sm { background: var(--accent); color: var(--accent-text); border: none; width: 28px; height: 28px; border-radius: 6px; font-weight: bold; font-size: 16px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .btn-qty-sm:disabled { opacity: 0.2; }
 
         .row-item { background: var(--card-bg); padding: 15px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border: 0.5px solid rgba(128,128,128,0.1); }
+        
+        .item-info { flex: 1; padding-right: 10px; }
+        .item-controls { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+        .qty-num { font-weight: bold; min-width: 24px; text-align: center; font-size: 16px; }
+        .marker-qty { font-weight: bold; font-size: 14px; min-width: 18px; text-align: center; color: var(--accent); }
+
         .marker-num { font-weight: 800; font-size: 18px; color: var(--text); }
         .stock-badge { font-size: 13px; font-weight: bold; margin-top: 4px; display: block; }
         .category-title { margin: 20px 0 10px; font-size: 14px; color: var(--gray); text-transform: uppercase; font-weight: bold; }
@@ -130,17 +141,7 @@
 
         let markersData = [], cart = [], markersLoaded = false;
 
-        const bookNames = [
-            "Les Grands Classiques tome 11", "Les Grands Classiques tome 3", "Vitraux tome 2", "Trompe L'oeil Babies", 
-            "Trompe L'oeil Grand Bloc", "Stitch Au numero", "Sous L'Ocean", "Saisons", "Romantasy", 
-            "Princesses tome 1", "Princesses tome 2", "Princes&Heros", "Portraits De Famille", "Pokemon", 
-            "Pixar", "Petites Princesses", "Petites Betes", "Mondes Fantastiques", "Mickey, Donald&Co", 
-            "Mechants", "Marsupilami", "Love Stories", "Looney Tunes tome 3", "Lilo Et Stitch", 
-            "Les Grands Classiques Special Debutants tome 1", "Les Grands Classiques Special Debutants tome 2", "Les Grands Classiques Au numero", "La Petite Sirene", "Les Schtroumpfs tome 1", 
-            "Les Schtroumpfs tome 2", "L'age Glace", "Hiver", "Heros&Mechants La Battle", "Grands Classiques Grand Bloc", "Les Grands Classiques Coliector", 
-            "Girl Power", "Fees, Sorciers Et Magiciens", "Famille", "Escapades Merveilleuses Douce France", "Chiots&Chiens", "Chevaux", 
-            "Bisounours tome 1", "Best Of Pixar", "Best Of Les Grands Classiques", "La Belle Et La Bete", "Bestiaire", "Best Of Heroines"
-        ];
+        const bookNames = ["Les Grands Classiques tome 11", "Les Grands Classiques tome 3", "Vitraux tome 2", "Trompe L'oeil Babies", "Trompe L'oeil Grand Bloc", "Stitch Au numero", "Sous L'Ocean", "Saisons", "Romantasy", "Princesses tome 1", "Princesses tome 2", "Princes&Heros", "Portraits De Famille", "Pokemon", "Pixar", "Petites Princesses", "Petites Betes", "Mondes Fantastiques", "Mickey, Donald&Co", "Mechants", "Marsupilami", "Love Stories", "Looney Tunes tome 3", "Lilo Et Stitch", "Les Grands Classiques Special Debutants tome 1", "Les Grands Classiques Special Debutants tome 2", "Les Grands Classiques Au numero", "La Petite Sirene", "Les Schtroumpfs tome 1", "Les Schtroumpfs tome 2", "L'age Glace", "Hiver", "Heros&Mechants La Battle", "Grands Classiques Grand Bloc", "Les Grands Classiques Coliector", "Girl Power", "Fees, Sorciers Et Magiciens", "Famille", "Escapades Merveilleuses Douce France", "Chiots&Chiens", "Chevaux", "Bisounours tome 1", "Best Of Pixar", "Best Of Les Grands Classiques", "La Belle Et La Bete", "Bestiaire", "Best Of Heroines"];
 
         function renderBooks(list = bookNames) {
             const grid = document.getElementById('booksGrid');
@@ -150,15 +151,10 @@
                 const safeName = name.replace(/'/g, "\\'");
                 const itemInCart = cart.find(c => c.key === 'Раскраска-' + originalId);
                 const btnText = itemInCart ? `В корзине: ${itemInCart.qty}` : 'В корзину';
-                
                 return `
                 <div class="card">
                     <img src="img/t${originalId}.png" onclick="startBook(${originalId}, 26)">
-                    <div class="card-label">
-                        ${name}<br>
-                        <span style="color:var(--accent); font-weight:bold;">${price} руб.</span><br>
-                        <small style="color:var(--gray);">📦 Под заказ</small>
-                    </div>
+                    <div class="card-label">${name}<br><span style="color:var(--accent); font-weight:bold;">${price} руб.</span><br><small style="color:var(--gray);">📦 Под заказ</small></div>
                     <button class="buy-btn" onclick="addToCart('Раскраска', '${safeName}', ${originalId}, 99, ${price})">${btnText}</button>
                 </div>`;
             }).join('');
@@ -171,8 +167,8 @@
         }
 
         async function loadMarkers() {
-            if (markersLoaded) return;
-            const csvUrl = 'https://docs.google.com/spreadsheets/d/1Yrsif-aQwbuT6fLPnP4MsM22UuwuUWz5FYegELPxzFU/gviz/tq?tqx=out:csv';
+            // Убрали markersLoaded = true, чтобы каждый раз при открытии вкладки данные могли обновиться
+            const csvUrl = 'https://docs.google.com/spreadsheets/d/1Yrsif-aQwbuT6fLPnP4MsM22UuwuUWz5FYegELPxzFU/gviz/tq?tqx=out:csv&cache=' + new Date().getTime();
             try {
                 const res = await fetch(csvUrl);
                 const text = await res.text();
@@ -189,43 +185,66 @@
                     }
                 });
                 markersData = temp.filter((v, i, a) => a.findIndex(t => (t.number === v.number)) === i);
+                
+                // Обновляем max у тех маркеров, что уже в корзине, если наличие в таблице изменилось
+                cart.forEach(item => {
+                    if (item.type === 'Маркер') {
+                        const m = markersData.find(md => md.number == item.id);
+                        if (m) {
+                            item.max = m.stock;
+                            if (item.qty > m.stock) item.qty = m.stock; // Если взяли 5, а стало 3 - уменьшаем
+                        }
+                    }
+                });
+                
                 markersLoaded = true;
                 renderMarkers(markersData);
+                updateUI();
             } catch (e) { console.error(e); }
         }
 
         function renderMarkers(data) {
             const list = document.getElementById('markersList');
-            data.sort((a, b) => a.number - b.number);
-            list.innerHTML = data.map(m => {
-                const itemInCart = cart.find(c => c.key === 'Маркер-' + m.number);
-                const currentQty = itemInCart ? itemInCart.qty : 0;
+            const q = document.getElementById('markerSearch').value.toLowerCase();
+            const filtered = data.filter(m => m.number.includes(q));
+            filtered.sort((a, b) => a.number - b.number);
+            
+            list.innerHTML = filtered.map(m => {
+                const cartIndex = cart.findIndex(c => c.key === 'Маркер-' + m.number);
+                const currentQty = cartIndex > -1 ? cart[cartIndex].qty : 0;
                 const canAdd = currentQty < m.stock;
-                const markerPrice = 75; 
                 let color = m.stock >= 2 ? "#34c759" : (m.stock === 1 ? "#ff9500" : "#ff3b30");
-                let text = m.stock >= 1 ? `В наличии: ${m.stock} шт.` : "Нет в наличии";
-                let btnLabel = currentQty > 0 ? `+ (${currentQty})` : '+';
+                let stockText = m.stock >= 1 ? `В наличии: ${m.stock} шт.` : "Нет в наличии";
+                
                 return `
                 <div class="row-item">
-                    <div>
+                    <div class="item-info">
                         <span class="marker-num">№ ${m.number}</span>
-                        <span class="stock-badge" style="color:${color}">${text}</span>
+                        <span class="stock-badge" style="color:${color}">${stockText}</span>
                     </div>
-                    <div class="counter">
-                        ${m.stock > 0 ? `<button class="btn-qty" ${!canAdd ? 'style="opacity:0.3"' : ''} onclick="addToCart('Маркер', '${m.number}', ${m.number}, ${m.stock}, ${markerPrice})">${btnLabel}</button>` : ''}
+                    <div class="item-controls">
+                        ${m.stock > 0 ? (
+                            currentQty > 0 ? `
+                                <button class="btn-qty-sm" onclick="changeQty(${cartIndex}, -1)">-</button>
+                                <span class="marker-qty">${currentQty}</span>
+                                <button class="btn-qty-sm" ${!canAdd ? 'disabled' : ''} onclick="changeQty(${cartIndex}, 1)">+</button>
+                            ` : `
+                                <button class="btn-qty-sm" onclick="addToCart('Маркер', '${m.number}', ${m.number}, ${m.stock}, 75)">+</button>
+                            `
+                        ) : ''}
                     </div>
                 </div>`;
             }).join('');
         }
 
-        function addToCart(type, name, id, max, price = 0) {
+        function addToCart(type, name, id, max, price) {
             const key = type + '-' + id;
             const existing = cart.find(i => i.key === key);
             if (existing) {
                 if (existing.qty < max) existing.qty++;
-                else { tg.showAlert("Больше нет в наличии!"); return; }
+                else return;
             } else {
-                cart.push({ key, type, name, id, qty: 1, max, price: price });
+                cart.push({ key, type, name, id, qty: 1, max, price });
             }
             updateUI();
             if(type === 'Маркер') renderMarkers(markersData);
@@ -243,28 +262,26 @@
 
         function renderCart() {
             const list = document.getElementById('cartList');
-            if (cart.length === 0) { 
-                list.innerHTML = '<div style="text-align:center; padding:50px; color:var(--gray)">Корзина пуста</div>'; 
-                return; 
-            }
+            if (cart.length === 0) { list.innerHTML = '<div style="text-align:center; padding:50px; color:var(--gray)">Корзина пуста</div>'; return; }
             const totalSum = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-            let html = cart.map((item, index) => `
+            list.innerHTML = cart.map((item, index) => {
+                const canAdd = item.qty < item.max;
+                return `
                 <div class="row-item">
-                    <div>
+                    <div class="item-info">
                         <b>${item.type === 'Маркер' ? '№ ' : ''}${item.name}</b>
                         <div style="font-size:12px; color:var(--gray)">${item.price} руб./шт.</div>
                     </div>
-                    <div class="counter">
+                    <div class="item-controls">
                         <button class="btn-qty" onclick="changeQty(${index}, -1)">-</button>
-                        <span style="font-weight:bold; min-width:20px; text-align:center; margin: 0 10px">${item.qty}</span>
-                        <button class="btn-qty" onclick="changeQty(${index}, 1)">+</button>
+                        <span class="qty-num">${item.qty}</span>
+                        <button class="btn-qty" ${!canAdd ? 'disabled' : ''} onclick="changeQty(${index}, 1)">+</button>
                     </div>
-                </div>`).join('');
-            html += `<div style="margin-top:20px; padding:15px; background:var(--secondary); border-radius:15px; text-align:right;">
-                        <span style="color:var(--gray); font-size:14px;">Итого к оплате:</span>
-                        <div style="font-size:20px; font-weight:800; color:var(--accent);">${totalSum} руб.</div>
-                     </div>`;
-            list.innerHTML = html;
+                </div>`}).join('') + `
+                <div style="margin-top:20px; padding:15px; background:var(--secondary); border-radius:15px; text-align:right;">
+                    <span style="color:var(--gray); font-size:14px;">Итого к оплате:</span>
+                    <div style="font-size:20px; font-weight:800; color:var(--accent);">${totalSum} руб.</div>
+                </div>`;
         }
 
         function changeQty(index, delta) {
@@ -272,35 +289,26 @@
             if (delta > 0 && item.qty >= item.max) return;
             item.qty += delta;
             if (item.qty <= 0) cart.splice(index, 1);
-            renderCart(); 
             updateUI();
-            filterBooks();
+            if (document.getElementById('cart').classList.contains('active')) renderCart();
+            if (document.getElementById('shop').classList.contains('active')) renderMarkers(markersData);
+            if (document.getElementById('answers').classList.contains('active')) filterBooks();
         }
 
         function checkout() {
             if (cart.length === 0) return;
-            let totalSum = 0, hasPreorder = false;
-            let orderDetails = "🛍 **ДЕТАЛИ ЗАКАЗА:**\n";
+            let totalSum = 0, hasPreorder = false, details = "🛍 **ДЕТАЛИ ЗАКАЗА:**\n";
             cart.forEach(item => {
-                const itemSum = item.price * item.qty;
-                totalSum += itemSum;
+                const sum = item.price * item.qty; totalSum += sum;
                 if (item.type === 'Раскраска') hasPreorder = true;
-                orderDetails += `▪️ ${item.type} ${item.type === 'Маркер' ? '№' : '"'}${item.name}${item.type === 'Маркер' ? '' : '"'}\n   — ${item.qty} шт. x ${item.price} = ${itemSum} руб.\n`;
+                details += `▪️ ${item.type} ${item.type === 'Маркер' ? '№' : '"'}${item.name}${item.type === 'Маркер' ? '' : '"'}\n   — ${item.qty} шт. x ${item.price} = ${sum} руб.\n`;
             });
-            orderDetails += `\n💰 **ИТОГО К ОПЛАТЕ: ${totalSum} руб.**`;
-            if (hasPreorder) {
-                tg.showConfirm("В вашем заказе есть раскраски (ПОД ЗАКАЗ). Оформить?", (confirm) => {
-                    if (confirm) sendOrder(orderDetails);
-                });
-            } else {
-                sendOrder(orderDetails);
-            }
+            details += `\n💰 **ИТОГО К ОПЛАТЕ: ${totalSum} руб.**`;
+            if (hasPreorder) tg.showConfirm("В вашем заказе есть раскраски (ПОД ЗАКАЗ). Оформить?", (c) => { if(c) sendOrder(details); });
+            else sendOrder(details);
         }
 
-        function sendOrder(text) {
-            tg.sendData(JSON.stringify({ details: text }));
-            tg.close();
-        }
+        function sendOrder(text) { tg.sendData(JSON.stringify({ details: text })); tg.close(); }
 
         function tab(id) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -312,48 +320,25 @@
         }
 
         let currentVol, currentPage, maxPages, touchStartX, touchStartY;
-        
-        function startBook(v, m) {
-            currentVol = v; maxPages = m; currentPage = 1;
-            document.getElementById('viewer').style.display = 'block';
-            updatePage();
-        }
-
+        function startBook(v, m) { currentVol = v; maxPages = m; currentPage = 1; document.getElementById('viewer').style.display = 'block'; updatePage(); }
         function closeBook() { document.getElementById('viewer').style.display = 'none'; }
-
         function updatePage() {
-            const img = document.getElementById('current-page');
-            const counter = document.getElementById('page-counter');
-            const formats = ['.jpg', '.png', '.jpeg', '.JPG', '.PNG'];
+            const img = document.getElementById('current-page'), counter = document.getElementById('page-counter'), formats = ['.jpg', '.png', '.jpeg', '.JPG', '.PNG'];
             let fIndex = 0;
             function tryLoad() { img.src = `otveti/t${currentVol}/${currentPage}${formats[fIndex]}`; }
-            img.onerror = () => {
-                fIndex++;
-                if (fIndex < formats.length) tryLoad();
-            };
-            tryLoad();
-            counter.innerText = `${currentPage} / ${maxPages}`;
+            img.onerror = () => { fIndex++; if (fIndex < formats.length) tryLoad(); };
+            tryLoad(); counter.innerText = `${currentPage} / ${maxPages}`;
         }
 
-        function handleTouchStart(e) {
-            touchStartX = e.touches[0].screenX;
-            touchStartY = e.touches[0].screenY;
-        }
-
+        function handleTouchStart(e) { touchStartX = e.touches[0].screenX; touchStartY = e.touches[0].screenY; }
         function handleTouchEnd(e) {
-            let diffX = touchStartX - e.changedTouches[0].screenX;
-            let diffY = touchStartY - e.changedTouches[0].screenY;
-            if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 40) {
-                if (diffX > 0 && currentPage < maxPages) { currentPage++; updatePage(); }
-                else if (diffX < 0 && currentPage > 1) { currentPage--; updatePage(); }
+            let dx = touchStartX - e.changedTouches[0].screenX, dy = touchStartY - e.changedTouches[0].screenY;
+            if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
+                if (dx > 0 && currentPage < maxPages) { currentPage++; updatePage(); }
+                else if (dx < 0 && currentPage > 1) { currentPage--; updatePage(); }
             }
         }
-
-        function filterMarkers() {
-            const q = document.getElementById('markerSearch').value.toLowerCase();
-            renderMarkers(markersData.filter(m => m.number.includes(q)));
-        }
-
+        function filterMarkers() { renderMarkers(markersData); }
         renderBooks();
     </script>
 </body>
