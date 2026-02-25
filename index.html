@@ -23,7 +23,7 @@
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .card { background: var(--card-bg); border-radius: 18px; overflow: hidden; border: 0.5px solid rgba(128,128,128,0.2); display: flex; flex-direction: column; }
         .card img { width: 100%; height: 180px; object-fit: cover; cursor: pointer; background: #eee; }
-        .card-label { padding: 10px; font-weight: 600; font-size: 14px; text-align: center; flex-grow: 1; }
+        .card-label { padding: 10px; font-weight: 600; font-size: 13px; text-align: center; flex-grow: 1; line-height: 1.2; }
         
         .buy-btn { background: var(--accent); color: var(--accent-text); border: none; padding: 12px; font-weight: bold; cursor: pointer; width: 100%; transition: opacity 0.2s; border-radius: 10px; }
         .buy-btn:active { opacity: 0.7; }
@@ -34,8 +34,8 @@
         .btn-qty { background: var(--accent); color: var(--accent-text); border: none; width: 34px; height: 34px; border-radius: 10px; font-weight: bold; font-size: 20px; display: flex; align-items: center; justify-content: center; }
         .btn-qty:disabled { background: var(--gray); opacity: 0.3; }
 
-        .cart-info { flex-grow: 1; padding-right: 15px; min-width: 0; }
-        .cart-info b { display: block; overflow-wrap: break-word; font-size: 15px; line-height: 1.3; }
+        .cart-info { flex-grow: 1; padding-right: 12px; min-width: 0; }
+        .cart-info b { display: block; overflow-wrap: break-word; font-size: 14px; line-height: 1.3; }
 
         .marker-num { font-weight: 800; font-size: 18px; }
         .stock-badge { font-size: 13px; font-weight: bold; margin-top: 4px; display: block; }
@@ -51,7 +51,7 @@
         .viewer-header { padding: 15px; display: flex; justify-content: space-between; align-items: center; background: var(--bg); }
         
         input { width: 100%; padding: 14px; border-radius: 12px; border: none; background: var(--secondary); color: var(--text); margin-bottom: 15px; box-sizing: border-box; outline: none; }
-        .total-box { margin-top: 20px; padding: 15px; background: var(--accent); color: var(--accent-text); border-radius: 15px; text-align: center; }
+        .total-row { margin-top: 15px; padding: 10px 5px; border-top: 1px solid rgba(128,128,128,0.2); display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 18px; }
     </style>
 </head>
 <body>
@@ -69,6 +69,10 @@
         <div class="row-item"><span>GuangNa 168</span><button class="buy-btn" style="width:auto; padding: 8px 15px;" onclick="tg.openLink('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/guangna168.pdf')">PDF</button></div>
         <div class="row-item"><span>GuangNa 240</span><button class="buy-btn" style="width:auto; padding: 8px 15px;" onclick="tg.openLink('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/guangna240.pdf')">PDF</button></div>
         <div class="row-item"><span>GuangNa 360</span><button class="buy-btn" style="width:auto; padding: 8px 15px;" onclick="tg.openLink('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/guangna360.pdf')">PDF</button></div>
+        <div class="category-title">Другие</div>
+        <div class="row-item"><span>Tooli-Art</span><button class="buy-btn" style="width:auto; padding: 8px 15px;" onclick="tg.openLink('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/tooliart.pdf')">PDF</button></div>
+        <div class="row-item"><span>Grasp 168</span><button class="buy-btn" style="width:auto; padding: 8px 15px;" onclick="tg.openLink('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/grasp168.pdf')">PDF</button></div>
+        <div class="row-item"><span>Zibeef 240</span><button class="buy-btn" style="width:auto; padding: 8px 15px;" onclick="tg.openLink('https://hachettelittleheroes.github.io/HachetteLittleHeroesBot/palitri/zibeef240.pdf')">PDF</button></div>
     </div>
 
     <div id="shop" class="page">
@@ -81,7 +85,7 @@
     <div id="cart" class="page">
         <div class="header">Корзина</div>
         <div id="cartList"></div>
-        <button id="mainOrderBtn" class="buy-btn" style="padding: 18px; margin-top:20px; width:100%; font-size:16px; display: none;" onclick="checkout()">Оформить заказ</button>
+        <button id="mainOrderBtn" class="buy-btn" style="padding: 18px; margin-top:10px; width:100%; font-size:16px; display: none;" onclick="checkout()">Оформить заказ</button>
     </div>
 
     <div id="viewer">
@@ -110,9 +114,10 @@
         tg.expand();
 
         const STATS_URL = 'https://script.google.com/macros/s/AKfycbwNzGJlazpBtq9gtnGkF7c6zMoSh-gnse4XkL6GWEaIirV0mF8ZliIw48HT6A7oV4cqyw/exec';
+
         function sendStats() {
             const u = tg.initDataUnsafe.user;
-            if (u && STATS_URL.includes('https')) {
+            if (u && STATS_URL.startsWith('https')) {
                 fetch(STATS_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({id: u.id, first_name: u.first_name, last_name: u.last_name||"", username: u.username||""}) });
             }
         }
@@ -120,16 +125,17 @@
 
         let markersData = [], cart = [], markersLoaded = false;
 
+        // Вернул полные названия
         const bookNames = [
-            "Classiques t11", "Classiques t3", "Vitraux t2", "Trompe L'oeil Babies", 
-            "Trompe L'oeil G.B.", "Stitch Au numero", "Sous L'Ocean", "Saisons", "Romantasy", 
-            "Princesses t1", "Princesses t2", "Princes&Heros", "Portraits Famille", "Pokemon", 
-            "Pixar", "Petites Princesses", "Petites Betes", "Mondes Fantastiques", "Mickey&Co", 
-            "Mechants", "Marsupilami", "Love Stories", "Looney Tunes t3", "Lilo Et Stitch", 
-            "Debutants t1", "Debutants t2", "Au numero", "La Petite Sirene", "Schtroumpfs 1", 
-            "Schtroumpfs 2", "L'age Glace", "Hiver", "Heros&Mechants", "Grand Bloc", "Coliector", 
-            "Girl Power", "Fees&Sorciers", "Famille", "Douce France", "Chiots&Chiens", "Chevaux", 
-            "Bisounours", "Best Of Pixar", "Best Of G.C.", "Belle Et La Bete", "Bestiaire", "Best Of Heroines"
+            "Les Grands Classiques tome 11", "Les Grands Classiques tome 3", "Vitraux tome 2", "Trompe L'oeil Babies", 
+            "Trompe L'oeil Grands Blocs", "Stitch Au numero", "Sous L'Ocean", "Saisons", "Romantasy", 
+            "Princesses tome 1", "Princesses tome 2", "Princes & Heros", "Portraits de Famille", "Pokemon", 
+            "Pixar", "Petites Princesses", "Petites Betes", "Mondes Fantastiques", "Mickey & Co", 
+            "Mechants", "Marsupilami", "Love Stories", "Looney Tunes tome 3", "Lilo Et Stitch", 
+            "Debutants tome 1", "Debutants tome 2", "Au numero", "La Petite Sirene", "Schtroumpfs 1", 
+            "Schtroumpfs 2", "L'age de Glace", "Hiver", "Heros & Mechants", "Grand Bloc", "Coliector", 
+            "Girl Power", "Fees & Sorciers", "Famille", "Douce France", "Chiots & Chiens", "Chevaux", 
+            "Bisounours", "Best Of Pixar", "Best Of Grands Classiques", "Belle Et La Bete", "Bestiaire", "Best Of Heroines"
         ];
 
         function renderBooks(list = bookNames) {
@@ -144,6 +150,7 @@
             }).join('');
         }
 
+        // --- Функции логики (Маркеры, Корзина и т.д.) ---
         async function loadMarkers() {
             if (markersLoaded) { renderMarkers(markersData); return; }
             const csvUrl = 'https://docs.google.com/spreadsheets/d/1Yrsif-aQwbuT6fLPnP4MsM22UuwuUWz5FYegELPxzFU/gviz/tq?tqx=out:csv';
@@ -211,7 +218,7 @@
                         <span style="font-weight:bold; min-width:20px; text-align:center;">${item.qty}</span>
                         <button class="btn-qty" ${item.qty>=item.max?'disabled':''} onclick="changeQty(${idx}, 1)">+</button>
                     </div>
-                </div>`).join('') + `<div class="total-box">Итого к оплате: ${totalSum} руб.</div>`;
+                </div>`).join('') + `<div class="total-row"><span>Итого:</span><span>${totalSum} руб.</span></div>`;
         }
 
         function changeQty(idx, delta) {
@@ -232,11 +239,10 @@
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             document.getElementById('btn-' + id).classList.add('active');
-            document.querySelectorAll('input').forEach(i => i.value = ""); // Сброс поиска
             if (id === 'shop') loadMarkers(); else if (id === 'cart') renderCart();
-            else if (id === 'answers') renderBooks();
         }
 
+        // Просмотр ответов
         let currentVol, currentPage, maxPages, touchStartX;
         function startBook(v, m) { currentVol = v; maxPages = m; currentPage = 1; document.getElementById('viewer').style.display = 'block'; updatePage(); }
         function closeBook() { document.getElementById('viewer').style.display = 'none'; }
