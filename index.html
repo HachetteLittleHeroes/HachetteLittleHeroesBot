@@ -15,14 +15,14 @@
             --card-bg: var(--tg-theme-secondary-bg-color, #f1f1f1);
         }
 
-        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 100px; overflow-x: hidden; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 100px; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
         .header { padding: 20px 15px; font-size: 24px; font-weight: 800; }
         .page { display: none; padding: 0 15px; }
         .page.active { display: block; }
 
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .card { background: var(--card-bg); border-radius: 18px; overflow: hidden; border: 0.5px solid rgba(128,128,128,0.2); display: flex; flex-direction: column; }
-        .card img { width: 100%; height: 180px; object-fit: cover; cursor: pointer; }
+        .card img { width: 100%; height: 180px; object-fit: cover; cursor: pointer; background: #eee; }
         .card-label { padding: 10px; font-weight: 600; font-size: 14px; text-align: center; flex-grow: 1; }
         
         .buy-btn { background: var(--accent); color: var(--accent-text); border: none; padding: 12px; font-weight: bold; cursor: pointer; width: 100%; }
@@ -39,19 +39,19 @@
         .nav-icon { font-size: 22px; margin-bottom: 4px; }
         .badge { position: absolute; top: 8px; right: 12%; background: #ff3b30; color: white; border-radius: 10px; padding: 2px 7px; font-size: 11px; }
 
-        #viewer { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--bg); z-index: 1000; }
+        #viewer { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 1000; }
         .viewer-header { padding: 15px; display: flex; justify-content: space-between; align-items: center; background: var(--bg); border-bottom: 0.5px solid rgba(128,128,128,0.2); }
         
-        input { width: 100%; padding: 14px; border-radius: 12px; border: none; background: var(--secondary); color: var(--text); margin-bottom: 15px; box-sizing: border-box; }
+        input { width: 100%; padding: 14px; border-radius: 12px; border: none; background: var(--secondary); color: var(--text); margin-bottom: 15px; box-sizing: border-box; outline: none; }
     </style>
 </head>
 <body>
 
     <div id="answers" class="page active">
-    <div class="header">Ответы</div>
-    <input type="text" id="bookSearch" placeholder="Поиск тома (напр. Pixar или t11)..." oninput="filterBooks()">
-    <div class="grid" id="booksGrid"></div>
-</div>
+        <div class="header">Ответы</div>
+        <input type="text" id="bookSearch" placeholder="Поиск тома..." oninput="filterBooks()">
+        <div class="grid" id="booksGrid"></div>
+    </div>
 
     <div id="palettes" class="page">
         <div class="header">Палитры</div>
@@ -67,14 +67,14 @@
     </div>
 
     <div id="shop" class="page">
-    <div class="header">Маркеры</div>
-    <div class="category-title" style="margin-top: 0; display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px;">
-        <span>GuangNa</span>
-        <span style="color: var(--accent); text-transform: none; font-size: 15px;">75 руб./шт.</span>
+        <div class="header">Маркеры</div>
+        <div class="category-title" style="margin-top: 0; display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px;">
+            <span>GuangNa</span>
+            <span style="color: var(--accent); text-transform: none; font-size: 15px;">75 руб./шт.</span>
+        </div>
+        <input type="text" id="markerSearch" placeholder="Поиск номера..." oninput="filterMarkers()">
+        <div id="markersList"></div>
     </div>
-    <input type="text" id="markerSearch" placeholder="Поиск номера..." oninput="filterMarkers()">
-    <div id="markersList"></div>
-</div>
 
     <div id="cart" class="page">
         <div class="header">Корзина</div>
@@ -85,10 +85,10 @@
     <div id="viewer">
         <div class="viewer-header">
             <button class="buy-btn" style="width:auto; border-radius:8px; padding: 8px 15px;" onclick="closeBook()">Назад</button>
-            <div id="page-counter" style="font-weight:bold;"></div>
+            <div id="page-counter" style="color:var(--text); font-weight:bold;"></div>
         </div>
-        <div style="height: 80vh; display: flex; align-items: center; justify-content: center;" ontouchstart="handleTouchStart(event)" ontouchend="handleTouchEnd(event)">
-            <img src="" id="current-page" style="max-width: 95%; max-height: 100%; border-radius:12px;">
+        <div id="viewer-content" style="height: 85vh; display: flex; align-items: center; justify-content: center; overflow: hidden; touch-action: none;" ontouchstart="handleTouchStart(event)" ontouchend="handleTouchEnd(event)">
+            <img src="" id="current-page" style="max-width: 100%; max-height: 100%; object-fit: contain;">
         </div>
     </div>
 
@@ -121,34 +121,32 @@
             "Bisounours", "Best Of Pixar", "Best Of G.C.", "Belle Et La Bete", "Bestiaire", "Best Of Heroines"
         ];
 
-      // Обновленная функция отрисовки книг
-function renderBooks(list = bookNames) {
-    const grid = document.getElementById('booksGrid');
-    grid.innerHTML = list.map((name) => {
-        // Находим оригинальный ID книги (её индекс в исходном массиве + 1)
-        // Это важно, чтобы картинки и ссылки не перепутались при поиске
-        const originalId = bookNames.indexOf(name) + 1;
-        const price = 2890; 
-        
-        return `
-        <div class="card">
-            <img src="img/t${originalId}.png" onclick="startBook(${originalId}, 26)">
-            <div class="card-label">
-                ${name}<br>
-                <span style="color:var(--accent); font-weight:bold;">${price} руб.</span><br>
-                <small style="color:var(--gray);">📦 Под заказ</small>
-            </div>
-            <button class="buy-btn" onclick="addToCart('Раскраска', '${name}', ${originalId}, 99, ${price})">В корзину</button>
-        </div>`;
-    }).join('');
-}
+        function renderBooks(list = bookNames) {
+            const grid = document.getElementById('booksGrid');
+            grid.innerHTML = list.map((name) => {
+                const originalId = bookNames.indexOf(name) + 1;
+                const price = 2890; 
+                // Экранируем кавычки в названии для JS
+                const safeName = name.replace(/'/g, "\\'");
+                
+                return `
+                <div class="card">
+                    <img src="img/t${originalId}.png" onclick="startBook(${originalId}, 26)">
+                    <div class="card-label">
+                        ${name}<br>
+                        <span style="color:var(--accent); font-weight:bold;">${price} руб.</span><br>
+                        <small style="color:var(--gray);">📦 Под заказ</small>
+                    </div>
+                    <button class="buy-btn" onclick="addToCart('Раскраска', '${safeName}', ${originalId}, 99, ${price})">В корзину</button>
+                </div>`;
+            }).join('');
+        }
 
-// Новая функция поиска по томам
-function filterBooks() {
-    const query = document.getElementById('bookSearch').value.toLowerCase();
-    const filtered = bookNames.filter(name => name.toLowerCase().includes(query));
-    renderBooks(filtered);
-}
+        function filterBooks() {
+            const query = document.getElementById('bookSearch').value.toLowerCase();
+            const filtered = bookNames.filter(name => name.toLowerCase().includes(query));
+            renderBooks(filtered);
+        }
 
         async function loadMarkers() {
             const csvUrl = 'https://docs.google.com/spreadsheets/d/1Yrsif-aQwbuT6fLPnP4MsM22UuwuUWz5FYegELPxzFU/gviz/tq?tqx=out:csv';
@@ -172,44 +170,44 @@ function filterBooks() {
             } catch (e) { console.error(e); }
         }
 
-      function renderMarkers(data) {
-    const list = document.getElementById('markersList');
-    data.sort((a, b) => a.number - b.number);
-    list.innerHTML = data.map(m => {
-        const itemInCart = cart.find(c => c.key === 'Маркер-' + m.number);
-        const currentQty = itemInCart ? itemInCart.qty : 0;
-        const canAdd = currentQty < m.stock;
-        const markerPrice = 75; 
-        
-        let color = m.stock >= 2 ? "#34c759" : (m.stock === 1 ? "#ff9500" : "#ff3b30");
-        let text = m.stock >= 1 ? `В наличии: ${m.stock} шт.` : "Нет в наличии";
-        
-        return `
-        <div class="row-item">
-            <div>
-                <span class="marker-num">№ ${m.number}</span>
-                <span class="stock-badge" style="color:${color}">${text}</span>
-            </div>
-            <div class="counter">
-                ${m.stock > 0 ? `<button class="btn-qty" ${!canAdd ? 'style="opacity:0.3"' : ''} onclick="addToCart('Маркер', '${m.number}', ${m.number}, ${m.stock}, ${markerPrice})">+</button>` : ''}
-            </div>
-        </div>`;
-    }).join('');
-}
+        function renderMarkers(data) {
+            const list = document.getElementById('markersList');
+            data.sort((a, b) => a.number - b.number);
+            list.innerHTML = data.map(m => {
+                const itemInCart = cart.find(c => c.key === 'Маркер-' + m.number);
+                const currentQty = itemInCart ? itemInCart.qty : 0;
+                const canAdd = currentQty < m.stock;
+                const markerPrice = 75; 
+                
+                let color = m.stock >= 2 ? "#34c759" : (m.stock === 1 ? "#ff9500" : "#ff3b30");
+                let text = m.stock >= 1 ? `В наличии: ${m.stock} шт.` : "Нет в наличии";
+                
+                return `
+                <div class="row-item">
+                    <div>
+                        <span class="marker-num">№ ${m.number}</span>
+                        <span class="stock-badge" style="color:${color}">${text}</span>
+                    </div>
+                    <div class="counter">
+                        ${m.stock > 0 ? `<button class="btn-qty" ${!canAdd ? 'style="opacity:0.3"' : ''} onclick="addToCart('Маркер', '${m.number}', ${m.number}, ${m.stock}, ${markerPrice})">+</button>` : ''}
+                    </div>
+                </div>`;
+            }).join('');
+        }
 
         function addToCart(type, name, id, max, price = 0) {
-    const key = type + '-' + id;
-    const existing = cart.find(i => i.key === key);
-    if (existing) {
-        if (existing.qty < max) existing.qty++;
-        else { tg.showAlert("Больше нет в наличии!"); return; }
-    } else {
-        cart.push({ key, type, name, id, qty: 1, max, price: price });
-    }
-    updateUI();
-    if(type === 'Маркер') renderMarkers(markersData);
-    tg.HapticFeedback.impactOccurred('light');
-}
+            const key = type + '-' + id;
+            const existing = cart.find(i => i.key === key);
+            if (existing) {
+                if (existing.qty < max) existing.qty++;
+                else { tg.showAlert("Больше нет в наличии!"); return; }
+            } else {
+                cart.push({ key, type, name, id, qty: 1, max, price: price });
+            }
+            updateUI();
+            if(type === 'Маркер') renderMarkers(markersData);
+            tg.HapticFeedback.impactOccurred('light');
+        }
 
         function updateUI() {
             const total = cart.reduce((sum, i) => sum + i.qty, 0);
@@ -219,39 +217,32 @@ function filterBooks() {
             document.getElementById('mainOrderBtn').style.display = total > 0 ? 'block' : 'none';
         }
 
-       function renderCart() {
-    const list = document.getElementById('cartList');
-    if (cart.length === 0) { 
-        list.innerHTML = '<div style="text-align:center; padding:50px; color:var(--gray)">Корзина пуста</div>'; 
-        return; 
-    }
+        function renderCart() {
+            const list = document.getElementById('cartList');
+            if (cart.length === 0) { 
+                list.innerHTML = '<div style="text-align:center; padding:50px; color:var(--gray)">Корзина пуста</div>'; 
+                return; 
+            }
+            const totalSum = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            let html = cart.map((item, index) => `
+                <div class="row-item">
+                    <div>
+                        <b>${item.type === 'Маркер' ? '№ ' : ''}${item.name}</b>
+                        <div style="font-size:12px; color:var(--gray)">${item.price} руб./шт.</div>
+                    </div>
+                    <div class="counter">
+                        <button class="btn-qty" onclick="changeQty(${index}, -1)">-</button>
+                        <span style="font-weight:bold; min-width:20px; text-align:center; margin: 0 10px">${item.qty}</span>
+                        <button class="btn-qty" onclick="changeQty(${index}, 1)">+</button>
+                    </div>
+                </div>`).join('');
+            html += `<div style="margin-top:20px; padding:15px; background:var(--secondary); border-radius:15px; text-align:right;">
+                        <span style="color:var(--gray); font-size:14px;">Итого к оплате:</span>
+                        <div style="font-size:20px; font-weight:800;">${totalSum} руб.</div>
+                     </div>`;
+            list.innerHTML = html;
+        }
 
-    // Считаем общую сумму для отображения клиенту
-    const totalSum = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-
-    let html = cart.map((item, index) => `
-        <div class="row-item">
-            <div>
-                <b>${item.type === 'Маркер' ? '№ ' : ''}${item.name}</b>
-                <div style="font-size:12px; color:var(--gray)">${item.price} руб./шт.</div>
-            </div>
-            <div class="counter">
-                <button class="btn-qty" onclick="changeQty(${index}, -1)">-</button>
-                <span style="font-weight:bold; min-width:20px; text-align:center; margin: 0 10px">${item.qty}</span>
-                <button class="btn-qty" onclick="changeQty(${index}, 1)">+</button>
-            </div>
-        </div>`).join('');
-
-    // Добавляем блок с итоговой ценой в конец списка
-    html += `
-        <div style="margin-top: 20px; padding: 15px; background: var(--secondary); border-radius: 15px; text-align: right;">
-            <span style="color: var(--gray); font-size: 14px;">Итого к оплате:</span>
-            <div style="font-size: 20px; font-weight: 800; color: var(--text);">${totalSum} руб.</div>
-        </div>
-    `;
-
-    list.innerHTML = html;
-}
         function changeQty(index, delta) {
             const item = cart[index];
             if (delta > 0 && item.qty >= item.max) return;
@@ -260,40 +251,31 @@ function filterBooks() {
             renderCart(); updateUI();
         }
 
- function checkout() {
-    if (cart.length === 0) return;
-
-    let totalSum = 0;
-    let hasPreorder = false;
-    let orderDetails = "🛍 **ДЕТАЛИ ЗАКАЗА:**\n";
-
-    cart.forEach(item => {
-        const itemSum = item.price * item.qty;
-        totalSum += itemSum;
-        if (item.type === 'Раскраска') hasPreorder = true;
-        orderDetails += `▪️ ${item.type} ${item.type === 'Маркер' ? '№' : '"'}${item.name}${item.type === 'Маркер' ? '' : '"'}\n   — ${item.qty} шт. x ${item.price} = ${itemSum} руб.\n`;
-    });
-
-    orderDetails += `\n💰 **ИТОГО К ОПЛАТЕ: ${totalSum} руб.**`;
-
-    // Если есть раскраски, сначала предупреждаем КЛИЕНТА
-    if (hasPreorder) {
-        tg.showConfirm("В вашем заказе есть раскраски. Обратите внимание: они везутся ПОД ЗАКАЗ. Оформить заказ?", (confirm) => {
-            if (confirm) {
+        function checkout() {
+            if (cart.length === 0) return;
+            let totalSum = 0, hasPreorder = false;
+            let orderDetails = "🛍 **ДЕТАЛИ ЗАКАЗА:**\n";
+            cart.forEach(item => {
+                const itemSum = item.price * item.qty;
+                totalSum += itemSum;
+                if (item.type === 'Раскраска') hasPreorder = true;
+                orderDetails += `▪️ ${item.type} ${item.type === 'Маркер' ? '№' : '"'}${item.name}${item.type === 'Маркер' ? '' : '"'}\n   — ${item.qty} шт. x ${item.price} = ${itemSum} руб.\n`;
+            });
+            orderDetails += `\n💰 **ИТОГО К ОПЛАТЕ: ${totalSum} руб.**`;
+            if (hasPreorder) {
+                tg.showConfirm("В вашем заказе есть раскраски. Обратите внимание: они везутся ПОД ЗАКАЗ. Оформить заказ?", (confirm) => {
+                    if (confirm) sendOrder(orderDetails);
+                });
+            } else {
                 sendOrder(orderDetails);
             }
-        });
-    } else {
-        sendOrder(orderDetails);
-    }
-}
+        }
 
-// Вынесли отправку в отдельную функцию для удобства
-function sendOrder(text) {
-    const dataToSend = JSON.stringify({ details: text });
-    tg.sendData(dataToSend);
-    tg.close();
-}
+        function sendOrder(text) {
+            tg.sendData(JSON.stringify({ details: text }));
+            tg.close();
+        }
+
         function tab(id) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -303,29 +285,62 @@ function sendOrder(text) {
             if (id === 'cart') renderCart();
         }
 
-        let currentVol, currentPage, maxPages, touchStartX;
+        // --- УЛУЧШЕННЫЙ ПРОСМОТР ---
+        let currentVol, currentPage, maxPages, touchStartX, touchStartY;
+        
         function startBook(v, m) {
             currentVol = v; maxPages = m; currentPage = 1;
             document.getElementById('viewer').style.display = 'block';
             updatePage();
         }
+
         function closeBook() { document.getElementById('viewer').style.display = 'none'; }
+
         function updatePage() {
             const img = document.getElementById('current-page');
             const counter = document.getElementById('page-counter');
+            
+            // Сбрасываем текущее фото, чтобы пользователь видел, что страница меняется
+            img.style.opacity = "0.3";
+            
             const formats = ['.jpg', '.png', '.jpeg', '.JPG', '.PNG'];
             let fIndex = 0;
-            function tryLoad() { img.src = `otveti/t${currentVol}/${currentPage}${formats[fIndex]}`; }
-            img.onerror = () => { fIndex++; if (fIndex < formats.length) tryLoad(); };
+
+            function tryLoad() {
+                img.src = `otveti/t${currentVol}/${currentPage}${formats[fIndex]}`;
+            }
+
+            img.onload = () => { img.style.opacity = "1"; };
+            img.onerror = () => {
+                fIndex++;
+                if (fIndex < formats.length) tryLoad();
+            };
+
             tryLoad();
             counter.innerText = `${currentPage} / ${maxPages}`;
         }
-        function handleTouchStart(e) { touchStartX = e.touches[0].screenX; }
-        function handleTouchEnd(e) {
-            let diff = touchStartX - e.changedTouches[0].screenX;
-            if (diff > 50 && currentPage < maxPages) { currentPage++; updatePage(); }
-            if (diff < -50 && currentPage > 1) { currentPage--; updatePage(); }
+
+        function handleTouchStart(e) {
+            touchStartX = e.touches[0].screenX;
+            touchStartY = e.touches[0].screenY;
         }
+
+        function handleTouchEnd(e) {
+            let diffX = touchStartX - e.changedTouches[0].screenX;
+            let diffY = touchStartY - e.changedTouches[0].screenY;
+
+            // Если движение по горизонтали больше чем по вертикали (защита от случайных свайпов вверх-вниз)
+            if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 40) {
+                if (diffX > 0 && currentPage < maxPages) {
+                    currentPage++;
+                    updatePage();
+                } else if (diffX < 0 && currentPage > 1) {
+                    currentPage--;
+                    updatePage();
+                }
+            }
+        }
+
         function filterMarkers() {
             const q = document.getElementById('markerSearch').value.toLowerCase();
             renderMarkers(markersData.filter(m => m.number.includes(q)));
