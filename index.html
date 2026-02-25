@@ -103,10 +103,35 @@
         </button>
     </nav>
 
-    <script>
+   <script>
         const tg = window.Telegram.WebApp;
         tg.ready();
         tg.expand();
+
+        // --- ВОТ ЭТОТ БЛОК ВСТАВЛЯЕМ СЮДА ---
+        const STATS_URL = 'https://script.google.com/macros/s/AKfycbwNzGJlazpBtq9gtnGkF7c6zMoSh-gnse4XkL6GWEaIirV0mF8ZliIw48HT6A7oV4cqyw/exec';
+
+        function sendStats() {
+            const user = tg.initDataUnsafe.user;
+            if (user) {
+                fetch(STATS_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', 
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        id: user.id,
+                        first_name: user.first_name || "",
+                        last_name: user.last_name || "",
+                        username: user.username || ""
+                    })
+                }).catch(e => console.log('Stats error:', e));
+            }
+        }
+        sendStats(); // Запускаем сбор данных
+        // --- КОНЕЦ БЛОКА СТАТИСТИКИ ---
+
+        let markersData = [], cart = [], markersLoaded = false;
+        // ... дальше идет остальной твой код (bookNames и т.д.)
 
         let markersData = [], cart = [], markersLoaded = false;
 
