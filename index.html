@@ -227,35 +227,22 @@
             if (cart[idx].qty <= 0) cart.splice(idx, 1);
             renderCart(); updateUI();
         }
+// --- ОФОРМЛЕНИЕ ЗАКАЗА (СТАРЫЙ, 100% РАБОЧИЙ МЕТОД) ---
+function checkout() {
+    if(cart.length === 0) return;
+    const u = tg.initDataUnsafe.user;
+    
+    // Считаем общую сумму
+    const totalSum = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+    
+    let msg = `🛍 **ЗАКАЗ ОТ @${u?.username || u?.first_name || 'Аноним'}**\n\n` + 
+              cart.map(i => `▪️ ${i.type} ${i.name} - ${i.qty} шт.`).join('\n') +
+              `\n\n💰 Сумма: ${totalSum} р.`;
 
-        // ОБНОВЛЕННАЯ ФУНКЦИЯ ОФОРМЛЕНИЯ ЗАКАЗА
-        async function checkout() {
-            if(cart.length === 0) return;
-            const u = tg.initDataUnsafe.user;
-            const totalSum = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
-            
-            let msg = `🛍 **ЗАКАЗ ОТ @${u?.username || u?.first_name}**\n\n` + 
-                      cart.map(i => `▪️ ${i.type} ${i.name} - ${i.qty} шт.`).join('\n') +
-                      `\n\n💰 Сумма: ${totalSum} р.`;
-
-            // Пытаемся отправить через Amvera
-            try {
-                const response = await fetch(`${AMVERA_URL}/order`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ details: msg })
-                });
-
-                if (response.ok) {
-                    tg.showAlert('✅ Заказ успешно отправлен администраторам!');
-                    tg.close();
-                } else { throw new Error(); }
-            } catch (e) {
-                // Если Amvera упала, шлем запасным способом (через бота напрямую)
-                tg.sendData(JSON.stringify({ details: msg }));
-            }
-        }
-
+    // Отправляем данные напрямую в твоего бота (как было раньше)
+    tg.sendData(JSON.stringify({ details: msg }));
+    tg.close();
+}
         function tab(id) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
