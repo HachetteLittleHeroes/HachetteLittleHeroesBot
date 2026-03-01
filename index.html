@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
             --bg: var(--tg-theme-bg-color, #ffffff);
@@ -13,6 +14,7 @@
             --secondary: var(--tg-theme-secondary-bg-color, #f2f2f7);
             --gray: #8e8e93;
             --card-bg: var(--tg-theme-secondary-bg-color, #f1f1f1);
+            --gold: #f1c40f; /* Тот самый золотой цвет */
         }
 
         body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 100px; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
@@ -51,14 +53,20 @@
         .nav-icon { font-size: 22px; margin-bottom: 4px; }
         .badge { position: absolute; top: 8px; right: 12%; background: #ff3b30; color: white; border-radius: 10px; padding: 2px 7px; font-size: 11px; }
 
-        /* СТИЛИ ПРОФИЛЯ (АШЕТИКИ) */
-        .balance-card {
-            background: linear-gradient(135deg, #FFB75E 0%, #ED8F03 100%);
-            border-radius: 20px; padding: 25px 20px; color: white; text-align: center;
-            box-shadow: 0 10px 20px rgba(237, 143, 3, 0.3); margin-top: 10px;
+        /* ИКОНКА ЗОЛОТОЙ КНИГИ */
+        .gold-book {
+            color: var(--gold);
+            filter: drop-shadow(0 0 5px rgba(241, 196, 15, 0.4));
         }
-        .balance-amount { font-size: 48px; font-weight: 800; margin: 10px 0; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .bonus-badge { color: #ED8F03; font-weight: bold; margin-top: 5px; font-size: 14px; }
+
+        /* ПРОФИЛЬ */
+        .balance-card {
+            background: linear-gradient(135deg, #0055a4 0%, #003366 100%);
+            border-radius: 20px; padding: 25px 20px; color: white; text-align: center;
+            box-shadow: 0 10px 20px rgba(0, 85, 164, 0.2); margin-top: 10px;
+        }
+        .balance-amount { font-size: 48px; font-weight: 800; margin: 10px 0; display: flex; align-items: center; justify-content: center; gap: 15px; }
+        .bonus-badge { color: var(--gold); font-weight: bold; margin-top: 5px; font-size: 14px; }
 
         #viewer { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 1000; }
         .viewer-header { padding: 15px; display: flex; justify-content: space-between; align-items: center; background: var(--bg); border-bottom: 0.5px solid rgba(128,128,128,0.2); }
@@ -107,12 +115,20 @@
         <div class="header">Профиль</div>
         <div class="balance-card">
             <p style="margin:0; opacity:0.9; font-size: 14px; letter-spacing: 1px;">ВАШ БАЛАНС</p>
-            <div class="balance-amount"><span id="userBalance">0</span> <span>🪙</span></div>
+            <div class="balance-amount"><span id="userBalance">0</span> <i class="fas fa-book-open gold-book"></i></div>
             <p style="margin:0; font-weight: 500;">ашетиков накоплено</p>
         </div>
-        <div class="category-title" style="margin-top:25px;">Как получить ашетики?</div>
-        <div class="row-item"><span>Заказ от 3000₽</span><b style="color:#ED8F03">+20 🪙</b></div>
-        <div class="row-item"><span>Участие в челлендже</span><b style="color:#ED8F03">+50 🪙</b></div>
+        <div class="category-title" style="margin-top:25px;">Программа лояльности</div>
+        <div class="row-item"><span>Приветственный бонус</span><b class="gold-book">+15 <i class="fas fa-book-open"></i></b></div>
+        <div class="row-item">
+            <div style="display:flex; flex-direction:column;">
+                <span>Бонусы за покупки</span>
+                <small style="color:var(--gray); font-size:11px;">от 5к - 30 / от 7.5к - 40 / от 10к - 50</small>
+            </div>
+            <b class="gold-book"><i class="fas fa-book-open"></i></b>
+        </div>
+        <div class="row-item"><span>Событие «Baby Boom»</span><b class="gold-book">+50 <i class="fas fa-book-open"></i></b></div>
+        <div class="row-item"><span>1 место в челленджах</span><b class="gold-book">+150 <i class="fas fa-book-open"></i></b></div>
         <div style="font-size: 12px; color: var(--gray); padding: 10px;">ID: <span id="userIdDisplay">---</span></div>
     </div>
 
@@ -247,14 +263,10 @@
             if (cart.length === 0) { list.innerHTML = '<div style="text-align:center; padding:50px; color:var(--gray)">Корзина пуста</div>'; return; }
             const totalSum = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
             
-            // ЛОГИКА АШЕТИКОВ
             let bonus = 0;
-            if (totalSum >= 3000) {
-                if (totalSum < 5000) bonus = 20;
-                else if (totalSum < 7500) bonus = 30;
-                else if (totalSum < 10000) bonus = 40;
-                else bonus = 50 + Math.floor((totalSum - 10000) / 2500) * 10;
-            }
+            if (totalSum >= 5000 && totalSum < 7500) bonus = 30;
+            else if (totalSum >= 7500 && totalSum < 10000) bonus = 40;
+            else if (totalSum >= 10000) bonus = 50;
 
             list.innerHTML = cart.map((item, index) => `
                 <div class="row-item">
@@ -268,7 +280,7 @@
                 <div style="margin-top:20px; padding:15px; background:var(--secondary); border-radius:15px; text-align:right;">
                     <span style="color:var(--gray); font-size:14px;">Итого к оплате:</span>
                     <div style="font-size:20px; font-weight:800; color:var(--accent);">${totalSum} руб.</div>
-                    <div class="bonus-badge">Будет начислено: +${bonus} 🪙</div>
+                    <div class="bonus-badge">Будет начислено: +${bonus} <i class="fas fa-book-open"></i></div>
                 </div>`;
         }
 
@@ -284,18 +296,14 @@
 
         function checkout() {
             if (cart.length === 0) return;
-            
             let markersCount = 0;
             cart.forEach(item => { if (item.type === 'Маркер') markersCount += item.qty; });
-
             if (markersCount > 0 && markersCount < 3) {
                 tg.showAlert("⚠️ Минимальный заказ маркеров — от 3 штук.");
                 return;
             }
-            
             let totalSum = 0, hasPreorder = false;
             let details = `🛍 **ДЕТАЛИ ЗАКАЗА:**\n`;
-            
             cart.forEach(item => {
                 const sum = item.price * item.qty; 
                 totalSum += sum;
@@ -303,28 +311,21 @@
                 details += `▪️ ${item.type} ${item.type === 'Маркер' ? '№' : '"'}${item.name}${item.type === 'Маркер' ? '' : '"'}\n   - ${item.qty} шт. x ${item.price} = ${sum} руб.\n`;
             });
 
-            // Расчет бонуса для отправки админу
             let bonusToEarn = 0;
-            if (totalSum >= 3000) {
-                if (totalSum < 5000) bonusToEarn = 20;
-                else if (totalSum < 7500) bonusToEarn = 30;
-                else if (totalSum < 10000) bonusToEarn = 40;
-                else bonusToEarn = 50 + Math.floor((totalSum - 10000) / 2500) * 10;
-            }
+            if (totalSum >= 5000 && totalSum < 7500) bonusToEarn = 30;
+            else if (totalSum >= 7500 && totalSum < 10000) bonusToEarn = 40;
+            else if (totalSum >= 10000) bonusToEarn = 50;
             
             details += `\n💰 **ИТОГО: ${totalSum} руб.**`;
-            details += `\n🎁 **БОНУС К НАЧИСЛЕНИЮ: ${bonusToEarn} 🪙**`;
+            details += `\n📖 **БОНУС К НАЧИСЛЕНИЮ: ${bonusToEarn}**`;
+            details += `\n👤 **ТЕКУЩИЙ БАЛАНС ЮЗЕРА: ${document.getElementById('userBalance').innerText}**`;
             
             if (hasPreorder) {
                 tg.showConfirm("В вашем заказе есть раскраски (ПОД ЗАКАЗ). Оформить?", (c) => { 
-                    if(c) {
-                        tg.sendData(JSON.stringify({ details: details })); 
-                        tg.close(); 
-                    }
+                    if(c) { tg.sendData(JSON.stringify({ details: details })); tg.close(); }
                 });
             } else { 
-                tg.sendData(JSON.stringify({ details: details })); 
-                tg.close(); 
+                tg.sendData(JSON.stringify({ details: details })); tg.close(); 
             }
         }
 
@@ -358,7 +359,6 @@
         }
         function filterMarkers() { renderMarkers(markersData); }
 
-        // ЗАГРУЗКА АШЕТИКОВ
         window.onload = () => {
             const params = new URLSearchParams(window.location.search);
             document.getElementById('userBalance').innerText = params.get('balance') || 0;
