@@ -280,7 +280,7 @@
                             <button class="btn-qty-sm" onclick="changeQty(${cartIndex}, -1)">-</button>
                             <span class="marker-qty">${currentQty}</span>
                             <button class="btn-qty-sm" ${!canAdd ? 'disabled' : ''} onclick="changeQty(${cartIndex}, 1)">+</button>
-                        ` : `<button class="btn-qty-sm" onclick="addToCart('Маркер', '${m.number}', ${m.number}, ${m.stock}, 75)">+</button>`) : ''}
+                        ` : `<button class="btn-qty-sm" onclick="addToCart('Маркер', '${m.number}', ${m.number}, ${m.stock}, 60)">+</button>`) : ''}
                     </div>
                 </div>`;
             }).join('');
