@@ -2451,6 +2451,23 @@
     </style>
 </head>
 <body>
+    <div style="position: fixed; top: 10px; left: 10px; z-index: 999999; background: red; padding: 10px; border-radius: 10px; font-size: 12px;">
+        <button onclick="alert('Test works!')" style="background: white; padding: 5px 10px;">Test Click</button>
+        <span id="test-status" style="color: white; margin-left: 10px;">Loading...</span>
+    </div>
+    
+    <script>
+        document.getElementById('test-status').innerText = 'JS Loaded';
+        console.log('✅ JavaScript loaded and running');
+        
+        // Проверка основных функций
+        setTimeout(() => {
+            console.log('typeof tab:', typeof tab);
+            console.log('typeof processAI:', typeof processAI);
+            console.log('typeof loadMarkers:', typeof loadMarkers);
+            console.log('user object:', user);
+        }, 1000);
+    </script>
     <!-- ========== ПРОФИЛЬ ========== -->
     <div id="profile" class="page active">
         <div class="profile-header-block">
