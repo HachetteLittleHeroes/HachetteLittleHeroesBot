@@ -3099,7 +3099,6 @@ button,
         let currentUploadLevel = null;
         let tempPhotos = [];
         let isUploading = false;
-        let currentFeedbackData = null;
         let batchFiles = [];
         
         // Данные пользователя
@@ -5774,65 +5773,103 @@ button,
             renderOrganizersList();
         }
         
-        // ==========================================
-        // ИНИЦИАЛИЗАЦИЯ
-        // ==========================================
+       // ==========================================
+// ИНИЦИАЛИЗАЦИЯ - ИСПРАВЛЕННАЯ
+// ==========================================
+
+// Дожидаемся полной загрузки DOM
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, starting init...');
+    
+    // Проверяем, что все переменные определены
+    if (typeof user === 'undefined') {
+        console.error('user is undefined! Check variable declaration order.');
+        return;
+    }
+    
+    // Загрузка сохраненных данных
+    const savedUser = localStorage.getItem('coloring_user');
+    if (savedUser) {
+        const parsed = JSON.parse(savedUser);
+        user = { ...user, ...parsed };
+    }
+    
+    const savedCart = localStorage.getItem('coloring_cart');
+    if (savedCart) {
+        cart = JSON.parse(savedCart);
+    }
+    
+    const savedAISettings = localStorage.getItem('ai_settings');
+    if (savedAISettings) {
+        aiSettings = JSON.parse(savedAISettings);
+    }
+    
+    // Загрузка данных с сервера (без await, используем Promise)
+    Promise.all([
+        loadUserBalance(),
+        loadUserProgress(),
+        loadUnlockedStatuses(),
+        loadUserAchievements(),
+        loadMarkerColors(),
+        loadAISettings()
+    ]).then(() => {
+        loadInventory();
+        loadUserMarkerBrands();
+        loadTimeTasksStatus();
         
-        async function init() {
-            // Загрузка сохраненных данных
-            const savedUser = localStorage.getItem('coloring_user');
-            if (savedUser) {
-                const parsed = JSON.parse(savedUser);
-                user = { ...user, ...parsed };
+        // Применение темы
+        const savedTheme = localStorage.getItem('app_theme');
+        if (savedTheme) {
+            if (savedTheme === 'custom') {
+                applyCustomTheme(true);
+            } else {
+                setTheme(savedTheme);
             }
-            
-            const savedCart = localStorage.getItem('coloring_cart');
-            if (savedCart) {
-                cart = JSON.parse(savedCart);
-            }
-            
-            const savedAISettings = localStorage.getItem('ai_settings');
-            if (savedAISettings) {
-                aiSettings = JSON.parse(savedAISettings);
-            }
-            
-            // Загрузка данных с сервера
-            await loadUserBalance();
-            await loadUserProgress();
-            await loadUnlockedStatuses();
-            await loadUserAchievements();
-            await loadMarkerColors();
-            await loadAISettings();
-            loadInventory();
-            loadUserMarkerBrands();
-            loadTimeTasksStatus();
-            
-            // Применение темы
-            const savedTheme = localStorage.getItem('app_theme');
-            if (savedTheme) {
-                if (savedTheme === 'custom') {
-                    applyCustomTheme(true);
-                } else {
-                    setTheme(savedTheme);
-                }
-            }
-            
-            // Обновление UI
-            updateUI();
-            renderBranchTasks();
-            renderTimeTasks();
-            renderShowcase();
-            renderCart();
-            renderVolumes();
-            
-            // Запуск автообновления
-            startProgressRefresh();
-            
-            // Инициализация свайпов для просмотра ответов
-            initSwipeListeners();
-            
-            console.log('✅ App initialized');
         }
+        
+        // Обновление UI
+        updateUI();
+        renderBranchTasks();
+        renderTimeTasks();
+        renderShowcase();
+        renderCart();
+        renderVolumes();
+        
+        // Запуск автообновления
+        startProgressRefresh();
+        
+        // Инициализация свайпов
+        initSwipeListeners();
+        
+        console.log('✅ App initialized successfully');
+        console.log('typeof tab:', typeof tab);
+        console.log('typeof processAI:', typeof processAI);
+        console.log('typeof loadMarkers:', typeof loadMarkers);
+    }).catch(error => {
+        console.error('Error during initialization:', error);
+    });
+});
+
+function initSwipeListeners() {
+    const viewerImage = document.getElementById('answersViewerImage');
+    if (!viewerImage) return;
+    
+    viewerImage.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+    });
+    
+    viewerImage.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        const swipeThreshold = 50;
+        const diff = touchEndX - touchStartX;
+        if (Math.abs(diff) < swipeThreshold) return;
+        if (diff > 0) {
+            prevAnswerPage();
+        } else {
+            nextAnswerPage();
+        }
+    });
+}
         
         function initSwipeListeners() {
             const viewerImage = document.getElementById('answersViewerImage');
