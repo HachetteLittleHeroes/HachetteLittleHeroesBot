@@ -2448,6 +2448,64 @@
                 grid-template-columns: 1fr;
             }
         }
+        /* ФОРСИРОВАНИЕ КЛИКАБЕЛЬНОСТИ - ДОБАВИТЬ В КОНЕЦ СТИЛЕЙ */
+button,
+.nav-btn,
+.marker-controls button,
+.theme-option,
+.upload-area,
+.showcase-slot,
+.reward-card,
+.avatar-wrapper,
+.status-badge,
+.balance-btn,
+.modal-action-btn,
+.modal-close-btn,
+.checkout-btn,
+.add-to-cart-btn,
+.apply-theme-btn,
+.task-submit-btn,
+.book-card,
+.create-organizer-btn,
+.close-view-btn,
+.inventory-header,
+.subblock-header,
+.search-mode-btn,
+.feedback-btn,
+.upload-multiple-btn,
+.apply-brands-btn {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: inline-flex !important;
+    position: relative !important;
+    z-index: 100 !important;
+}
+
+/* Убедитесь, что навигация видима и кликабельна */
+.nav {
+    z-index: 10000 !important;
+    pointer-events: auto !important;
+    display: flex !important;
+    visibility: visible !important;
+}
+
+.nav-btn {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+}
+
+/* Исправление для модальных окон */
+.modal-overlay {
+    z-index: 100000 !important;
+    pointer-events: auto !important;
+}
+
+/* Принудительное отображение всех кнопок */
+[onclick] {
+    cursor: pointer !important;
+}
     </style>
 </head>
 <body>
