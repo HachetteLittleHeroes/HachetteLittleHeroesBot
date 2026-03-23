@@ -370,7 +370,6 @@
             transform: scale(0.98);
             background: rgba(255, 255, 255, 0.3);
         }
-
         /* ==========================================
            5. ТОВАРЫ ЗА АШЕТИКИ
            ========================================== */
@@ -452,7 +451,8 @@
         .reward-buy-btn:active {
             transform: scale(0.95);
         }
-/* ==========================================
+
+        /* ==========================================
            6. ЗАРАБОТОК АШЕТИКОВ
            ========================================== */
         .earn-list {
@@ -916,7 +916,6 @@
             padding: 30px 0;
             font-size: 14px;
         }
-
         /* ==========================================
            12. ГАЛЕРЕЯ ДОСТИЖЕНИЙ
            ========================================== */
@@ -978,6 +977,7 @@
             font-size: 12px;
             margin-top: 4px;
         }
+
         /* ==========================================
            13. МАРКЕРЫ (С ЦВЕТАМИ)
            ========================================== */
@@ -1794,7 +1794,6 @@
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
         }
-
         /* ==========================================
            17. НАВИГАЦИЯ
            ========================================== */
@@ -1846,6 +1845,7 @@
             border-radius: 10px;
             font-weight: 900;
         }
+
         /* ==========================================
            18. МОДАЛЬНЫЕ ОКНА
            ========================================== */
@@ -2102,26 +2102,42 @@
             overflow-x: auto;
         }
 
-        /* Органайзер сетка */
+        /* Органайзер сетка - компактная */
         .organizer-grid {
             display: grid;
-            gap: 10px;
+            gap: 8px;
             justify-content: center;
-            padding: 10px;
+            padding: 8px;
             overflow-x: auto;
             background: var(--bg);
             border-radius: 20px;
+            scrollbar-width: thin;
+        }
+        
+        .organizer-grid::-webkit-scrollbar {
+            height: 4px;
+        }
+        
+        .organizer-grid::-webkit-scrollbar-track {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+        
+        .organizer-grid::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 4px;
         }
         
         .organizer-cell {
             background: var(--bg-header);
             border: 2px solid var(--border-color);
-            border-radius: 16px;
-            padding: 12px 6px;
+            border-radius: 14px;
+            padding: 10px 4px;
             text-align: center;
             cursor: pointer;
             transition: all 0.2s ease;
-            min-width: 70px;
+            min-width: 65px;
+            max-width: 75px;
         }
         
         .organizer-cell:hover {
@@ -2135,17 +2151,16 @@
             background: radial-gradient(circle, rgba(255,149,0,0.08) 0%, transparent 80%);
         }
         
-        .organizer-cell-label {
-            font-size: 11px;
-            color: var(--text-gray);
-            margin-bottom: 6px;
-            font-weight: 500;
-        }
-        
         .organizer-cell-count {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: bold;
             color: var(--accent);
+            margin-bottom: 4px;
+        }
+        
+        .organizer-cell-label {
+            font-size: 9px;
+            color: var(--text-gray);
         }
 
         /* Модалка ячейки органайзера */
@@ -2162,19 +2177,18 @@
             background: rgba(255,149,0,0.05);
         }
 
-        .toggle-inventory-btn {
-            background: var(--status-green);
+        .delete-marker-btn {
+            background: var(--status-red);
             color: white;
-            padding: 5px 14px;
+            padding: 6px 14px;
             border-radius: 30px;
             font-size: 11px;
-            font-weight: 500;
             cursor: pointer;
-            transition: all 0.2s;
             border: none;
+            transition: all 0.2s;
         }
 
-        .toggle-inventory-btn:active {
+        .delete-marker-btn:active {
             transform: scale(0.95);
         }
 
@@ -2227,7 +2241,7 @@
         }
 
         /* ==========================================
-           20. БРЕНДЫ В ИНВЕНТАРЕ
+           20. БРЕНДЫ В ИНВЕНТАРЕ (КАСТОМНЫЕ И ОБУЧЕННЫЕ)
            ========================================== */
         .brand-content {
             scrollbar-width: thin;
@@ -2268,10 +2282,14 @@
         .brand-inventory-name {
             font-weight: 600;
             color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
         }
 
         .brand-inventory-count {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-gray);
             background: var(--bg);
             padding: 2px 8px;
@@ -2292,6 +2310,68 @@
 
         .brand-inventory-btn:active {
             transform: scale(0.95);
+        }
+
+        .delete-brand-btn {
+            background: var(--status-red);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 10px;
+            cursor: pointer;
+            border: none;
+        }
+
+        .brand-markers-list {
+            margin-top: 10px;
+            margin-bottom: 15px;
+            padding-left: 20px;
+            border-left: 2px solid var(--accent);
+        }
+
+        .brand-marker-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            margin: 6px 0;
+            background: var(--card-bg);
+            border-radius: 14px;
+            border: 1px solid var(--border-color);
+        }
+
+        .toggle-marker-btn {
+            background: var(--text-gray);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 12px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .toggle-marker-btn:active {
+            transform: scale(0.95);
+        }
+
+        .add-marker-to-brand-btn {
+            width: 100%;
+            background: var(--bg);
+            border: 1px dashed var(--accent);
+            color: var(--accent);
+            padding: 10px;
+            border-radius: 14px;
+            margin-bottom: 12px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .add-marker-to-brand-btn:active {
+            transform: scale(0.98);
+            background: rgba(255,149,0,0.1);
         }
 
         /* ==========================================
@@ -2373,7 +2453,6 @@
             cursor: pointer;
             text-align: center;
         }
-
         /* ==========================================
            22. ВРЕМЕННЫЕ ЗАДАНИЯ
            ========================================== */
@@ -2616,9 +2695,11 @@
         .feedback-btn,
         .upload-multiple-btn,
         .inventory-modal-btn,
-        .toggle-inventory-btn,
+        .toggle-marker-btn,
         .brand-inventory-btn,
-        .inventory-remove-btn,
+        .delete-brand-btn,
+        .delete-marker-btn,
+        .add-marker-to-brand-btn,
         .brand-selector-btn {
             pointer-events: auto !important;
             cursor: pointer !important;
@@ -2642,7 +2723,9 @@
         .search-mode-btn:active,
         .feedback-btn:active,
         .upload-multiple-btn:active,
-        .toggle-inventory-btn:active {
+        .toggle-marker-btn:active,
+        .brand-inventory-btn:active,
+        .delete-marker-btn:active {
             transform: scale(0.96);
             opacity: 0.9;
         }
@@ -2689,11 +2772,11 @@
                 min-width: 55px;
                 padding: 8px 4px;
             }
-            .organizer-cell-label {
-                font-size: 9px;
-            }
             .organizer-cell-count {
-                font-size: 14px;
+                font-size: 16px;
+            }
+            .organizer-cell-label {
+                font-size: 8px;
             }
             .batch-results {
                 grid-template-columns: 1fr;
@@ -2730,6 +2813,15 @@
             }
             .marker-color-info {
                 font-size: 9px;
+            }
+            .brand-inventory-item {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+            .brand-inventory-btn {
+                width: 100%;
+                text-align: center;
             }
         }
     </style>
@@ -2876,10 +2968,10 @@
                     </div>
                 </div>
                 
-                <!-- МАРКЕРЫ (отдельный подраздел) -->
+                <!-- МАРКЕРЫ (отдельный подраздел для настройки инвентаря) -->
                 <div class="inventory-subblock">
                     <div class="subblock-header" onclick="toggleMarkersBlock()">
-                        <div class="subblock-header-left"><i class="fas fa-palette"></i><span>Маркеры</span></div>
+                        <div class="subblock-header-left"><i class="fas fa-palette"></i><span>Маркеры (настройка инвентаря)</span></div>
                         <i class="fas fa-chevron-down" id="markersArrow"></i>
                     </div>
                     <div id="markersBlockContent" class="subblock-content">
@@ -3127,11 +3219,11 @@
             <input type="text" id="organizerName" placeholder="Название органайзера">
             <div class="form-group">
                 <label>Количество столбцов:</label>
-                <input type="number" id="organizerCols" value="3" min="1" max="10">
+                <input type="number" id="organizerCols" value="5" min="1" max="12">
             </div>
             <div class="form-group">
                 <label>Количество строк:</label>
-                <input type="number" id="organizerRows" value="3" min="1" max="10">
+                <input type="number" id="organizerRows" value="5" min="1" max="10">
             </div>
             <button class="modal-action-btn" onclick="createOrganizer()">Создать</button>
             <button class="modal-close-btn" onclick="closeOrganizerModal()">Отмена</button>
@@ -3144,7 +3236,7 @@
             <h3>➕ Добавить маркер</h3>
             <div class="form-group">
                 <label>Бренд:</label>
-                <select id="addMarkerBrand">
+                <select id="addMarkerBrand" style="padding: 14px; border-radius: 14px; font-size: 16px;">
                     <option value="GuangNa">GuangNa</option>
                     <option value="Languo">Languo</option>
                     <option value="Zibeef">Zibeef</option>
@@ -3207,7 +3299,7 @@
             <h3>📝 Уточните правильный маркер</h3>
             <div id="feedbackPhotoPreview" class="feedback-color-preview" style="width:80px; height:80px; border-radius:12px; margin:0 auto 15px; background:var(--bg); border:2px solid var(--border-color);"></div>
             <div class="brand-number-select">
-                <select id="feedbackBrand">
+                <select id="feedbackBrand" style="padding: 14px; border-radius: 14px;">
                     <option value="GuangNa">GuangNa</option>
                     <option value="Languo">Languo</option>
                     <option value="Zibeef">Zibeef</option>
@@ -3263,6 +3355,30 @@
                 <i class="fas fa-plus"></i> Добавить маркер
             </button>
             <button class="modal-close-btn" onclick="document.getElementById('organizerCellModal').style.display='none'">Закрыть</button>
+        </div>
+    </div>
+
+    <!-- Модалка добавления своего бренда -->
+    <div id="addBrandModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <h3>➕ Добавить свой бренд</h3>
+            <input type="text" id="newBrandNameInput" placeholder="Название бренда (например: Copic, Ohuhu)">
+            <div class="modal-buttons-row" style="margin-top: 20px;">
+                <button class="modal-close-btn" onclick="closeAddBrandModal()">Отмена</button>
+                <button class="modal-action-btn" onclick="confirmAddBrand()">Добавить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модалка добавления маркера в бренд -->
+    <div id="addMarkerToBrandModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <h3 id="addMarkerToBrandTitle">➕ Добавить маркер</h3>
+            <input type="text" id="newMarkerNumberInput" placeholder="Номер маркера (например: 101)">
+            <div class="modal-buttons-row" style="margin-top: 20px;">
+                <button class="modal-close-btn" onclick="closeAddMarkerToBrandModal()">Отмена</button>
+                <button class="modal-action-btn" onclick="confirmAddMarkerToBrand()">Добавить</button>
+            </div>
         </div>
     </div>
     <script>
@@ -3341,6 +3457,7 @@
         let currentOrganizerId = null;
         let currentCellIndex = null;
         let currentOrganizerCellData = null;
+        let currentBrandForMarker = null;
         
         // Данные пользователя
         let user = {
@@ -3371,6 +3488,9 @@
         let markersLoading = false;
         let userProgress = {};
         
+        // Кастомные бренды
+        let customBrands = [];
+        
         // Переменные для томов
         let currentVolumeId = null;
         let currentPageIndex = 0;
@@ -3393,7 +3513,9 @@
             sea: "Царица морей",
             queen: "Злая королева",
             mystery: "Загадка",
-            anaconda: "Анаконда"
+            anaconda: "Анаконда",
+            scrooge: "Скрудж",
+            benefactor: "Благодетель"
         };
         
         const TASK_BRANCHES = {
@@ -3517,6 +3639,20 @@
                     { title: "Василиск", maxProgress: 5, desc: "Раскрась 5 картинок со змеей" },
                     { title: "Анаконда", maxProgress: 8, desc: "Раскрась 8 картинок со змеей" }
                 ]
+            },
+            scrooge: {
+                name: "Скрудж",
+                desc: "Соберите 2500 ашетиков на счету",
+                levels: [
+                    { title: "Скрудж", maxProgress: 2500, desc: "Накопите 2500 ашетиков", isBalance: true }
+                ]
+            },
+            benefactor: {
+                name: "Благодетель",
+                desc: "Поддержите развитие проекта",
+                levels: [
+                    { title: "Благодетель", maxProgress: 1, desc: "Поддержите нас", isDonation: true }
+                ]
             }
         };
         
@@ -3535,9 +3671,10 @@
             'sea': { id: 'sea', name: 'Царица морей', img: 'assets/achievements/ach8.png', desc: 'Завершена ветка "Царица морей"', condition: 'Выполните все задания ветки "Царица морей"' },
             'queen': { id: 'queen', name: 'Злая королева', img: 'assets/achievements/ach9.png', desc: 'Завершена ветка "Злая королева"', condition: 'Выполните все задания ветки "Злая королева"' },
             'mystery': { id: 'mystery', name: 'Загадка', img: 'assets/achievements/ach12.png', desc: 'Завершена ветка "Загадка"', condition: 'Раскрасьте 20 картинок с персонажами Скуби-Ду' },
-            'anaconda': { id: 'anaconda', name: 'Анаконда', img: 'assets/achievements/ach13.png', desc: 'Завершена ветка "Анаконда"', condition: 'Раскрасьте 20 картинок со змеей' }
+            'anaconda': { id: 'anaconda', name: 'Анаконда', img: 'assets/achievements/ach13.png', desc: 'Завершена ветка "Анаконда"', condition: 'Раскрасьте 20 картинок со змеей' },
+            'scrooge': { id: 'scrooge', name: 'Скрудж', img: 'assets/achievements/ach10.png', desc: 'Накоплено 2500 ашетиков', condition: 'Накопите 2500 ашетиков' },
+            'benefactor': { id: 'benefactor', name: 'Благодетель', img: 'assets/achievements/ach11.png', desc: 'Поддержали проект', condition: 'Поддержите нас' }
         };
-        
         // ==========================================
         // ДАННЫЕ ТОМОВ (47 ТОМОВ)
         // ==========================================
@@ -3586,6 +3723,7 @@
                 completed: false
             }
         ];
+        
         // ==========================================
         // API ВЫЗОВЫ
         // ==========================================
@@ -3988,6 +4126,7 @@
             localStorage.setItem('coloring_user', JSON.stringify(user));
             localStorage.setItem('coloring_cart', JSON.stringify(cart));
             localStorage.setItem('ai_settings', JSON.stringify(aiSettings));
+            localStorage.setItem('custom_brands', JSON.stringify(customBrands));
             updateUI();
         }
         
@@ -4010,7 +4149,6 @@
                 }
             }
         }
-        
         // ==========================================
         // ФУНКЦИИ ДЛЯ РАБОТЫ С ЗАДАНИЯМИ
         // ==========================================
@@ -4022,6 +4160,12 @@
         }
         
         function isBranchCompleted(branchKey) {
+            if (branchKey === 'scrooge') {
+                return user.balance >= 2500;
+            }
+            if (branchKey === 'benefactor') {
+                return user.unlockedStatuses.includes('Благодетель');
+            }
             const levels = TASK_BRANCHES[branchKey].levels;
             for (let i = 0; i < levels.length; i++) {
                 const currentProgress = getLevelProgress(branchKey, i);
@@ -4033,6 +4177,12 @@
         }
         
         function getCurrentLevelIndex(branchKey) {
+            if (branchKey === 'scrooge') {
+                return user.balance >= 2500 ? 1 : 0;
+            }
+            if (branchKey === 'benefactor') {
+                return user.unlockedStatuses.includes('Благодетель') ? 1 : 0;
+            }
             const levels = TASK_BRANCHES[branchKey].levels;
             for (let i = 0; i < levels.length; i++) {
                 const currentProgress = getLevelProgress(branchKey, i);
@@ -4078,24 +4228,62 @@
                     branchCard.appendChild(completedDiv);
                 } else if (currentLevelIndex < levels.length) {
                     const level = levels[currentLevelIndex];
-                    const currentProgress = getLevelProgress(branchKey, currentLevelIndex);
-                    const percent = (currentProgress / level.maxProgress) * 100;
-                    const levelCard = document.createElement('div');
-                    levelCard.className = 'level-card';
-                    levelCard.innerHTML = `
-                        <div class="level-header">
-                            <span class="level-title">Уровень ${currentLevelIndex + 1}: ${level.title}</span>
-                            <span class="level-progress">${currentProgress}/${level.maxProgress}</span>
-                        </div>
-                        <div class="level-desc">${level.desc}</div>
-                        <div class="progress-bar-container">
-                            <div class="progress-bar-fill" style="width: ${percent}%"></div>
-                        </div>
-                        <button class="task-submit-btn" onclick="openTaskUpload('${branchKey}', ${currentLevelIndex})">
-                            <i class="fas fa-camera"></i> Отправить фото на проверку
-                        </button>
-                    `;
-                    branchCard.appendChild(levelCard);
+                    
+                    if (branchKey === 'scrooge') {
+                        const currentProgress = user.balance;
+                        const percent = (currentProgress / level.maxProgress) * 100;
+                        const levelCard = document.createElement('div');
+                        levelCard.className = 'level-card';
+                        levelCard.innerHTML = `
+                            <div class="level-header">
+                                <span class="level-title">${level.title}</span>
+                                <span class="level-progress">${currentProgress}/${level.maxProgress} ашетиков</span>
+                            </div>
+                            <div class="level-desc">${level.desc}</div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar-fill" style="width: ${Math.min(percent, 100)}%"></div>
+                            </div>
+                            <div class="level-desc" style="color: var(--accent); margin-top: 10px;">
+                                <i class="fas fa-coins"></i> Текущий баланс: ${user.balance} ашетиков
+                            </div>
+                        `;
+                        branchCard.appendChild(levelCard);
+                    } else if (branchKey === 'benefactor') {
+                        const levelCard = document.createElement('div');
+                        levelCard.className = 'level-card';
+                        levelCard.innerHTML = `
+                            <div class="level-header">
+                                <span class="level-title">${level.title}</span>
+                            </div>
+                            <div class="level-desc">${level.desc}</div>
+                            <button class="task-submit-btn" onclick="openSupportForStatus()">
+                                <i class="fas fa-heart"></i> Поддержать проект
+                            </button>
+                            <div class="level-desc" style="font-size: 12px; margin-top: 10px; color: var(--text-gray);">
+                                После подтверждения пожертвования статус будет разблокирован автоматически
+                            </div>
+                        `;
+                        branchCard.appendChild(levelCard);
+                    } else {
+                        const currentProgress = getLevelProgress(branchKey, currentLevelIndex);
+                        const percent = (currentProgress / level.maxProgress) * 100;
+                        const levelCard = document.createElement('div');
+                        levelCard.className = 'level-card';
+                        levelCard.innerHTML = `
+                            <div class="level-header">
+                                <span class="level-title">Уровень ${currentLevelIndex + 1}: ${level.title}</span>
+                                <span class="level-progress">${currentProgress}/${level.maxProgress}</span>
+                            </div>
+                            <div class="level-desc">${level.desc}</div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar-fill" style="width: ${percent}%"></div>
+                            </div>
+                            <button class="task-submit-btn" onclick="openTaskUpload('${branchKey}', ${currentLevelIndex})">
+                                <i class="fas fa-camera"></i> Отправить фото на проверку
+                            </button>
+                        `;
+                        branchCard.appendChild(levelCard);
+                    }
                 }
                 
                 container.appendChild(branchCard);
@@ -4229,6 +4417,7 @@
             tempPhotos = [];
             isUploading = false;
         }
+        
         // ==========================================
         // ВРЕМЕННЫЕ ЗАДАНИЯ
         // ==========================================
@@ -4241,11 +4430,6 @@
                     task.completed = completed.includes(task.id);
                 });
             }
-        }
-        
-        function saveTimeTaskCompleted(taskId) {
-            const completed = TIME_TASKS.filter(t => t.completed).map(t => t.id);
-            localStorage.setItem('time_tasks_completed', JSON.stringify(completed));
         }
         
         function renderTimeTasks() {
@@ -4461,6 +4645,7 @@
             if (content.style.display === 'none' || content.style.display === '') {
                 content.style.display = 'block';
                 if (arrow) arrow.style.transform = 'rotate(180deg)';
+                renderBrandsInventory();
             } else {
                 content.style.display = 'none';
                 if (arrow) arrow.style.transform = 'rotate(0deg)';
@@ -4540,7 +4725,7 @@
                         } else {
                             colorCircle.style.backgroundColor = 'var(--bg)';
                             colorCircle.style.border = '2px solid var(--border-color)';
-                            colorCircle.innerHTML = '<i class="fas fa-question" style="color: var(--text-gray); font-size: 20px;"></i>';
+                            colorCircle.innerHTML = '<i class="fas fa-question" style="color: var(--text-gray); font-size: 16px;"></i>';
                             colorCircle.classList.remove('has-color');
                         }
                     }
@@ -4573,7 +4758,6 @@
             
             container.innerHTML = '';
             
-            // Заголовок бренда
             const brandHeader = document.createElement('div');
             brandHeader.className = 'markers-brand-header';
             brandHeader.innerHTML = `
@@ -4583,7 +4767,6 @@
             `;
             container.appendChild(brandHeader);
             
-            // Фильтруем только GuangNa
             const guangnaMarkers = markersDB.filter(m => m.brand === 'GuangNa');
             
             if (guangnaMarkers.length === 0) {
@@ -4686,7 +4869,6 @@
                 }
             });
         }
-        
         // ==========================================
         // КОРЗИНА
         // ==========================================
@@ -4763,7 +4945,6 @@
                 }
             }
             
-            // Расчет возможного бонуса
             let bonusAchetiki = 0;
             if (totalSum >= 10000) {
                 bonusAchetiki = 50;
@@ -4862,6 +5043,7 @@
                 if (tg) tg.showAlert('❌ Ошибка отправки заказа. Попробуйте позже.');
             }
         }
+        
         // ==========================================
         // ТОМА И ОТВЕТЫ
         // ==========================================
@@ -5095,7 +5277,6 @@
             const file = event.target.files[0];
             if (!file) return;
             
-            // Валидация файла
             if (file.size > MAX_FILE_SIZE) {
                 if (tg) tg.showAlert(`❌ Файл слишком большой! Максимум ${MAX_FILE_SIZE / 1024 / 1024}MB`);
                 return;
@@ -5222,7 +5403,6 @@
                 return;
             }
             
-            // Проверка размера каждого файла
             const oversized = files.filter(f => f.size > MAX_FILE_SIZE);
             if (oversized.length > 0) {
                 if (tg) tg.showAlert(`Некоторые файлы превышают ${MAX_FILE_SIZE / 1024 / 1024}MB`);
@@ -5305,10 +5485,8 @@
         // ОБРАТНАЯ СВЯЗЬ И КАРАНТИН
         // ==========================================
         
-        
         function sendFeedback(brand, number, isCorrect, photoIndex, photoFile) {
             if (isCorrect) {
-                // Подтверждение правильного подбора
                 fetch(`${SERVER_URL}/api/ai_feedback`, {
                     method: 'POST',
                     body: JSON.stringify({
@@ -5327,7 +5505,6 @@
                 })
                 .catch(error => console.error('Feedback error:', error));
             } else {
-                // Неправильный подбор - открываем модалку для выбора правильного
                 currentFeedbackData = {
                     original_brand: brand,
                     original_number: number,
@@ -5495,7 +5672,6 @@
                 return;
             }
             
-            // Проверка размера файлов
             const oversized = files.filter(f => f.size > MAX_FILE_SIZE);
             if (oversized.length > 0) {
                 if (tg) tg.showAlert(`Некоторые файлы превышают ${MAX_FILE_SIZE / 1024 / 1024}MB`);
@@ -5665,6 +5841,25 @@
             if (tg) tg.showAlert(`✅ Статус изменен на "${statusName}"`);
         }
         
+        function openSupportForStatus() {
+            const supportUrl = 'https://boosty.to/hachettelittleheroes/donate';
+            if (tg) {
+                tg.showConfirm(
+                    'Вы будете перенаправлены на страницу поддержки.\n\nПосле пожертвования, напишите администратору для получения статуса "Благодетель".',
+                    (confirm) => {
+                        if (confirm) {
+                            window.open(supportUrl, '_blank');
+                            if (tg) tg.showAlert('Спасибо за поддержку! После пожертвования напишите @admin для получения статуса.');
+                        }
+                    }
+                );
+            } else {
+                if (confirm('Перейти на страницу поддержки?\n\nПосле пожертвования от 2000 рублей вы получите статус "Благодетель".')) {
+                    window.open(supportUrl, '_blank');
+                }
+            }
+        }
+        
         // ==========================================
         // ТЕМЫ ОФОРМЛЕНИЯ
         // ==========================================
@@ -5769,89 +5964,9 @@
         }
         
         // ==========================================
-        // ИНИЦИАЛИЗАЦИЯ ПРИЛОЖЕНИЯ
+        // ОРГАНАЙЗЕРЫ (ПОЛНАЯ РЕАЛИЗАЦИЯ)
         // ==========================================
         
-        async function init() {
-            console.log('🚀 Initializing app...');
-            
-            // Загрузка сохраненных данных
-            const savedUser = localStorage.getItem('coloring_user');
-            if (savedUser) {
-                const parsed = JSON.parse(savedUser);
-                user = { ...user, ...parsed };
-            }
-            
-            const savedCart = localStorage.getItem('coloring_cart');
-            if (savedCart) {
-                cart = JSON.parse(savedCart);
-            }
-            
-            const savedAISettings = localStorage.getItem('ai_settings');
-            if (savedAISettings) {
-                aiSettings = JSON.parse(savedAISettings);
-            }
-            
-            // Загрузка данных с сервера
-            await loadUserBalance();
-            await loadUserProgress();
-            await loadUnlockedStatuses();
-            await loadUserAchievements();
-            await loadMarkerColors();
-            await loadAISettings();
-            loadInventory();
-            loadUserMarkerBrands();
-            loadTimeTasksStatus();
-            
-            // Применение темы
-            const savedTheme = localStorage.getItem('app_theme');
-            if (savedTheme) {
-                if (savedTheme === 'custom') {
-                    applyCustomTheme(true);
-                } else {
-                    setTheme(savedTheme);
-                }
-            }
-            
-            // Обновление UI
-            updateUI();
-            renderBranchTasks();
-            renderTimeTasks();
-            renderShowcase();
-            renderCart();
-            renderVolumes();
-            
-            // Запуск автообновления
-            startProgressRefresh();
-            
-            // Инициализация свайпов для просмотра ответов
-            initSwipeListeners();
-            
-            console.log('✅ App initialized successfully');
-        }
-        
-        function initSwipeListeners() {
-            const viewerImage = document.getElementById('answersViewerImage');
-            if (!viewerImage) return;
-            
-            viewerImage.addEventListener('touchstart', (e) => {
-                touchStartX = e.changedTouches[0].screenX;
-            });
-            
-            viewerImage.addEventListener('touchend', (e) => {
-                touchEndX = e.changedTouches[0].screenX;
-                const swipeThreshold = 50;
-                const diff = touchEndX - touchStartX;
-                if (Math.abs(diff) < swipeThreshold) return;
-                if (diff > 0) {
-                    prevAnswerPage();
-                } else {
-                    nextAnswerPage();
-                }
-            });
-        }
-        
-        // Функции для инвентаря и органайзеров (заглушки для полноты)
         function loadInventory() {
             const saved = localStorage.getItem('coloring_inventory');
             if (saved) {
@@ -5860,6 +5975,10 @@
                 inventory = { organizers: [], userMarkers: {} };
             }
             renderOrganizersList();
+        }
+        
+        function saveInventory() {
+            localStorage.setItem('coloring_inventory', JSON.stringify(inventory));
         }
         
         function renderOrganizersList() {
@@ -5898,11 +6017,18 @@
             const gridContainer = document.getElementById('selectedOrganizerGrid');
             gridContainer.innerHTML = '';
             
+            const needsScroll = org.cols > 5;
             const grid = document.createElement('div');
             grid.className = 'organizer-grid';
-            grid.style.gridTemplateColumns = `repeat(${org.cols}, minmax(70px, 90px))`;
-            grid.style.gap = '10px';
+            grid.style.display = 'grid';
+            grid.style.gridTemplateColumns = `repeat(${org.cols}, minmax(65px, 75px))`;
+            grid.style.gap = '6px';
             grid.style.justifyContent = 'center';
+            if (needsScroll) {
+                grid.style.overflowX = 'auto';
+                grid.style.justifyContent = 'start';
+                grid.style.paddingBottom = '8px';
+            }
             
             for (let i = 0; i < org.cells.length; i++) {
                 const cell = org.cells[i];
@@ -5910,17 +6036,18 @@
                 cellDiv.className = `organizer-cell ${cell && cell.markers && cell.markers.length > 0 ? 'filled' : ''}`;
                 cellDiv.onclick = () => openOrganizerCellModal(orgId, i);
                 
-                const markerCount = cell && cell.markers ? cell.markers.length : 0;
+                let totalMarkers = 0;
+                if (cell && cell.markers) {
+                    totalMarkers = cell.markers.reduce((sum, m) => sum + (m.count || 1), 0);
+                }
                 
-                if (cell && cell.markers && cell.markers.length > 0) {
-                    const firstMarker = cell.markers[0];
+                if (totalMarkers > 0) {
                     cellDiv.innerHTML = `
-                        <div class="organizer-cell-label">${firstMarker.brand}</div>
-                        <div class="organizer-cell-count">${firstMarker.number}</div>
-                        ${markerCount > 1 ? `<div style="font-size: 10px; color: var(--accent);">+${markerCount - 1}</div>` : ''}
+                        <div class="organizer-cell-count">${totalMarkers}</div>
+                        <div class="organizer-cell-label">марк.</div>
                     `;
                 } else {
-                    cellDiv.innerHTML = '<div class="organizer-cell-label">+</div><div class="organizer-cell-count">0</div>';
+                    cellDiv.innerHTML = '<div class="organizer-cell-count">+</div><div class="organizer-cell-label">добавить</div>';
                 }
                 
                 grid.appendChild(cellDiv);
@@ -5941,8 +6068,8 @@
         function closeOrganizerModal() {
             document.getElementById('organizerModal').style.display = 'none';
             document.getElementById('organizerName').value = '';
-            document.getElementById('organizerCols').value = '3';
-            document.getElementById('organizerRows').value = '3';
+            document.getElementById('organizerCols').value = '5';
+            document.getElementById('organizerRows').value = '5';
         }
         
         function createOrganizer() {
@@ -5971,8 +6098,26 @@
             if (tg) tg.showAlert(`✅ Органайзер "${name}" создан!`);
         }
         
-        function saveInventory() {
-            localStorage.setItem('coloring_inventory', JSON.stringify(inventory));
+        function deleteOrganizer(orgId) {
+            if (tg) {
+                tg.showConfirm('Удалить органайзер? Все маркеры в нем будут потеряны!', (confirm) => {
+                    if (confirm) {
+                        inventory.organizers = inventory.organizers.filter(o => o.id !== orgId);
+                        saveInventory();
+                        renderOrganizersList();
+                        closeOrganizerView();
+                        if (tg) tg.showAlert('✅ Органайзер удален');
+                    }
+                });
+            } else {
+                if (confirm('Удалить органайзер? Все маркеры в нем будут потеряны!')) {
+                    inventory.organizers = inventory.organizers.filter(o => o.id !== orgId);
+                    saveInventory();
+                    renderOrganizersList();
+                    closeOrganizerView();
+                    alert('✅ Органайзер удален');
+                }
+            }
         }
         
         function openOrganizerCellModal(orgId, cellIndex) {
@@ -5983,62 +6128,62 @@
             const markers = cell.markers || [];
             
             const modal = document.getElementById('organizerCellModal');
-            if (modal) {
-                document.getElementById('organizerCellModalTitle').innerText = `Ячейка ${Math.floor(cellIndex / org.cols) + 1}:${(cellIndex % org.cols) + 1}`;
-                
-                const listContainer = document.getElementById('organizerCellMarkersList');
-                listContainer.innerHTML = '';
-                
-                if (markers.length === 0) {
-                    listContainer.innerHTML = '<div class="no-results">Нет маркеров в этой ячейке</div>';
-                } else {
-                    markers.forEach((marker, idx) => {
-                        const isInInventory = inventory.userMarkers && inventory.userMarkers[`${marker.brand}_${marker.number}`];
-                        const markerDiv = document.createElement('div');
-                        markerDiv.className = 'organizer-cell-marker-item';
-                        markerDiv.innerHTML = `
+            if (!modal) return;
+            
+            document.getElementById('organizerCellModalTitle').innerText = `Ячейка ${Math.floor(cellIndex / org.cols) + 1}:${(cellIndex % org.cols) + 1}`;
+            
+            const listContainer = document.getElementById('organizerCellMarkersList');
+            listContainer.innerHTML = '';
+            
+            if (markers.length === 0) {
+                listContainer.innerHTML = '<div class="no-results">Нет маркеров в этой ячейке</div>';
+            } else {
+                markers.forEach((marker, idx) => {
+                    const hasColor = getMarkerColor(marker.brand, marker.number);
+                    const markerDiv = document.createElement('div');
+                    markerDiv.className = 'organizer-cell-marker-item';
+                    markerDiv.style.cssText = 'display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid var(--border-color);';
+                    markerDiv.innerHTML = `
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div class="color-circle" style="width: 32px; height: 32px; background-color: ${hasColor || '#ccc'}; border: none;"></div>
                             <div>
                                 <strong>${marker.brand}</strong> №${marker.number}
                                 <div style="font-size: 11px; color: var(--text-gray);">x${marker.count || 1}</div>
                             </div>
-                            <button class="toggle-inventory-btn" onclick="toggleMarkerInInventory('${orgId}', ${cellIndex}, ${idx}, '${marker.brand}', '${marker.number}')" 
-                                style="background: ${isInInventory ? 'var(--status-green)' : 'var(--text-gray)'};">
-                                ${isInInventory ? 'В инвентаре' : 'Нет в наличии'}
-                            </button>
-                        `;
-                        listContainer.appendChild(markerDiv);
-                    });
-                }
-                
-                modal.style.display = 'flex';
-                currentOrganizerCellData = { orgId, cellIndex };
+                        </div>
+                        <button class="delete-marker-btn" onclick="deleteMarkerFromOrganizerCell('${orgId}', ${cellIndex}, ${idx})">🗑️ Удалить</button>
+                    `;
+                    listContainer.appendChild(markerDiv);
+                });
             }
+            
+            const addBtn = document.createElement('button');
+            addBtn.className = 'modal-action-btn';
+            addBtn.style.marginTop = '15px';
+            addBtn.innerHTML = '<i class="fas fa-plus"></i> Добавить маркер в ячейку';
+            addBtn.onclick = () => openAddMarkerToOrganizerCell(orgId, cellIndex);
+            listContainer.appendChild(addBtn);
+            
+            currentOrganizerCellData = { orgId, cellIndex };
+            modal.style.display = 'flex';
         }
         
-        function toggleMarkerInInventory(orgId, cellIndex, markerIndex, brand, number) {
-            const org = inventory.organizers.find(o => o.id === orgId);
+        function deleteMarkerFromOrganizerCell(orgId, cellIndex, markerIndex) {
+            const org = inventory.organizers.find(o => o.id === parseInt(orgId));
             if (!org) return;
             
             const cell = org.cells[cellIndex];
-            if (!cell || !cell.markers) return;
-            
-            if (!inventory.userMarkers) inventory.userMarkers = {};
-            
-            const key = `${brand}_${number}`;
-            if (inventory.userMarkers[key]) {
-                delete inventory.userMarkers[key];
-                if (tg) tg.showAlert(`❌ Маркер ${brand} №${number} убран из инвентаря`);
-            } else {
-                inventory.userMarkers[key] = { brand, number, count: cell.markers[markerIndex].count || 1 };
-                if (tg) tg.showAlert(`✅ Маркер ${brand} №${number} добавлен в инвентарь`);
+            if (cell && cell.markers) {
+                cell.markers.splice(markerIndex, 1);
+                saveInventory();
+                openOrganizerCellModal(orgId, cellIndex);
+                openOrganizerView(orgId);
+                if (tg) tg.showAlert('🗑️ Маркер удален из ячейки');
             }
-            
-            saveInventory();
-            openOrganizerCellModal(orgId, cellIndex);
-            openOrganizerView(orgId);
         }
         
         function openAddMarkerToOrganizerCell(orgId, cellIndex) {
+            document.getElementById('organizerCellModal').style.display = 'none';
             currentOrganizerId = orgId;
             currentCellIndex = cellIndex;
             document.getElementById('addMarkerModal').style.display = 'flex';
@@ -6086,26 +6231,6 @@
             document.getElementById('addMarkerCount').value = '1';
             currentOrganizerId = null;
             currentCellIndex = null;
-        }
-        
-        function deleteOrganizer(orgId) {
-            if (tg) {
-                tg.showConfirm('Удалить органайзер?', (confirm) => {
-                    if (confirm) {
-                        inventory.organizers = inventory.organizers.filter(o => o.id !== orgId);
-                        saveInventory();
-                        renderOrganizersList();
-                        closeOrganizerView();
-                    }
-                });
-            } else {
-                if (confirm('Удалить органайзер?')) {
-                    inventory.organizers = inventory.organizers.filter(o => o.id !== orgId);
-                    saveInventory();
-                    renderOrganizersList();
-                    closeOrganizerView();
-                }
-            }
         }
         
         function searchMarkerInOrganizers() {
@@ -6168,6 +6293,240 @@
             }
         }
         
+        // ==========================================
+        // КАСТОМНЫЕ БРЕНДЫ И ИНВЕНТАРЬ
+        // ==========================================
+        
+        function renderBrandsInventory() {
+            const container = document.getElementById('brandsList');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            const learnedBrands = new Map();
+            const trainingData = JSON.parse(localStorage.getItem('ai_training_data_v2') || '{"markers":[]}');
+            if (trainingData.markers) {
+                trainingData.markers.forEach(marker => {
+                    const brand = marker.brand;
+                    if (!learnedBrands.has(brand)) {
+                        learnedBrands.set(brand, new Set());
+                    }
+                    learnedBrands.get(brand).add(marker.number);
+                });
+            }
+            
+            const addBrandBtn = document.createElement('button');
+            addBrandBtn.className = 'create-organizer-btn';
+            addBrandBtn.style.marginBottom = '15px';
+            addBrandBtn.style.background = 'var(--accent)';
+            addBrandBtn.innerHTML = '<i class="fas fa-plus"></i> Добавить свой бренд';
+            addBrandBtn.onclick = () => openAddBrandModal();
+            container.appendChild(addBrandBtn);
+            
+            function renderBrand(brandName, markersSet, isCustom = false) {
+                const brandDiv = document.createElement('div');
+                brandDiv.className = 'brand-inventory-item';
+                brandDiv.style.marginBottom = '8px';
+                brandDiv.innerHTML = `
+                    <div class="brand-inventory-name" style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                        <i class="fas fa-tag"></i> 
+                        <strong>${brandName}</strong>
+                        <span class="brand-inventory-count">${markersSet.size} маркеров</span>
+                        ${isCustom ? `<button class="delete-brand-btn" onclick="event.stopPropagation(); deleteCustomBrand('${brandName}')">🗑️</button>` : ''}
+                    </div>
+                    <button class="brand-inventory-btn" onclick="toggleBrandMarkersList('${brandName.replace(/'/g, "\\'")}')">📋 Показать маркеры</button>
+                `;
+                container.appendChild(brandDiv);
+                
+                const markersContainer = document.createElement('div');
+                markersContainer.id = `brand-markers-${brandName.replace(/\s/g, '')}`;
+                markersContainer.className = 'brand-markers-list';
+                markersContainer.style.display = 'none';
+                markersContainer.style.marginTop = '10px';
+                markersContainer.style.marginBottom = '15px';
+                markersContainer.style.paddingLeft = '20px';
+                markersContainer.style.borderLeft = `2px solid var(--accent)`;
+                
+                const addMarkerBtn = document.createElement('button');
+                addMarkerBtn.className = 'add-marker-to-brand-btn';
+                addMarkerBtn.innerHTML = '<i class="fas fa-plus"></i> Добавить маркер';
+                addMarkerBtn.onclick = () => openAddMarkerToBrandModal(brandName);
+                markersContainer.appendChild(addMarkerBtn);
+                
+                const sortedMarkers = Array.from(markersSet).sort((a, b) => {
+                    const numA = parseInt(a);
+                    const numB = parseInt(b);
+                    if (isNaN(numA) || isNaN(numB)) return String(a).localeCompare(String(b));
+                    return numA - numB;
+                });
+                
+                sortedMarkers.forEach(number => {
+                    const isInInventory = inventory.userMarkers && inventory.userMarkers[`${brandName}_${number}`];
+                    const markerColor = getMarkerColor(brandName, number);
+                    const markerDiv = document.createElement('div');
+                    markerDiv.className = 'brand-marker-item';
+                    markerDiv.innerHTML = `
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div class="color-circle" style="width: 32px; height: 32px; background-color: ${markerColor || '#ccc'}; border: none;"></div>
+                            <span style="font-weight: 600; font-size: 16px;">№${number}</span>
+                            ${!markerColor ? '<span style="font-size: 10px; color: var(--text-gray);">(цвет не определен)</span>' : ''}
+                        </div>
+                        <button class="toggle-marker-btn" onclick="toggleMarkerForAI('${brandName}', '${number}')" 
+                            style="background: ${isInInventory ? 'var(--status-green)' : 'var(--text-gray)'}">
+                            ${isInInventory ? '✅ В инвентаре' : '➕ Добавить в инвентарь'}
+                        </button>
+                    `;
+                    markersContainer.appendChild(markerDiv);
+                });
+                
+                container.appendChild(markersContainer);
+            }
+            
+            learnedBrands.forEach((markersSet, brandName) => {
+                renderBrand(brandName, markersSet, false);
+            });
+            
+            customBrands.forEach(customBrand => {
+                const markersSet = new Set(customBrand.markers);
+                renderBrand(customBrand.name, markersSet, true);
+            });
+            
+            if (learnedBrands.size === 0 && customBrands.length === 0) {
+                const emptyMsg = document.createElement('div');
+                emptyMsg.className = 'no-results';
+                emptyMsg.innerHTML = '📦 Нет маркеров в базе. Админ добавит их через обучение ИИ, или вы можете создать свой бренд.';
+                container.appendChild(emptyMsg);
+            }
+        }
+        
+        function openAddBrandModal() {
+            document.getElementById('addBrandModal').style.display = 'flex';
+        }
+        
+        function closeAddBrandModal() {
+            document.getElementById('addBrandModal').style.display = 'none';
+            document.getElementById('newBrandNameInput').value = '';
+        }
+        
+        function confirmAddBrand() {
+            const brandName = document.getElementById('newBrandNameInput').value.trim();
+            if (brandName) {
+                if (customBrands.some(b => b.name === brandName)) {
+                    if (tg) tg.showAlert('❌ Бренд уже существует');
+                    return;
+                }
+                customBrands.push({ name: brandName, markers: [] });
+                saveCustomBrands();
+                renderBrandsInventory();
+                closeAddBrandModal();
+                if (tg) tg.showAlert(`✅ Бренд "${brandName}" добавлен!`);
+            } else {
+                if (tg) tg.showAlert('Введите название бренда');
+            }
+        }
+        
+        function deleteCustomBrand(brandName) {
+            if (tg) {
+                tg.showConfirm(`Удалить бренд "${brandName}" и все его маркеры?`, (confirm) => {
+                    if (confirm) {
+                        customBrands = customBrands.filter(b => b.name !== brandName);
+                        saveCustomBrands();
+                        renderBrandsInventory();
+                        if (tg) tg.showAlert(`✅ Бренд "${brandName}" удален`);
+                    }
+                });
+            } else {
+                if (confirm(`Удалить бренд "${brandName}" и все его маркеры?`)) {
+                    customBrands = customBrands.filter(b => b.name !== brandName);
+                    saveCustomBrands();
+                    renderBrandsInventory();
+                    alert(`✅ Бренд "${brandName}" удален`);
+                }
+            }
+        }
+        
+        function openAddMarkerToBrandModal(brandName) {
+            currentBrandForMarker = brandName;
+            document.getElementById('addMarkerToBrandTitle').innerText = `➕ Добавить маркер в ${brandName}`;
+            document.getElementById('addMarkerToBrandModal').style.display = 'flex';
+        }
+        
+        function closeAddMarkerToBrandModal() {
+            document.getElementById('addMarkerToBrandModal').style.display = 'none';
+            document.getElementById('newMarkerNumberInput').value = '';
+            currentBrandForMarker = null;
+        }
+        
+        function confirmAddMarkerToBrand() {
+            const number = document.getElementById('newMarkerNumberInput').value.trim();
+            if (!number) {
+                if (tg) tg.showAlert('Введите номер маркера');
+                return;
+            }
+            
+            const brand = customBrands.find(b => b.name === currentBrandForMarker);
+            if (brand) {
+                if (brand.markers.includes(number)) {
+                    if (tg) tg.showAlert('❌ Такой маркер уже есть в этом бренде');
+                    return;
+                }
+                brand.markers.push(number);
+                saveCustomBrands();
+                renderBrandsInventory();
+                closeAddMarkerToBrandModal();
+                if (tg) tg.showAlert(`✅ Маркер №${number} добавлен в ${currentBrandForMarker}`);
+            } else {
+                const key = `${currentBrandForMarker}_${number}`;
+                if (!inventory.userMarkers) inventory.userMarkers = {};
+                inventory.userMarkers[key] = { brand: currentBrandForMarker, number: number, count: 1 };
+                saveInventory();
+                renderBrandsInventory();
+                closeAddMarkerToBrandModal();
+                if (tg) tg.showAlert(`✅ Маркер №${number} добавлен в инвентарь`);
+            }
+        }
+        
+        function toggleBrandMarkersList(brandName) {
+            const container = document.getElementById(`brand-markers-${brandName.replace(/\s/g, '')}`);
+            if (container) {
+                if (container.style.display === 'none') {
+                    container.style.display = 'block';
+                } else {
+                    container.style.display = 'none';
+                }
+            }
+        }
+        
+        function toggleMarkerForAI(brand, number) {
+            const key = `${brand}_${number}`;
+            if (!inventory.userMarkers) inventory.userMarkers = {};
+            
+            if (inventory.userMarkers[key]) {
+                delete inventory.userMarkers[key];
+                if (tg) tg.showAlert(`❌ Маркер ${brand} №${number} убран из инвентаря для расчета ИИ`);
+            } else {
+                inventory.userMarkers[key] = { brand, number, count: 1 };
+                if (tg) tg.showAlert(`✅ Маркер ${brand} №${number} добавлен в инвентарь для расчета ИИ`);
+            }
+            
+            saveInventory();
+            renderBrandsInventory();
+            updateMarkerColorsInUI();
+        }
+        
+        function saveCustomBrands() {
+            localStorage.setItem('custom_brands', JSON.stringify(customBrands));
+        }
+        
+        function loadCustomBrands() {
+            const saved = localStorage.getItem('custom_brands');
+            if (saved) {
+                customBrands = JSON.parse(saved);
+            } else {
+                customBrands = [];
+            }
+        }
+        
         function openInventoryModal() {
             const modal = document.getElementById('inventoryModal');
             if (!modal) return;
@@ -6200,7 +6559,6 @@
                 `;
             }
             
-            // Показываем бренды с маркерами
             const brandsWithMarkers = {};
             Object.values(userMarkers).forEach(m => {
                 if (!brandsWithMarkers[m.brand]) brandsWithMarkers[m.brand] = [];
@@ -6255,9 +6613,86 @@
             }
         }
         
+        // ==========================================
+        // ИНИЦИАЛИЗАЦИЯ ПРИЛОЖЕНИЯ
+        // ==========================================
+        
+        async function init() {
+            console.log('🚀 Initializing app...');
+            
+            const savedUser = localStorage.getItem('coloring_user');
+            if (savedUser) {
+                const parsed = JSON.parse(savedUser);
+                user = { ...user, ...parsed };
+            }
+            
+            const savedCart = localStorage.getItem('coloring_cart');
+            if (savedCart) {
+                cart = JSON.parse(savedCart);
+            }
+            
+            const savedAISettings = localStorage.getItem('ai_settings');
+            if (savedAISettings) {
+                aiSettings = JSON.parse(savedAISettings);
+            }
+            
+            loadCustomBrands();
+            
+            await loadUserBalance();
+            await loadUserProgress();
+            await loadUnlockedStatuses();
+            await loadUserAchievements();
+            await loadMarkerColors();
+            await loadAISettings();
+            loadInventory();
+            loadUserMarkerBrands();
+            loadTimeTasksStatus();
+            
+            const savedTheme = localStorage.getItem('app_theme');
+            if (savedTheme) {
+                if (savedTheme === 'custom') {
+                    applyCustomTheme(true);
+                } else {
+                    setTheme(savedTheme);
+                }
+            }
+            
+            updateUI();
+            renderBranchTasks();
+            renderTimeTasks();
+            renderShowcase();
+            renderCart();
+            renderVolumes();
+            
+            startProgressRefresh();
+            initSwipeListeners();
+            
+            console.log('✅ App initialized successfully');
+        }
+        
+        function initSwipeListeners() {
+            const viewerImage = document.getElementById('answersViewerImage');
+            if (!viewerImage) return;
+            
+            viewerImage.addEventListener('touchstart', (e) => {
+                touchStartX = e.changedTouches[0].screenX;
+            });
+            
+            viewerImage.addEventListener('touchend', (e) => {
+                touchEndX = e.changedTouches[0].screenX;
+                const swipeThreshold = 50;
+                const diff = touchEndX - touchStartX;
+                if (Math.abs(diff) < swipeThreshold) return;
+                if (diff > 0) {
+                    prevAnswerPage();
+                } else {
+                    nextAnswerPage();
+                }
+            });
+        }
+        
         // Запуск приложения
         init();
     </script>
 </body>
 </html>
-        
