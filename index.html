@@ -318,13 +318,13 @@
             pointer-events: none;
         }
 
-       .balance-label {
-    font-size: 13px;
-    letter-spacing: 1.5px;
-    opacity: 0.85;
-    text-transform: uppercase;
-    font-weight: 600;
-}
+        .balance-label {
+            font-size: 13px;
+            letter-spacing: 1.5px;
+            opacity: 0.85;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
 
         .balance-main {
             font-size: 46px;
@@ -352,15 +352,23 @@
 
         .balance-btn {
             width: 100%;
-            background: rgba(255, 255, 255, 0.18);
+            background: rgba(255, 255, 255, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.3);
             color: white;
             padding: 14px 10px;
             font-size: 15px;
-            font-weight: 700;
+            font-weight: 600;
             border-radius: 16px;
             backdrop-filter: blur(5px);
             cursor: pointer;
+            text-align: center;
+            display: block;
+            transition: all 0.2s;
+        }
+
+        .balance-btn:active {
+            transform: scale(0.98);
+            background: rgba(255, 255, 255, 0.3);
         }
 
         /* ==========================================
@@ -438,13 +446,13 @@
             cursor: pointer;
             transition: all 0.2s;
             margin-top: auto;
+            text-align: center;
         }
 
         .reward-buy-btn:active {
             transform: scale(0.95);
         }
-
-        /* ==========================================
+/* ==========================================
            6. ЗАРАБОТОК АШЕТИКОВ
            ========================================== */
         .earn-list {
@@ -492,6 +500,7 @@
             font-weight: 800;
             font-size: 16px;
         }
+
         /* ==========================================
            7. ЗАДАНИЯ (ВЕТКИ)
            ========================================== */
@@ -641,6 +650,7 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
+            text-align: center;
         }
 
         .task-submit-btn:active {
@@ -863,6 +873,7 @@
             font-weight: 600;
             margin-top: 10px;
             cursor: pointer;
+            text-align: center;
         }
 
         /* ==========================================
@@ -967,7 +978,6 @@
             font-size: 12px;
             margin-top: 4px;
         }
-
         /* ==========================================
            13. МАРКЕРЫ (С ЦВЕТАМИ)
            ========================================== */
@@ -975,15 +985,37 @@
             padding: 0 15px;
         }
 
+        .markers-brand-header {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            padding: 0 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text);
+        }
+
+        .markers-brand-header i {
+            color: var(--accent);
+            font-size: 22px;
+        }
+
         .marker-item {
             background: var(--bg-header);
-            padding: 16px;
+            padding: 14px;
             border-radius: 18px;
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 14px;
             margin-bottom: 12px;
             border: 1px solid var(--border-color);
+            transition: all 0.2s;
+        }
+
+        .marker-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
 
         .marker-item.hidden {
@@ -991,8 +1023,8 @@
         }
 
         .color-circle {
-            width: 55px;
-            height: 55px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             border: 2px solid var(--border-color);
             flex-shrink: 0;
@@ -1001,6 +1033,7 @@
             align-items: center;
             justify-content: center;
             transition: all 0.2s;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
         }
 
         .color-circle.has-color {
@@ -1028,16 +1061,6 @@
             flex-wrap: wrap;
         }
 
-        .marker-brand-select {
-            background: var(--input-bg);
-            color: var(--text);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 4px 8px;
-            font-size: 12px;
-            cursor: pointer;
-        }
-
         .marker-number {
             font-weight: 800;
             font-size: 18px;
@@ -1048,14 +1071,15 @@
             color: var(--accent);
             font-size: 14px;
             font-weight: 600;
-            background: rgba(255,149,0,0.1);
-            padding: 4px 8px;
-            border-radius: 12px;
+            background: rgba(255,149,0,0.12);
+            padding: 4px 10px;
+            border-radius: 20px;
         }
 
         .marker-stock {
             font-size: 12px;
             font-weight: 500;
+            margin-top: 2px;
         }
 
         .marker-stock.out-of-stock {
@@ -1063,11 +1087,11 @@
         }
 
         .marker-stock.low-stock {
-            color: var(--status-dark-orange);
+            color: var(--status-orange);
         }
 
         .marker-stock.medium-stock {
-            color: var(--status-orange);
+            color: var(--status-green);
         }
 
         .marker-stock.high-stock {
@@ -1077,15 +1101,20 @@
         .marker-color-info {
             font-size: 10px;
             margin-top: 4px;
+            color: var(--text-gray);
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
 
         .marker-controls {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             background: var(--card-bg);
-            padding: 8px 12px;
+            padding: 6px 10px;
             border-radius: 30px;
+            border: 1px solid var(--border-color);
         }
 
         .marker-controls button {
@@ -1101,6 +1130,11 @@
             font-weight: 600;
             cursor: pointer;
             border: none;
+            transition: all 0.15s;
+        }
+
+        .marker-controls button:active {
+            transform: scale(0.92);
         }
 
         .marker-controls button:disabled {
@@ -1120,10 +1154,11 @@
         .marker-controls span {
             font-size: 16px;
             font-weight: 700;
-            min-width: 24px;
+            min-width: 28px;
             text-align: center;
             color: var(--text);
         }
+
         /* ==========================================
            14. ТОМА И ОТВЕТЫ
            ========================================== */
@@ -1235,15 +1270,19 @@
             border: none;
             padding: 12px;
             border-radius: 30px;
-            font-weight: 700;
+            font-weight: 600;
             font-size: 14px;
             cursor: pointer;
             margin-top: auto;
             transition: all 0.2s;
+            text-align: center;
+            display: block;
         }
 
         .add-to-cart-btn:active {
-            transform: scale(0.98);
+            transform: scale(0.97);
+            background: var(--accent);
+            opacity: 0.9;
         }
 
         @media (max-width: 480px) {
@@ -1423,7 +1462,6 @@
             padding: 0 15px;
         }
 
-        /* Настройки поиска ИИ */
         .ai-settings-panel {
             background: var(--bg-header);
             margin: 15px;
@@ -1466,6 +1504,23 @@
             background: var(--accent);
             color: white;
             border-color: var(--accent);
+        }
+
+        .inventory-modal-btn {
+            margin-top: 15px;
+            background: var(--bg);
+            color: var(--text);
+            border: 1px solid var(--accent);
+            width: 100%;
+            padding: 12px;
+            border-radius: 16px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
         .brands-selector {
@@ -1549,7 +1604,6 @@
             gap: 8px;
         }
 
-        /* Результаты массовой загрузки */
         .batch-results {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -1674,7 +1728,8 @@
         }
 
         .admin-panel input,
-        .admin-panel select {
+        .admin-panel select,
+        .admin-panel textarea {
             width: 100%;
             padding: 12px;
             border-radius: 12px;
@@ -1693,11 +1748,6 @@
         .admin-batch-train h5 {
             margin: 0 0 10px 0;
             color: var(--text);
-        }
-
-        .batch-numbers-input {
-            font-family: monospace;
-            font-size: 12px;
         }
 
         .admin-panel button {
@@ -1796,7 +1846,6 @@
             border-radius: 10px;
             font-weight: 900;
         }
-
         /* ==========================================
            18. МОДАЛЬНЫЕ ОКНА
            ========================================== */
@@ -1842,6 +1891,7 @@
             margin-top: 10px;
             cursor: pointer;
             border: none;
+            text-align: center;
         }
 
         .modal-action-btn {
@@ -1855,6 +1905,7 @@
             margin-top: 10px;
             cursor: pointer;
             border: none;
+            text-align: center;
         }
 
         .modal-buttons-row {
@@ -1906,6 +1957,7 @@
             resize: vertical;
             min-height: 80px;
         }
+
         /* ==========================================
            19. ИНВЕНТАРЬ И ОРГАНАЙЗЕРЫ
            ========================================== */
@@ -2017,6 +2069,7 @@
             font-weight: 600;
             margin-bottom: 15px;
             cursor: pointer;
+            text-align: center;
         }
 
         .close-view-btn {
@@ -2052,22 +2105,29 @@
         /* Органайзер сетка */
         .organizer-grid {
             display: grid;
-            gap: 8px;
-            justify-content: start;
-            margin: 0 auto;
-            padding: 5px;
+            gap: 10px;
+            justify-content: center;
+            padding: 10px;
             overflow-x: auto;
+            background: var(--bg);
+            border-radius: 20px;
         }
         
         .organizer-cell {
-            background: var(--bg);
+            background: var(--bg-header);
             border: 2px solid var(--border-color);
-            border-radius: 12px;
-            padding: 10px 4px;
+            border-radius: 16px;
+            padding: 12px 6px;
             text-align: center;
             cursor: pointer;
             transition: all 0.2s ease;
-            min-width: 60px;
+            min-width: 70px;
+        }
+        
+        .organizer-cell:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
         
         .organizer-cell.filled {
@@ -2078,13 +2138,44 @@
         .organizer-cell-label {
             font-size: 11px;
             color: var(--text-gray);
-            margin-bottom: 4px;
+            margin-bottom: 6px;
+            font-weight: 500;
         }
         
         .organizer-cell-count {
-            font-size: 16px;
+            font-size: 18px;
             font-weight: bold;
             color: var(--accent);
+        }
+
+        /* Модалка ячейки органайзера */
+        .organizer-cell-marker-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+            transition: background 0.2s;
+        }
+
+        .organizer-cell-marker-item:hover {
+            background: rgba(255,149,0,0.05);
+        }
+
+        .toggle-inventory-btn {
+            background: var(--status-green);
+            color: white;
+            padding: 5px 14px;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .toggle-inventory-btn:active {
+            transform: scale(0.95);
         }
 
         .marker-search-result {
@@ -2124,14 +2215,6 @@
             font-size: 12px;
             color: var(--text-gray);
         }
-        
-        .marker-search-result-count {
-            background: var(--accent);
-            color: white;
-            padding: 2px 8px;
-            border-radius: 20px;
-            font-size: 11px;
-        }
 
         @keyframes highlight {
             0% { background: var(--accent); transform: scale(1); }
@@ -2144,7 +2227,7 @@
         }
 
         /* ==========================================
-           20. БРЕНДЫ
+           20. БРЕНДЫ В ИНВЕНТАРЕ
            ========================================== */
         .brand-content {
             scrollbar-width: thin;
@@ -2164,6 +2247,51 @@
         .brand-content::-webkit-scrollbar-thumb {
             background: var(--accent);
             border-radius: 4px;
+        }
+
+        .brand-inventory-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            margin-bottom: 8px;
+            border: 1px solid var(--border-color);
+            transition: all 0.2s;
+        }
+
+        .brand-inventory-item:hover {
+            border-color: var(--accent);
+        }
+
+        .brand-inventory-name {
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .brand-inventory-count {
+            font-size: 12px;
+            color: var(--text-gray);
+            background: var(--bg);
+            padding: 2px 8px;
+            border-radius: 20px;
+        }
+
+        .brand-inventory-btn {
+            background: var(--accent);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .brand-inventory-btn:active {
+            transform: scale(0.95);
         }
 
         /* ==========================================
@@ -2243,6 +2371,7 @@
             font-weight: 600;
             margin-top: 10px;
             cursor: pointer;
+            text-align: center;
         }
 
         /* ==========================================
@@ -2329,12 +2458,6 @@
         .time-task-btn:active {
             transform: scale(0.98);
         }
-        
-        .time-task-btn.completed {
-            background: var(--status-green);
-            opacity: 0.7;
-            cursor: default;
-        }
 
         /* ==========================================
            23. МОДАЛКА ОБРАТНОЙ СВЯЗИ ДЛЯ ИИ
@@ -2359,7 +2482,112 @@
         }
 
         /* ==========================================
-           24. ГЛОБАЛЬНЫЕ ФИКСЫ
+           24. МОДАЛКА ИНВЕНТАРЯ
+           ========================================== */
+        .inventory-markers-list {
+            max-height: 50vh;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .inventory-marker-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            margin-bottom: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .inventory-marker-color {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .inventory-marker-info {
+            flex: 1;
+        }
+
+        .inventory-marker-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text);
+        }
+
+        .inventory-marker-count {
+            font-size: 11px;
+            color: var(--text-gray);
+        }
+
+        .inventory-remove-btn {
+            background: var(--status-red);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .inventory-remove-btn:active {
+            transform: scale(0.95);
+        }
+
+        .brands-selector-title {
+            margin: 15px 0 10px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .brand-selector-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            background: var(--card-bg);
+            border-radius: 14px;
+            margin-bottom: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .brand-selector-name {
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .brand-selector-count {
+            font-size: 11px;
+            color: var(--text-gray);
+            background: var(--bg);
+            padding: 2px 8px;
+            border-radius: 20px;
+        }
+
+        .brand-selector-btn {
+            background: var(--accent);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .brand-selector-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* ==========================================
+           25. ГЛОБАЛЬНЫЕ ФИКСЫ И АДАПТИВ
            ========================================== */
         button,
         .nav-btn,
@@ -2385,9 +2613,38 @@
         .subblock-header,
         .search-mode-btn,
         .brand-checkbox,
-        .feedback-btn {
+        .feedback-btn,
+        .upload-multiple-btn,
+        .inventory-modal-btn,
+        .toggle-inventory-btn,
+        .brand-inventory-btn,
+        .inventory-remove-btn,
+        .brand-selector-btn {
             pointer-events: auto !important;
             cursor: pointer !important;
+            transition: all 0.2s ease;
+        }
+
+        button:active,
+        .nav-btn:active,
+        .marker-controls button:active,
+        .theme-option:active,
+        .upload-area:active,
+        .showcase-slot:active,
+        .reward-card:active,
+        .balance-btn:active,
+        .modal-action-btn:active,
+        .checkout-btn:active,
+        .add-to-cart-btn:active,
+        .task-submit-btn:active,
+        .book-card:active,
+        .create-organizer-btn:active,
+        .search-mode-btn:active,
+        .feedback-btn:active,
+        .upload-multiple-btn:active,
+        .toggle-inventory-btn:active {
+            transform: scale(0.96);
+            opacity: 0.9;
         }
 
         .modal-overlay {
@@ -2429,8 +2686,8 @@
 
         @media (max-width: 480px) {
             .organizer-cell {
-                min-width: 50px;
-                padding: 8px 2px;
+                min-width: 55px;
+                padding: 8px 4px;
             }
             .organizer-cell-label {
                 font-size: 9px;
@@ -2447,85 +2704,37 @@
             .brands-grid {
                 grid-template-columns: 1fr;
             }
+            .color-circle {
+                width: 42px;
+                height: 42px;
+            }
+            .marker-number {
+                font-size: 15px;
+            }
+            .marker-price {
+                font-size: 12px;
+                padding: 3px 8px;
+            }
+            .marker-controls {
+                padding: 4px 8px;
+                gap: 8px;
+            }
+            .marker-controls button {
+                width: 28px;
+                height: 28px;
+                font-size: 16px;
+            }
+            .marker-controls span {
+                font-size: 14px;
+                min-width: 24px;
+            }
+            .marker-color-info {
+                font-size: 9px;
+            }
         }
-        /* ФОРСИРОВАНИЕ КЛИКАБЕЛЬНОСТИ - ДОБАВИТЬ В КОНЕЦ СТИЛЕЙ */
-button,
-.nav-btn,
-.marker-controls button,
-.theme-option,
-.upload-area,
-.showcase-slot,
-.reward-card,
-.avatar-wrapper,
-.status-badge,
-.balance-btn,
-.modal-action-btn,
-.modal-close-btn,
-.checkout-btn,
-.add-to-cart-btn,
-.apply-theme-btn,
-.task-submit-btn,
-.book-card,
-.create-organizer-btn,
-.close-view-btn,
-.inventory-header,
-.subblock-header,
-.search-mode-btn,
-.feedback-btn,
-.upload-multiple-btn,
-.apply-brands-btn {
-    pointer-events: auto !important;
-    cursor: pointer !important;
-    opacity: 1 !important;
-    visibility: visible !important;
-    display: inline-flex !important;
-    position: relative !important;
-    z-index: 100 !important;
-}
-
-/* Убедитесь, что навигация видима и кликабельна */
-.nav {
-    z-index: 10000 !important;
-    pointer-events: auto !important;
-    display: flex !important;
-    visibility: visible !important;
-}
-
-.nav-btn {
-    pointer-events: auto !important;
-    cursor: pointer !important;
-}
-
-/* Исправление для модальных окон */
-.modal-overlay {
-    z-index: 100000 !important;
-    pointer-events: auto !important;
-}
-
-/* Принудительное отображение всех кнопок */
-[onclick] {
-    cursor: pointer !important;
-}
     </style>
 </head>
 <body>
-    <div style="position: fixed; top: 10px; left: 10px; z-index: 999999; background: red; padding: 10px; border-radius: 10px; font-size: 12px;">
-        <button onclick="alert('Test works!')" style="background: white; padding: 5px 10px;">Test Click</button>
-        <span id="test-status" style="color: white; margin-left: 10px;">Loading...</span>
-    </div>
-    
-    <script>
-        document.getElementById('test-status').innerText = 'JS Loaded';
-        console.log('✅ JavaScript loaded and running');
-        
-        // Проверка основных функций
-        setTimeout(() => {
-            console.log('typeof tab:', typeof tab);
-            console.log('typeof processAI:', typeof processAI);
-            console.log('typeof loadMarkers:', typeof loadMarkers);
-            console.log('user object:', user);
-        }, 1000);
-    </script>
     <!-- ========== ПРОФИЛЬ ========== -->
     <div id="profile" class="page active">
         <div class="profile-header-block">
@@ -2760,6 +2969,9 @@ button,
                 </div>
                 <button class="apply-brands-btn" onclick="applyBrandsFilter()" style="width:100%; background:var(--accent); color:white; padding:10px; border-radius:12px; margin-top:10px;">Применить фильтр</button>
             </div>
+            <button class="inventory-modal-btn" onclick="openInventoryModal()">
+                <i class="fas fa-boxes"></i> Мой инвентарь
+            </button>
         </div>
         
         <!-- Загрузка фото -->
@@ -2926,7 +3138,7 @@ button,
         </div>
     </div>
 
-    <!-- Модалка добавления маркера -->
+    <!-- Модалка добавления маркера в органайзер -->
     <div id="addMarkerModal" class="modal-overlay">
         <div class="modal-content">
             <h3>➕ Добавить маркер</h3>
@@ -3031,6 +3243,28 @@ button,
         </div>
     </div>
 
+    <!-- Модалка инвентаря для ИИ палитры -->
+    <div id="inventoryModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3>📦 Мой инвентарь</h3>
+            <div id="inventoryModalContent" class="inventory-markers-list"></div>
+            <div class="brands-selector-title">Маркеры по брендам:</div>
+            <div id="inventoryBrandsList" class="brands-selector"></div>
+            <button class="modal-close-btn" onclick="document.getElementById('inventoryModal').style.display='none'">Закрыть</button>
+        </div>
+    </div>
+
+    <!-- Модалка ячейки органайзера -->
+    <div id="organizerCellModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 id="organizerCellModalTitle">Маркеры в ячейке</h3>
+            <div id="organizerCellMarkersList" style="max-height: 50vh; overflow-y: auto;"></div>
+            <button class="modal-action-btn" onclick="openAddMarkerToOrganizerCell(currentOrganizerCellData?.orgId, currentOrganizerCellData?.cellIndex)" style="margin-top: 15px;">
+                <i class="fas fa-plus"></i> Добавить маркер
+            </button>
+            <button class="modal-close-btn" onclick="document.getElementById('organizerCellModal').style.display='none'">Закрыть</button>
+        </div>
+    </div>
     <script>
         // ==========================================
         // КОНФИГУРАЦИЯ И ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ
@@ -3038,6 +3272,9 @@ button,
         
         const SERVER_URL = 'https://bot-hachettelittleheroes.amvera.io/';
         const MARKER_PRICE = 75;
+        const MAX_FILE_SIZE = 20 * 1024 * 1024;  // 20 MB
+        const MAX_FILES_BATCH = 40;
+        const MAX_FILES_TRAIN = 20;
         
         // Бренды для отображения
         const BRANDS_DATA = [
@@ -3099,7 +3336,11 @@ button,
         let currentUploadLevel = null;
         let tempPhotos = [];
         let isUploading = false;
+        let currentFeedbackData = null;
         let batchFiles = [];
+        let currentOrganizerId = null;
+        let currentCellIndex = null;
+        let currentOrganizerCellData = null;
         
         // Данные пользователя
         let user = {
@@ -3136,6 +3377,7 @@ button,
         let currentVolumePages = 0;
         let touchStartX = 0;
         let touchEndX = 0;
+        
         // ==========================================
         // ДАННЫЕ ЗАДАНИЙ (ВЕТКИ)
         // ==========================================
@@ -3344,7 +3586,6 @@ button,
                 completed: false
             }
         ];
-        
         // ==========================================
         // API ВЫЗОВЫ
         // ==========================================
@@ -3769,6 +4010,7 @@ button,
                 }
             }
         }
+        
         // ==========================================
         // ФУНКЦИИ ДЛЯ РАБОТЫ С ЗАДАНИЯМИ
         // ==========================================
@@ -3881,10 +4123,9 @@ button,
             const files = Array.from(event.target.files);
             if (files.length === 0) return;
             
-            const maxSize = 10 * 1024 * 1024;
-            const oversizedFiles = files.filter(f => f.size > maxSize);
+            const oversizedFiles = files.filter(f => f.size > MAX_FILE_SIZE);
             if (oversizedFiles.length > 0) {
-                if (tg) tg.showAlert('❌ Файл(ы) слишком большие. Максимум 10MB на фото.');
+                if (tg) tg.showAlert(`❌ Файл(ы) слишком большие. Максимум ${MAX_FILE_SIZE / 1024 / 1024}MB на фото.`);
                 return;
             }
             
@@ -3988,7 +4229,6 @@ button,
             tempPhotos = [];
             isUploading = false;
         }
-        
         // ==========================================
         // ВРЕМЕННЫЕ ЗАДАНИЯ
         // ==========================================
@@ -4075,6 +4315,13 @@ button,
         function handleTimeTaskFilesSelected(event) {
             const files = Array.from(event.target.files);
             if (files.length === 0) return;
+            
+            const oversizedFiles = files.filter(f => f.size > MAX_FILE_SIZE);
+            if (oversizedFiles.length > 0) {
+                if (tg) tg.showAlert(`❌ Файл(ы) слишком большие. Максимум ${MAX_FILE_SIZE / 1024 / 1024}MB на фото.`);
+                return;
+            }
+            
             tempPhotos = files;
             const previewContainer = document.getElementById('taskPhotoPreviewContainer');
             if (previewContainer) {
@@ -4302,7 +4549,7 @@ button,
                             colorInfo.innerHTML = `🎨 Цвет: ${color}`;
                             colorInfo.style.color = 'var(--text-gray)';
                         } else {
-                            colorInfo.innerHTML = `⚠️ Цвет не определен. Админ добавит при обучении ИИ`;
+                            colorInfo.innerHTML = `⚡ Цвет будет добавлен при обучении ИИ`;
                             colorInfo.style.color = 'var(--status-orange)';
                         }
                     }
@@ -4326,36 +4573,51 @@ button,
             
             container.innerHTML = '';
             
-            markersDB.forEach(m => {
+            // Заголовок бренда
+            const brandHeader = document.createElement('div');
+            brandHeader.className = 'markers-brand-header';
+            brandHeader.innerHTML = `
+                <i class="fas fa-palette"></i>
+                <span>GuangNa</span>
+                <span style="font-size: 12px; color: var(--text-gray); font-weight: normal;">Маркеры в наличии</span>
+            `;
+            container.appendChild(brandHeader);
+            
+            // Фильтруем только GuangNa
+            const guangnaMarkers = markersDB.filter(m => m.brand === 'GuangNa');
+            
+            if (guangnaMarkers.length === 0) {
+                container.innerHTML += '<div class="no-results">📦 Нет маркеров бренда GuangNa</div>';
+                return;
+            }
+            
+            guangnaMarkers.forEach(m => {
                 const cartKey = `marker_${m.num}`;
                 const cartCount = (cart && cart[cartKey]) ? cart[cartKey] : 0;
                 const canAdd = cartCount < m.stock;
                 const canRemove = cartCount > 0;
                 const stockClass = getStockColor(m.stock);
-                const markerColor = getMarkerColor(m.brand, m.num);
+                const markerColor = getMarkerColor('GuangNa', m.num);
                 
                 const div = document.createElement('div');
                 div.className = 'marker-item';
                 div.setAttribute('data-num', m.num);
-                div.setAttribute('data-brand', m.brand);
+                div.setAttribute('data-brand', 'GuangNa');
                 
                 div.innerHTML = `
                     <div class="color-circle" style="background-color: ${markerColor || 'var(--bg)'}; border: ${markerColor ? 'none' : '2px solid var(--border-color)'};">
-                        ${!markerColor ? '<i class="fas fa-question" style="color: var(--text-gray); font-size: 20px;"></i>' : ''}
+                        ${!markerColor ? '<i class="fas fa-question" style="color: var(--text-gray); font-size: 16px;"></i>' : ''}
                     </div>
                     <div class="marker-info">
                         <div class="marker-header">
                             <div class="marker-header-left">
-                                <select class="marker-brand-select" data-num="${m.num}" onchange="changeMarkerBrand('${m.num}', this.value)" style="background: var(--input-bg); color: var(--text); border: 1px solid var(--border-color); border-radius: 8px; padding: 4px 8px; font-size: 12px;">
-                                    ${BRANDS_DATA.map(b => `<option value="${b.name}" ${(m.brand === b.name) ? 'selected' : ''}>${b.name}</option>`).join('')}
-                                </select>
                                 <span class="marker-number">№${m.num}</span>
                             </div>
                             <span class="marker-price">${MARKER_PRICE} ₽</span>
                         </div>
                         <div class="marker-stock ${stockClass}">${getStockText(m.stock)}</div>
                         <div class="marker-color-info">
-                            ${markerColor ? `🎨 Цвет: ${markerColor}` : '⚠️ Цвет не определен. Админ добавит при обучении ИИ'}
+                            ${markerColor ? `🎨 Цвет: ${markerColor}` : '⚡ Цвет будет добавлен при обучении ИИ'}
                         </div>
                     </div>
                     <div class="marker-controls">
@@ -4369,59 +4631,6 @@ button,
             });
         }
         
-        function changeMarkerBrand(num, newBrand) {
-            const markerItem = document.querySelector(`.marker-item[data-num="${num}"]`);
-            if (markerItem) {
-                markerItem.setAttribute('data-brand', newBrand);
-                const color = getMarkerColor(newBrand, num);
-                const colorCircle = markerItem.querySelector('.color-circle');
-                const colorInfo = markerItem.querySelector('.marker-color-info');
-                if (colorCircle) {
-                    if (color) {
-                        colorCircle.style.backgroundColor = color;
-                        colorCircle.style.border = 'none';
-                        colorCircle.innerHTML = '';
-                        colorCircle.classList.add('has-color');
-                    } else {
-                        colorCircle.style.backgroundColor = 'var(--bg)';
-                        colorCircle.style.border = '2px solid var(--border-color)';
-                        colorCircle.innerHTML = '<i class="fas fa-question" style="color: var(--text-gray); font-size: 20px;"></i>';
-                        colorCircle.classList.remove('has-color');
-                    }
-                }
-                if (colorInfo) {
-                    if (color) {
-                        colorInfo.innerHTML = `🎨 Цвет: ${color}`;
-                        colorInfo.style.color = 'var(--text-gray)';
-                    } else {
-                        colorInfo.innerHTML = `⚠️ Цвет не определен. Админ добавит при обучении ИИ`;
-                        colorInfo.style.color = 'var(--status-orange)';
-                    }
-                }
-                saveUserMarkerBrand(num, newBrand);
-            }
-        }
-        
-        function saveUserMarkerBrand(num, brand) {
-            const userMarkerBrands = JSON.parse(localStorage.getItem('user_marker_brands') || '{}');
-            userMarkerBrands[num] = brand;
-            localStorage.setItem('user_marker_brands', JSON.stringify(userMarkerBrands));
-        }
-        
-        function loadUserMarkerBrands() {
-            const saved = localStorage.getItem('user_marker_brands');
-            if (saved) {
-                const brands = JSON.parse(saved);
-                for (const [num, brand] of Object.entries(brands)) {
-                    const select = document.querySelector(`.marker-brand-select[data-num="${num}"]`);
-                    if (select) {
-                        select.value = brand;
-                        changeMarkerBrand(num, brand);
-                    }
-                }
-            }
-        }
-        
         function getStockColor(stock) {
             if (stock === 0) return 'out-of-stock';
             if (stock === 1) return 'low-stock';
@@ -4432,6 +4641,7 @@ button,
         function getStockText(stock) {
             if (stock === 0) return 'Нет в наличии';
             if (stock === 1) return '1 шт.';
+            if (stock <= 3) return `${stock} шт.`;
             return `${stock} шт.`;
         }
         
@@ -4476,6 +4686,7 @@ button,
                 }
             });
         }
+        
         // ==========================================
         // КОРЗИНА
         // ==========================================
@@ -4651,7 +4862,6 @@ button,
                 if (tg) tg.showAlert('❌ Ошибка отправки заказа. Попробуйте позже.');
             }
         }
-        
         // ==========================================
         // ТОМА И ОТВЕТЫ
         // ==========================================
@@ -4828,7 +5038,7 @@ button,
         }
         
         // ==========================================
-        // ИИ ПАЛИТРА (ОБНОВЛЕННАЯ)
+        // ИИ ПАЛИТРА (ОСНОВНЫЕ ФУНКЦИИ)
         // ==========================================
         
         function setSearchMode(mode) {
@@ -4886,8 +5096,8 @@ button,
             if (!file) return;
             
             // Валидация файла
-            if (file.size > 5 * 1024 * 1024) {
-                if (tg) tg.showAlert('❌ Файл слишком большой! Максимум 5MB');
+            if (file.size > MAX_FILE_SIZE) {
+                if (tg) tg.showAlert(`❌ Файл слишком большой! Максимум ${MAX_FILE_SIZE / 1024 / 1024}MB`);
                 return;
             }
             if (!file.type.startsWith('image/')) {
@@ -4950,7 +5160,7 @@ button,
                                         <div style="font-weight:bold;">${match.brand} №${match.number}</div>
                                         <div style="font-size:11px; color:var(--accent);">Точность: ${match.confidence}%</div>
                                         <div style="font-size:10px; color:var(--text-gray);">ΔE: ${match.delta_e}</div>
-                                        <button class="photo-upload-btn" style="padding:5px 10px; font-size:11px; margin-top:5px;" onclick="addToCartFromAI('${match.number}')">
+                                        <button class="upload-photo-btn" style="padding:5px 10px; font-size:11px; margin-top:5px;" onclick="addToCartFromAI('${match.number}')">
                                             <i class="fas fa-cart-plus"></i> Добавить в корзину
                                         </button>
                                     </div>
@@ -5007,8 +5217,15 @@ button,
                 if (tg) tg.showAlert('Выберите фото для загрузки');
                 return;
             }
-            if (files.length > 40) {
-                if (tg) tg.showAlert('Максимум 40 фото за раз!');
+            if (files.length > MAX_FILES_BATCH) {
+                if (tg) tg.showAlert(`Максимум ${MAX_FILES_BATCH} фото за раз!`);
+                return;
+            }
+            
+            // Проверка размера каждого файла
+            const oversized = files.filter(f => f.size > MAX_FILE_SIZE);
+            if (oversized.length > 0) {
+                if (tg) tg.showAlert(`Некоторые файлы превышают ${MAX_FILE_SIZE / 1024 / 1024}MB`);
                 return;
             }
             
@@ -5084,6 +5301,9 @@ button,
                 container.appendChild(card);
             });
         }
+        // ==========================================
+        // ОБРАТНАЯ СВЯЗЬ И КАРАНТИН
+        // ==========================================
         
         let currentFeedbackData = null;
         
@@ -5126,6 +5346,7 @@ button,
                         preview.style.backgroundImage = `url(${e.target.result})`;
                         preview.style.backgroundSize = 'cover';
                         preview.style.backgroundPosition = 'center';
+                        preview.style.backgroundColor = 'transparent';
                     };
                     reader.readAsDataURL(photoFile);
                 }
@@ -5151,10 +5372,13 @@ button,
                     preview.style.backgroundImage = `url(${e.target.result})`;
                     preview.style.backgroundSize = 'cover';
                     preview.style.backgroundPosition = 'center';
+                    preview.style.backgroundColor = 'transparent';
                 };
                 reader.readAsDataURL(photoFile);
             } else if (colorHex) {
-                document.getElementById('feedbackPhotoPreview').style.backgroundColor = colorHex;
+                const preview = document.getElementById('feedbackPhotoPreview');
+                preview.style.backgroundColor = colorHex;
+                preview.style.backgroundImage = 'none';
             }
         }
         
@@ -5202,6 +5426,10 @@ button,
             }
         }
         
+        // ==========================================
+        // ОБУЧЕНИЕ ИИ (АДМИН)
+        // ==========================================
+        
         async function trainAI() {
             const fileInput = document.getElementById('aiTrainFile');
             const brandSelect = document.getElementById('aiTrainBrand');
@@ -5216,8 +5444,14 @@ button,
                 return;
             }
             
+            const file = fileInput.files[0];
+            if (file.size > MAX_FILE_SIZE) {
+                if (tg) tg.showAlert(`❌ Файл слишком большой! Максимум ${MAX_FILE_SIZE / 1024 / 1024}MB`);
+                return;
+            }
+            
             const formData = new FormData();
-            formData.append('photo', fileInput.files[0]);
+            formData.append('photo', file);
             formData.append('brand', brandSelect.value);
             formData.append('number', numberInput.value.trim());
             
@@ -5253,12 +5487,19 @@ button,
                 if (tg) tg.showAlert('Выберите фото маркеров');
                 return;
             }
-            if (files.length > 20) {
-                if (tg) tg.showAlert('Максимум 20 фото за раз');
+            if (files.length > MAX_FILES_TRAIN) {
+                if (tg) tg.showAlert(`Максимум ${MAX_FILES_TRAIN} фото за раз`);
                 return;
             }
             if (files.length !== numbers.length) {
                 if (tg) tg.showAlert(`Количество фото (${files.length}) и номеров (${numbers.length}) не совпадает`);
+                return;
+            }
+            
+            // Проверка размера файлов
+            const oversized = files.filter(f => f.size > MAX_FILE_SIZE);
+            if (oversized.length > 0) {
+                if (tg) tg.showAlert(`Некоторые файлы превышают ${MAX_FILE_SIZE / 1024 / 1024}MB`);
                 return;
             }
             
@@ -5325,8 +5566,9 @@ button,
                 if (tg) tg.showAlert(`❌ Недостаточно ашетиков! Нужно ${price}, у вас ${user.balance}`);
             }
         }
+        
         // ==========================================
-        // ОБНОВЛЕНИЕ ПРОГРЕССА
+        // ОБНОВЛЕНИЕ ПРОГРЕССА И СТАТУСЫ
         // ==========================================
         
         async function refreshUserProgress() {
@@ -5357,10 +5599,6 @@ button,
             }, 30000);
             console.log('✅ Progress refresh started (every 30 seconds)');
         }
-        
-        // ==========================================
-        // ВЫБОР СТАТУСА
-        // ==========================================
         
         function openStatusInfo() {
             console.log('openStatusInfo called');
@@ -5532,52 +5770,102 @@ button,
         }
         
         // ==========================================
-        // ОРГАНАЙЗЕРЫ (заглушки)
+        // ИНИЦИАЛИЗАЦИЯ ПРИЛОЖЕНИЯ
         // ==========================================
         
-        function openOrganizerCreator() {
-            const modal = document.getElementById('organizerModal');
-            if (modal) modal.style.display = 'flex';
-        }
-        
-        function closeOrganizerModal() {
-            const modal = document.getElementById('organizerModal');
-            if (modal) modal.style.display = 'none';
-            document.getElementById('organizerName').value = '';
-            document.getElementById('organizerCols').value = '3';
-            document.getElementById('organizerRows').value = '3';
-        }
-        
-        function createOrganizer() {
-            const name = document.getElementById('organizerName').value.trim();
-            const cols = parseInt(document.getElementById('organizerCols').value);
-            const rows = parseInt(document.getElementById('organizerRows').value);
+        async function init() {
+            console.log('🚀 Initializing app...');
             
-            if (!name) {
-                if (tg) tg.showAlert('Введите название органайзера');
-                return;
+            // Загрузка сохраненных данных
+            const savedUser = localStorage.getItem('coloring_user');
+            if (savedUser) {
+                const parsed = JSON.parse(savedUser);
+                user = { ...user, ...parsed };
             }
             
-            const newOrganizer = {
-                id: Date.now(),
-                name: name,
-                cols: cols,
-                rows: rows,
-                cells: Array(cols * rows).fill(null)
-            };
+            const savedCart = localStorage.getItem('coloring_cart');
+            if (savedCart) {
+                cart = JSON.parse(savedCart);
+            }
             
-            if (!inventory.organizers) inventory.organizers = [];
-            inventory.organizers.push(newOrganizer);
-            saveInventory();
+            const savedAISettings = localStorage.getItem('ai_settings');
+            if (savedAISettings) {
+                aiSettings = JSON.parse(savedAISettings);
+            }
+            
+            // Загрузка данных с сервера
+            await loadUserBalance();
+            await loadUserProgress();
+            await loadUnlockedStatuses();
+            await loadUserAchievements();
+            await loadMarkerColors();
+            await loadAISettings();
+            loadInventory();
+            loadUserMarkerBrands();
+            loadTimeTasksStatus();
+            
+            // Применение темы
+            const savedTheme = localStorage.getItem('app_theme');
+            if (savedTheme) {
+                if (savedTheme === 'custom') {
+                    applyCustomTheme(true);
+                } else {
+                    setTheme(savedTheme);
+                }
+            }
+            
+            // Обновление UI
+            updateUI();
+            renderBranchTasks();
+            renderTimeTasks();
+            renderShowcase();
+            renderCart();
+            renderVolumes();
+            
+            // Запуск автообновления
+            startProgressRefresh();
+            
+            // Инициализация свайпов для просмотра ответов
+            initSwipeListeners();
+            
+            console.log('✅ App initialized successfully');
+        }
+        
+        function initSwipeListeners() {
+            const viewerImage = document.getElementById('answersViewerImage');
+            if (!viewerImage) return;
+            
+            viewerImage.addEventListener('touchstart', (e) => {
+                touchStartX = e.changedTouches[0].screenX;
+            });
+            
+            viewerImage.addEventListener('touchend', (e) => {
+                touchEndX = e.changedTouches[0].screenX;
+                const swipeThreshold = 50;
+                const diff = touchEndX - touchStartX;
+                if (Math.abs(diff) < swipeThreshold) return;
+                if (diff > 0) {
+                    prevAnswerPage();
+                } else {
+                    nextAnswerPage();
+                }
+            });
+        }
+        
+        // Функции для инвентаря и органайзеров (заглушки для полноты)
+        function loadInventory() {
+            const saved = localStorage.getItem('coloring_inventory');
+            if (saved) {
+                inventory = JSON.parse(saved);
+            } else {
+                inventory = { organizers: [], userMarkers: {} };
+            }
             renderOrganizersList();
-            closeOrganizerModal();
-            if (tg) tg.showAlert(`✅ Органайзер "${name}" создан!`);
         }
         
         function renderOrganizersList() {
             const container = document.getElementById('organizersList');
             if (!container) return;
-            
             container.innerHTML = '';
             
             if (!inventory.organizers || inventory.organizers.length === 0) {
@@ -5613,21 +5901,27 @@ button,
             
             const grid = document.createElement('div');
             grid.className = 'organizer-grid';
-            grid.style.gridTemplateColumns = `repeat(${org.cols}, minmax(60px, 80px))`;
+            grid.style.gridTemplateColumns = `repeat(${org.cols}, minmax(70px, 90px))`;
+            grid.style.gap = '10px';
+            grid.style.justifyContent = 'center';
             
             for (let i = 0; i < org.cells.length; i++) {
                 const cell = org.cells[i];
                 const cellDiv = document.createElement('div');
-                cellDiv.className = `organizer-cell ${cell ? 'filled' : ''}`;
-                cellDiv.onclick = () => openAddMarkerToOrganizer(orgId, i);
+                cellDiv.className = `organizer-cell ${cell && cell.markers && cell.markers.length > 0 ? 'filled' : ''}`;
+                cellDiv.onclick = () => openOrganizerCellModal(orgId, i);
                 
-                if (cell) {
+                const markerCount = cell && cell.markers ? cell.markers.length : 0;
+                
+                if (cell && cell.markers && cell.markers.length > 0) {
+                    const firstMarker = cell.markers[0];
                     cellDiv.innerHTML = `
-                        <div class="organizer-cell-label">${cell.brand}</div>
-                        <div class="organizer-cell-count">${cell.number}</div>
+                        <div class="organizer-cell-label">${firstMarker.brand}</div>
+                        <div class="organizer-cell-count">${firstMarker.number}</div>
+                        ${markerCount > 1 ? `<div style="font-size: 10px; color: var(--accent);">+${markerCount - 1}</div>` : ''}
                     `;
                 } else {
-                    cellDiv.innerHTML = '<div class="organizer-cell-label">+</div>';
+                    cellDiv.innerHTML = '<div class="organizer-cell-label">+</div><div class="organizer-cell-count">0</div>';
                 }
                 
                 grid.appendChild(cellDiv);
@@ -5641,20 +5935,120 @@ button,
             document.getElementById('selectedOrganizerView').style.display = 'none';
         }
         
-        function openAddMarkerToOrganizer(orgId, cellIndex) {
-            currentOrganizerId = orgId;
-            currentCellIndex = cellIndex;
-            const modal = document.getElementById('addMarkerModal');
-            if (modal) modal.style.display = 'flex';
+        function openOrganizerCreator() {
+            document.getElementById('organizerModal').style.display = 'flex';
         }
         
-        let currentOrganizerId = null;
-        let currentCellIndex = null;
+        function closeOrganizerModal() {
+            document.getElementById('organizerModal').style.display = 'none';
+            document.getElementById('organizerName').value = '';
+            document.getElementById('organizerCols').value = '3';
+            document.getElementById('organizerRows').value = '3';
+        }
+        
+        function createOrganizer() {
+            const name = document.getElementById('organizerName').value.trim();
+            const cols = parseInt(document.getElementById('organizerCols').value);
+            const rows = parseInt(document.getElementById('organizerRows').value);
+            
+            if (!name) {
+                if (tg) tg.showAlert('Введите название органайзера');
+                return;
+            }
+            
+            const newOrganizer = {
+                id: Date.now(),
+                name: name,
+                cols: cols,
+                rows: rows,
+                cells: Array(cols * rows).fill(null)
+            };
+            
+            if (!inventory.organizers) inventory.organizers = [];
+            inventory.organizers.push(newOrganizer);
+            saveInventory();
+            renderOrganizersList();
+            closeOrganizerModal();
+            if (tg) tg.showAlert(`✅ Органайзер "${name}" создан!`);
+        }
+        
+        function saveInventory() {
+            localStorage.setItem('coloring_inventory', JSON.stringify(inventory));
+        }
+        
+        function openOrganizerCellModal(orgId, cellIndex) {
+            const org = inventory.organizers.find(o => o.id === orgId);
+            if (!org) return;
+            
+            const cell = org.cells[cellIndex] || { markers: [] };
+            const markers = cell.markers || [];
+            
+            const modal = document.getElementById('organizerCellModal');
+            if (modal) {
+                document.getElementById('organizerCellModalTitle').innerText = `Ячейка ${Math.floor(cellIndex / org.cols) + 1}:${(cellIndex % org.cols) + 1}`;
+                
+                const listContainer = document.getElementById('organizerCellMarkersList');
+                listContainer.innerHTML = '';
+                
+                if (markers.length === 0) {
+                    listContainer.innerHTML = '<div class="no-results">Нет маркеров в этой ячейке</div>';
+                } else {
+                    markers.forEach((marker, idx) => {
+                        const isInInventory = inventory.userMarkers && inventory.userMarkers[`${marker.brand}_${marker.number}`];
+                        const markerDiv = document.createElement('div');
+                        markerDiv.className = 'organizer-cell-marker-item';
+                        markerDiv.innerHTML = `
+                            <div>
+                                <strong>${marker.brand}</strong> №${marker.number}
+                                <div style="font-size: 11px; color: var(--text-gray);">x${marker.count || 1}</div>
+                            </div>
+                            <button class="toggle-inventory-btn" onclick="toggleMarkerInInventory('${orgId}', ${cellIndex}, ${idx}, '${marker.brand}', '${marker.number}')" 
+                                style="background: ${isInInventory ? 'var(--status-green)' : 'var(--text-gray)'};">
+                                ${isInInventory ? 'В инвентаре' : 'Нет в наличии'}
+                            </button>
+                        `;
+                        listContainer.appendChild(markerDiv);
+                    });
+                }
+                
+                modal.style.display = 'flex';
+                currentOrganizerCellData = { orgId, cellIndex };
+            }
+        }
+        
+        function toggleMarkerInInventory(orgId, cellIndex, markerIndex, brand, number) {
+            const org = inventory.organizers.find(o => o.id === orgId);
+            if (!org) return;
+            
+            const cell = org.cells[cellIndex];
+            if (!cell || !cell.markers) return;
+            
+            if (!inventory.userMarkers) inventory.userMarkers = {};
+            
+            const key = `${brand}_${number}`;
+            if (inventory.userMarkers[key]) {
+                delete inventory.userMarkers[key];
+                if (tg) tg.showAlert(`❌ Маркер ${brand} №${number} убран из инвентаря`);
+            } else {
+                inventory.userMarkers[key] = { brand, number, count: cell.markers[markerIndex].count || 1 };
+                if (tg) tg.showAlert(`✅ Маркер ${brand} №${number} добавлен в инвентарь`);
+            }
+            
+            saveInventory();
+            openOrganizerCellModal(orgId, cellIndex);
+            openOrganizerView(orgId);
+        }
+        
+        function openAddMarkerToOrganizerCell(orgId, cellIndex) {
+            currentOrganizerId = orgId;
+            currentCellIndex = cellIndex;
+            document.getElementById('addMarkerModal').style.display = 'flex';
+        }
         
         function confirmAddMarker() {
             const brand = document.getElementById('addMarkerBrand').value;
             const number = document.getElementById('addMarkerNumber').value.trim();
-            const count = parseInt(document.getElementById('addMarkerCount').value);
+            const count = parseInt(document.getElementById('addMarkerCount').value) || 1;
             
             if (!number) {
                 if (tg) tg.showAlert('Введите номер маркера');
@@ -5664,19 +6058,31 @@ button,
             if (currentOrganizerId !== null && currentCellIndex !== null) {
                 const org = inventory.organizers.find(o => o.id === currentOrganizerId);
                 if (org) {
-                    org.cells[currentCellIndex] = { brand, number, count };
+                    if (!org.cells[currentCellIndex]) {
+                        org.cells[currentCellIndex] = { markers: [] };
+                    }
+                    if (!org.cells[currentCellIndex].markers) {
+                        org.cells[currentCellIndex].markers = [];
+                    }
+                    
+                    const existing = org.cells[currentCellIndex].markers.find(m => m.brand === brand && m.number === number);
+                    if (existing) {
+                        existing.count = (existing.count || 1) + count;
+                    } else {
+                        org.cells[currentCellIndex].markers.push({ brand, number, count });
+                    }
+                    
                     saveInventory();
                     openOrganizerView(currentOrganizerId);
                 }
             }
             
             closeAddMarkerModal();
-            if (tg) tg.showAlert(`✅ Маркер ${brand} №${number} добавлен!`);
+            if (tg) tg.showAlert(`✅ Маркер ${brand} №${number} добавлен в ячейку!`);
         }
         
         function closeAddMarkerModal() {
-            const modal = document.getElementById('addMarkerModal');
-            if (modal) modal.style.display = 'none';
+            document.getElementById('addMarkerModal').style.display = 'none';
             document.getElementById('addMarkerNumber').value = '';
             document.getElementById('addMarkerCount').value = '1';
             currentOrganizerId = null;
@@ -5716,12 +6122,16 @@ button,
             if (inventory.organizers) {
                 inventory.organizers.forEach(org => {
                     org.cells.forEach((cell, idx) => {
-                        if (cell && (cell.number.includes(query) || cell.brand.toLowerCase().includes(query))) {
-                            results.push({
-                                brand: cell.brand,
-                                number: cell.number,
-                                organizer: org.name,
-                                cellIndex: idx
+                        if (cell && cell.markers) {
+                            cell.markers.forEach(marker => {
+                                if (marker.number.includes(query) || marker.brand.toLowerCase().includes(query)) {
+                                    results.push({
+                                        brand: marker.brand,
+                                        number: marker.number,
+                                        organizer: org.name,
+                                        cellIndex: idx
+                                    });
+                                }
                             });
                         }
                     });
@@ -5759,137 +6169,91 @@ button,
             }
         }
         
-        function saveInventory() {
-            localStorage.setItem('coloring_inventory', JSON.stringify(inventory));
+        function openInventoryModal() {
+            const modal = document.getElementById('inventoryModal');
+            if (!modal) return;
+            
+            const container = document.getElementById('inventoryModalContent');
+            const brandsContainer = document.getElementById('inventoryBrandsList');
+            
+            const userMarkers = inventory.userMarkers || {};
+            const markersList = Object.values(userMarkers);
+            
+            if (markersList.length === 0) {
+                container.innerHTML = '<div class="no-results">У вас пока нет маркеров в инвентаре</div>';
+            } else {
+                container.innerHTML = `
+                    <div style="margin-bottom: 15px;">
+                        <strong>Маркеры в наличии:</strong> ${markersList.length} шт.
+                    </div>
+                    <div class="achievements-grid">
+                        ${markersList.map(m => `
+                            <div class="inventory-marker-card">
+                                <div class="inventory-marker-color" style="background-color: ${getMarkerColor(m.brand, m.number) || '#ccc'}; border-radius: 50%;"></div>
+                                <div class="inventory-marker-info">
+                                    <div class="inventory-marker-name"><strong>${m.brand}</strong> №${m.number}</div>
+                                    <div class="inventory-marker-count">x${m.count || 1}</div>
+                                </div>
+                                <button class="inventory-remove-btn" onclick="removeFromInventory('${m.brand}', '${m.number}')">Удалить</button>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+            
+            // Показываем бренды с маркерами
+            const brandsWithMarkers = {};
+            Object.values(userMarkers).forEach(m => {
+                if (!brandsWithMarkers[m.brand]) brandsWithMarkers[m.brand] = [];
+                brandsWithMarkers[m.brand].push(m.number);
+            });
+            
+            brandsContainer.innerHTML = '<div class="brands-selector-title">Маркеры по брендам:</div>';
+            Object.entries(brandsWithMarkers).forEach(([brand, numbers]) => {
+                const div = document.createElement('div');
+                div.className = 'brand-selector-item';
+                div.innerHTML = `
+                    <span class="brand-selector-name"><strong>${brand}</strong></span>
+                    <span class="brand-selector-count">${numbers.length} маркеров</span>
+                    <button class="brand-selector-btn" onclick="toggleBrandInSearch('${brand}')">Выбрать для поиска</button>
+                `;
+                brandsContainer.appendChild(div);
+            });
+            
+            modal.style.display = 'flex';
         }
         
-        function loadInventory() {
-            const saved = localStorage.getItem('coloring_inventory');
+        function removeFromInventory(brand, number) {
+            if (inventory.userMarkers) {
+                delete inventory.userMarkers[`${brand}_${number}`];
+                saveInventory();
+                openInventoryModal();
+                if (tg) tg.showAlert(`✅ Маркер ${brand} №${number} удален из инвентаря`);
+            }
+        }
+        
+        function toggleBrandInSearch(brand) {
+            if (!aiSettings.selected_brands.includes(brand)) {
+                aiSettings.selected_brands.push(brand);
+            }
+            aiSettings.search_mode = 'brands';
+            saveAISettings();
+            applyAISettingsUI();
+            document.getElementById('inventoryModal').style.display = 'none';
+            if (tg) tg.showAlert(`✅ Бренд ${brand} добавлен в фильтр поиска ИИ`);
+        }
+        
+        function loadUserMarkerBrands() {
+            const saved = localStorage.getItem('user_marker_brands');
             if (saved) {
-                inventory = JSON.parse(saved);
-            } else {
-                inventory = { organizers: [], userMarkers: {} };
-            }
-            renderOrganizersList();
-        }
-        
-       // ==========================================
-// ИНИЦИАЛИЗАЦИЯ - ИСПРАВЛЕННАЯ
-// ==========================================
-
-// Дожидаемся полной загрузки DOM
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM loaded, starting init...');
-    
-    // Проверяем, что все переменные определены
-    if (typeof user === 'undefined') {
-        console.error('user is undefined! Check variable declaration order.');
-        return;
-    }
-    
-    // Загрузка сохраненных данных
-    const savedUser = localStorage.getItem('coloring_user');
-    if (savedUser) {
-        const parsed = JSON.parse(savedUser);
-        user = { ...user, ...parsed };
-    }
-    
-    const savedCart = localStorage.getItem('coloring_cart');
-    if (savedCart) {
-        cart = JSON.parse(savedCart);
-    }
-    
-    const savedAISettings = localStorage.getItem('ai_settings');
-    if (savedAISettings) {
-        aiSettings = JSON.parse(savedAISettings);
-    }
-    
-    // Загрузка данных с сервера (без await, используем Promise)
-    Promise.all([
-        loadUserBalance(),
-        loadUserProgress(),
-        loadUnlockedStatuses(),
-        loadUserAchievements(),
-        loadMarkerColors(),
-        loadAISettings()
-    ]).then(() => {
-        loadInventory();
-        loadUserMarkerBrands();
-        loadTimeTasksStatus();
-        
-        // Применение темы
-        const savedTheme = localStorage.getItem('app_theme');
-        if (savedTheme) {
-            if (savedTheme === 'custom') {
-                applyCustomTheme(true);
-            } else {
-                setTheme(savedTheme);
-            }
-        }
-        
-        // Обновление UI
-        updateUI();
-        renderBranchTasks();
-        renderTimeTasks();
-        renderShowcase();
-        renderCart();
-        renderVolumes();
-        
-        // Запуск автообновления
-        startProgressRefresh();
-        
-        // Инициализация свайпов
-        initSwipeListeners();
-        
-        console.log('✅ App initialized successfully');
-        console.log('typeof tab:', typeof tab);
-        console.log('typeof processAI:', typeof processAI);
-        console.log('typeof loadMarkers:', typeof loadMarkers);
-    }).catch(error => {
-        console.error('Error during initialization:', error);
-    });
-});
-
-function initSwipeListeners() {
-    const viewerImage = document.getElementById('answersViewerImage');
-    if (!viewerImage) return;
-    
-    viewerImage.addEventListener('touchstart', (e) => {
-        touchStartX = e.changedTouches[0].screenX;
-    });
-    
-    viewerImage.addEventListener('touchend', (e) => {
-        touchEndX = e.changedTouches[0].screenX;
-        const swipeThreshold = 50;
-        const diff = touchEndX - touchStartX;
-        if (Math.abs(diff) < swipeThreshold) return;
-        if (diff > 0) {
-            prevAnswerPage();
-        } else {
-            nextAnswerPage();
-        }
-    });
-}
-        
-        function initSwipeListeners() {
-            const viewerImage = document.getElementById('answersViewerImage');
-            if (!viewerImage) return;
-            
-            viewerImage.addEventListener('touchstart', (e) => {
-                touchStartX = e.changedTouches[0].screenX;
-            });
-            
-            viewerImage.addEventListener('touchend', (e) => {
-                touchEndX = e.changedTouches[0].screenX;
-                const swipeThreshold = 50;
-                const diff = touchEndX - touchStartX;
-                if (Math.abs(diff) < swipeThreshold) return;
-                if (diff > 0) {
-                    prevAnswerPage();
-                } else {
-                    nextAnswerPage();
+                const brands = JSON.parse(saved);
+                for (const [num, brand] of Object.entries(brands)) {
+                    const select = document.querySelector(`.marker-brand-select[data-num="${num}"]`);
+                    if (select) {
+                        select.value = brand;
+                    }
                 }
-            });
+            }
         }
         
         // Запуск приложения
@@ -5897,3 +6261,4 @@ function initSwipeListeners() {
     </script>
 </body>
 </html>
+        
