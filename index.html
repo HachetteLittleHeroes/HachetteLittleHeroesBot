@@ -18,6 +18,7 @@
             --text: #1c1c1e;
             --text-gray: #8e8e93;
             --accent: #ff9500;
+            --accent-rgb: 255, 149, 0;
             --accent-gradient: linear-gradient(135deg, #FF8C00 0%, #E65100 100%);
             --status-green: #34c759;
             --status-red: #ff3b30;
@@ -35,6 +36,8 @@
             --bg-header: #1c1c1e;
             --text: #ffffff;
             --text-gray: #8e8e93;
+            --accent: #ff9500;
+            --accent-rgb: 255, 149, 0;
             --border-color: rgba(255,255,255,0.1);
             --card-bg: #1c1c1e;
             --input-bg: #2c2c2e;
@@ -47,6 +50,7 @@
             --text: #1c1c1e;
             --text-gray: #6b7280;
             --accent: #3b82f6;
+            --accent-rgb: 59, 130, 246;
             --accent-gradient: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
         }
 
@@ -57,6 +61,7 @@
             --text: #1c1c1e;
             --text-gray: #6b7280;
             --accent: #22c55e;
+            --accent-rgb: 34, 197, 94;
             --accent-gradient: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
         }
 
@@ -67,6 +72,7 @@
             --text: #1c1c1e;
             --text-gray: #6b7280;
             --accent: #a855f7;
+            --accent-rgb: 168, 85, 247;
             --accent-gradient: linear-gradient(135deg, #a855f7 0%, #7e22ce 100%);
         }
 
@@ -77,6 +83,7 @@
             --text: #1c1c1e;
             --text-gray: #6b7280;
             --accent: #ec4899;
+            --accent-rgb: 236, 72, 153;
             --accent-gradient: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
         }
 
@@ -916,6 +923,7 @@
             padding: 30px 0;
             font-size: 14px;
         }
+
         /* ==========================================
            12. ГАЛЕРЕЯ ДОСТИЖЕНИЙ
            ========================================== */
@@ -1158,7 +1166,6 @@
             text-align: center;
             color: var(--text);
         }
-
         /* ==========================================
            14. ТОМА И ОТВЕТЫ
            ========================================== */
@@ -1846,6 +1853,7 @@
             border-radius: 10px;
             font-weight: 900;
         }
+
         /* ==========================================
            18. МОДАЛЬНЫЕ ОКНА
            ========================================== */
@@ -1963,7 +1971,6 @@
             resize: vertical;
             min-height: 80px;
         }
-
         /* ==========================================
            19. ИНВЕНТАРЬ И ОРГАНАЙЗЕРЫ
            ========================================== */
@@ -2109,26 +2116,27 @@
         }
 
         /* Органайзер сетка - 5 ячеек в строку */
-.organizer-grid {
-    display: grid;
-    gap: 6px;
-    justify-content: center;
-    padding: 8px;
-    background: var(--bg);
-    border-radius: 20px;
-}
-
-.organizer-cell {
-    background: var(--bg-header);
-    border: 2px solid var(--border-color);
-    border-radius: 10px;
-    padding: 6px 2px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    min-width: 50px;
-    max-width: 55px;
-}
+        .organizer-grid {
+            display: grid;
+            gap: 6px;
+            justify-content: center;
+            padding: 8px;
+            background: var(--bg);
+            border-radius: 20px;
+        }
+        
+        .organizer-cell {
+            background: var(--bg-header);
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            padding: 6px 2px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-width: 50px;
+            max-width: 55px;
+        }
+        
         .organizer-cell:hover {
             transform: translateY(-2px);
             border-color: var(--accent);
@@ -2140,17 +2148,17 @@
             background: radial-gradient(circle, rgba(255,149,0,0.08) 0%, transparent 80%);
         }
         
-       .organizer-cell-count {
-    font-size: 16px;
-    font-weight: bold;
-    color: var(--accent);
-    margin-bottom: 2px;
-}
-
-.organizer-cell-label {
-    font-size: 7px;
-    color: var(--text-gray);
-}
+        .organizer-cell-count {
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--accent);
+            margin-bottom: 2px;
+        }
+        
+        .organizer-cell-label {
+            font-size: 7px;
+            color: var(--text-gray);
+        }
 
         /* Модалка ячейки органайзера */
         .organizer-cell-marker-item {
@@ -2230,7 +2238,7 @@
         }
 
         /* ==========================================
-           20. БРЕНДЫ В ИНВЕНТАРЕ (КАСТОМНЫЕ И ОБУЧЕННЫЕ)
+           20. БРЕНДЫ В ИНВЕНТАРЕ (ТОЛЬКО ОБУЧЕННЫЕ)
            ========================================== */
         .brand-inventory-item {
             display: flex;
@@ -2283,16 +2291,7 @@
             transform: scale(0.95);
         }
 
-        .delete-brand-btn {
-            background: var(--status-red);
-            color: white;
-            padding: 2px 8px;
-            border-radius: 20px;
-            font-size: 10px;
-            cursor: pointer;
-            border: none;
-        }
-
+        /* Маркерные плитки - акцентный цвет для "в инвентаре" */
         .brand-markers-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -2310,72 +2309,43 @@
             }
         }
 
-       /* Маркерные плитки - без текста статуса */
-.marker-tile {
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 14px;
-    padding: 10px 4px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.2s;
-}
+        .marker-tile {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 8px 2px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
 
-.marker-tile:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    border-color: var(--accent);
-}
+        .marker-tile:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-color: var(--accent);
+        }
 
-.marker-tile.in-inventory {
-    background: linear-gradient(135deg, rgba(52, 199, 89, 0.15), rgba(52, 199, 89, 0.05));
-    border-color: var(--status-green);
-}
+        .marker-tile.in-inventory {
+            background: rgba(var(--accent-rgb), 0.15);
+            border-color: var(--accent);
+        }
 
-.marker-tile.not-in-inventory {
-    background: var(--card-bg);
-    border-color: var(--border-color);
-}
+        .marker-tile.not-in-inventory {
+            background: var(--card-bg);
+            border-color: var(--border-color);
+        }
 
-.marker-tile .color-circle {
-    width: 40px;
-    height: 40px;
-    margin: 0 auto 6px;
-    border-radius: 50%;
-}
+        .marker-tile .color-circle {
+            width: 36px;
+            height: 36px;
+            margin: 0 auto 4px;
+            border-radius: 50%;
+        }
 
-.marker-tile .marker-number {
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--text);
-}
-
-/* Компактная сетка для карточек маркеров */
-.brand-markers-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-    padding: 12px;
-    background: var(--bg);
-    border-radius: 16px;
-    margin-top: 8px;
-    margin-bottom: 12px;
-}
-
-@media (max-width: 450px) {
-    .brand-markers-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-    .marker-tile .color-circle {
-        width: 32px;
-        height: 32px;
-    }
-}
-
-        .marker-tile .marker-status {
-            font-size: 9px;
-            margin-top: 4px;
-            color: var(--text-gray);
+        .marker-tile .marker-number {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text);
         }
 
         .add-marker-to-brand-btn {
@@ -2591,7 +2561,112 @@
         }
 
         /* ==========================================
-           24. ГЛОБАЛЬНЫЕ ФИКСЫ И АДАПТИВ
+           24. МОДАЛКА ИНВЕНТАРЯ ДЛЯ ИИ
+           ========================================== */
+        .inventory-markers-list {
+            max-height: 50vh;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .inventory-marker-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            margin-bottom: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .inventory-marker-color {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .inventory-marker-info {
+            flex: 1;
+        }
+
+        .inventory-marker-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text);
+        }
+
+        .inventory-marker-count {
+            font-size: 11px;
+            color: var(--text-gray);
+        }
+
+        .inventory-remove-btn {
+            background: var(--status-red);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .inventory-remove-btn:active {
+            transform: scale(0.95);
+        }
+
+        .brands-selector-title {
+            margin: 15px 0 10px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .brand-selector-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            background: var(--card-bg);
+            border-radius: 14px;
+            margin-bottom: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .brand-selector-name {
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .brand-selector-count {
+            font-size: 11px;
+            color: var(--text-gray);
+            background: var(--bg);
+            padding: 2px 8px;
+            border-radius: 20px;
+        }
+
+        .brand-selector-btn {
+            background: var(--accent);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .brand-selector-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* ==========================================
+           25. ГЛОБАЛЬНЫЕ ФИКСЫ И АДАПТИВ
            ========================================== */
         button,
         .nav-btn,
@@ -2622,9 +2697,8 @@
         .inventory-modal-btn,
         .marker-tile,
         .brand-inventory-btn,
-        .delete-brand-btn,
-        .delete-marker-btn,
-        .add-marker-to-brand-btn {
+        .add-marker-to-brand-btn,
+        .brand-selector-btn {
             pointer-events: auto !important;
             cursor: pointer !important;
             transition: all 0.2s ease;
@@ -2669,14 +2743,14 @@
 
         @media (max-width: 480px) {
             .organizer-cell {
-                min-width: 48px;
-                padding: 6px 2px;
+                min-width: 45px;
+                padding: 4px 2px;
             }
             .organizer-cell-count {
-                font-size: 14px;
+                font-size: 12px;
             }
             .organizer-cell-label {
-                font-size: 7px;
+                font-size: 6px;
             }
             .batch-results {
                 grid-template-columns: 1fr;
@@ -2715,11 +2789,16 @@
                 font-size: 9px;
             }
             .marker-tile .color-circle {
-                width: 32px;
-                height: 32px;
+                width: 28px;
+                height: 28px;
             }
             .marker-tile .marker-number {
-                font-size: 12px;
+                font-size: 10px;
+            }
+            .brand-markers-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 6px;
+                padding: 8px;
             }
         }
     </style>
@@ -2866,7 +2945,7 @@
                     </div>
                 </div>
                 
-                <!-- МАРКЕРЫ (отдельный подраздел для настройки инвентаря) -->
+                <!-- МАРКЕРЫ (настройка инвентаря - только обученные маркеры) -->
                 <div class="inventory-subblock">
                     <div class="subblock-header" onclick="toggleMarkersBlock()">
                         <div class="subblock-header-left"><i class="fas fa-palette"></i><span>Маркеры (настройка инвентаря)</span></div>
@@ -3256,10 +3335,11 @@
         </div>
     </div>
 
-    <!-- Модалка добавления своего бренда -->
+    <!-- Модалка добавления своего бренда (только для органайзеров) -->
     <div id="addBrandModal" class="modal-overlay" style="display: none;">
         <div class="modal-content">
             <h3>➕ Добавить свой бренд</h3>
+            <p style="font-size: 12px; color: var(--text-gray); margin-bottom: 10px;">Кастомные бренды используются только в органайзерах и не участвуют в расчете ИИ</p>
             <input type="text" id="newBrandNameInput" placeholder="Название бренда (например: Copic, Ohuhu)">
             <div class="modal-buttons-row" style="margin-top: 20px;">
                 <button class="modal-close-btn" onclick="closeAddBrandModal()">Отмена</button>
@@ -3268,7 +3348,7 @@
         </div>
     </div>
 
-    <!-- Модалка добавления маркера в бренд -->
+    <!-- Модалка добавления маркера в кастомный бренд -->
     <div id="addMarkerToBrandModal" class="modal-overlay" style="display: none;">
         <div class="modal-content">
             <h3 id="addMarkerToBrandTitle">➕ Добавить маркер</h3>
@@ -3290,7 +3370,7 @@
         const MAX_FILES_BATCH = 40;
         const MAX_FILES_TRAIN = 20;
         
-        // Бренды для отображения
+        // Бренды для отображения (только для справки)
         const BRANDS_DATA = [
             { name: 'GuangNa', total: 408 },
             { name: 'Languo', total: 288 },
@@ -3386,7 +3466,10 @@
         let markersLoading = false;
         let userProgress = {};
         
-        // Кастомные бренды
+        // Обученные маркеры с сервера
+        let learnedMarkersData = { markers: [] };
+        
+        // Кастомные бренды (только для органайзеров)
         let customBrands = [];
         
         // Переменные для томов
@@ -3750,6 +3833,53 @@
             } catch (error) {
                 console.error('Error saving AI settings:', error);
             }
+        }
+        
+        // ==========================================
+        // ЗАГРУЗКА ОБУЧЕННЫХ МАРКЕРОВ С СЕРВЕРА
+        // ==========================================
+        
+        async function loadLearnedMarkersFromServer() {
+            try {
+                const response = await fetch(`${SERVER_URL}/api/ai_training_data`);
+                const data = await response.json();
+                if (data && data.markers) {
+                    learnedMarkersData = data;
+                    localStorage.setItem('ai_training_data_v2', JSON.stringify(data));
+                    console.log('✅ Loaded learned markers:', learnedMarkersData.markers.length);
+                    return learnedMarkersData;
+                }
+            } catch (error) {
+                console.error('Error loading learned markers:', error);
+                const saved = localStorage.getItem('ai_training_data_v2');
+                if (saved) {
+                    learnedMarkersData = JSON.parse(saved);
+                }
+                return learnedMarkersData;
+            }
+        }
+        
+        function getLearnedBrands() {
+            const brands = new Set();
+            if (learnedMarkersData.markers) {
+                learnedMarkersData.markers.forEach(m => {
+                    if (m.brand) brands.add(m.brand);
+                });
+            }
+            return Array.from(brands).sort();
+        }
+        
+        function getMarkersByBrand(brandName) {
+            if (!learnedMarkersData.markers) return [];
+            return learnedMarkersData.markers
+                .filter(m => m.brand === brandName)
+                .map(m => m.number)
+                .sort((a, b) => {
+                    const numA = parseInt(a);
+                    const numB = parseInt(b);
+                    if (isNaN(numA) || isNaN(numB)) return String(a).localeCompare(String(b));
+                    return numA - numB;
+                });
         }
         // ==========================================
         // ФУНКЦИИ ПРОФИЛЯ И UI
@@ -4316,6 +4446,7 @@
             tempPhotos = [];
             isUploading = false;
         }
+        
         // ==========================================
         // ВРЕМЕННЫЕ ЗАДАНИЯ
         // ==========================================
@@ -4551,7 +4682,7 @@
         }
         
         // ==========================================
-        // МАРКЕРЫ (С ЦВЕТАМИ)
+        // МАРКЕРЫ (С ЦВЕТАМИ) - ТОЛЬКО GUANGNA
         // ==========================================
         
         async function loadMarkers() {
@@ -5144,13 +5275,16 @@
             if (!container) return;
             container.innerHTML = '';
             
-            BRANDS_DATA.forEach(brand => {
-                const isChecked = aiSettings.selected_brands.includes(brand.name);
+            const learnedBrands = getLearnedBrands();
+            
+            learnedBrands.forEach(brand => {
+                const isChecked = aiSettings.selected_brands.includes(brand);
+                const markersCount = getMarkersByBrand(brand).length;
                 const div = document.createElement('div');
                 div.className = 'brand-checkbox';
                 div.innerHTML = `
-                    <input type="checkbox" id="brand_${brand.name}" value="${brand.name}" ${isChecked ? 'checked' : ''}>
-                    <label for="brand_${brand.name}">${brand.name} (${brand.total} маркеров)</label>
+                    <input type="checkbox" id="brand_${brand.replace(/\s/g, '')}" value="${brand}" ${isChecked ? 'checked' : ''}>
+                    <label for="brand_${brand.replace(/\s/g, '')}">${brand} (${markersCount} маркеров)</label>
                 `;
                 container.appendChild(div);
             });
@@ -5379,6 +5513,7 @@
                 container.appendChild(card);
             });
         }
+        
         // ==========================================
         // ОБРАТНАЯ СВЯЗЬ И КАРАНТИН
         // ==========================================
@@ -5540,6 +5675,7 @@
                     fileInput.value = '';
                     numberInput.value = '';
                     await loadMarkerColors();
+                    await loadLearnedMarkersFromServer();
                 } else {
                     throw new Error(result.message);
                 }
@@ -5592,6 +5728,7 @@
                     fileInput.value = '';
                     document.getElementById('aiBatchTrainNumbers').value = '';
                     await loadMarkerColors();
+                    await loadLearnedMarkersFromServer();
                 } else {
                     throw new Error(result.message);
                 }
@@ -5639,7 +5776,6 @@
                 if (tg) tg.showAlert(`❌ Недостаточно ашетиков! Нужно ${price}, у вас ${user.balance}`);
             }
         }
-        
         // ==========================================
         // ОБНОВЛЕНИЕ ПРОГРЕССА И СТАТУСЫ
         // ==========================================
@@ -5808,15 +5944,20 @@
             const commonStyles = `button, .nav-btn, .task-submit-btn, .search-mode-btn, .feedback-btn { pointer-events: auto !important; cursor: pointer !important; } .modal-overlay { z-index: 10000 !important; }`;
             
             if (bgMode === 'light') {
-                style.textContent = `:root { --bg: #f5f5f7; --bg-secondary: #ffffff; --bg-header: #ffffff; --text: #1c1c1e; --text-gray: #8e8e93; --accent: ${accentColor}; --accent-gradient: linear-gradient(135deg, ${accentColor} 0%, ${accentColor}cc 100%); --border-color: rgba(0,0,0,0.1); --card-bg: #ffffff; --input-bg: #ffffff; } ${commonStyles}`;
+                style.textContent = `:root { --bg: #f5f5f7; --bg-secondary: #ffffff; --bg-header: #ffffff; --text: #1c1c1e; --text-gray: #8e8e93; --accent: ${accentColor}; --accent-rgb: ${hexToRgb(accentColor)}; --accent-gradient: linear-gradient(135deg, ${accentColor} 0%, ${accentColor}cc 100%); --border-color: rgba(0,0,0,0.1); --card-bg: #ffffff; --input-bg: #ffffff; } ${commonStyles}`;
             } else {
-                style.textContent = `:root { --bg: #121212; --bg-secondary: #1e1e1e; --bg-header: #1c1c1e; --text: #ffffff; --text-gray: #8e8e93; --accent: ${accentColor}; --accent-gradient: linear-gradient(135deg, ${accentColor} 0%, ${accentColor}cc 100%); --border-color: rgba(255,255,255,0.1); --card-bg: #1c1c1e; --input-bg: #2c2c2e; } ${commonStyles}`;
+                style.textContent = `:root { --bg: #121212; --bg-secondary: #1e1e1e; --bg-header: #1c1c1e; --text: #ffffff; --text-gray: #8e8e93; --accent: ${accentColor}; --accent-rgb: ${hexToRgb(accentColor)}; --accent-gradient: linear-gradient(135deg, ${accentColor} 0%, ${accentColor}cc 100%); --border-color: rgba(255,255,255,0.1); --card-bg: #1c1c1e; --input-bg: #2c2c2e; } ${commonStyles}`;
             }
             
             document.head.appendChild(style);
             document.documentElement.removeAttribute('data-theme');
             user.theme = 'custom';
             localStorage.setItem('app_theme', 'custom');
+        }
+        
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '255, 149, 0';
         }
         
         // ==========================================
@@ -5860,6 +6001,7 @@
                     break;
             }
         }
+        
         // ==========================================
         // ОРГАНАЙЗЕРЫ (ПОЛНАЯ РЕАЛИЗАЦИЯ)
         // ==========================================
@@ -5914,7 +6056,7 @@
             const gridContainer = document.getElementById('selectedOrganizerGrid');
             gridContainer.innerHTML = '';
             
-            const cellWidth = org.cols <= 5 ? 65 : 60;
+            const cellWidth = org.cols <= 5 ? 55 : 50;
             const grid = document.createElement('div');
             grid.className = 'organizer-grid';
             grid.style.display = 'grid';
@@ -6023,93 +6165,90 @@
         }
         
         function openOrganizerCellModal(orgId, cellIndex) {
-    const org = inventory.organizers.find(o => o.id === orgId);
-    if (!org) return;
-    
-    const cell = org.cells[cellIndex] || { markers: [] };
-    const markers = cell.markers || [];
-    
-    const modal = document.getElementById('organizerCellModal');
-    if (!modal) return;
-    
-    document.getElementById('organizerCellModalTitle').innerText = `Ячейка ${Math.floor(cellIndex / org.cols) + 1}:${(cellIndex % org.cols) + 1}`;
-    
-    const listContainer = document.getElementById('organizerCellMarkersList');
-    listContainer.innerHTML = '';
-    
-    // Фильтр по бренду с добавлением "Другие бренды"
-    const filterDiv = document.createElement('div');
-    filterDiv.style.cssText = 'margin-bottom: 15px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;';
-    
-    // Собираем все бренды из маркеров в ячейке
-    const allBrandsInCell = new Set();
-    markers.forEach(m => allBrandsInCell.add(m.brand));
-    
-    // Собираем все кастомные бренды
-    const allCustomBrands = new Set(customBrands.map(b => b.name));
-    
-    filterDiv.innerHTML = `
-        <label style="font-size: 12px; color: var(--text-gray);">Фильтр по бренду:</label>
-        <select id="markerBrandFilter" style="flex: 1; padding: 8px; border-radius: 12px; background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text);">
-            <option value="all">Все бренды</option>
-            ${Array.from(allBrandsInCell).map(b => `<option value="${b}">${b}</option>`).join('')}
-            ${allCustomBrands.size > 0 ? '<option disabled>──────────</option>' : ''}
-            ${Array.from(allCustomBrands).filter(b => !allBrandsInCell.has(b)).map(b => `<option value="${b}">${b} (другой)</option>`).join('')}
-        </select>
-    `;
-    listContainer.appendChild(filterDiv);
-    
-    const markersListDiv = document.createElement('div');
-    markersListDiv.id = 'organizerMarkersList';
-    markersListDiv.style.maxHeight = '40vh';
-    markersListDiv.style.overflowY = 'auto';
-    listContainer.appendChild(markersListDiv);
-    
-    function renderFilteredMarkers() {
-        const selectedBrand = document.getElementById('markerBrandFilter').value;
-        const filteredMarkers = selectedBrand === 'all' ? markers : markers.filter(m => m.brand === selectedBrand);
-        
-        markersListDiv.innerHTML = '';
-        
-        if (filteredMarkers.length === 0) {
-            markersListDiv.innerHTML = '<div class="no-results">Нет маркеров в этой ячейке</div>';
-            return;
-        }
-        
-        filteredMarkers.forEach((marker, idx) => {
-            const originalIdx = markers.findIndex(m => m === marker);
-            const hasColor = getMarkerColor(marker.brand, marker.number);
-            const markerDiv = document.createElement('div');
-            markerDiv.className = 'organizer-cell-marker-item';
-            markerDiv.style.cssText = 'display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid var(--border-color);';
-            markerDiv.innerHTML = `
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <div class="color-circle" style="width: 32px; height: 32px; background-color: ${hasColor || '#ccc'}; border: none;"></div>
-                    <div>
-                        <strong>${marker.brand}</strong> №${marker.number}
-                        <div style="font-size: 11px; color: var(--text-gray);">x${marker.count || 1}</div>
-                    </div>
-                </div>
-                <button class="delete-marker-btn" onclick="deleteMarkerFromOrganizerCell('${orgId}', ${cellIndex}, ${originalIdx})">🗑️ Удалить</button>
+            const org = inventory.organizers.find(o => o.id === orgId);
+            if (!org) return;
+            
+            const cell = org.cells[cellIndex] || { markers: [] };
+            const markers = cell.markers || [];
+            
+            const modal = document.getElementById('organizerCellModal');
+            if (!modal) return;
+            
+            document.getElementById('organizerCellModalTitle').innerText = `Ячейка ${Math.floor(cellIndex / org.cols) + 1}:${(cellIndex % org.cols) + 1}`;
+            
+            const listContainer = document.getElementById('organizerCellMarkersList');
+            listContainer.innerHTML = '';
+            
+            // Фильтр по бренду с добавлением кастомных брендов
+            const filterDiv = document.createElement('div');
+            filterDiv.style.cssText = 'margin-bottom: 15px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;';
+            
+            const allBrandsInCell = new Set();
+            markers.forEach(m => allBrandsInCell.add(m.brand));
+            const allCustomBrands = new Set(customBrands.map(b => b.name));
+            
+            filterDiv.innerHTML = `
+                <label style="font-size: 12px; color: var(--text-gray);">Фильтр по бренду:</label>
+                <select id="markerBrandFilter" style="flex: 1; padding: 8px; border-radius: 12px; background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text);">
+                    <option value="all">Все бренды</option>
+                    ${Array.from(allBrandsInCell).map(b => `<option value="${b}">${b}</option>`).join('')}
+                    ${allCustomBrands.size > 0 ? '<option disabled>──────────</option>' : ''}
+                    ${Array.from(allCustomBrands).filter(b => !allBrandsInCell.has(b)).map(b => `<option value="${b}">${b} (другой)</option>`).join('')}
+                </select>
             `;
-            markersListDiv.appendChild(markerDiv);
-        });
-    }
-    
-    filterSelect.onchange = renderFilteredMarkers;
-    renderFilteredMarkers();
-    
-    // ТОЛЬКО ОДНА КНОПКА - Добавить маркер в ячейку
-    const addBtn = document.createElement('button');
-    addBtn.className = 'modal-action-btn';
-    addBtn.style.marginTop = '15px';
-    addBtn.innerHTML = '<i class="fas fa-plus"></i> Добавить маркер в ячейку';
-    addBtn.onclick = () => openAddMarkerToOrganizerCell(orgId, cellIndex);
-    listContainer.appendChild(addBtn);
-    
-    currentOrganizerCellData = { orgId, cellIndex };
-    modal.style.display = 'flex';
-}
+            listContainer.appendChild(filterDiv);
+            
+            const markersListDiv = document.createElement('div');
+            markersListDiv.id = 'organizerMarkersList';
+            markersListDiv.style.maxHeight = '40vh';
+            markersListDiv.style.overflowY = 'auto';
+            listContainer.appendChild(markersListDiv);
+            
+            function renderFilteredMarkers() {
+                const selectedBrand = document.getElementById('markerBrandFilter').value;
+                const filteredMarkers = selectedBrand === 'all' ? markers : markers.filter(m => m.brand === selectedBrand);
+                
+                markersListDiv.innerHTML = '';
+                
+                if (filteredMarkers.length === 0) {
+                    markersListDiv.innerHTML = '<div class="no-results">Нет маркеров в этой ячейке</div>';
+                    return;
+                }
+                
+                filteredMarkers.forEach((marker, idx) => {
+                    const originalIdx = markers.findIndex(m => m === marker);
+                    const hasColor = getMarkerColor(marker.brand, marker.number);
+                    const markerDiv = document.createElement('div');
+                    markerDiv.className = 'organizer-cell-marker-item';
+                    markerDiv.style.cssText = 'display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid var(--border-color);';
+                    markerDiv.innerHTML = `
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div class="color-circle" style="width: 32px; height: 32px; background-color: ${hasColor || '#ccc'}; border: none;"></div>
+                            <div>
+                                <strong>${marker.brand}</strong> №${marker.number}
+                                <div style="font-size: 11px; color: var(--text-gray);">x${marker.count || 1}</div>
+                            </div>
+                        </div>
+                        <button class="delete-marker-btn" onclick="deleteMarkerFromOrganizerCell('${orgId}', ${cellIndex}, ${originalIdx})">🗑️ Удалить</button>
+                    `;
+                    markersListDiv.appendChild(markerDiv);
+                });
+            }
+            
+            const filterSelect = document.getElementById('markerBrandFilter');
+            filterSelect.onchange = renderFilteredMarkers;
+            renderFilteredMarkers();
+            
+            const addBtn = document.createElement('button');
+            addBtn.className = 'modal-action-btn';
+            addBtn.style.marginTop = '15px';
+            addBtn.innerHTML = '<i class="fas fa-plus"></i> Добавить маркер в ячейку';
+            addBtn.onclick = () => openAddMarkerToOrganizerCell(orgId, cellIndex);
+            listContainer.appendChild(addBtn);
+            
+            currentOrganizerCellData = { orgId, cellIndex };
+            modal.style.display = 'flex';
+        }
         
         function deleteMarkerFromOrganizerCell(orgId, cellIndex, markerIndex) {
             const org = inventory.organizers.find(o => o.id === parseInt(orgId));
@@ -6126,47 +6265,44 @@
         }
         
         function openAddMarkerToOrganizerCell(orgId, cellIndex) {
-    document.getElementById('organizerCellModal').style.display = 'none';
-    currentOrganizerId = orgId;
-    currentCellIndex = cellIndex;
-    
-    // Обновляем список брендов в модалке добавления, включая кастомные
-    const brandSelect = document.getElementById('addMarkerBrand');
-    if (brandSelect) {
-        const currentValue = brandSelect.value;
-        brandSelect.innerHTML = '';
-        
-        // Стандартные бренды
-        const standardBrands = ['GuangNa', 'Languo', 'Zibeef', 'Grasp', 'InfiArt', 'Tooli-Art'];
-        standardBrands.forEach(b => {
-            const option = document.createElement('option');
-            option.value = b;
-            option.textContent = b;
-            brandSelect.appendChild(option);
-        });
-        
-        // Кастомные бренды
-        if (customBrands.length > 0) {
-            const separator = document.createElement('option');
-            separator.disabled = true;
-            separator.textContent = '──────────';
-            brandSelect.appendChild(separator);
+            document.getElementById('organizerCellModal').style.display = 'none';
+            currentOrganizerId = orgId;
+            currentCellIndex = cellIndex;
             
-            customBrands.forEach(b => {
-                const option = document.createElement('option');
-                option.value = b.name;
-                option.textContent = `${b.name} (пользовательский)`;
-                brandSelect.appendChild(option);
-            });
+            const brandSelect = document.getElementById('addMarkerBrand');
+            if (brandSelect) {
+                const currentValue = brandSelect.value;
+                brandSelect.innerHTML = '';
+                
+                const standardBrands = ['GuangNa', 'Languo', 'Zibeef', 'Grasp', 'InfiArt', 'Tooli-Art'];
+                standardBrands.forEach(b => {
+                    const option = document.createElement('option');
+                    option.value = b;
+                    option.textContent = b;
+                    brandSelect.appendChild(option);
+                });
+                
+                if (customBrands.length > 0) {
+                    const separator = document.createElement('option');
+                    separator.disabled = true;
+                    separator.textContent = '──────────';
+                    brandSelect.appendChild(separator);
+                    
+                    customBrands.forEach(b => {
+                        const option = document.createElement('option');
+                        option.value = b.name;
+                        option.textContent = `${b.name} (пользовательский)`;
+                        brandSelect.appendChild(option);
+                    });
+                }
+                
+                if (currentValue && [...standardBrands, ...customBrands.map(b => b.name)].includes(currentValue)) {
+                    brandSelect.value = currentValue;
+                }
+            }
+            
+            document.getElementById('addMarkerModal').style.display = 'flex';
         }
-        
-        if (currentValue && [...standardBrands, ...customBrands.map(b => b.name)].includes(currentValue)) {
-            brandSelect.value = currentValue;
-        }
-    }
-    
-    document.getElementById('addMarkerModal').style.display = 'flex';
-}
         
         function confirmAddMarker() {
             const brand = document.getElementById('addMarkerBrand').value;
@@ -6274,106 +6410,60 @@
                 }, 100);
             }
         }
-        
         // ==========================================
-        // КАСТОМНЫЕ БРЕНДЫ И ИНВЕНТАРЬ
+        // КАСТОМНЫЕ БРЕНДЫ (ТОЛЬКО ДЛЯ ОРГАНАЙЗЕРОВ)
         // ==========================================
         
         function renderBrandsInventory() {
-    const container = document.getElementById('brandsList');
-    if (!container) return;
-    
-    container.innerHTML = '';
-    
-    const allBrands = new Map();
-    
-    const trainingData = JSON.parse(localStorage.getItem('ai_training_data_v2') || '{"markers":[]}');
-    if (trainingData.markers) {
-        trainingData.markers.forEach(marker => {
-            if (!allBrands.has(marker.brand)) {
-                allBrands.set(marker.brand, new Set());
+            const container = document.getElementById('brandsList');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            const learnedBrands = getLearnedBrands();
+            
+            if (learnedBrands.length === 0) {
+                container.innerHTML = '<div class="no-results">📦 Нет обученных маркеров. Админ добавит их через обучение ИИ.</div>';
+                return;
             }
-            allBrands.get(marker.brand).add(marker.number);
-        });
-    }
-    
-    customBrands.forEach(brand => {
-        if (!allBrands.has(brand.name)) {
-            allBrands.set(brand.name, new Set());
+            
+            learnedBrands.forEach(brandName => {
+                const markers = getMarkersByBrand(brandName);
+                
+                const brandDiv = document.createElement('div');
+                brandDiv.className = 'brand-inventory-item';
+                brandDiv.style.marginBottom = '12px';
+                brandDiv.innerHTML = `
+                    <div class="brand-inventory-name">
+                        <i class="fas fa-tag"></i> 
+                        <strong style="font-size: 16px;">${brandName}</strong>
+                        <span class="brand-inventory-count">${markers.length} марк.</span>
+                    </div>
+                    <button class="brand-inventory-btn" onclick="toggleBrandMarkersGrid('${brandName.replace(/'/g, "\\'")}')">📋 Показать маркеры</button>
+                `;
+                container.appendChild(brandDiv);
+                
+                const markersGrid = document.createElement('div');
+                markersGrid.id = `brand-markers-grid-${brandName.replace(/\s/g, '')}`;
+                markersGrid.className = 'brand-markers-grid';
+                markersGrid.style.display = 'none';
+                
+                markers.forEach(number => {
+                    const isInInventory = inventory.userMarkers && inventory.userMarkers[`${brandName}_${number}`];
+                    const markerColor = getMarkerColor(brandName, number);
+                    const markerTile = document.createElement('div');
+                    markerTile.className = `marker-tile ${isInInventory ? 'in-inventory' : 'not-in-inventory'}`;
+                    markerTile.onclick = () => toggleMarkerForAI(brandName, number);
+                    markerTile.innerHTML = `
+                        <div class="color-circle" style="background-color: ${markerColor || '#ccc'}; border: none;"></div>
+                        <div class="marker-number">№${number}</div>
+                    `;
+                    markersGrid.appendChild(markerTile);
+                });
+                
+                container.appendChild(markersGrid);
+            });
         }
-        brand.markers.forEach(num => allBrands.get(brand.name).add(num));
-    });
-    
-    const addBrandBtn = document.createElement('button');
-    addBrandBtn.className = 'create-organizer-btn';
-    addBrandBtn.style.marginBottom = '15px';
-    addBrandBtn.style.background = 'var(--accent)';
-    addBrandBtn.innerHTML = '<i class="fas fa-plus"></i> Добавить свой бренд';
-    addBrandBtn.onclick = () => openAddBrandModal();
-    container.appendChild(addBrandBtn);
-    
-    if (allBrands.size === 0) {
-        const emptyMsg = document.createElement('div');
-        emptyMsg.className = 'no-results';
-        emptyMsg.innerHTML = '📦 Нет маркеров в базе. Админ добавит их через обучение ИИ, или вы можете создать свой бренд.';
-        container.appendChild(emptyMsg);
-        return;
-    }
-    
-    const sortedBrands = Array.from(allBrands.keys()).sort();
-    
-    sortedBrands.forEach(brandName => {
-        const markersSet = allBrands.get(brandName);
-        const isCustom = customBrands.some(b => b.name === brandName);
-        
-        const brandDiv = document.createElement('div');
-        brandDiv.className = 'brand-inventory-item';
-        brandDiv.style.marginBottom = '12px';
-        brandDiv.innerHTML = `
-            <div class="brand-inventory-name">
-                <i class="fas fa-tag"></i> 
-                <strong style="font-size: 16px;">${brandName}</strong>
-                <span class="brand-inventory-count">${markersSet.size} марк.</span>
-                ${isCustom ? `<button class="delete-brand-btn" onclick="event.stopPropagation(); deleteCustomBrand('${brandName}')">🗑️</button>` : ''}
-            </div>
-            <button class="brand-inventory-btn" onclick="toggleBrandMarkersGrid('${brandName.replace(/'/g, "\\'")}')">📋 Показать маркеры</button>
-        `;
-        container.appendChild(brandDiv);
-        
-        const markersGrid = document.createElement('div');
-        markersGrid.id = `brand-markers-grid-${brandName.replace(/\s/g, '')}`;
-        markersGrid.className = 'brand-markers-grid';
-        markersGrid.style.display = 'none';
-        
-        const sortedMarkers = Array.from(markersSet).sort((a, b) => {
-            const numA = parseInt(a);
-            const numB = parseInt(b);
-            if (isNaN(numA) || isNaN(numB)) return String(a).localeCompare(String(b));
-            return numA - numB;
-        });
-        
-        sortedMarkers.forEach(number => {
-            const isInInventory = inventory.userMarkers && inventory.userMarkers[`${brandName}_${number}`];
-            const markerColor = getMarkerColor(brandName, number);
-            const markerTile = document.createElement('div');
-            markerTile.className = `marker-tile ${isInInventory ? 'in-inventory' : 'not-in-inventory'}`;
-            markerTile.onclick = () => toggleMarkerForAI(brandName, number);
-            markerTile.innerHTML = `
-                <div class="color-circle" style="background-color: ${markerColor || '#ccc'}; border: none;"></div>
-                <div class="marker-number">№${number}</div>
-            `;
-            markersGrid.appendChild(markerTile);
-        });
-        
-        const addMarkerBtn = document.createElement('button');
-        addMarkerBtn.className = 'add-marker-to-brand-btn';
-        addMarkerBtn.innerHTML = '<i class="fas fa-plus"></i> Добавить маркер в этот бренд';
-        addMarkerBtn.onclick = () => openAddMarkerToBrandModal(brandName);
-        markersGrid.appendChild(addMarkerBtn);
-        
-        container.appendChild(markersGrid);
-    });
-}
         
         function toggleBrandMarkersGrid(brandName) {
             const grid = document.getElementById(`brand-markers-grid-${brandName.replace(/\s/g, '')}`);
@@ -6387,25 +6477,34 @@
         }
         
         function toggleMarkerForAI(brand, number) {
-    const key = `${brand}_${number}`;
-    if (!inventory.userMarkers) inventory.userMarkers = {};
-    
-    if (inventory.userMarkers[key]) {
-        delete inventory.userMarkers[key];
-    } else {
-        inventory.userMarkers[key] = { brand, number, count: 1 };
-    }
-    
-    saveInventory();
-    renderBrandsInventory(); // Обновляем отображение
-    updateMarkerColorsInUI();
-    
-    // Обновляем модалку инвентаря если открыта
-    const inventoryModal = document.getElementById('inventoryModal');
-    if (inventoryModal && inventoryModal.style.display === 'flex') {
-        openInventoryModal();
-    }
-}
+            const key = `${brand}_${number}`;
+            if (!inventory.userMarkers) inventory.userMarkers = {};
+            
+            if (inventory.userMarkers[key]) {
+                delete inventory.userMarkers[key];
+            } else {
+                inventory.userMarkers[key] = { brand, number, count: 1 };
+            }
+            
+            saveInventory();
+            renderBrandsInventory();
+            updateMarkerColorsInUI();
+            
+            const inventoryModal = document.getElementById('inventoryModal');
+            if (inventoryModal && inventoryModal.style.display === 'flex') {
+                const filterSelect = document.getElementById('inventoryBrandFilter');
+                if (filterSelect) {
+                    const selectedBrand = filterSelect.value;
+                    renderInventoryMarkers(selectedBrand);
+                } else {
+                    openInventoryModal();
+                }
+            }
+        }
+        
+        // ==========================================
+        // КАСТОМНЫЕ БРЕНДЫ ДЛЯ ОРГАНАЙЗЕРОВ
+        // ==========================================
         
         function openAddBrandModal() {
             document.getElementById('addBrandModal').style.display = 'flex';
@@ -6425,7 +6524,6 @@
                 }
                 customBrands.push({ name: brandName, markers: [] });
                 saveCustomBrands();
-                renderBrandsInventory();
                 closeAddBrandModal();
                 if (tg) tg.showAlert(`✅ Бренд "${brandName}" добавлен!`);
             } else {
@@ -6439,7 +6537,6 @@
                     if (confirm) {
                         customBrands = customBrands.filter(b => b.name !== brandName);
                         saveCustomBrands();
-                        renderBrandsInventory();
                         if (tg) tg.showAlert(`✅ Бренд "${brandName}" удален`);
                     }
                 });
@@ -6447,7 +6544,6 @@
                 if (confirm(`Удалить бренд "${brandName}" и все его маркеры?`)) {
                     customBrands = customBrands.filter(b => b.name !== brandName);
                     saveCustomBrands();
-                    renderBrandsInventory();
                     alert(`✅ Бренд "${brandName}" удален`);
                 }
             }
@@ -6480,7 +6576,6 @@
                 }
                 brand.markers.push(number);
                 saveCustomBrands();
-                renderBrandsInventory();
                 closeAddMarkerToBrandModal();
                 if (tg) tg.showAlert(`✅ Маркер №${number} добавлен в ${currentBrandForMarker}`);
             } else {
@@ -6488,7 +6583,6 @@
                 if (!inventory.userMarkers) inventory.userMarkers = {};
                 inventory.userMarkers[key] = { brand: currentBrandForMarker, number: number, count: 1 };
                 saveInventory();
-                renderBrandsInventory();
                 closeAddMarkerToBrandModal();
                 if (tg) tg.showAlert(`✅ Маркер №${number} добавлен в инвентарь`);
             }
@@ -6507,100 +6601,118 @@
             }
         }
         
+        // ==========================================
+        // МОДАЛКА ИНВЕНТАРЯ ДЛЯ ИИ ПАЛИТРЫ
+        // ==========================================
+        
         function openInventoryModal() {
-    const modal = document.getElementById('inventoryModal');
-    if (!modal) return;
-    
-    const container = document.getElementById('inventoryModalContent');
-    const brandsContainer = document.getElementById('inventoryBrandsList');
-    
-    const userMarkers = inventory.userMarkers || {};
-    const markersList = Object.values(userMarkers);
-    
-    if (markersList.length === 0) {
-        container.innerHTML = '<div class="no-results">У вас пока нет маркеров в инвентаре</div>';
-    } else {
-        // Сортируем маркеры по бренду и номеру
-        const sortedMarkers = [...markersList].sort((a, b) => {
-            if (a.brand !== b.brand) return a.brand.localeCompare(b.brand);
-            const numA = parseInt(a.number);
-            const numB = parseInt(b.number);
-            if (isNaN(numA) || isNaN(numB)) return a.number.localeCompare(b.number);
-            return numA - numB;
-        });
-        
-        // Группируем по брендам для отображения
-        const groupedByBrand = new Map();
-        sortedMarkers.forEach(m => {
-            if (!groupedByBrand.has(m.brand)) groupedByBrand.set(m.brand, []);
-            groupedByBrand.get(m.brand).push(m);
-        });
-        
-        container.innerHTML = `
-            <div style="margin-bottom: 15px;">
-                <strong>Маркеры в наличии:</strong> ${markersList.length} шт.
-            </div>
-        `;
-        
-        groupedByBrand.forEach((markers, brand) => {
-            const brandSection = document.createElement('div');
-            brandSection.style.marginBottom = '20px';
-            brandSection.innerHTML = `<div style="font-weight: 600; margin-bottom: 10px; color: var(--accent);">${brand}</div>`;
+            const modal = document.getElementById('inventoryModal');
+            if (!modal) return;
             
-            const markersGrid = document.createElement('div');
-            markersGrid.style.display = 'grid';
-            markersGrid.style.gridTemplateColumns = 'repeat(4, 1fr)';
-            markersGrid.style.gap = '8px';
+            const container = document.getElementById('inventoryModalContent');
+            const brandsContainer = document.getElementById('inventoryBrandsList');
             
-            markers.forEach(m => {
-                const markerColor = getMarkerColor(m.brand, m.number);
-                const tile = document.createElement('div');
-                tile.className = `marker-tile in-inventory`;
-                tile.style.cursor = 'pointer';
-                tile.onclick = () => toggleMarkerForAI(m.brand, m.number);
-                tile.innerHTML = `
-                    <div class="color-circle" style="width: 40px; height: 40px; margin: 0 auto 6px; background-color: ${markerColor || '#ccc'}; border: none;"></div>
-                    <div class="marker-number">№${m.number}</div>
+            const learnedBrands = getLearnedBrands();
+            const userMarkers = inventory.userMarkers || {};
+            
+            const filterDiv = document.createElement('div');
+            filterDiv.style.cssText = 'margin-bottom: 15px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;';
+            filterDiv.innerHTML = `
+                <label style="font-size: 12px; color: var(--text-gray);">Фильтр по бренду:</label>
+                <select id="inventoryBrandFilter" style="flex: 1; padding: 8px; border-radius: 12px; background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text);">
+                    <option value="all">Все бренды</option>
+                    ${learnedBrands.map(b => `<option value="${b}">${b}</option>`).join('')}
+                </select>
+            `;
+            container.innerHTML = '';
+            container.appendChild(filterDiv);
+            
+            const markersContainer = document.createElement('div');
+            markersContainer.id = 'inventoryMarkersContainer';
+            container.appendChild(markersContainer);
+            
+            window.renderInventoryMarkers = function(selectedBrand = 'all') {
+                markersContainer.innerHTML = '';
+                
+                let brandsToShow = selectedBrand === 'all' ? learnedBrands : [selectedBrand];
+                
+                if (brandsToShow.length === 0) {
+                    markersContainer.innerHTML = '<div class="no-results">Нет обученных маркеров</div>';
+                    return;
+                }
+                
+                let totalMarkers = 0;
+                
+                brandsToShow.forEach(brandName => {
+                    const markers = getMarkersByBrand(brandName);
+                    if (markers.length === 0) return;
+                    
+                    const userMarkersForBrand = markers.filter(num => userMarkers[`${brandName}_${num}`]);
+                    totalMarkers += userMarkersForBrand.length;
+                    
+                    const brandSection = document.createElement('div');
+                    brandSection.style.marginBottom = '20px';
+                    brandSection.innerHTML = `
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <div style="font-weight: 600; color: var(--accent);">${brandName}</div>
+                            <div style="font-size: 11px; color: var(--text-gray);">в инвентаре: ${userMarkersForBrand.length}/${markers.length}</div>
+                        </div>
+                    `;
+                    
+                    const markersGrid = document.createElement('div');
+                    markersGrid.style.display = 'grid';
+                    markersGrid.style.gridTemplateColumns = 'repeat(4, 1fr)';
+                    markersGrid.style.gap = '8px';
+                    
+                    markers.forEach(number => {
+                        const isInInventory = !!userMarkers[`${brandName}_${number}`];
+                        const markerColor = getMarkerColor(brandName, number);
+                        const tile = document.createElement('div');
+                        tile.className = `marker-tile ${isInInventory ? 'in-inventory' : 'not-in-inventory'}`;
+                        tile.style.cursor = 'pointer';
+                        tile.onclick = () => {
+                            toggleMarkerForAI(brandName, number);
+                            renderInventoryMarkers(selectedBrand);
+                        };
+                        tile.innerHTML = `
+                            <div class="color-circle" style="width: 36px; height: 36px; margin: 0 auto 4px; background-color: ${markerColor || '#ccc'}; border: none;"></div>
+                            <div class="marker-number">№${number}</div>
+                        `;
+                        markersGrid.appendChild(tile);
+                    });
+                    
+                    brandSection.appendChild(markersGrid);
+                    markersContainer.appendChild(brandSection);
+                });
+                
+                const counterDiv = document.createElement('div');
+                counterDiv.style.cssText = 'margin-top: 15px; padding-top: 10px; border-top: 1px solid var(--border-color); text-align: center; font-size: 12px; color: var(--text-gray);';
+                counterDiv.innerHTML = `📦 Всего в инвентаре: ${totalMarkers} маркеров`;
+                markersContainer.appendChild(counterDiv);
+            };
+            
+            document.getElementById('inventoryBrandFilter').onchange = (e) => {
+                renderInventoryMarkers(e.target.value);
+            };
+            renderInventoryMarkers('all');
+            
+            brandsContainer.innerHTML = '<div class="brands-selector-title">⚡ Быстрый выбор бренда для ИИ:</div>';
+            learnedBrands.forEach(brand => {
+                const markersCount = getMarkersByBrand(brand).length;
+                const div = document.createElement('div');
+                div.className = 'brand-selector-item';
+                div.innerHTML = `
+                    <span class="brand-selector-name"><strong>${brand}</strong></span>
+                    <span class="brand-selector-count">${markersCount} маркеров</span>
+                    <button class="brand-selector-btn" onclick="selectBrandForAI('${brand}')">Выбрать</button>
                 `;
-                markersGrid.appendChild(tile);
+                brandsContainer.appendChild(div);
             });
             
-            brandSection.appendChild(markersGrid);
-            container.appendChild(brandSection);
-        });
-    }
-    
-    // Обновляем список брендов для быстрого выбора в ИИ
-    const brandsWithMarkers = {};
-    Object.values(userMarkers).forEach(m => {
-        if (!brandsWithMarkers[m.brand]) brandsWithMarkers[m.brand] = [];
-        brandsWithMarkers[m.brand].push(m.number);
-    });
-    
-    brandsContainer.innerHTML = '<div class="brands-selector-title">Быстрый выбор бренда для ИИ:</div>';
-    Object.entries(brandsWithMarkers).forEach(([brand, numbers]) => {
-        const div = document.createElement('div');
-        div.className = 'brand-selector-item';
-        div.innerHTML = `
-            <span class="brand-selector-name"><strong>${brand}</strong></span>
-            <span class="brand-selector-count">${numbers.length} маркеров</span>
-            <button class="brand-selector-btn" onclick="toggleBrandInSearch('${brand}')">Выбрать для поиска</button>
-        `;
-        brandsContainer.appendChild(div);
-    });
-    
-    modal.style.display = 'flex';
-}
-        function removeFromInventory(brand, number) {
-            if (inventory.userMarkers) {
-                delete inventory.userMarkers[`${brand}_${number}`];
-                saveInventory();
-                openInventoryModal();
-                if (tg) tg.showAlert(`✅ Маркер ${brand} №${number} удален из инвентаря`);
-            }
+            modal.style.display = 'flex';
         }
         
-        function toggleBrandInSearch(brand) {
+        function selectBrandForAI(brand) {
             if (!aiSettings.selected_brands.includes(brand)) {
                 aiSettings.selected_brands.push(brand);
             }
@@ -6648,6 +6760,8 @@
             }
             
             loadCustomBrands();
+            
+            await loadLearnedMarkersFromServer();
             
             await loadUserBalance();
             await loadUserProgress();
@@ -6707,4 +6821,3 @@
     </script>
 </body>
 </html>
-        
