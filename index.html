@@ -6165,104 +6165,119 @@
         }
         
         function openOrganizerCellModal(orgId, cellIndex) {
-            const org = inventory.organizers.find(o => o.id === orgId);
-            if (!org) return;
-            
-            const cell = org.cells[cellIndex] || { markers: [] };
-            const markers = cell.markers || [];
-            
-            const modal = document.getElementById('organizerCellModal');
-            if (!modal) return;
-            
-            document.getElementById('organizerCellModalTitle').innerText = `Ячейка ${Math.floor(cellIndex / org.cols) + 1}:${(cellIndex % org.cols) + 1}`;
-            
-            const listContainer = document.getElementById('organizerCellMarkersList');
-            listContainer.innerHTML = '';
-            
-            // Фильтр по бренду с добавлением кастомных брендов
-            const filterDiv = document.createElement('div');
-            filterDiv.style.cssText = 'margin-bottom: 15px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;';
-            
-            const allBrandsInCell = new Set();
-            markers.forEach(m => allBrandsInCell.add(m.brand));
-            const allCustomBrands = new Set(customBrands.map(b => b.name));
-            
-            filterDiv.innerHTML = `
-                <label style="font-size: 12px; color: var(--text-gray);">Фильтр по бренду:</label>
-                <select id="markerBrandFilter" style="flex: 1; padding: 8px; border-radius: 12px; background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text);">
-                    <option value="all">Все бренды</option>
-                    ${Array.from(allBrandsInCell).map(b => `<option value="${b}">${b}</option>`).join('')}
-                    ${allCustomBrands.size > 0 ? '<option disabled>──────────</option>' : ''}
-                    ${Array.from(allCustomBrands).filter(b => !allBrandsInCell.has(b)).map(b => `<option value="${b}">${b} (другой)</option>`).join('')}
-                </select>
-            `;
-            listContainer.appendChild(filterDiv);
-            
-            const markersListDiv = document.createElement('div');
-            markersListDiv.id = 'organizerMarkersList';
-            markersListDiv.style.maxHeight = '40vh';
-            markersListDiv.style.overflowY = 'auto';
-            listContainer.appendChild(markersListDiv);
-            
-            function renderFilteredMarkers() {
-                const selectedBrand = document.getElementById('markerBrandFilter').value;
-                const filteredMarkers = selectedBrand === 'all' ? markers : markers.filter(m => m.brand === selectedBrand);
-                
-                markersListDiv.innerHTML = '';
-                
-                if (filteredMarkers.length === 0) {
-                    markersListDiv.innerHTML = '<div class="no-results">Нет маркеров в этой ячейке</div>';
-                    return;
-                }
-                
-                filteredMarkers.forEach((marker, idx) => {
-                    const originalIdx = markers.findIndex(m => m === marker);
-                    const hasColor = getMarkerColor(marker.brand, marker.number);
-                    const markerDiv = document.createElement('div');
-                    markerDiv.className = 'organizer-cell-marker-item';
-                    markerDiv.style.cssText = 'display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid var(--border-color);';
-                    markerDiv.innerHTML = `
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <div class="color-circle" style="width: 32px; height: 32px; background-color: ${hasColor || '#ccc'}; border: none;"></div>
-                            <div>
-                                <strong>${marker.brand}</strong> №${marker.number}
-                                <div style="font-size: 11px; color: var(--text-gray);">x${marker.count || 1}</div>
-                            </div>
-                        </div>
-                        <button class="delete-marker-btn" onclick="deleteMarkerFromOrganizerCell('${orgId}', ${cellIndex}, ${originalIdx})">🗑️ Удалить</button>
-                    `;
-                    markersListDiv.appendChild(markerDiv);
-                });
-            }
-            
-            const filterSelect = document.getElementById('markerBrandFilter');
-            filterSelect.onchange = renderFilteredMarkers;
-            renderFilteredMarkers();
-            
-            const addBtn = document.createElement('button');
-            addBtn.className = 'modal-action-btn';
-            addBtn.style.marginTop = '15px';
-            addBtn.innerHTML = '<i class="fas fa-plus"></i> Добавить маркер в ячейку';
-            addBtn.onclick = () => openAddMarkerToOrganizerCell(orgId, cellIndex);
-            listContainer.appendChild(addBtn);
-            
-            currentOrganizerCellData = { orgId, cellIndex };
-            modal.style.display = 'flex';
+    const org = inventory.organizers.find(o => o.id === orgId);
+    if (!org) return;
+    
+    const cell = org.cells[cellIndex] || { markers: [] };
+    const markers = cell.markers || [];
+    
+    const modal = document.getElementById('organizerCellModal');
+    if (!modal) return;
+    
+    document.getElementById('organizerCellModalTitle').innerText = `Ячейка ${Math.floor(cellIndex / org.cols) + 1}:${(cellIndex % org.cols) + 1}`;
+    
+    const listContainer = document.getElementById('organizerCellMarkersList');
+    listContainer.innerHTML = '';
+    
+    // Фильтр по бренду
+    const filterDiv = document.createElement('div');
+    filterDiv.style.cssText = 'margin-bottom: 15px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;';
+    
+    const allBrandsInCell = new Set();
+    markers.forEach(m => allBrandsInCell.add(m.brand));
+    const allCustomBrands = new Set(customBrands.map(b => b.name));
+    
+    filterDiv.innerHTML = `
+        <label style="font-size: 12px; color: var(--text-gray);">Фильтр по бренду:</label>
+        <select id="markerBrandFilter" style="flex: 1; padding: 8px; border-radius: 12px; background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text);">
+            <option value="all">Все бренды</option>
+            ${Array.from(allBrandsInCell).map(b => `<option value="${b}">${b}</option>`).join('')}
+            ${allCustomBrands.size > 0 ? '<option disabled>──────────</option>' : ''}
+            ${Array.from(allCustomBrands).filter(b => !allBrandsInCell.has(b)).map(b => `<option value="${b}">${b} (другой)</option>`).join('')}
+        </select>
+    `;
+    listContainer.appendChild(filterDiv);
+    
+    const markersListDiv = document.createElement('div');
+    markersListDiv.id = 'organizerMarkersList';
+    markersListDiv.style.maxHeight = '40vh';
+    markersListDiv.style.overflowY = 'auto';
+    listContainer.appendChild(markersListDiv);
+    
+    function renderFilteredMarkers() {
+        const selectedBrand = document.getElementById('markerBrandFilter').value;
+        const filteredMarkers = selectedBrand === 'all' ? markers : markers.filter(m => m.brand === selectedBrand);
+        
+        markersListDiv.innerHTML = '';
+        
+        if (filteredMarkers.length === 0) {
+            markersListDiv.innerHTML = '<div class="no-results">Нет маркеров в этой ячейке</div>';
+            return;
         }
         
-        function deleteMarkerFromOrganizerCell(orgId, cellIndex, markerIndex) {
-            const org = inventory.organizers.find(o => o.id === parseInt(orgId));
-            if (!org) return;
-            
-            const cell = org.cells[cellIndex];
-            if (cell && cell.markers) {
-                cell.markers.splice(markerIndex, 1);
-                saveInventory();
-                openOrganizerView(orgId);
+        filteredMarkers.forEach((marker, idx) => {
+            const originalIdx = markers.findIndex(m => m === marker);
+            const hasColor = getMarkerColor(marker.brand, marker.number);
+            const markerDiv = document.createElement('div');
+            markerDiv.className = 'organizer-cell-marker-item';
+            markerDiv.style.cssText = 'display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid var(--border-color);';
+            markerDiv.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div class="color-circle" style="width: 32px; height: 32px; background-color: ${hasColor || '#ccc'}; border: none;"></div>
+                    <div>
+                        <strong>${marker.brand}</strong> №${marker.number}
+                        <div style="font-size: 11px; color: var(--text-gray);">x${marker.count || 1}</div>
+                    </div>
+                </div>
+                <button class="delete-marker-btn" onclick="deleteMarkerFromOrganizerCell('${orgId}', ${cellIndex}, ${originalIdx})">🗑️ Удалить</button>
+            `;
+            markersListDiv.appendChild(markerDiv);
+        });
+    }
+    
+    const filterSelect = document.getElementById('markerBrandFilter');
+    filterSelect.onchange = renderFilteredMarkers;
+    renderFilteredMarkers();
+    
+    // ТОЛЬКО ОДНА КНОПКА - Добавить маркер в ячейку
+    const addBtn = document.createElement('button');
+    addBtn.className = 'modal-action-btn';
+    addBtn.style.marginTop = '15px';
+    addBtn.innerHTML = '<i class="fas fa-plus"></i> Добавить маркер в ячейку';
+    addBtn.onclick = () => openAddMarkerToOrganizerCell(orgId, cellIndex);
+    listContainer.appendChild(addBtn);
+    
+    currentOrganizerCellData = { orgId, cellIndex };
+    modal.style.display = 'flex';
+}
+        
+       function deleteMarkerFromOrganizerCell(orgId, cellIndex, markerIndex) {
+    const org = inventory.organizers.find(o => o.id === parseInt(orgId));
+    if (!org) return;
+    
+    const cell = org.cells[cellIndex];
+    if (cell && cell.markers) {
+        cell.markers.splice(markerIndex, 1);
+        saveInventory();
+        
+        // Немедленное обновление интерфейса
+        // 1. Обновляем отображение ячейки в сетке
+        openOrganizerView(orgId);
+        
+        // 2. Обновляем текущую модалку (перерисовываем список маркеров)
+        const modal = document.getElementById('organizerCellModal');
+        if (modal && modal.style.display === 'flex') {
+            // Просто обновляем содержимое модалки, не закрывая её
+            const currentOrgId = currentOrganizerCellData?.orgId;
+            const currentCellIdx = currentOrganizerCellData?.cellIndex;
+            if (currentOrgId === orgId && currentCellIdx === cellIndex) {
                 openOrganizerCellModal(orgId, cellIndex);
-                if (tg) tg.showAlert('🗑️ Маркер удален из ячейки');
             }
         }
+        
+        if (tg) tg.showAlert('🗑️ Маркер удален из ячейки');
+    }
+}
         
         function openAddMarkerToOrganizerCell(orgId, cellIndex) {
             document.getElementById('organizerCellModal').style.display = 'none';
