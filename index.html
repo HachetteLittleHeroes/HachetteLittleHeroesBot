@@ -1456,7 +1456,7 @@
         }
 
         /* ==========================================
-           16. ИИ ПАЛИТРА (ОБНОВЛЕННАЯ)
+           16. ИИ ПАЛИТРА
            ========================================== */
         .ai-section {
             padding: 0 15px;
@@ -1794,6 +1794,7 @@
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
         }
+
         /* ==========================================
            17. НАВИГАЦИЯ
            ========================================== */
@@ -1845,7 +1846,6 @@
             border-radius: 10px;
             font-weight: 900;
         }
-
         /* ==========================================
            18. МОДАЛЬНЫЕ ОКНА
            ========================================== */
@@ -1951,6 +1951,12 @@
             background: var(--input-bg);
             color: var(--text);
             font-size: 16px;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(255,149,0,0.2);
         }
 
         textarea {
@@ -2105,39 +2111,23 @@
         /* Органайзер сетка - компактная */
         .organizer-grid {
             display: grid;
-            gap: 8px;
+            gap: 6px;
             justify-content: center;
             padding: 8px;
-            overflow-x: auto;
             background: var(--bg);
             border-radius: 20px;
-            scrollbar-width: thin;
-        }
-        
-        .organizer-grid::-webkit-scrollbar {
-            height: 4px;
-        }
-        
-        .organizer-grid::-webkit-scrollbar-track {
-            background: var(--border-color);
-            border-radius: 4px;
-        }
-        
-        .organizer-grid::-webkit-scrollbar-thumb {
-            background: var(--accent);
-            border-radius: 4px;
         }
         
         .organizer-cell {
             background: var(--bg-header);
             border: 2px solid var(--border-color);
-            border-radius: 14px;
-            padding: 10px 4px;
+            border-radius: 12px;
+            padding: 8px 2px;
             text-align: center;
             cursor: pointer;
             transition: all 0.2s ease;
-            min-width: 65px;
-            max-width: 75px;
+            min-width: 55px;
+            max-width: 65px;
         }
         
         .organizer-cell:hover {
@@ -2152,14 +2142,14 @@
         }
         
         .organizer-cell-count {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
             color: var(--accent);
-            margin-bottom: 4px;
+            margin-bottom: 2px;
         }
         
         .organizer-cell-label {
-            font-size: 9px;
+            font-size: 8px;
             color: var(--text-gray);
         }
 
@@ -2243,26 +2233,6 @@
         /* ==========================================
            20. БРЕНДЫ В ИНВЕНТАРЕ (КАСТОМНЫЕ И ОБУЧЕННЫЕ)
            ========================================== */
-        .brand-content {
-            scrollbar-width: thin;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-
-        .brand-content::-webkit-scrollbar {
-            width: 4px;
-        }
-
-        .brand-content::-webkit-scrollbar-track {
-            background: var(--border-color);
-            border-radius: 4px;
-        }
-
-        .brand-content::-webkit-scrollbar-thumb {
-            background: var(--accent);
-            border-radius: 4px;
-        }
-
         .brand-inventory-item {
             display: flex;
             justify-content: space-between;
@@ -2273,6 +2243,8 @@
             margin-bottom: 8px;
             border: 1px solid var(--border-color);
             transition: all 0.2s;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .brand-inventory-item:hover {
@@ -2301,7 +2273,7 @@
             color: white;
             padding: 6px 14px;
             border-radius: 30px;
-            font-size: 11px;
+            font-size: 12px;
             font-weight: 500;
             cursor: pointer;
             transition: all 0.2s;
@@ -2322,37 +2294,61 @@
             border: none;
         }
 
-        .brand-markers-list {
-            margin-top: 10px;
-            margin-bottom: 15px;
-            padding-left: 20px;
-            border-left: 2px solid var(--accent);
+        .brand-markers-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            padding: 12px;
+            background: var(--bg);
+            border-radius: 16px;
+            margin-top: 8px;
+            margin-bottom: 12px;
         }
 
-        .brand-marker-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 12px;
-            margin: 6px 0;
+        @media (max-width: 450px) {
+            .brand-markers-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .marker-tile {
             background: var(--card-bg);
-            border-radius: 14px;
             border: 1px solid var(--border-color);
-        }
-
-        .toggle-marker-btn {
-            background: var(--text-gray);
-            color: white;
-            padding: 6px 14px;
-            border-radius: 30px;
-            font-size: 12px;
+            border-radius: 14px;
+            padding: 10px 4px;
+            text-align: center;
             cursor: pointer;
-            border: none;
             transition: all 0.2s;
         }
 
-        .toggle-marker-btn:active {
-            transform: scale(0.95);
+        .marker-tile:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-color: var(--accent);
+        }
+
+        .marker-tile.in-inventory {
+            background: linear-gradient(135deg, rgba(52, 199, 89, 0.15), rgba(52, 199, 89, 0.05));
+            border-color: var(--status-green);
+        }
+
+        .marker-tile .color-circle {
+            width: 40px;
+            height: 40px;
+            margin: 0 auto 6px;
+            border-radius: 50%;
+        }
+
+        .marker-tile .marker-number {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .marker-tile .marker-status {
+            font-size: 9px;
+            margin-top: 4px;
+            color: var(--text-gray);
         }
 
         .add-marker-to-brand-btn {
@@ -2362,11 +2358,17 @@
             color: var(--accent);
             padding: 10px;
             border-radius: 14px;
-            margin-bottom: 12px;
             font-size: 12px;
             cursor: pointer;
             transition: all 0.2s;
             text-align: center;
+            grid-column: span 4;
+        }
+
+        @media (max-width: 450px) {
+            .add-marker-to-brand-btn {
+                grid-column: span 3;
+            }
         }
 
         .add-marker-to-brand-btn:active {
@@ -2453,6 +2455,7 @@
             cursor: pointer;
             text-align: center;
         }
+
         /* ==========================================
            22. ВРЕМЕННЫЕ ЗАДАНИЯ
            ========================================== */
@@ -2561,112 +2564,7 @@
         }
 
         /* ==========================================
-           24. МОДАЛКА ИНВЕНТАРЯ
-           ========================================== */
-        .inventory-markers-list {
-            max-height: 50vh;
-            overflow-y: auto;
-            padding-right: 5px;
-        }
-
-        .inventory-marker-card {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px;
-            background: var(--card-bg);
-            border-radius: 16px;
-            margin-bottom: 8px;
-            border: 1px solid var(--border-color);
-        }
-
-        .inventory-marker-color {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            flex-shrink: 0;
-        }
-
-        .inventory-marker-info {
-            flex: 1;
-        }
-
-        .inventory-marker-name {
-            font-weight: 600;
-            font-size: 14px;
-            color: var(--text);
-        }
-
-        .inventory-marker-count {
-            font-size: 11px;
-            color: var(--text-gray);
-        }
-
-        .inventory-remove-btn {
-            background: var(--status-red);
-            color: white;
-            padding: 6px 14px;
-            border-radius: 30px;
-            font-size: 11px;
-            font-weight: 500;
-            cursor: pointer;
-            border: none;
-            transition: all 0.2s;
-        }
-
-        .inventory-remove-btn:active {
-            transform: scale(0.95);
-        }
-
-        .brands-selector-title {
-            margin: 15px 0 10px;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text);
-        }
-
-        .brand-selector-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 12px;
-            background: var(--card-bg);
-            border-radius: 14px;
-            margin-bottom: 8px;
-            border: 1px solid var(--border-color);
-        }
-
-        .brand-selector-name {
-            font-weight: 500;
-            color: var(--text);
-        }
-
-        .brand-selector-count {
-            font-size: 11px;
-            color: var(--text-gray);
-            background: var(--bg);
-            padding: 2px 8px;
-            border-radius: 20px;
-        }
-
-        .brand-selector-btn {
-            background: var(--accent);
-            color: white;
-            padding: 5px 12px;
-            border-radius: 30px;
-            font-size: 11px;
-            font-weight: 500;
-            cursor: pointer;
-            border: none;
-            transition: all 0.2s;
-        }
-
-        .brand-selector-btn:active {
-            transform: scale(0.95);
-        }
-
-        /* ==========================================
-           25. ГЛОБАЛЬНЫЕ ФИКСЫ И АДАПТИВ
+           24. ГЛОБАЛЬНЫЕ ФИКСЫ И АДАПТИВ
            ========================================== */
         button,
         .nav-btn,
@@ -2695,39 +2593,14 @@
         .feedback-btn,
         .upload-multiple-btn,
         .inventory-modal-btn,
-        .toggle-marker-btn,
+        .marker-tile,
         .brand-inventory-btn,
         .delete-brand-btn,
         .delete-marker-btn,
-        .add-marker-to-brand-btn,
-        .brand-selector-btn {
+        .add-marker-to-brand-btn {
             pointer-events: auto !important;
             cursor: pointer !important;
             transition: all 0.2s ease;
-        }
-
-        button:active,
-        .nav-btn:active,
-        .marker-controls button:active,
-        .theme-option:active,
-        .upload-area:active,
-        .showcase-slot:active,
-        .reward-card:active,
-        .balance-btn:active,
-        .modal-action-btn:active,
-        .checkout-btn:active,
-        .add-to-cart-btn:active,
-        .task-submit-btn:active,
-        .book-card:active,
-        .create-organizer-btn:active,
-        .search-mode-btn:active,
-        .feedback-btn:active,
-        .upload-multiple-btn:active,
-        .toggle-marker-btn:active,
-        .brand-inventory-btn:active,
-        .delete-marker-btn:active {
-            transform: scale(0.96);
-            opacity: 0.9;
         }
 
         .modal-overlay {
@@ -2769,14 +2642,14 @@
 
         @media (max-width: 480px) {
             .organizer-cell {
-                min-width: 55px;
-                padding: 8px 4px;
+                min-width: 48px;
+                padding: 6px 2px;
             }
             .organizer-cell-count {
-                font-size: 16px;
+                font-size: 14px;
             }
             .organizer-cell-label {
-                font-size: 8px;
+                font-size: 7px;
             }
             .batch-results {
                 grid-template-columns: 1fr;
@@ -2814,14 +2687,12 @@
             .marker-color-info {
                 font-size: 9px;
             }
-            .brand-inventory-item {
-                flex-direction: column;
-                gap: 10px;
-                align-items: flex-start;
+            .marker-tile .color-circle {
+                width: 32px;
+                height: 32px;
             }
-            .brand-inventory-btn {
-                width: 100%;
-                text-align: center;
+            .marker-tile .marker-number {
+                font-size: 12px;
             }
         }
     </style>
@@ -3352,7 +3223,7 @@
             <h3 id="organizerCellModalTitle">Маркеры в ячейке</h3>
             <div id="organizerCellMarkersList" style="max-height: 50vh; overflow-y: auto;"></div>
             <button class="modal-action-btn" onclick="openAddMarkerToOrganizerCell(currentOrganizerCellData?.orgId, currentOrganizerCellData?.cellIndex)" style="margin-top: 15px;">
-                <i class="fas fa-plus"></i> Добавить маркер
+                <i class="fas fa-plus"></i> Добавить маркер в ячейку
             </button>
             <button class="modal-close-btn" onclick="document.getElementById('organizerCellModal').style.display='none'">Закрыть</button>
         </div>
@@ -3675,6 +3546,7 @@
             'scrooge': { id: 'scrooge', name: 'Скрудж', img: 'assets/achievements/ach10.png', desc: 'Накоплено 2500 ашетиков', condition: 'Накопите 2500 ашетиков' },
             'benefactor': { id: 'benefactor', name: 'Благодетель', img: 'assets/achievements/ach11.png', desc: 'Поддержали проект', condition: 'Поддержите нас' }
         };
+        
         // ==========================================
         // ДАННЫЕ ТОМОВ (47 ТОМОВ)
         // ==========================================
@@ -3852,7 +3724,6 @@
                 console.error('Error saving AI settings:', error);
             }
         }
-        
         // ==========================================
         // ФУНКЦИИ ПРОФИЛЯ И UI
         // ==========================================
@@ -4149,6 +4020,7 @@
                 }
             }
         }
+        
         // ==========================================
         // ФУНКЦИИ ДЛЯ РАБОТЫ С ЗАДАНИЯМИ
         // ==========================================
@@ -4417,7 +4289,6 @@
             tempPhotos = [];
             isUploading = false;
         }
-        
         // ==========================================
         // ВРЕМЕННЫЕ ЗАДАНИЯ
         // ==========================================
@@ -4869,6 +4740,7 @@
                 }
             });
         }
+        
         // ==========================================
         // КОРЗИНА
         // ==========================================
@@ -5043,7 +4915,6 @@
                 if (tg) tg.showAlert('❌ Ошибка отправки заказа. Попробуйте позже.');
             }
         }
-        
         // ==========================================
         // ТОМА И ОТВЕТЫ
         // ==========================================
@@ -5962,7 +5833,6 @@
                     break;
             }
         }
-        
         // ==========================================
         // ОРГАНАЙЗЕРЫ (ПОЛНАЯ РЕАЛИЗАЦИЯ)
         // ==========================================
@@ -6017,14 +5887,15 @@
             const gridContainer = document.getElementById('selectedOrganizerGrid');
             gridContainer.innerHTML = '';
             
-            const needsScroll = org.cols > 5;
+            const cellWidth = org.cols <= 5 ? 65 : 60;
             const grid = document.createElement('div');
             grid.className = 'organizer-grid';
             grid.style.display = 'grid';
-            grid.style.gridTemplateColumns = `repeat(${org.cols}, minmax(65px, 75px))`;
+            grid.style.gridTemplateColumns = `repeat(${org.cols}, minmax(${cellWidth}px, ${cellWidth + 5}px))`;
             grid.style.gap = '6px';
             grid.style.justifyContent = 'center';
-            if (needsScroll) {
+            
+            if (org.cols > 5) {
                 grid.style.overflowX = 'auto';
                 grid.style.justifyContent = 'start';
                 grid.style.paddingBottom = '8px';
@@ -6036,18 +5907,18 @@
                 cellDiv.className = `organizer-cell ${cell && cell.markers && cell.markers.length > 0 ? 'filled' : ''}`;
                 cellDiv.onclick = () => openOrganizerCellModal(orgId, i);
                 
-                let totalMarkers = 0;
+                let uniqueMarkers = 0;
                 if (cell && cell.markers) {
-                    totalMarkers = cell.markers.reduce((sum, m) => sum + (m.count || 1), 0);
+                    uniqueMarkers = cell.markers.length;
                 }
                 
-                if (totalMarkers > 0) {
+                if (uniqueMarkers > 0) {
                     cellDiv.innerHTML = `
-                        <div class="organizer-cell-count">${totalMarkers}</div>
-                        <div class="organizer-cell-label">марк.</div>
+                        <div class="organizer-cell-count">${uniqueMarkers}</div>
+                        <div class="organizer-cell-label">цв.</div>
                     `;
                 } else {
-                    cellDiv.innerHTML = '<div class="organizer-cell-count">+</div><div class="organizer-cell-label">добавить</div>';
+                    cellDiv.innerHTML = '<div class="organizer-cell-count">+</div><div class="organizer-cell-label">доб.</div>';
                 }
                 
                 grid.appendChild(cellDiv);
@@ -6079,6 +5950,10 @@
             
             if (!name) {
                 if (tg) tg.showAlert('Введите название органайзера');
+                return;
+            }
+            if (cols < 1 || cols > 12 || rows < 1 || rows > 10) {
+                if (tg) tg.showAlert('Размеры: столбцы 1-12, строки 1-10');
                 return;
             }
             
@@ -6135,27 +6010,66 @@
             const listContainer = document.getElementById('organizerCellMarkersList');
             listContainer.innerHTML = '';
             
-            if (markers.length === 0) {
-                listContainer.innerHTML = '<div class="no-results">Нет маркеров в этой ячейке</div>';
-            } else {
-                markers.forEach((marker, idx) => {
+            // Фильтр по бренду
+            const filterDiv = document.createElement('div');
+            filterDiv.style.cssText = 'margin-bottom: 15px; display: flex; gap: 10px; align-items: center;';
+            filterDiv.innerHTML = `
+                <label style="font-size: 12px; color: var(--text-gray);">Фильтр по бренду:</label>
+                <select id="markerBrandFilter" style="flex: 1; padding: 8px; border-radius: 12px; background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text);">
+                    <option value="all">Все бренды</option>
+                </select>
+            `;
+            listContainer.appendChild(filterDiv);
+            
+            const allBrands = new Set();
+            markers.forEach(m => allBrands.add(m.brand));
+            const filterSelect = document.getElementById('markerBrandFilter');
+            allBrands.forEach(brand => {
+                const option = document.createElement('option');
+                option.value = brand;
+                option.textContent = brand;
+                filterSelect.appendChild(option);
+            });
+            
+            const markersListDiv = document.createElement('div');
+            markersListDiv.id = 'organizerMarkersList';
+            markersListDiv.style.maxHeight = '40vh';
+            markersListDiv.style.overflowY = 'auto';
+            listContainer.appendChild(markersListDiv);
+            
+            function renderFilteredMarkers() {
+                const selectedBrand = document.getElementById('markerBrandFilter').value;
+                const filteredMarkers = selectedBrand === 'all' ? markers : markers.filter(m => m.brand === selectedBrand);
+                
+                markersListDiv.innerHTML = '';
+                
+                if (filteredMarkers.length === 0) {
+                    markersListDiv.innerHTML = '<div class="no-results">Нет маркеров в этой ячейке</div>';
+                    return;
+                }
+                
+                filteredMarkers.forEach((marker, idx) => {
+                    const originalIdx = markers.findIndex(m => m === marker);
                     const hasColor = getMarkerColor(marker.brand, marker.number);
                     const markerDiv = document.createElement('div');
                     markerDiv.className = 'organizer-cell-marker-item';
-                    markerDiv.style.cssText = 'display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid var(--border-color);';
+                    markerDiv.style.cssText = 'display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid var(--border-color);';
                     markerDiv.innerHTML = `
-                        <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
                             <div class="color-circle" style="width: 32px; height: 32px; background-color: ${hasColor || '#ccc'}; border: none;"></div>
                             <div>
                                 <strong>${marker.brand}</strong> №${marker.number}
                                 <div style="font-size: 11px; color: var(--text-gray);">x${marker.count || 1}</div>
                             </div>
                         </div>
-                        <button class="delete-marker-btn" onclick="deleteMarkerFromOrganizerCell('${orgId}', ${cellIndex}, ${idx})">🗑️ Удалить</button>
+                        <button class="delete-marker-btn" onclick="deleteMarkerFromOrganizerCell('${orgId}', ${cellIndex}, ${originalIdx})">🗑️ Удалить</button>
                     `;
-                    listContainer.appendChild(markerDiv);
+                    markersListDiv.appendChild(markerDiv);
                 });
             }
+            
+            filterSelect.onchange = renderFilteredMarkers;
+            renderFilteredMarkers();
             
             const addBtn = document.createElement('button');
             addBtn.className = 'modal-action-btn';
@@ -6176,8 +6090,8 @@
             if (cell && cell.markers) {
                 cell.markers.splice(markerIndex, 1);
                 saveInventory();
-                openOrganizerCellModal(orgId, cellIndex);
                 openOrganizerView(orgId);
+                openOrganizerCellModal(orgId, cellIndex);
                 if (tg) tg.showAlert('🗑️ Маркер удален из ячейки');
             }
         }
@@ -6249,11 +6163,14 @@
                         if (cell && cell.markers) {
                             cell.markers.forEach(marker => {
                                 if (marker.number.includes(query) || marker.brand.toLowerCase().includes(query)) {
+                                    const row = Math.floor(idx / org.cols) + 1;
+                                    const col = (idx % org.cols) + 1;
                                     results.push({
                                         brand: marker.brand,
                                         number: marker.number,
                                         organizer: org.name,
-                                        cellIndex: idx
+                                        cellIndex: idx,
+                                        location: `${row}:${col}`
                                     });
                                 }
                             });
@@ -6270,7 +6187,7 @@
                             <span class="marker-search-result-brand">${r.brand}</span>
                             <span class="marker-search-result-number">№${r.number}</span>
                         </div>
-                        <div class="marker-search-result-location">📍 ${r.organizer}</div>
+                        <div class="marker-search-result-location">📍 ${r.organizer} • ячейка ${r.location}</div>
                     </div>
                 `).join('');
             } else {
@@ -6303,17 +6220,24 @@
             
             container.innerHTML = '';
             
-            const learnedBrands = new Map();
+            const allBrands = new Map();
+            
             const trainingData = JSON.parse(localStorage.getItem('ai_training_data_v2') || '{"markers":[]}');
             if (trainingData.markers) {
                 trainingData.markers.forEach(marker => {
-                    const brand = marker.brand;
-                    if (!learnedBrands.has(brand)) {
-                        learnedBrands.set(brand, new Set());
+                    if (!allBrands.has(marker.brand)) {
+                        allBrands.set(marker.brand, new Set());
                     }
-                    learnedBrands.get(brand).add(marker.number);
+                    allBrands.get(marker.brand).add(marker.number);
                 });
             }
+            
+            customBrands.forEach(brand => {
+                if (!allBrands.has(brand.name)) {
+                    allBrands.set(brand.name, new Set());
+                }
+                brand.markers.forEach(num => allBrands.get(brand.name).add(num));
+            });
             
             const addBrandBtn = document.createElement('button');
             addBrandBtn.className = 'create-organizer-btn';
@@ -6323,35 +6247,38 @@
             addBrandBtn.onclick = () => openAddBrandModal();
             container.appendChild(addBrandBtn);
             
-            function renderBrand(brandName, markersSet, isCustom = false) {
+            if (allBrands.size === 0) {
+                const emptyMsg = document.createElement('div');
+                emptyMsg.className = 'no-results';
+                emptyMsg.innerHTML = '📦 Нет маркеров в базе. Админ добавит их через обучение ИИ, или вы можете создать свой бренд.';
+                container.appendChild(emptyMsg);
+                return;
+            }
+            
+            const sortedBrands = Array.from(allBrands.keys()).sort();
+            
+            sortedBrands.forEach(brandName => {
+                const markersSet = allBrands.get(brandName);
+                const isCustom = customBrands.some(b => b.name === brandName);
+                
                 const brandDiv = document.createElement('div');
                 brandDiv.className = 'brand-inventory-item';
-                brandDiv.style.marginBottom = '8px';
+                brandDiv.style.marginBottom = '12px';
                 brandDiv.innerHTML = `
-                    <div class="brand-inventory-name" style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                    <div class="brand-inventory-name">
                         <i class="fas fa-tag"></i> 
-                        <strong>${brandName}</strong>
-                        <span class="brand-inventory-count">${markersSet.size} маркеров</span>
+                        <strong style="font-size: 16px;">${brandName}</strong>
+                        <span class="brand-inventory-count">${markersSet.size} марк.</span>
                         ${isCustom ? `<button class="delete-brand-btn" onclick="event.stopPropagation(); deleteCustomBrand('${brandName}')">🗑️</button>` : ''}
                     </div>
-                    <button class="brand-inventory-btn" onclick="toggleBrandMarkersList('${brandName.replace(/'/g, "\\'")}')">📋 Показать маркеры</button>
+                    <button class="brand-inventory-btn" onclick="toggleBrandMarkersGrid('${brandName.replace(/'/g, "\\'")}')">📋 Показать маркеры</button>
                 `;
                 container.appendChild(brandDiv);
                 
-                const markersContainer = document.createElement('div');
-                markersContainer.id = `brand-markers-${brandName.replace(/\s/g, '')}`;
-                markersContainer.className = 'brand-markers-list';
-                markersContainer.style.display = 'none';
-                markersContainer.style.marginTop = '10px';
-                markersContainer.style.marginBottom = '15px';
-                markersContainer.style.paddingLeft = '20px';
-                markersContainer.style.borderLeft = `2px solid var(--accent)`;
-                
-                const addMarkerBtn = document.createElement('button');
-                addMarkerBtn.className = 'add-marker-to-brand-btn';
-                addMarkerBtn.innerHTML = '<i class="fas fa-plus"></i> Добавить маркер';
-                addMarkerBtn.onclick = () => openAddMarkerToBrandModal(brandName);
-                markersContainer.appendChild(addMarkerBtn);
+                const markersGrid = document.createElement('div');
+                markersGrid.id = `brand-markers-grid-${brandName.replace(/\s/g, '')}`;
+                markersGrid.className = 'brand-markers-grid';
+                markersGrid.style.display = 'none';
                 
                 const sortedMarkers = Array.from(markersSet).sort((a, b) => {
                     const numA = parseInt(a);
@@ -6363,40 +6290,53 @@
                 sortedMarkers.forEach(number => {
                     const isInInventory = inventory.userMarkers && inventory.userMarkers[`${brandName}_${number}`];
                     const markerColor = getMarkerColor(brandName, number);
-                    const markerDiv = document.createElement('div');
-                    markerDiv.className = 'brand-marker-item';
-                    markerDiv.innerHTML = `
-                        <div style="display: flex; align-items: center; gap: 12px;">
-                            <div class="color-circle" style="width: 32px; height: 32px; background-color: ${markerColor || '#ccc'}; border: none;"></div>
-                            <span style="font-weight: 600; font-size: 16px;">№${number}</span>
-                            ${!markerColor ? '<span style="font-size: 10px; color: var(--text-gray);">(цвет не определен)</span>' : ''}
-                        </div>
-                        <button class="toggle-marker-btn" onclick="toggleMarkerForAI('${brandName}', '${number}')" 
-                            style="background: ${isInInventory ? 'var(--status-green)' : 'var(--text-gray)'}">
-                            ${isInInventory ? '✅ В инвентаре' : '➕ Добавить в инвентарь'}
-                        </button>
+                    const markerTile = document.createElement('div');
+                    markerTile.className = `marker-tile ${isInInventory ? 'in-inventory' : 'not-in-inventory'}`;
+                    markerTile.onclick = () => toggleMarkerForAI(brandName, number);
+                    markerTile.innerHTML = `
+                        <div class="color-circle" style="background-color: ${markerColor || '#ccc'}; border: none;"></div>
+                        <div class="marker-number">№${number}</div>
+                        <div class="marker-status">${isInInventory ? '✅ в инвентаре' : '➕ добавить'}</div>
                     `;
-                    markersContainer.appendChild(markerDiv);
+                    markersGrid.appendChild(markerTile);
                 });
                 
-                container.appendChild(markersContainer);
+                const addMarkerBtn = document.createElement('button');
+                addMarkerBtn.className = 'add-marker-to-brand-btn';
+                addMarkerBtn.innerHTML = '<i class="fas fa-plus"></i> Добавить маркер в этот бренд';
+                addMarkerBtn.onclick = () => openAddMarkerToBrandModal(brandName);
+                markersGrid.appendChild(addMarkerBtn);
+                
+                container.appendChild(markersGrid);
+            });
+        }
+        
+        function toggleBrandMarkersGrid(brandName) {
+            const grid = document.getElementById(`brand-markers-grid-${brandName.replace(/\s/g, '')}`);
+            if (grid) {
+                if (grid.style.display === 'none') {
+                    grid.style.display = 'grid';
+                } else {
+                    grid.style.display = 'none';
+                }
+            }
+        }
+        
+        function toggleMarkerForAI(brand, number) {
+            const key = `${brand}_${number}`;
+            if (!inventory.userMarkers) inventory.userMarkers = {};
+            
+            if (inventory.userMarkers[key]) {
+                delete inventory.userMarkers[key];
+                if (tg) tg.showAlert(`❌ Маркер ${brand} №${number} убран из инвентаря для расчета ИИ`);
+            } else {
+                inventory.userMarkers[key] = { brand, number, count: 1 };
+                if (tg) tg.showAlert(`✅ Маркер ${brand} №${number} добавлен в инвентарь для расчета ИИ`);
             }
             
-            learnedBrands.forEach((markersSet, brandName) => {
-                renderBrand(brandName, markersSet, false);
-            });
-            
-            customBrands.forEach(customBrand => {
-                const markersSet = new Set(customBrand.markers);
-                renderBrand(customBrand.name, markersSet, true);
-            });
-            
-            if (learnedBrands.size === 0 && customBrands.length === 0) {
-                const emptyMsg = document.createElement('div');
-                emptyMsg.className = 'no-results';
-                emptyMsg.innerHTML = '📦 Нет маркеров в базе. Админ добавит их через обучение ИИ, или вы можете создать свой бренд.';
-                container.appendChild(emptyMsg);
-            }
+            saveInventory();
+            renderBrandsInventory();
+            updateMarkerColorsInUI();
         }
         
         function openAddBrandModal() {
@@ -6484,34 +6424,6 @@
                 closeAddMarkerToBrandModal();
                 if (tg) tg.showAlert(`✅ Маркер №${number} добавлен в инвентарь`);
             }
-        }
-        
-        function toggleBrandMarkersList(brandName) {
-            const container = document.getElementById(`brand-markers-${brandName.replace(/\s/g, '')}`);
-            if (container) {
-                if (container.style.display === 'none') {
-                    container.style.display = 'block';
-                } else {
-                    container.style.display = 'none';
-                }
-            }
-        }
-        
-        function toggleMarkerForAI(brand, number) {
-            const key = `${brand}_${number}`;
-            if (!inventory.userMarkers) inventory.userMarkers = {};
-            
-            if (inventory.userMarkers[key]) {
-                delete inventory.userMarkers[key];
-                if (tg) tg.showAlert(`❌ Маркер ${brand} №${number} убран из инвентаря для расчета ИИ`);
-            } else {
-                inventory.userMarkers[key] = { brand, number, count: 1 };
-                if (tg) tg.showAlert(`✅ Маркер ${brand} №${number} добавлен в инвентарь для расчета ИИ`);
-            }
-            
-            saveInventory();
-            renderBrandsInventory();
-            updateMarkerColorsInUI();
         }
         
         function saveCustomBrands() {
@@ -6696,3 +6608,4 @@
     </script>
 </body>
 </html>
+        
