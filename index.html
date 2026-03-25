@@ -6103,74 +6103,74 @@
     document.getElementById('selectedOrganizerView').style.display = 'block';
 }
         
-        function closeOrganizerView() {
-            document.getElementById('selectedOrganizerView').style.display = 'none';
-        }
+function closeOrganizerView() {
+    document.getElementById('selectedOrganizerView').style.display = 'none';
+}
         
-        function openOrganizerCreator() {
-            document.getElementById('organizerModal').style.display = 'flex';
-        }
+function openOrganizerCreator() {
+    document.getElementById('organizerModal').style.display = 'flex';
+}
         
-        function closeOrganizerModal() {
-            document.getElementById('organizerModal').style.display = 'none';
-            document.getElementById('organizerName').value = '';
-            document.getElementById('organizerCols').value = '5';
-            document.getElementById('organizerRows').value = '5';
-        }
+function closeOrganizerModal() {
+    document.getElementById('organizerModal').style.display = 'none';
+    document.getElementById('organizerName').value = '';
+    document.getElementById('organizerCols').value = '5';
+    document.getElementById('organizerRows').value = '5';
+}
         
-        function createOrganizer() {
-            const name = document.getElementById('organizerName').value.trim();
-            const cols = parseInt(document.getElementById('organizerCols').value);
-            const rows = parseInt(document.getElementById('organizerRows').value);
-            
-            if (!name) {
-                if (tg) tg.showAlert('Введите название органайзера');
-                return;
+function createOrganizer() {
+    const name = document.getElementById('organizerName').value.trim();
+    const cols = parseInt(document.getElementById('organizerCols').value);
+    const rows = parseInt(document.getElementById('organizerRows').value);
+    
+    if (!name) {
+        if (tg) tg.showAlert('Введите название органайзера');
+        return;
+    }
+    if (cols < 1 || cols > 12 || rows < 1 || rows > 10) {
+        if (tg) tg.showAlert('Размеры: столбцы 1-12, строки 1-10');
+        return;
+    }
+    
+    const newOrganizer = {
+        id: Date.now(),
+        name: name,
+        cols: cols,
+        rows: rows,
+        cells: Array(cols * rows).fill(null)
+    };
+    
+    if (!inventory.organizers) inventory.organizers = [];
+    inventory.organizers.push(newOrganizer);
+    saveInventory();
+    renderOrganizersList();
+    closeOrganizerModal();
+    if (tg) tg.showAlert(`✅ Органайзер "${name}" создан!`);
+}
+        
+function deleteOrganizer(orgId) {
+    if (tg) {
+        tg.showConfirm('Удалить органайзер? Все маркеры в нем будут потеряны!', (confirm) => {
+            if (confirm) {
+                inventory.organizers = inventory.organizers.filter(o => o.id !== orgId);
+                saveInventory();
+                renderOrganizersList();
+                closeOrganizerView();
+                if (tg) tg.showAlert('✅ Органайзер удален');
             }
-            if (cols < 1 || cols > 12 || rows < 1 || rows > 10) {
-                if (tg) tg.showAlert('Размеры: столбцы 1-12, строки 1-10');
-                return;
-            }
-            
-            const newOrganizer = {
-                id: Date.now(),
-                name: name,
-                cols: cols,
-                rows: rows,
-                cells: Array(cols * rows).fill(null)
-            };
-            
-            if (!inventory.organizers) inventory.organizers = [];
-            inventory.organizers.push(newOrganizer);
+        });
+    } else {
+        if (confirm('Удалить органайзер? Все маркеры в нем будут потеряны!')) {
+            inventory.organizers = inventory.organizers.filter(o => o.id !== orgId);
             saveInventory();
             renderOrganizersList();
-            closeOrganizerModal();
-            if (tg) tg.showAlert(`✅ Органайзер "${name}" создан!`);
+            closeOrganizerView();
+            alert('✅ Органайзер удален');
         }
+    }
+}
         
-        function deleteOrganizer(orgId) {
-            if (tg) {
-                tg.showConfirm('Удалить органайзер? Все маркеры в нем будут потеряны!', (confirm) => {
-                    if (confirm) {
-                        inventory.organizers = inventory.organizers.filter(o => o.id !== orgId);
-                        saveInventory();
-                        renderOrganizersList();
-                        closeOrganizerView();
-                        if (tg) tg.showAlert('✅ Органайзер удален');
-                    }
-                });
-            } else {
-                if (confirm('Удалить органайзер? Все маркеры в нем будут потеряны!')) {
-                    inventory.organizers = inventory.organizers.filter(o => o.id !== orgId);
-                    saveInventory();
-                    renderOrganizersList();
-                    closeOrganizerView();
-                    alert('✅ Органайзер удален');
-                }
-            }
-        }
-        
-      function openOrganizerCellModal(orgId, cellIndex) {
+function openOrganizerCellModal(orgId, cellIndex) {
     const org = inventory.organizers.find(o => o.id === orgId);
     if (!org) return;
     
@@ -6263,80 +6263,38 @@
     modal.style.display = 'flex';
 }
         
-       function deleteMarkerFromOrganizerCell(orgId, cellIndex, markerIndex) {
+function deleteMarkerFromOrganizerCell(orgId, cellIndex, markerIndex) {
+    console.log('Deleting marker:', orgId, cellIndex, markerIndex);
+    
     const org = inventory.organizers.find(o => o.id === parseInt(orgId));
-    if (!org) return;
+    if (!org) {
+        console.error('Organizer not found');
+        return;
+    }
     
     const cell = org.cells[cellIndex];
-    if (cell && cell.markers) {
+    if (cell && cell.markers && cell.markers[markerIndex]) {
         // Удаляем маркер
         cell.markers.splice(markerIndex, 1);
         saveInventory();
         
-        // Обновляем сетку (чтобы обновилось число в ячейке)
+        // 1. Обновляем сетку (числа в ячейках)
         openOrganizerView(orgId);
         
-        // Обновляем содержимое текущей модалки
+        // 2. Полностью переоткрываем модалку для обновления
         const modal = document.getElementById('organizerCellModal');
         if (modal && modal.style.display === 'flex') {
-            // Получаем актуальные маркеры
-            const updatedMarkers = cell.markers || [];
-            
-            // Обновляем фильтр (перестраиваем select)
-            const filterSelect = document.getElementById('markerBrandFilter');
-            const allBrandsInCell = new Set();
-            updatedMarkers.forEach(m => allBrandsInCell.add(m.brand));
-            const allCustomBrands = new Set(customBrands.map(b => b.name));
-            
-            if (filterSelect) {
-                const currentValue = filterSelect.value;
-                filterSelect.innerHTML = `
-                    <option value="all">Все бренды</option>
-                    ${Array.from(allBrandsInCell).map(b => `<option value="${b}">${b}</option>`).join('')}
-                    ${allCustomBrands.size > 0 ? '<option disabled>──────────</option>' : ''}
-                    ${Array.from(allCustomBrands).filter(b => !allBrandsInCell.has(b)).map(b => `<option value="${b}">${b} (другой)</option>`).join('')}
-                `;
-                if (Array.from(allBrandsInCell).includes(currentValue) || currentValue === 'all') {
-                    filterSelect.value = currentValue;
-                } else {
-                    filterSelect.value = 'all';
-                }
-            }
-            
-            // Обновляем список маркеров
-            const markersListDiv = document.getElementById('organizerMarkersList');
-            if (markersListDiv) {
-                const selectedBrand = filterSelect ? filterSelect.value : 'all';
-                const filteredMarkers = selectedBrand === 'all' ? updatedMarkers : updatedMarkers.filter(m => m.brand === selectedBrand);
-                
-                markersListDiv.innerHTML = '';
-                
-                if (filteredMarkers.length === 0) {
-                    markersListDiv.innerHTML = '<div class="no-results">Нет маркеров в этой ячейке</div>';
-                } else {
-                    filteredMarkers.forEach((marker, idx) => {
-                        const originalIdx = updatedMarkers.findIndex(m => m === marker);
-                        const hasColor = getMarkerColor(marker.brand, marker.number);
-                        const markerDiv = document.createElement('div');
-                        markerDiv.className = 'organizer-cell-marker-item';
-                        markerDiv.style.cssText = 'display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid var(--border-color);';
-                        markerDiv.innerHTML = `
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <div class="color-circle" style="width: 32px; height: 32px; background-color: ${hasColor || '#ccc'}; border: none;"></div>
-                                <div>
-                                    <strong>${marker.brand}</strong> №${marker.number}
-                                    <div style="font-size: 11px; color: var(--text-gray);">x${marker.count || 1}</div>
-                                </div>
-                            </div>
-                            <button class="delete-marker-btn" onclick="deleteMarkerFromOrganizerCell('${orgId}', ${cellIndex}, ${originalIdx})">🗑️ Удалить</button>
-                        `;
-                        markersListDiv.appendChild(markerDiv);
-                    });
-                }
-            }
+            // Закрываем текущую модалку
+            modal.style.display = 'none';
+            // Открываем заново с обновленными данными
+            setTimeout(() => {
+                openOrganizerCellModal(orgId, cellIndex);
+            }, 50);
         }
         
         if (tg) tg.showAlert('🗑️ Маркер удален из ячейки');
+    } else {
+        console.error('Marker not found');
     }
 }
                 // Функция для отрисовки маркеров
