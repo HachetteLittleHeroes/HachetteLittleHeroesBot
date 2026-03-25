@@ -2128,13 +2128,15 @@
         .organizer-cell {
             background: var(--bg-header);
             border: 2px solid var(--border-color);
-            border-radius: 10px;
-            padding: 6px 2px;
+            border-radius: 12px;
             text-align: center;
             cursor: pointer;
             transition: all 0.2s ease;
-            min-width: 50px;
-            max-width: 55px;
+            width: 55px;
+            height: 55px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .organizer-cell:hover {
@@ -2149,15 +2151,16 @@
         }
         
         .organizer-cell-count {
-            font-size: 16px;
+            font-size: 22px;
             font-weight: bold;
             color: var(--accent);
-            margin-bottom: 2px;
         }
         
-        .organizer-cell-label {
-            font-size: 7px;
+        .organizer-cell-empty {
+            font-size: 32px;
+            font-weight: 300;
             color: var(--text-gray);
+            line-height: 1;
         }
 
         /* Модалка ячейки органайзера */
@@ -6048,54 +6051,50 @@
         }
         
         function openOrganizerView(orgId) {
-            const org = inventory.organizers.find(o => o.id === orgId);
-            if (!org) return;
-            
-            document.getElementById('selectedOrganizerName').innerText = org.name;
-            
-            const gridContainer = document.getElementById('selectedOrganizerGrid');
-            gridContainer.innerHTML = '';
-            
-            const cellWidth = org.cols <= 5 ? 55 : 50;
-            const grid = document.createElement('div');
-            grid.className = 'organizer-grid';
-            grid.style.display = 'grid';
-            grid.style.gridTemplateColumns = `repeat(${org.cols}, minmax(${cellWidth}px, ${cellWidth + 5}px))`;
-            grid.style.gap = '6px';
-            grid.style.justifyContent = 'center';
-            
-            if (org.cols > 5) {
-                grid.style.overflowX = 'auto';
-                grid.style.justifyContent = 'start';
-                grid.style.paddingBottom = '8px';
-            }
-            
-            for (let i = 0; i < org.cells.length; i++) {
-                const cell = org.cells[i];
-                const cellDiv = document.createElement('div');
-                cellDiv.className = `organizer-cell ${cell && cell.markers && cell.markers.length > 0 ? 'filled' : ''}`;
-                cellDiv.onclick = () => openOrganizerCellModal(orgId, i);
-                
-                let uniqueMarkers = 0;
-                if (cell && cell.markers) {
-                    uniqueMarkers = cell.markers.length;
-                }
-                
-                if (uniqueMarkers > 0) {
-                    cellDiv.innerHTML = `
-                        <div class="organizer-cell-count">${uniqueMarkers}</div>
-                        <div class="organizer-cell-label">цв.</div>
-                    `;
-                } else {
-                    cellDiv.innerHTML = '<div class="organizer-cell-count">+</div><div class="organizer-cell-label">доб.</div>';
-                }
-                
-                grid.appendChild(cellDiv);
-            }
-            
-            gridContainer.appendChild(grid);
-            document.getElementById('selectedOrganizerView').style.display = 'block';
+    const org = inventory.organizers.find(o => o.id === orgId);
+    if (!org) return;
+    
+    document.getElementById('selectedOrganizerName').innerText = org.name;
+    
+    const gridContainer = document.getElementById('selectedOrganizerGrid');
+    gridContainer.innerHTML = '';
+    
+    const grid = document.createElement('div');
+    grid.className = 'organizer-grid';
+    grid.style.display = 'grid';
+    grid.style.gridTemplateColumns = `repeat(${org.cols}, 55px)`;
+    grid.style.gap = '6px';
+    grid.style.justifyContent = 'center';
+    
+    if (org.cols > 5) {
+        grid.style.overflowX = 'auto';
+        grid.style.justifyContent = 'start';
+        grid.style.paddingBottom = '8px';
+    }
+    
+    for (let i = 0; i < org.cells.length; i++) {
+        const cell = org.cells[i];
+        const cellDiv = document.createElement('div');
+        cellDiv.className = `organizer-cell ${cell && cell.markers && cell.markers.length > 0 ? 'filled' : ''}`;
+        cellDiv.onclick = () => openOrganizerCellModal(orgId, i);
+        
+        let uniqueMarkers = 0;
+        if (cell && cell.markers) {
+            uniqueMarkers = cell.markers.length;
         }
+        
+        if (uniqueMarkers > 0) {
+            cellDiv.innerHTML = `<div class="organizer-cell-count">${uniqueMarkers}</div>`;
+        } else {
+            cellDiv.innerHTML = `<div class="organizer-cell-empty">+</div>`;
+        }
+        
+        grid.appendChild(cellDiv);
+    }
+    
+    gridContainer.appendChild(grid);
+    document.getElementById('selectedOrganizerView').style.display = 'block';
+}
         
         function closeOrganizerView() {
             document.getElementById('selectedOrganizerView').style.display = 'none';
@@ -6220,10 +6219,10 @@
             const hasColor = getMarkerColor(marker.brand, marker.number);
             const markerDiv = document.createElement('div');
             markerDiv.className = 'organizer-cell-marker-item';
-            markerDiv.style.cssText = 'display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid var(--border-color);';
+            markerDiv.style.cssText = 'display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid var(--border-color);';
             markerDiv.innerHTML = `
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <div class="color-circle" style="width: 32px; height: 32px; background-color: ${hasColor || '#ccc'}; border: none;"></div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div class="color-circle" style="width: 36px; height: 36px; background-color: ${hasColor || '#ccc'}; border: none;"></div>
                     <div>
                         <strong>${marker.brand}</strong> №${marker.number}
                         <div style="font-size: 11px; color: var(--text-gray);">x${marker.count || 1}</div>
@@ -6239,7 +6238,7 @@
     filterSelect.onchange = renderFilteredMarkers;
     renderFilteredMarkers();
     
-    // ТОЛЬКО ОДНА КНОПКА - Добавить маркер в ячейку
+    // Кнопка добавления маркера
     const addBtn = document.createElement('button');
     addBtn.className = 'modal-action-btn';
     addBtn.style.marginTop = '15px';
