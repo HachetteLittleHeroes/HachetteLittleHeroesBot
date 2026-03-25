@@ -6076,7 +6076,14 @@
         const cell = org.cells[i];
         const cellDiv = document.createElement('div');
         cellDiv.className = `organizer-cell ${cell && cell.markers && cell.markers.length > 0 ? 'filled' : ''}`;
-        cellDiv.onclick = () => openOrganizerCellModal(orgId, i);
+        
+        // Сохраняем индекс ячейки в data-атрибуте
+        cellDiv.setAttribute('data-cell-index', i);
+        
+        // Передаем индекс ячейки в функцию открытия
+        cellDiv.onclick = (function(idx) {
+            return function() { openOrganizerCellModal(orgId, idx); };
+        })(i);
         
         let uniqueMarkers = 0;
         if (cell && cell.markers) {
@@ -6163,7 +6170,7 @@
             }
         }
         
-        function openOrganizerCellModal(orgId, cellIndex) {
+      function openOrganizerCellModal(orgId, cellIndex) {
     const org = inventory.organizers.find(o => o.id === orgId);
     if (!org) return;
     
@@ -6173,7 +6180,13 @@
     const modal = document.getElementById('organizerCellModal');
     if (!modal) return;
     
-    document.getElementById('organizerCellModalTitle').innerText = `Ячейка ${Math.floor(cellIndex / org.cols) + 1}:${(cellIndex % org.cols) + 1}`;
+    // Преобразуем индекс в формат A1, A2, B1, B2...
+    const row = Math.floor(cellIndex / org.cols);
+    const col = cellIndex % org.cols;
+    const rowLetter = String.fromCharCode(65 + row); // 65 = 'A'
+    const cellLabel = `${rowLetter}${col + 1}`;
+    
+    document.getElementById('organizerCellModalTitle').innerText = `Ячейка ${cellLabel}`;
     
     const listContainer = document.getElementById('organizerCellMarkersList');
     listContainer.innerHTML = '';
@@ -6219,10 +6232,10 @@
             const hasColor = getMarkerColor(marker.brand, marker.number);
             const markerDiv = document.createElement('div');
             markerDiv.className = 'organizer-cell-marker-item';
-            markerDiv.style.cssText = 'display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid var(--border-color);';
+            markerDiv.style.cssText = 'display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid var(--border-color);';
             markerDiv.innerHTML = `
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <div class="color-circle" style="width: 36px; height: 36px; background-color: ${hasColor || '#ccc'}; border: none;"></div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div class="color-circle" style="width: 32px; height: 32px; background-color: ${hasColor || '#ccc'}; border: none;"></div>
                     <div>
                         <strong>${marker.brand}</strong> №${marker.number}
                         <div style="font-size: 11px; color: var(--text-gray);">x${marker.count || 1}</div>
@@ -6260,56 +6273,72 @@
         cell.markers.splice(markerIndex, 1);
         saveInventory();
         
-        // 1. Обновляем сетку органайзера (числа в ячейках)
+        // Обновляем сетку (чтобы обновилось число в ячейке)
         openOrganizerView(orgId);
         
-        // 2. Обновляем содержимое текущей открытой модалки
+        // Обновляем содержимое текущей модалки
         const modal = document.getElementById('organizerCellModal');
         if (modal && modal.style.display === 'flex') {
-            // Обновляем заголовок
-            document.getElementById('organizerCellModalTitle').innerText = `Ячейка ${Math.floor(cellIndex / org.cols) + 1}:${(cellIndex % org.cols) + 1}`;
+            // Получаем актуальные маркеры
+            const updatedMarkers = cell.markers || [];
             
-            // Получаем контейнер со списком маркеров
-            const listContainer = document.getElementById('organizerCellMarkersList');
-            if (listContainer) {
-                // Сохраняем текущий выбранный фильтр
-                const filterSelect = document.getElementById('markerBrandFilter');
-                const currentFilter = filterSelect ? filterSelect.value : 'all';
-                
-                // Получаем актуальные маркеры из ячейки
-                const updatedMarkers = cell.markers || [];
-                
-                // Обновляем фильтр (добавляем новые бренды, если появились)
-                const allBrandsInCell = new Set();
-                updatedMarkers.forEach(m => allBrandsInCell.add(m.brand));
-                const allCustomBrands = new Set(customBrands.map(b => b.name));
-                
-                // Обновляем select фильтра
-                if (filterSelect) {
-                    const currentValue = filterSelect.value;
-                    filterSelect.innerHTML = `
-                        <option value="all">Все бренды</option>
-                        ${Array.from(allBrandsInCell).map(b => `<option value="${b}">${b}</option>`).join('')}
-                        ${allCustomBrands.size > 0 ? '<option disabled>──────────</option>' : ''}
-                        ${Array.from(allCustomBrands).filter(b => !allBrandsInCell.has(b)).map(b => `<option value="${b}">${b} (другой)</option>`).join('')}
-                    `;
-                    if (Array.from(allBrandsInCell).includes(currentValue) || currentValue === 'all') {
-                        filterSelect.value = currentValue;
-                    } else {
-                        filterSelect.value = 'all';
-                    }
+            // Обновляем фильтр (перестраиваем select)
+            const filterSelect = document.getElementById('markerBrandFilter');
+            const allBrandsInCell = new Set();
+            updatedMarkers.forEach(m => allBrandsInCell.add(m.brand));
+            const allCustomBrands = new Set(customBrands.map(b => b.name));
+            
+            if (filterSelect) {
+                const currentValue = filterSelect.value;
+                filterSelect.innerHTML = `
+                    <option value="all">Все бренды</option>
+                    ${Array.from(allBrandsInCell).map(b => `<option value="${b}">${b}</option>`).join('')}
+                    ${allCustomBrands.size > 0 ? '<option disabled>──────────</option>' : ''}
+                    ${Array.from(allCustomBrands).filter(b => !allBrandsInCell.has(b)).map(b => `<option value="${b}">${b} (другой)</option>`).join('')}
+                `;
+                if (Array.from(allBrandsInCell).includes(currentValue) || currentValue === 'all') {
+                    filterSelect.value = currentValue;
+                } else {
+                    filterSelect.value = 'all';
                 }
+            }
+            
+            // Обновляем список маркеров
+            const markersListDiv = document.getElementById('organizerMarkersList');
+            if (markersListDiv) {
+                const selectedBrand = filterSelect ? filterSelect.value : 'all';
+                const filteredMarkers = selectedBrand === 'all' ? updatedMarkers : updatedMarkers.filter(m => m.brand === selectedBrand);
                 
-                // Находим или создаем контейнер для списка маркеров
-                let markersListDiv = document.getElementById('organizerMarkersList');
-                if (!markersListDiv) {
-                    markersListDiv = document.createElement('div');
-                    markersListDiv.id = 'organizerMarkersList';
-                    markersListDiv.style.maxHeight = '40vh';
-                    markersListDiv.style.overflowY = 'auto';
-                    listContainer.appendChild(markersListDiv);
+                markersListDiv.innerHTML = '';
+                
+                if (filteredMarkers.length === 0) {
+                    markersListDiv.innerHTML = '<div class="no-results">Нет маркеров в этой ячейке</div>';
+                } else {
+                    filteredMarkers.forEach((marker, idx) => {
+                        const originalIdx = updatedMarkers.findIndex(m => m === marker);
+                        const hasColor = getMarkerColor(marker.brand, marker.number);
+                        const markerDiv = document.createElement('div');
+                        markerDiv.className = 'organizer-cell-marker-item';
+                        markerDiv.style.cssText = 'display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid var(--border-color);';
+                        markerDiv.innerHTML = `
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div class="color-circle" style="width: 32px; height: 32px; background-color: ${hasColor || '#ccc'}; border: none;"></div>
+                                <div>
+                                    <strong>${marker.brand}</strong> №${marker.number}
+                                    <div style="font-size: 11px; color: var(--text-gray);">x${marker.count || 1}</div>
+                                </div>
+                            </div>
+                            <button class="delete-marker-btn" onclick="deleteMarkerFromOrganizerCell('${orgId}', ${cellIndex}, ${originalIdx})">🗑️ Удалить</button>
+                        `;
+                        markersListDiv.appendChild(markerDiv);
+                    });
                 }
-                
+            }
+        }
+        
+        if (tg) tg.showAlert('🗑️ Маркер удален из ячейки');
+    }
+}
                 // Функция для отрисовки маркеров
                 function renderMarkers() {
                     const selectedBrand = filterSelect ? filterSelect.value : 'all';
