@@ -2807,11 +2807,82 @@
     </style>
 </head>
 <body>
-    <div style="position: fixed; top: 10px; left: 10px; z-index: 999999; background: red; padding: 10px; border-radius: 10px;">
-    <button onclick="alert('Test button works!')" style="background: white; padding: 5px 10px;">Test Click</button>
-    <button onclick="tab('profile')" style="background: white; padding: 5px 10px;">Tab Profile</button>
-    <span id="test-status" style="color: white; margin-left: 10px;">Loading...</span>
-</div>
+   <script>
+    // Объявляем функции заранее, чтобы они были доступны при загрузке
+    window.tab = function(pageId) {
+        console.log('tab called with:', pageId);
+        const targetPage = document.getElementById(pageId);
+        if (!targetPage) return;
+        
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        targetPage.classList.add('active');
+        
+        document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+        const activeBtn = document.getElementById('btn-' + pageId);
+        if (activeBtn) activeBtn.classList.add('active');
+        
+        window.scrollTo(0, 0);
+    };
+    
+    // Заглушки для других функций, чтобы избежать ошибок
+    window.loadMarkers = function() { console.log('loadMarkers called'); };
+    window.renderCart = function() { console.log('renderCart called'); };
+    window.renderVolumes = function() { console.log('renderVolumes called'); };
+    window.updateUI = function() { console.log('updateUI called'); };
+    window.refreshUserProgress = function() { console.log('refreshUserProgress called'); };
+    window.loadAISettings = function() { console.log('loadAISettings called'); };
+    window.processAI = function() { console.log('processAI called'); };
+    window.setSearchMode = function() { console.log('setSearchMode called'); };
+    window.applyBrandsFilter = function() { console.log('applyBrandsFilter called'); };
+    window.openInventoryModal = function() { console.log('openInventoryModal called'); };
+    window.toggleSection = function() { console.log('toggleSection called'); };
+    window.toggleTasks = function() { console.log('toggleTasks called'); };
+    window.toggleTimeTasks = function() { console.log('toggleTimeTasks called'); };
+    window.toggleInventoryBlock = function() { console.log('toggleInventoryBlock called'); };
+    window.toggleOrganizersBlock = function() { console.log('toggleOrganizersBlock called'); };
+    window.toggleMarkersBlock = function() { console.log('toggleMarkersBlock called'); };
+    window.openOrganizerCreator = function() { console.log('openOrganizerCreator called'); };
+    window.createOrganizer = function() { console.log('createOrganizer called'); };
+    window.deleteOrganizer = function() { console.log('deleteOrganizer called'); };
+    window.openOrganizerView = function() { console.log('openOrganizerView called'); };
+    window.closeOrganizerView = function() { console.log('closeOrganizerView called'); };
+    window.openOrganizerCellModal = function() { console.log('openOrganizerCellModal called'); };
+    window.deleteMarkerFromOrganizerCell = function() { console.log('deleteMarkerFromOrganizerCell called'); };
+    window.confirmAddMarker = function() { console.log('confirmAddMarker called'); };
+    window.searchMarkerInOrganizers = function() { console.log('searchMarkerInOrganizers called'); };
+    window.openSupport = function() { console.log('openSupport called'); };
+    window.setTheme = function() { console.log('setTheme called'); };
+    window.applyCustomTheme = function() { console.log('applyCustomTheme called'); };
+    window.buyItem = function() { console.log('buyItem called'); };
+    window.openStatusInfo = function() { console.log('openStatusInfo called'); };
+    window.toggleAvatarEditor = function() { console.log('toggleAvatarEditor called'); };
+    window.changeNickname = function() { console.log('changeNickname called'); };
+    window.openAchievementsGallery = function() { console.log('openAchievementsGallery called'); };
+    window.checkout = function() { console.log('checkout called'); };
+    window.searchVolumes = function() { console.log('searchVolumes called'); };
+    window.searchMarkers = function() { console.log('searchMarkers called'); };
+    window.trainAI = function() { console.log('trainAI called'); };
+    window.batchTrainAI = function() { console.log('batchTrainAI called'); };
+    window.openBatchUpload = function() { console.log('openBatchUpload called'); };
+    window.processBatchUpload = function() { console.log('processBatchUpload called'); };
+    window.sendFeedback = function() { console.log('sendFeedback called'); };
+    window.closeAIFeedbackModal = function() { console.log('closeAIFeedbackModal called'); };
+    window.submitAIFeedback = function() { console.log('submitAIFeedback called'); };
+    window.addToCartFromAI = function() { console.log('addToCartFromAI called'); };
+    window.resetAllData = function() { console.log('resetAllData called'); };
+    window.saveNewNickname = function() { console.log('saveNewNickname called'); };
+    window.closeNameModal = function() { console.log('closeNameModal called'); };
+    window.closeAchievementInfo = function() { console.log('closeAchievementInfo called'); };
+    window.closeTaskUploadModal = function() { console.log('closeTaskUploadModal called'); };
+    window.submitTaskPhoto = function() { console.log('submitTaskPhoto called'); };
+    window.closeOrganizerModal = function() { console.log('closeOrganizerModal called'); };
+    window.closeAddMarkerModal = function() { console.log('closeAddMarkerModal called'); };
+    window.closeAnswersViewer = function() { console.log('closeAnswersViewer called'); };
+    window.prevAnswerPage = function() { console.log('prevAnswerPage called'); };
+    window.nextAnswerPage = function() { console.log('nextAnswerPage called'); };
+    
+    console.log('✅ Early functions registered');
+</script>
 
 <script>
     document.getElementById('test-status').innerText = 'JS Loaded';
@@ -7123,5 +7194,19 @@
         // Запуск приложения
         init();
     </script>
+    <script>
+    // Переопределяем функции реальными после полной загрузки
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM fully loaded, replacing with real functions');
+        
+        // Здесь будут настоящие функции из вашего кода
+        // Они перезапишут заглушки
+        setTimeout(() => {
+            console.log('typeof tab after load:', typeof tab);
+            console.log('typeof processAI after load:', typeof processAI);
+        }, 100);
+    });
+</script>
 </body>
+
 </html>
