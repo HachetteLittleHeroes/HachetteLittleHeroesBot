@@ -2892,6 +2892,44 @@
     console.log('typeof openOrganizerView:', typeof openOrganizerView);
     console.log('user object exists:', typeof user !== 'undefined');
 </script>
+<script>
+    // Диагностика: ловим все ошибки
+    window.onerror = function(msg, url, line, col, error) {
+        console.error('Global error:', msg, 'at', line, ':', col);
+        document.getElementById('test-status').innerHTML = 'Error: ' + msg;
+        return false;
+    };
+    
+    // Проверяем все функции после загрузки
+    window.addEventListener('load', function() {
+        console.log('=== FUNCTION CHECK ===');
+        const functions = [
+            'openOrganizerCreator', 'createOrganizer', 'deleteOrganizer',
+            'openOrganizerView', 'closeOrganizerView', 'openOrganizerCellModal',
+            'deleteMarkerFromOrganizerCell', 'confirmAddMarker', 'searchMarkerInOrganizers',
+            'renderBrandsInventory', 'toggleMarkerForAI', 'openInventoryModal',
+            'processAI', 'trainAI', 'batchTrainAI', 'openBatchUpload', 'processBatchUpload',
+            'sendFeedback', 'submitAIFeedback', 'addToCartFromAI', 'buyItem',
+            'setSearchMode', 'applyBrandsFilter', 'loadMarkers', 'updateMarkerCart',
+            'renderCart', 'checkout', 'renderVolumes', 'updateVolumeCart',
+            'openVolumeAnswers', 'closeAnswersViewer', 'searchVolumes',
+            'openStatusInfo', 'selectStatus', 'setTheme', 'applyCustomTheme',
+            'toggleSection', 'toggleTasks', 'toggleTimeTasks', 'toggleInventoryBlock',
+            'toggleOrganizersBlock', 'toggleMarkersBlock', 'loadInventory', 'saveInventory',
+            'renderOrganizersList', 'closeOrganizerModal', 'closeAddMarkerModal',
+            'openAddBrandModal', 'confirmAddBrand', 'deleteCustomBrand',
+            'openAddMarkerToBrandModal', 'confirmAddMarkerToBrand', 'selectBrandForAI'
+        ];
+        
+        functions.forEach(fn => {
+            if (typeof window[fn] === 'function') {
+                console.log(`✅ ${fn} is defined`);
+            } else {
+                console.log(`❌ ${fn} is NOT defined`);
+            }
+        });
+    });
+</script>
     <!-- ========== ПРОФИЛЬ ========== -->
     <div id="profile" class="page active">
         <div class="profile-header-block">
