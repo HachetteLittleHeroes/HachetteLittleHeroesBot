@@ -6274,19 +6274,16 @@ function deleteMarkerFromOrganizerCell(orgId, cellIndex, markerIndex) {
     
     const cell = org.cells[cellIndex];
     if (cell && cell.markers && cell.markers[markerIndex]) {
-        // Удаляем маркер
         cell.markers.splice(markerIndex, 1);
         saveInventory();
         
-        // 1. Обновляем сетку (числа в ячейках)
+        // Обновляем сетку
         openOrganizerView(orgId);
         
-        // 2. Полностью переоткрываем модалку для обновления
+        // Обновляем модалку
         const modal = document.getElementById('organizerCellModal');
         if (modal && modal.style.display === 'flex') {
-            // Закрываем текущую модалку
             modal.style.display = 'none';
-            // Открываем заново с обновленными данными
             setTimeout(() => {
                 openOrganizerCellModal(orgId, cellIndex);
             }, 50);
@@ -6898,71 +6895,5 @@ function deleteMarkerFromOrganizerCell(orgId, cellIndex, markerIndex) {
         // Запуск приложения
         init();
     </script>
-    <script>
-    // Принудительное исправление модалки ячейки
-    document.addEventListener('DOMContentLoaded', function() {
-        // Удаляем лишние кнопки из модалки при загрузке
-        const modal = document.getElementById('organizerCellModal');
-        if (modal) {
-            const oldBtns = modal.querySelectorAll('.modal-action-btn');
-            oldBtns.forEach(btn => {
-                if (btn.innerHTML.includes('Добавить маркер')) {
-                    btn.remove();
-                }
-            });
-        }
-    });
-    
-    // Переопределяем функции для исправления
-    const originalDelete = deleteMarkerFromOrganizerCell;
-    deleteMarkerFromOrganizerCell = function(orgId, cellIndex, markerIndex) {
-        const org = inventory.organizers.find(o => o.id === parseInt(orgId));
-        if (!org) return;
-        
-        const cell = org.cells[cellIndex];
-        if (cell && cell.markers) {
-            cell.markers.splice(markerIndex, 1);
-            saveInventory();
-            
-            // Обновляем сетку
-            openOrganizerView(orgId);
-            
-            // Обновляем модалку, если открыта
-            const modal = document.getElementById('organizerCellModal');
-            if (modal && modal.style.display === 'flex') {
-                // Получаем текущие данные
-                const title = document.getElementById('organizerCellModalTitle');
-                const match = title?.innerText.match(/Ячейка (\d+):(\d+)/);
-                if (match) {
-                    const row = parseInt(match[1]) - 1;
-                    const col = parseInt(match[2]) - 1;
-                    const idx = row * org.cols + col;
-                    openOrganizerCellModal(orgId, idx);
-                }
-            }
-            
-            if (tg) tg.showAlert('🗑️ Маркер удален');
-        }
-    };
-    
-    const originalOpenCell = openOrganizerCellModal;
-    openOrganizerCellModal = function(orgId, cellIndex) {
-        // Вызываем оригинальную функцию, но после неё удаляем лишние кнопки
-        originalOpenCell(orgId, cellIndex);
-        
-        setTimeout(() => {
-            const modal = document.getElementById('organizerCellModal');
-            if (modal) {
-                const btns = modal.querySelectorAll('.modal-action-btn');
-                if (btns.length > 1) {
-                    // Оставляем только последнюю кнопку (добавленную динамически)
-                    for (let i = 0; i < btns.length - 1; i++) {
-                        btns[i].remove();
-                    }
-                }
-            }
-        }, 50);
-    };
-</script>
 </body>
 </html>
