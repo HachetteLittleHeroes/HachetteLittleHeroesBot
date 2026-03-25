@@ -2746,14 +2746,14 @@
 
         @media (max-width: 480px) {
             .organizer-cell {
-                min-width: 45px;
-                padding: 4px 2px;
+                width: 48px;
+                height: 48px;
             }
             .organizer-cell-count {
-                font-size: 12px;
+                font-size: 18px;
             }
-            .organizer-cell-label {
-                font-size: 6px;
+            .organizer-cell-empty {
+                font-size: 28px;
             }
             .batch-results {
                 grid-template-columns: 1fr;
@@ -3331,9 +3331,6 @@
         <div class="modal-content">
             <h3 id="organizerCellModalTitle">Маркеры в ячейке</h3>
             <div id="organizerCellMarkersList" style="max-height: 50vh; overflow-y: auto;"></div>
-            <button class="modal-action-btn" onclick="openAddMarkerToOrganizerCell(currentOrganizerCellData?.orgId, currentOrganizerCellData?.cellIndex)" style="margin-top: 15px;">
-                <i class="fas fa-plus"></i> Добавить маркер в ячейку
-            </button>
             <button class="modal-close-btn" onclick="document.getElementById('organizerCellModal').style.display='none'">Закрыть</button>
         </div>
     </div>
@@ -3708,7 +3705,6 @@
                 completed: false
             }
         ];
-        
         // ==========================================
         // API ВЫЗОВЫ
         // ==========================================
@@ -3884,6 +3880,7 @@
                     return numA - numB;
                 });
         }
+        
         // ==========================================
         // ФУНКЦИИ ПРОФИЛЯ И UI
         // ==========================================
@@ -4449,241 +4446,6 @@
             tempPhotos = [];
             isUploading = false;
         }
-        
-        // ==========================================
-        // ВРЕМЕННЫЕ ЗАДАНИЯ
-        // ==========================================
-        
-        function loadTimeTasksStatus() {
-            const saved = localStorage.getItem('time_tasks_completed');
-            if (saved) {
-                const completed = JSON.parse(saved);
-                TIME_TASKS.forEach(task => {
-                    task.completed = completed.includes(task.id);
-                });
-            }
-        }
-        
-        function renderTimeTasks() {
-            const container = document.getElementById('timeTasksList');
-            if (!container) return;
-            container.innerHTML = '';
-            
-            TIME_TASKS.forEach(task => {
-                const isCompleted = task.completed;
-                const today = new Date();
-                const deadline = new Date(task.deadline);
-                const isExpired = today > deadline && !isCompleted;
-                const taskCard = document.createElement('div');
-                taskCard.className = `time-task-card ${isCompleted ? 'completed' : ''}`;
-                taskCard.innerHTML = `
-                    <div class="time-badge">${task.deadlineText}</div>
-                    <div class="time-header">
-                        <h3>${task.title}</h3>
-                        <p>${task.description}</p>
-                        <div class="time-reward">🎁 Награда: +${task.reward} ашетиков</div>
-                    </div>
-                    <div class="level-card">
-                        ${!isCompleted && !isExpired ? `
-                            <button class="time-task-btn" onclick="openTimeTaskUpload('${task.id}', ${task.reward})">
-                                <i class="fas fa-camera"></i> Отправить фото на проверку
-                            </button>
-                        ` : isCompleted ? `
-                            <div style="text-align: center; padding: 12px; color: var(--status-green);">
-                                <i class="fas fa-check-circle"></i> Задание выполнено! +${task.reward} ашетиков получено
-                            </div>
-                        ` : `
-                            <div style="text-align: center; padding: 12px; color: var(--status-red);">
-                                <i class="fas fa-clock"></i> Время выполнения истекло
-                            </div>
-                        `}
-                    </div>
-                `;
-                container.appendChild(taskCard);
-            });
-        }
-        
-        let currentTimeTaskId = null;
-        let currentTimeTaskReward = null;
-        
-        function openTimeTaskUpload(taskId, reward) {
-            const task = TIME_TASKS.find(t => t.id === taskId);
-            if (!task || task.completed) {
-                if (tg) tg.showAlert('Это задание уже выполнено!');
-                return;
-            }
-            const today = new Date();
-            const deadline = new Date(task.deadline);
-            if (today > deadline) {
-                if (tg) tg.showAlert('Срок выполнения задания истек!');
-                return;
-            }
-            currentTimeTaskId = taskId;
-            currentTimeTaskReward = reward;
-            const fileInput = document.createElement('input');
-            fileInput.type = 'file';
-            fileInput.accept = 'image/*';
-            fileInput.multiple = true;
-            fileInput.onchange = handleTimeTaskFilesSelected;
-            fileInput.click();
-        }
-        
-        function handleTimeTaskFilesSelected(event) {
-            const files = Array.from(event.target.files);
-            if (files.length === 0) return;
-            
-            const oversizedFiles = files.filter(f => f.size > MAX_FILE_SIZE);
-            if (oversizedFiles.length > 0) {
-                if (tg) tg.showAlert(`❌ Файл(ы) слишком большие. Максимум ${MAX_FILE_SIZE / 1024 / 1024}MB на фото.`);
-                return;
-            }
-            
-            tempPhotos = files;
-            const previewContainer = document.getElementById('taskPhotoPreviewContainer');
-            if (previewContainer) {
-                previewContainer.innerHTML = '';
-                files.forEach((file) => {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const img = document.createElement('img');
-                        img.src = e.target.result;
-                        img.style.cssText = 'width: 70px; height: 70px; object-fit: cover; border-radius: 12px; margin: 5px; border: 2px solid var(--accent);';
-                        previewContainer.appendChild(img);
-                    };
-                    reader.readAsDataURL(file);
-                });
-            }
-            const modal = document.getElementById('taskUploadModal');
-            if (modal) {
-                modal.style.display = 'flex';
-                const submitBtn = modal.querySelector('.modal-action-btn');
-                if (submitBtn) {
-                    submitBtn.onclick = () => submitTimeTaskPhoto();
-                }
-            }
-        }
-        
-        async function submitTimeTaskPhoto() {
-            if (isUploading) return;
-            if (!tempPhotos || tempPhotos.length === 0) {
-                if (tg) tg.showAlert('❌ Выберите хотя бы одно фото');
-                return;
-            }
-            isUploading = true;
-            try {
-                const formData = new FormData();
-                formData.append('user', userId.toString());
-                formData.append('title', `Временное задание: ${TIME_TASKS.find(t => t.id === currentTimeTaskId)?.title}`);
-                formData.append('id', currentTimeTaskId);
-                formData.append('points', currentTimeTaskReward.toString());
-                formData.append('maxProgress', '1');
-                for (let i = 0; i < tempPhotos.length; i++) {
-                    formData.append('photos', tempPhotos[i]);
-                }
-                const response = await fetch(`${SERVER_URL}/api/check_time_task`, {
-                    method: 'POST',
-                    body: formData
-                });
-                if (!response.ok) {
-                    throw new Error(`Ошибка сервера: ${response.status}`);
-                }
-                const result = await response.json();
-                if (result && result.status === 'ok') {
-                    if (tg) tg.showAlert('✅ Фото отправлено на проверку!');
-                    closeTaskUploadModal();
-                } else {
-                    throw new Error(result?.message || 'Ошибка отправки');
-                }
-            } catch (error) {
-                console.error('❌ Ошибка:', error);
-                if (tg) tg.showAlert(`❌ Ошибка: ${error.message}`);
-            } finally {
-                isUploading = false;
-            }
-        }
-        
-        function toggleTimeTasks() {
-            const content = document.getElementById('timeTasksContent');
-            const arrow = document.getElementById('timeTasksArrow');
-            if (!content) return;
-            if (content.style.display === 'block') {
-                content.style.display = 'none';
-                if (arrow) arrow.style.transform = 'rotate(0deg)';
-            } else {
-                content.style.display = 'block';
-                if (arrow) arrow.style.transform = 'rotate(180deg)';
-                renderTimeTasks();
-            }
-        }
-        
-        function toggleTasks() {
-            const content = document.getElementById('tasksContent');
-            const arrow = document.getElementById('tasksArrow');
-            if (!content) return;
-            if (content.style.display === 'block') {
-                content.style.display = 'none';
-                if (arrow) arrow.style.transform = 'rotate(0deg)';
-            } else {
-                content.style.display = 'block';
-                if (arrow) arrow.style.transform = 'rotate(180deg)';
-                renderBranchTasks();
-            }
-        }
-        
-        function toggleSection(sectionId) {
-            const section = document.getElementById(sectionId);
-            if (section) {
-                if (section.style.display === 'none' || section.style.display === '') {
-                    document.querySelectorAll('.rewards-section').forEach(el => {
-                        if (el && el !== section) el.style.display = 'none';
-                    });
-                    section.style.display = 'block';
-                } else {
-                    section.style.display = 'none';
-                }
-            }
-        }
-        
-        function toggleInventoryBlock() {
-            const content = document.getElementById('inventoryContent');
-            const arrow = document.getElementById('inventoryArrow');
-            if (!content) return;
-            if (content.style.display === 'none' || content.style.display === '') {
-                content.style.display = 'block';
-                if (arrow) arrow.style.transform = 'rotate(180deg)';
-            } else {
-                content.style.display = 'none';
-                if (arrow) arrow.style.transform = 'rotate(0deg)';
-            }
-        }
-        
-        function toggleOrganizersBlock() {
-            const content = document.getElementById('organizersBlockContent');
-            const arrow = document.getElementById('organizersArrow');
-            if (!content) return;
-            if (content.style.display === 'none' || content.style.display === '') {
-                content.style.display = 'block';
-                if (arrow) arrow.style.transform = 'rotate(180deg)';
-            } else {
-                content.style.display = 'none';
-                if (arrow) arrow.style.transform = 'rotate(0deg)';
-            }
-        }
-        
-        function toggleMarkersBlock() {
-            const content = document.getElementById('markersBlockContent');
-            const arrow = document.getElementById('markersArrow');
-            if (!content) return;
-            if (content.style.display === 'none' || content.style.display === '') {
-                content.style.display = 'block';
-                if (arrow) arrow.style.transform = 'rotate(180deg)';
-                renderBrandsInventory();
-            } else {
-                content.style.display = 'none';
-                if (arrow) arrow.style.transform = 'rotate(0deg)';
-            }
-        }
-        
         // ==========================================
         // МАРКЕРЫ (С ЦВЕТАМИ) - ТОЛЬКО GUANGNA
         // ==========================================
@@ -5076,6 +4838,7 @@
                 if (tg) tg.showAlert('❌ Ошибка отправки заказа. Попробуйте позже.');
             }
         }
+        
         // ==========================================
         // ТОМА И ОТВЕТЫ
         // ==========================================
@@ -5250,7 +5013,6 @@
                 }
             });
         }
-        
         // ==========================================
         // ИИ ПАЛИТРА (ОСНОВНЫЕ ФУНКЦИИ)
         // ==========================================
@@ -6051,295 +5813,746 @@
         }
         
         function openOrganizerView(orgId) {
-    const org = inventory.organizers.find(o => o.id === orgId);
-    if (!org) return;
-    
-    document.getElementById('selectedOrganizerName').innerText = org.name;
-    
-    const gridContainer = document.getElementById('selectedOrganizerGrid');
-    gridContainer.innerHTML = '';
-    
-    const grid = document.createElement('div');
-    grid.className = 'organizer-grid';
-    grid.style.display = 'grid';
-    grid.style.gridTemplateColumns = `repeat(${org.cols}, 55px)`;
-    grid.style.gap = '6px';
-    grid.style.justifyContent = 'center';
-    
-    if (org.cols > 5) {
-        grid.style.overflowX = 'auto';
-        grid.style.justifyContent = 'start';
-        grid.style.paddingBottom = '8px';
-    }
-    
-    for (let i = 0; i < org.cells.length; i++) {
-        const cell = org.cells[i];
-        const cellDiv = document.createElement('div');
-        cellDiv.className = `organizer-cell ${cell && cell.markers && cell.markers.length > 0 ? 'filled' : ''}`;
-        
-        // Сохраняем индекс ячейки в data-атрибуте
-        cellDiv.setAttribute('data-cell-index', i);
-        
-        // Передаем индекс ячейки в функцию открытия
-        cellDiv.onclick = (function(idx) {
-            return function() { openOrganizerCellModal(orgId, idx); };
-        })(i);
-        
-        let uniqueMarkers = 0;
-        if (cell && cell.markers) {
-            uniqueMarkers = cell.markers.length;
-        }
-        
-        if (uniqueMarkers > 0) {
-            cellDiv.innerHTML = `<div class="organizer-cell-count">${uniqueMarkers}</div>`;
-        } else {
-            cellDiv.innerHTML = `<div class="organizer-cell-empty">+</div>`;
-        }
-        
-        grid.appendChild(cellDiv);
-    }
-    
-    gridContainer.appendChild(grid);
-    document.getElementById('selectedOrganizerView').style.display = 'block';
-}
-        
-function closeOrganizerView() {
-    document.getElementById('selectedOrganizerView').style.display = 'none';
-}
-        
-function openOrganizerCreator() {
-    document.getElementById('organizerModal').style.display = 'flex';
-}
-        
-function closeOrganizerModal() {
-    document.getElementById('organizerModal').style.display = 'none';
-    document.getElementById('organizerName').value = '';
-    document.getElementById('organizerCols').value = '5';
-    document.getElementById('organizerRows').value = '5';
-}
-        
-function createOrganizer() {
-    const name = document.getElementById('organizerName').value.trim();
-    const cols = parseInt(document.getElementById('organizerCols').value);
-    const rows = parseInt(document.getElementById('organizerRows').value);
-    
-    if (!name) {
-        if (tg) tg.showAlert('Введите название органайзера');
-        return;
-    }
-    if (cols < 1 || cols > 12 || rows < 1 || rows > 10) {
-        if (tg) tg.showAlert('Размеры: столбцы 1-12, строки 1-10');
-        return;
-    }
-    
-    const newOrganizer = {
-        id: Date.now(),
-        name: name,
-        cols: cols,
-        rows: rows,
-        cells: Array(cols * rows).fill(null)
-    };
-    
-    if (!inventory.organizers) inventory.organizers = [];
-    inventory.organizers.push(newOrganizer);
-    saveInventory();
-    renderOrganizersList();
-    closeOrganizerModal();
-    if (tg) tg.showAlert(`✅ Органайзер "${name}" создан!`);
-}
-        
-function deleteOrganizer(orgId) {
-    if (tg) {
-        tg.showConfirm('Удалить органайзер? Все маркеры в нем будут потеряны!', (confirm) => {
-            if (confirm) {
-                inventory.organizers = inventory.organizers.filter(o => o.id !== orgId);
-                saveInventory();
-                renderOrganizersList();
-                closeOrganizerView();
-                if (tg) tg.showAlert('✅ Органайзер удален');
+            const org = inventory.organizers.find(o => o.id === orgId);
+            if (!org) return;
+            
+            document.getElementById('selectedOrganizerName').innerText = org.name;
+            
+            const gridContainer = document.getElementById('selectedOrganizerGrid');
+            gridContainer.innerHTML = '';
+            
+            const grid = document.createElement('div');
+            grid.className = 'organizer-grid';
+            grid.style.display = 'grid';
+            grid.style.gridTemplateColumns = `repeat(${org.cols}, 55px)`;
+            grid.style.gap = '6px';
+            grid.style.justifyContent = 'center';
+            
+            if (org.cols > 5) {
+                grid.style.overflowX = 'auto';
+                grid.style.justifyContent = 'start';
+                grid.style.paddingBottom = '8px';
             }
-        });
-    } else {
-        if (confirm('Удалить органайзер? Все маркеры в нем будут потеряны!')) {
-            inventory.organizers = inventory.organizers.filter(o => o.id !== orgId);
+            
+            for (let i = 0; i < org.cells.length; i++) {
+                const cell = org.cells[i];
+                const cellDiv = document.createElement('div');
+                cellDiv.className = `organizer-cell ${cell && cell.markers && cell.markers.length > 0 ? 'filled' : ''}`;
+                cellDiv.setAttribute('data-cell-index', i);
+                cellDiv.onclick = (function(idx) {
+                    return function() { openOrganizerCellModal(orgId, idx); };
+                })(i);
+                
+                let uniqueMarkers = 0;
+                if (cell && cell.markers) {
+                    uniqueMarkers = cell.markers.length;
+                }
+                
+                if (uniqueMarkers > 0) {
+                    cellDiv.innerHTML = `<div class="organizer-cell-count">${uniqueMarkers}</div>`;
+                } else {
+                    cellDiv.innerHTML = `<div class="organizer-cell-empty">+</div>`;
+                }
+                
+                grid.appendChild(cellDiv);
+            }
+            
+            gridContainer.appendChild(grid);
+            document.getElementById('selectedOrganizerView').style.display = 'block';
+        }
+        
+        function closeOrganizerView() {
+            document.getElementById('selectedOrganizerView').style.display = 'none';
+        }
+        
+        function openOrganizerCreator() {
+            document.getElementById('organizerModal').style.display = 'flex';
+        }
+        
+        function closeOrganizerModal() {
+            document.getElementById('organizerModal').style.display = 'none';
+            document.getElementById('organizerName').value = '';
+            document.getElementById('organizerCols').value = '5';
+            document.getElementById('organizerRows').value = '5';
+        }
+        
+        function createOrganizer() {
+            const name = document.getElementById('organizerName').value.trim();
+            const cols = parseInt(document.getElementById('organizerCols').value);
+            const rows = parseInt(document.getElementById('organizerRows').value);
+            
+            if (!name) {
+                if (tg) tg.showAlert('Введите название органайзера');
+                return;
+            }
+            if (cols < 1 || cols > 12 || rows < 1 || rows > 10) {
+                if (tg) tg.showAlert('Размеры: столбцы 1-12, строки 1-10');
+                return;
+            }
+            
+            const newOrganizer = {
+                id: Date.now(),
+                name: name,
+                cols: cols,
+                rows: rows,
+                cells: Array(cols * rows).fill(null)
+            };
+            
+            if (!inventory.organizers) inventory.organizers = [];
+            inventory.organizers.push(newOrganizer);
             saveInventory();
             renderOrganizersList();
-            closeOrganizerView();
-            alert('✅ Органайзер удален');
-        }
-    }
-}
-        
-function openOrganizerCellModal(orgId, cellIndex) {
-    const org = inventory.organizers.find(o => o.id === orgId);
-    if (!org) return;
-    
-    const cell = org.cells[cellIndex] || { markers: [] };
-    const markers = cell.markers || [];
-    
-    const modal = document.getElementById('organizerCellModal');
-    if (!modal) return;
-    
-    // Преобразуем индекс в формат A1, A2, B1, B2...
-    const row = Math.floor(cellIndex / org.cols);
-    const col = cellIndex % org.cols;
-    const rowLetter = String.fromCharCode(65 + row); // 65 = 'A'
-    const cellLabel = `${rowLetter}${col + 1}`;
-    
-    document.getElementById('organizerCellModalTitle').innerText = `Ячейка ${cellLabel}`;
-    
-    const listContainer = document.getElementById('organizerCellMarkersList');
-    listContainer.innerHTML = '';
-    
-    // Фильтр по бренду
-    const filterDiv = document.createElement('div');
-    filterDiv.style.cssText = 'margin-bottom: 15px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;';
-    
-    const allBrandsInCell = new Set();
-    markers.forEach(m => allBrandsInCell.add(m.brand));
-    const allCustomBrands = new Set(customBrands.map(b => b.name));
-    
-    filterDiv.innerHTML = `
-        <label style="font-size: 12px; color: var(--text-gray);">Фильтр по бренду:</label>
-        <select id="markerBrandFilter" style="flex: 1; padding: 8px; border-radius: 12px; background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text);">
-            <option value="all">Все бренды</option>
-            ${Array.from(allBrandsInCell).map(b => `<option value="${b}">${b}</option>`).join('')}
-            ${allCustomBrands.size > 0 ? '<option disabled>──────────</option>' : ''}
-            ${Array.from(allCustomBrands).filter(b => !allBrandsInCell.has(b)).map(b => `<option value="${b}">${b} (другой)</option>`).join('')}
-        </select>
-    `;
-    listContainer.appendChild(filterDiv);
-    
-    const markersListDiv = document.createElement('div');
-    markersListDiv.id = 'organizerMarkersList';
-    markersListDiv.style.maxHeight = '40vh';
-    markersListDiv.style.overflowY = 'auto';
-    listContainer.appendChild(markersListDiv);
-    
-    function renderFilteredMarkers() {
-        const selectedBrand = document.getElementById('markerBrandFilter').value;
-        const filteredMarkers = selectedBrand === 'all' ? markers : markers.filter(m => m.brand === selectedBrand);
-        
-        markersListDiv.innerHTML = '';
-        
-        if (filteredMarkers.length === 0) {
-            markersListDiv.innerHTML = '<div class="no-results">Нет маркеров в этой ячейке</div>';
-            return;
+            closeOrganizerModal();
+            if (tg) tg.showAlert(`✅ Органайзер "${name}" создан!`);
         }
         
-        filteredMarkers.forEach((marker, idx) => {
-            const originalIdx = markers.findIndex(m => m === marker);
-            const hasColor = getMarkerColor(marker.brand, marker.number);
-            const markerDiv = document.createElement('div');
-            markerDiv.className = 'organizer-cell-marker-item';
-            markerDiv.style.cssText = 'display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid var(--border-color);';
-            markerDiv.innerHTML = `
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <div class="color-circle" style="width: 32px; height: 32px; background-color: ${hasColor || '#ccc'}; border: none;"></div>
-                    <div>
-                        <strong>${marker.brand}</strong> №${marker.number}
-                        <div style="font-size: 11px; color: var(--text-gray);">x${marker.count || 1}</div>
-                    </div>
-                </div>
-                <button class="delete-marker-btn" onclick="deleteMarkerFromOrganizerCell('${orgId}', ${cellIndex}, ${originalIdx})">🗑️ Удалить</button>
-            `;
-            markersListDiv.appendChild(markerDiv);
-        });
-    }
-    
-    const filterSelect = document.getElementById('markerBrandFilter');
-    filterSelect.onchange = renderFilteredMarkers;
-    renderFilteredMarkers();
-    
-    // Кнопка добавления маркера
-    const addBtn = document.createElement('button');
-    addBtn.className = 'modal-action-btn';
-    addBtn.style.marginTop = '15px';
-    addBtn.innerHTML = '<i class="fas fa-plus"></i> Добавить маркер в ячейку';
-    addBtn.onclick = () => openAddMarkerToOrganizerCell(orgId, cellIndex);
-    listContainer.appendChild(addBtn);
-    
-    currentOrganizerCellData = { orgId, cellIndex };
-    modal.style.display = 'flex';
-}
-        
-function deleteMarkerFromOrganizerCell(orgId, cellIndex, markerIndex) {
-    console.log('Deleting marker:', orgId, cellIndex, markerIndex);
-    
-    const org = inventory.organizers.find(o => o.id === parseInt(orgId));
-    if (!org) {
-        console.error('Organizer not found');
-        return;
-    }
-    
-    const cell = org.cells[cellIndex];
-    if (cell && cell.markers && cell.markers[markerIndex]) {
-        cell.markers.splice(markerIndex, 1);
-        saveInventory();
-        
-        // Обновляем сетку
-        openOrganizerView(orgId);
-        
-        // Обновляем модалку
-        const modal = document.getElementById('organizerCellModal');
-        if (modal && modal.style.display === 'flex') {
-            modal.style.display = 'none';
-            setTimeout(() => {
-                openOrganizerCellModal(orgId, cellIndex);
-            }, 50);
-        }
-        
-        if (tg) tg.showAlert('🗑️ Маркер удален из ячейки');
-    } else {
-        console.error('Marker not found');
-    }
-}
-                // Функция для отрисовки маркеров
-                function renderMarkers() {
-                    const selectedBrand = filterSelect ? filterSelect.value : 'all';
-                    const filteredMarkers = selectedBrand === 'all' ? updatedMarkers : updatedMarkers.filter(m => m.brand === selectedBrand);
-                    
-                    markersListDiv.innerHTML = '';
-                    
-                    if (filteredMarkers.length === 0) {
-                        markersListDiv.innerHTML = '<div class="no-results">Нет маркеров в этой ячейке</div>';
-                        return;
+        function deleteOrganizer(orgId) {
+            if (tg) {
+                tg.showConfirm('Удалить органайзер? Все маркеры в нем будут потеряны!', (confirm) => {
+                    if (confirm) {
+                        inventory.organizers = inventory.organizers.filter(o => o.id !== orgId);
+                        saveInventory();
+                        renderOrganizersList();
+                        closeOrganizerView();
+                        if (tg) tg.showAlert('✅ Органайзер удален');
                     }
-                    
-                    filteredMarkers.forEach((marker, idx) => {
-                        const originalIdx = updatedMarkers.findIndex(m => m === marker);
-                        const hasColor = getMarkerColor(marker.brand, marker.number);
-                        const markerDiv = document.createElement('div');
-                        markerDiv.className = 'organizer-cell-marker-item';
-                        markerDiv.style.cssText = 'display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid var(--border-color);';
-                        markerDiv.innerHTML = `
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <div class="color-circle" style="width: 32px; height: 32px; background-color: ${hasColor || '#ccc'}; border: none;"></div>
-                                <div>
-                                    <strong>${marker.brand}</strong> №${marker.number}
-                                    <div style="font-size: 11px; color: var(--text-gray);">x${marker.count || 1}</div>
-                                </div>
-                            </div>
-                            <button class="delete-marker-btn" onclick="deleteMarkerFromOrganizerCell('${orgId}', ${cellIndex}, ${originalIdx})">🗑️ Удалить</button>
-                        `;
-                        markersListDiv.appendChild(markerDiv);
-                    });
+                });
+            } else {
+                if (confirm('Удалить органайзер? Все маркеры в нем будут потеряны!')) {
+                    inventory.organizers = inventory.organizers.filter(o => o.id !== orgId);
+                    saveInventory();
+                    renderOrganizersList();
+                    closeOrganizerView();
+                    alert('✅ Органайзер удален');
                 }
-                
-                // Привязываем обработчик изменения фильтра
-                if (filterSelect) {
-                    filterSelect.onchange = renderMarkers;
-                }
-                
-                // Отрисовываем маркеры
-                renderMarkers();
             }
         }
         
-        if (tg) tg.showAlert('🗑️ Маркер удален из ячейки');
-    }
-}
+        function openOrganizerCellModal(orgId, cellIndex) {
+            const org = inventory.organizers.find(o => o.id === orgId);
+            if (!org) return;
+            
+            const cell = org.cells[cellIndex] || { markers: [] };
+            const markers = cell.markers || [];
+            
+            const modal = document.getElementById('organizerCellModal');
+            if (!modal) return;
+            
+            const row = Math.floor(cellIndex / org.cols);
+            const col = cellIndex % org.cols;
+            const rowLetter = String.fromCharCode(65 + row);
+            const cellLabel = `${rowLetter}${col + 1}`;
+            
+            document.getElementById('organizerCellModalTitle').innerText = `Ячейка ${cellLabel}`;
+            
+            const listContainer = document.getElementById('organizerCellMarkersList');
+            listContainer.innerHTML = '';
+            
+            const filterDiv = document.createElement('div');
+            filterDiv.style.cssText = 'margin-bottom: 15px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;';
+            
+            const allBrandsInCell = new Set();
+            markers.forEach(m => allBrandsInCell.add(m.brand));
+            const allCustomBrands = new Set(customBrands.map(b => b.name));
+            
+            filterDiv.innerHTML = `
+                <label style="font-size: 12px; color: var(--text-gray);">Фильтр по бренду:</label>
+                <select id="markerBrandFilter" style="flex: 1; padding: 8px; border-radius: 12px; background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text);">
+                    <option value="all">Все бренды</option>
+                    ${Array.from(allBrandsInCell).map(b => `<option value="${b}">${b}</option>`).join('')}
+                    ${allCustomBrands.size > 0 ? '<option disabled>──────────</option>' : ''}
+                    ${Array.from(allCustomBrands).filter(b => !allBrandsInCell.has(b)).map(b => `<option value="${b}">${b} (другой)</option>`).join('')}
+                </select>
+            `;
+            listContainer.appendChild(filterDiv);
+            
+            const markersListDiv = document.createElement('div');
+            markersListDiv.id = 'organizerMarkersList';
+            markersListDiv.style.maxHeight = '40vh';
+            markersListDiv.style.overflowY = 'auto';
+            listContainer.appendChild(markersListDiv);
+            
+            function renderFilteredMarkers() {
+                const selectedBrand = document.getElementById('markerBrandFilter').value;
+                const filteredMarkers = selectedBrand === 'all' ? markers : markers.filter(m => m.brand === selectedBrand);
+                
+                markersListDiv.innerHTML = '';
+                
+                if (filteredMarkers.length === 0) {
+                    markersListDiv.innerHTML = '<div class="no-results">Нет маркеров в этой ячейке</div>';
+                    return;
+                }
+                
+                filteredMarkers.forEach((marker, idx) => {
+                    const originalIdx = markers.findIndex(m => m === marker);
+                    const hasColor = getMarkerColor(marker.brand, marker.number);
+                    const markerDiv = document.createElement('div');
+                    markerDiv.className = 'organizer-cell-marker-item';
+                    markerDiv.style.cssText = 'display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid var(--border-color);';
+                    markerDiv.innerHTML = `
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div class="color-circle" style="width: 32px; height: 32px; background-color: ${hasColor || '#ccc'}; border: none;"></div>
+                            <div>
+                                <strong>${marker.brand}</strong> №${marker.number}
+                                <div style="font-size: 11px; color: var(--text-gray);">x${marker.count || 1}</div>
+                            </div>
+                        </div>
+                        <button class="delete-marker-btn" onclick="deleteMarkerFromOrganizerCell('${orgId}', ${cellIndex}, ${originalIdx})">🗑️ Удалить</button>
+                    `;
+                    markersListDiv.appendChild(markerDiv);
+                });
+            }
+            
+            const filterSelect = document.getElementById('markerBrandFilter');
+            filterSelect.onchange = renderFilteredMarkers;
+            renderFilteredMarkers();
+            
+            const addBtn = document.createElement('button');
+            addBtn.className = 'modal-action-btn';
+            addBtn.style.marginTop = '15px';
+            addBtn.innerHTML = '<i class="fas fa-plus"></i> Добавить маркер в ячейку';
+            addBtn.onclick = () => openAddMarkerToOrganizerCell(orgId, cellIndex);
+            listContainer.appendChild(addBtn);
+            
+            currentOrganizerCellData = { orgId, cellIndex };
+            modal.style.display = 'flex';
+        }
         
+        function deleteMarkerFromOrganizerCell(orgId, cellIndex, markerIndex) {
+            console.log('Deleting marker:', orgId, cellIndex, markerIndex);
+            
+            const org = inventory.organizers.find(o => o.id === parseInt(orgId));
+            if (!org) {
+                console.error('Organizer not found');
+                return;
+            }
+            
+            const cell = org.cells[cellIndex];
+            if (cell && cell.markers && cell.markers[markerIndex]) {
+                cell.markers.splice(markerIndex, 1);
+                saveInventory();
+                
+                openOrganizerView(orgId);
+                
+                const modal = document.getElementById('organizerCellModal');
+                if (modal && modal.style.display === 'flex') {
+                    modal.style.display = 'none';
+                    setTimeout(() => {
+                        openOrganizerCellModal(orgId, cellIndex);
+                    }, 50);
+                }
+                
+                if (tg) tg.showAlert('🗑️ Маркер удален из ячейки');
+            } else {
+                console.error('Marker not found');
+            }
+        }
+        // ==========================================
+        // ОБНОВЛЕНИЕ ПРОГРЕССА И СТАТУСЫ
+        // ==========================================
+        
+        async function refreshUserProgress() {
+            console.log('🔄 Refreshing user progress...');
+            
+            try {
+                await loadUserBalance();
+                await loadUserProgress();
+                await loadUnlockedStatuses();
+                await loadUserAchievements();
+                
+                renderBranchTasks();
+                renderTimeTasks();
+                updateUI();
+                
+                console.log('✅ Progress refreshed, current balance:', user.balance);
+            } catch (error) {
+                console.error('Error refreshing progress:', error);
+            }
+        }
+        
+        let refreshInterval = null;
+        
+        function startProgressRefresh() {
+            if (refreshInterval) clearInterval(refreshInterval);
+            refreshInterval = setInterval(() => {
+                refreshUserProgress();
+            }, 30000);
+            console.log('✅ Progress refresh started (every 30 seconds)');
+        }
+        
+        function openStatusInfo() {
+            console.log('openStatusInfo called');
+            console.log('user.unlockedStatuses:', user.unlockedStatuses);
+            
+            const list = document.getElementById('availableStatusesList');
+            if (!list) return;
+            
+            list.innerHTML = '';
+            
+            const allStatuses = ['Без статуса', ...Object.values(BRANCH_REWARDS)];
+            
+            allStatuses.forEach(status => {
+                const isUnlocked = user.unlockedStatuses.includes(status);
+                const isActive = user.status === status;
+                
+                const div = document.createElement('div');
+                div.style.cssText = `padding:14px 16px; margin:10px 0; border-radius:14px; background:var(--card-bg); display:flex; justify-content:space-between; align-items:center; border:1px solid var(--border-color);`;
+                
+                const leftSpan = document.createElement('span');
+                leftSpan.style.cssText = `font-weight:500; font-size:15px; color:var(--text);`;
+                leftSpan.innerText = status;
+                
+                const rightSpan = document.createElement('span');
+                rightSpan.style.cssText = `display:inline-flex; align-items:center; gap:8px; white-space:nowrap;`;
+                
+                if (isUnlocked) {
+                    if (isActive) {
+                        rightSpan.innerHTML = `<span style="color:var(--status-green); font-size:13px;"><i class="fas fa-check-circle"></i> Активен</span>`;
+                    } else {
+                        const btn = document.createElement('button');
+                        btn.innerText = 'Выбрать';
+                        btn.style.cssText = `background:var(--accent); color:white; border:none; padding:6px 16px; border-radius:20px; font-size:13px; font-weight:500; cursor:pointer;`;
+                        btn.onclick = (function(s) {
+                            return function() { selectStatus(s); };
+                        })(status);
+                        rightSpan.appendChild(btn);
+                    }
+                } else {
+                    rightSpan.innerHTML = `<span style="color:var(--text-gray); font-size:12px;"><i class="fas fa-lock"></i> Выполните все уровни ветки</span>`;
+                }
+                
+                div.appendChild(leftSpan);
+                div.appendChild(rightSpan);
+                list.appendChild(div);
+            });
+            
+            const modal = document.getElementById('statusSelectModal');
+            if (modal) modal.style.display = 'flex';
+        }
+        
+        function selectStatus(statusName) {
+            if (!user.unlockedStatuses.includes(statusName)) {
+                if (tg) tg.showAlert(`Статус "${statusName}" не разблокирован`);
+                return;
+            }
+            
+            user.status = statusName;
+            saveUserData();
+            
+            const modal = document.getElementById('statusSelectModal');
+            if (modal) modal.style.display = 'none';
+            
+            updateUI();
+            if (tg) tg.showAlert(`✅ Статус изменен на "${statusName}"`);
+        }
+        
+        function openSupportForStatus() {
+            const supportUrl = 'https://boosty.to/hachettelittleheroes/donate';
+            if (tg) {
+                tg.showConfirm(
+                    'Вы будете перенаправлены на страницу поддержки.\n\nПосле пожертвования, напишите администратору для получения статуса "Благодетель".',
+                    (confirm) => {
+                        if (confirm) {
+                            window.open(supportUrl, '_blank');
+                            if (tg) tg.showAlert('Спасибо за поддержку! После пожертвования напишите @admin для получения статуса.');
+                        }
+                    }
+                );
+            } else {
+                if (confirm('Перейти на страницу поддержки?\n\nПосле пожертвования от 2000 рублей вы получите статус "Благодетель".')) {
+                    window.open(supportUrl, '_blank');
+                }
+            }
+        }
+        
+        // ==========================================
+        // ТЕМЫ ОФОРМЛЕНИЯ
+        // ==========================================
+        
+        function setTheme(themeName) {
+            const oldStyle = document.getElementById('custom-theme-style');
+            if (oldStyle) oldStyle.remove();
+            
+            if (themeName === 'custom') {
+                applyCustomTheme(true);
+            } else {
+                document.documentElement.setAttribute('data-theme', themeName);
+                user.theme = themeName;
+                localStorage.setItem('app_theme', themeName);
+            }
+            
+            document.querySelectorAll('.theme-option').forEach(el => {
+                el.classList.remove('active');
+                if (el.dataset.theme === themeName) el.classList.add('active');
+            });
+        }
+        
+        function applyCustomTheme(loadFromCache = false) {
+            let bgMode, accentColor;
+            
+            if (loadFromCache) {
+                bgMode = localStorage.getItem('custom_theme_bg') || 'light';
+                accentColor = localStorage.getItem('custom_theme_accent') || '#ff9500';
+                const bgEl = document.getElementById('themeBgMode');
+                const accEl = document.getElementById('themeAccentColor');
+                if (bgEl) bgEl.value = bgMode;
+                if (accEl) accEl.value = accentColor;
+            } else {
+                const bgEl = document.getElementById('themeBgMode');
+                const accEl = document.getElementById('themeAccentColor');
+                bgMode = bgEl ? bgEl.value : 'light';
+                accentColor = accEl ? accEl.value : '#ff9500';
+                localStorage.setItem('custom_theme_bg', bgMode);
+                localStorage.setItem('custom_theme_accent', accentColor);
+            }
+            
+            const oldStyle = document.getElementById('custom-theme-style');
+            if (oldStyle) oldStyle.remove();
+            
+            const style = document.createElement('style');
+            style.id = 'custom-theme-style';
+            
+            const commonStyles = `button, .nav-btn, .task-submit-btn, .search-mode-btn, .feedback-btn { pointer-events: auto !important; cursor: pointer !important; } .modal-overlay { z-index: 10000 !important; }`;
+            
+            if (bgMode === 'light') {
+                style.textContent = `:root { --bg: #f5f5f7; --bg-secondary: #ffffff; --bg-header: #ffffff; --text: #1c1c1e; --text-gray: #8e8e93; --accent: ${accentColor}; --accent-rgb: ${hexToRgb(accentColor)}; --accent-gradient: linear-gradient(135deg, ${accentColor} 0%, ${accentColor}cc 100%); --border-color: rgba(0,0,0,0.1); --card-bg: #ffffff; --input-bg: #ffffff; } ${commonStyles}`;
+            } else {
+                style.textContent = `:root { --bg: #121212; --bg-secondary: #1e1e1e; --bg-header: #1c1c1e; --text: #ffffff; --text-gray: #8e8e93; --accent: ${accentColor}; --accent-rgb: ${hexToRgb(accentColor)}; --accent-gradient: linear-gradient(135deg, ${accentColor} 0%, ${accentColor}cc 100%); --border-color: rgba(255,255,255,0.1); --card-bg: #1c1c1e; --input-bg: #2c2c2e; } ${commonStyles}`;
+            }
+            
+            document.head.appendChild(style);
+            document.documentElement.removeAttribute('data-theme');
+            user.theme = 'custom';
+            localStorage.setItem('app_theme', 'custom');
+        }
+        
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '255, 149, 0';
+        }
+        
+        // ==========================================
+        // НАВИГАЦИЯ
+        // ==========================================
+        
+        function tab(pageId) {
+            const targetPage = document.getElementById(pageId);
+            if (!targetPage) return;
+            
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            targetPage.classList.add('active');
+            
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            const activeBtn = document.getElementById('btn-' + pageId);
+            if (activeBtn) activeBtn.classList.add('active');
+            
+            window.scrollTo(0, 0);
+            
+            switch(pageId) {
+                case 'markers':
+                    if (!markersDB || markersDB.length === 0) loadMarkers();
+                    else renderMarkers();
+                    break;
+                case 'cart':
+                    renderCart();
+                    break;
+                case 'answers':
+                    renderVolumes();
+                    break;
+                case 'profile':
+                    updateUI();
+                    refreshUserProgress();
+                    break;
+                case 'aipalette':
+                    if (userId === ADMIN_ID) {
+                        const adminBlock = document.getElementById('adminAiBlock');
+                        if (adminBlock) adminBlock.style.display = 'block';
+                    }
+                    loadAISettings();
+                    break;
+            }
+        }
+        
+        // ==========================================
+        // ОРГАНАЙЗЕРЫ (ПОЛНАЯ РЕАЛИЗАЦИЯ)
+        // ==========================================
+        
+        function loadInventory() {
+            const saved = localStorage.getItem('coloring_inventory');
+            if (saved) {
+                inventory = JSON.parse(saved);
+            } else {
+                inventory = { organizers: [], userMarkers: {} };
+            }
+            renderOrganizersList();
+        }
+        
+        function saveInventory() {
+            localStorage.setItem('coloring_inventory', JSON.stringify(inventory));
+        }
+        
+        function renderOrganizersList() {
+            const container = document.getElementById('organizersList');
+            if (!container) return;
+            container.innerHTML = '';
+            
+            if (!inventory.organizers || inventory.organizers.length === 0) {
+                container.innerHTML = '<div class="no-results">Нет органайзеров. Создайте первый!</div>';
+                return;
+            }
+            
+            inventory.organizers.forEach(org => {
+                const div = document.createElement('div');
+                div.style.cssText = 'background: var(--card-bg); border-radius: 12px; padding: 12px; margin-bottom: 10px; cursor: pointer; border: 1px solid var(--border-color);';
+                div.onclick = () => openOrganizerView(org.id);
+                div.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <strong>${org.name}</strong>
+                            <div style="font-size: 11px; color: var(--text-gray);">${org.cols}×${org.rows}</div>
+                        </div>
+                        <button onclick="event.stopPropagation(); deleteOrganizer(${org.id})" style="background: var(--status-red); color: white; padding: 4px 12px; border-radius: 20px; font-size: 11px;">Удалить</button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+        
+        function openOrganizerView(orgId) {
+            const org = inventory.organizers.find(o => o.id === orgId);
+            if (!org) return;
+            
+            document.getElementById('selectedOrganizerName').innerText = org.name;
+            
+            const gridContainer = document.getElementById('selectedOrganizerGrid');
+            gridContainer.innerHTML = '';
+            
+            const grid = document.createElement('div');
+            grid.className = 'organizer-grid';
+            grid.style.display = 'grid';
+            grid.style.gridTemplateColumns = `repeat(${org.cols}, 55px)`;
+            grid.style.gap = '6px';
+            grid.style.justifyContent = 'center';
+            
+            if (org.cols > 5) {
+                grid.style.overflowX = 'auto';
+                grid.style.justifyContent = 'start';
+                grid.style.paddingBottom = '8px';
+            }
+            
+            for (let i = 0; i < org.cells.length; i++) {
+                const cell = org.cells[i];
+                const cellDiv = document.createElement('div');
+                cellDiv.className = `organizer-cell ${cell && cell.markers && cell.markers.length > 0 ? 'filled' : ''}`;
+                cellDiv.setAttribute('data-cell-index', i);
+                cellDiv.onclick = (function(idx) {
+                    return function() { openOrganizerCellModal(orgId, idx); };
+                })(i);
+                
+                let uniqueMarkers = 0;
+                if (cell && cell.markers) {
+                    uniqueMarkers = cell.markers.length;
+                }
+                
+                if (uniqueMarkers > 0) {
+                    cellDiv.innerHTML = `<div class="organizer-cell-count">${uniqueMarkers}</div>`;
+                } else {
+                    cellDiv.innerHTML = `<div class="organizer-cell-empty">+</div>`;
+                }
+                
+                grid.appendChild(cellDiv);
+            }
+            
+            gridContainer.appendChild(grid);
+            document.getElementById('selectedOrganizerView').style.display = 'block';
+        }
+        
+        function closeOrganizerView() {
+            document.getElementById('selectedOrganizerView').style.display = 'none';
+        }
+        
+        function openOrganizerCreator() {
+            document.getElementById('organizerModal').style.display = 'flex';
+        }
+        
+        function closeOrganizerModal() {
+            document.getElementById('organizerModal').style.display = 'none';
+            document.getElementById('organizerName').value = '';
+            document.getElementById('organizerCols').value = '5';
+            document.getElementById('organizerRows').value = '5';
+        }
+        
+        function createOrganizer() {
+            const name = document.getElementById('organizerName').value.trim();
+            const cols = parseInt(document.getElementById('organizerCols').value);
+            const rows = parseInt(document.getElementById('organizerRows').value);
+            
+            if (!name) {
+                if (tg) tg.showAlert('Введите название органайзера');
+                return;
+            }
+            if (cols < 1 || cols > 12 || rows < 1 || rows > 10) {
+                if (tg) tg.showAlert('Размеры: столбцы 1-12, строки 1-10');
+                return;
+            }
+            
+            const newOrganizer = {
+                id: Date.now(),
+                name: name,
+                cols: cols,
+                rows: rows,
+                cells: Array(cols * rows).fill(null)
+            };
+            
+            if (!inventory.organizers) inventory.organizers = [];
+            inventory.organizers.push(newOrganizer);
+            saveInventory();
+            renderOrganizersList();
+            closeOrganizerModal();
+            if (tg) tg.showAlert(`✅ Органайзер "${name}" создан!`);
+        }
+        
+        function deleteOrganizer(orgId) {
+            if (tg) {
+                tg.showConfirm('Удалить органайзер? Все маркеры в нем будут потеряны!', (confirm) => {
+                    if (confirm) {
+                        inventory.organizers = inventory.organizers.filter(o => o.id !== orgId);
+                        saveInventory();
+                        renderOrganizersList();
+                        closeOrganizerView();
+                        if (tg) tg.showAlert('✅ Органайзер удален');
+                    }
+                });
+            } else {
+                if (confirm('Удалить органайзер? Все маркеры в нем будут потеряны!')) {
+                    inventory.organizers = inventory.organizers.filter(o => o.id !== orgId);
+                    saveInventory();
+                    renderOrganizersList();
+                    closeOrganizerView();
+                    alert('✅ Органайзер удален');
+                }
+            }
+        }
+        
+        function openOrganizerCellModal(orgId, cellIndex) {
+            const org = inventory.organizers.find(o => o.id === orgId);
+            if (!org) return;
+            
+            const cell = org.cells[cellIndex] || { markers: [] };
+            const markers = cell.markers || [];
+            
+            const modal = document.getElementById('organizerCellModal');
+            if (!modal) return;
+            
+            const row = Math.floor(cellIndex / org.cols);
+            const col = cellIndex % org.cols;
+            const rowLetter = String.fromCharCode(65 + row);
+            const cellLabel = `${rowLetter}${col + 1}`;
+            
+            document.getElementById('organizerCellModalTitle').innerText = `Ячейка ${cellLabel}`;
+            
+            const listContainer = document.getElementById('organizerCellMarkersList');
+            listContainer.innerHTML = '';
+            
+            const filterDiv = document.createElement('div');
+            filterDiv.style.cssText = 'margin-bottom: 15px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;';
+            
+            const allBrandsInCell = new Set();
+            markers.forEach(m => allBrandsInCell.add(m.brand));
+            const allCustomBrands = new Set(customBrands.map(b => b.name));
+            
+            filterDiv.innerHTML = `
+                <label style="font-size: 12px; color: var(--text-gray);">Фильтр по бренду:</label>
+                <select id="markerBrandFilter" style="flex: 1; padding: 8px; border-radius: 12px; background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text);">
+                    <option value="all">Все бренды</option>
+                    ${Array.from(allBrandsInCell).map(b => `<option value="${b}">${b}</option>`).join('')}
+                    ${allCustomBrands.size > 0 ? '<option disabled>──────────</option>' : ''}
+                    ${Array.from(allCustomBrands).filter(b => !allBrandsInCell.has(b)).map(b => `<option value="${b}">${b} (другой)</option>`).join('')}
+                </select>
+            `;
+            listContainer.appendChild(filterDiv);
+            
+            const markersListDiv = document.createElement('div');
+            markersListDiv.id = 'organizerMarkersList';
+            markersListDiv.style.maxHeight = '40vh';
+            markersListDiv.style.overflowY = 'auto';
+            listContainer.appendChild(markersListDiv);
+            
+            function renderFilteredMarkers() {
+                const selectedBrand = document.getElementById('markerBrandFilter').value;
+                const filteredMarkers = selectedBrand === 'all' ? markers : markers.filter(m => m.brand === selectedBrand);
+                
+                markersListDiv.innerHTML = '';
+                
+                if (filteredMarkers.length === 0) {
+                    markersListDiv.innerHTML = '<div class="no-results">Нет маркеров в этой ячейке</div>';
+                    return;
+                }
+                
+                filteredMarkers.forEach((marker, idx) => {
+                    const originalIdx = markers.findIndex(m => m === marker);
+                    const hasColor = getMarkerColor(marker.brand, marker.number);
+                    const markerDiv = document.createElement('div');
+                    markerDiv.className = 'organizer-cell-marker-item';
+                    markerDiv.style.cssText = 'display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid var(--border-color);';
+                    markerDiv.innerHTML = `
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div class="color-circle" style="width: 32px; height: 32px; background-color: ${hasColor || '#ccc'}; border: none;"></div>
+                            <div>
+                                <strong>${marker.brand}</strong> №${marker.number}
+                                <div style="font-size: 11px; color: var(--text-gray);">x${marker.count || 1}</div>
+                            </div>
+                        </div>
+                        <button class="delete-marker-btn" onclick="deleteMarkerFromOrganizerCell('${orgId}', ${cellIndex}, ${originalIdx})">🗑️ Удалить</button>
+                    `;
+                    markersListDiv.appendChild(markerDiv);
+                });
+            }
+            
+            const filterSelect = document.getElementById('markerBrandFilter');
+            filterSelect.onchange = renderFilteredMarkers;
+            renderFilteredMarkers();
+            
+            const addBtn = document.createElement('button');
+            addBtn.className = 'modal-action-btn';
+            addBtn.style.marginTop = '15px';
+            addBtn.innerHTML = '<i class="fas fa-plus"></i> Добавить маркер в ячейку';
+            addBtn.onclick = () => openAddMarkerToOrganizerCell(orgId, cellIndex);
+            listContainer.appendChild(addBtn);
+            
+            currentOrganizerCellData = { orgId, cellIndex };
+            modal.style.display = 'flex';
+        }
+        
+        function deleteMarkerFromOrganizerCell(orgId, cellIndex, markerIndex) {
+            console.log('Deleting marker:', orgId, cellIndex, markerIndex);
+            
+            const org = inventory.organizers.find(o => o.id === parseInt(orgId));
+            if (!org) {
+                console.error('Organizer not found');
+                return;
+            }
+            
+            const cell = org.cells[cellIndex];
+            if (cell && cell.markers && cell.markers[markerIndex]) {
+                cell.markers.splice(markerIndex, 1);
+                saveInventory();
+                
+                openOrganizerView(orgId);
+                
+                const modal = document.getElementById('organizerCellModal');
+                if (modal && modal.style.display === 'flex') {
+                    modal.style.display = 'none';
+                    setTimeout(() => {
+                        openOrganizerCellModal(orgId, cellIndex);
+                    }, 50);
+                }
+                
+                if (tg) tg.showAlert('🗑️ Маркер удален из ячейки');
+            } else {
+                console.error('Marker not found');
+            }
+        }
         function openAddMarkerToOrganizerCell(orgId, cellIndex) {
             document.getElementById('organizerCellModal').style.display = 'none';
             currentOrganizerId = orgId;
@@ -6486,6 +6699,7 @@ function deleteMarkerFromOrganizerCell(orgId, cellIndex, markerIndex) {
                 }, 100);
             }
         }
+        
         // ==========================================
         // КАСТОМНЫЕ БРЕНДЫ (ТОЛЬКО ДЛЯ ОРГАНАЙЗЕРОВ)
         // ==========================================
