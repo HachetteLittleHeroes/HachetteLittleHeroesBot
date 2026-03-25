@@ -2807,6 +2807,20 @@
     </style>
 </head>
 <body>
+    <div style="position: fixed; top: 10px; left: 10px; z-index: 999999; background: red; padding: 10px; border-radius: 10px;">
+    <button onclick="alert('Test button works!')" style="background: white; padding: 5px 10px;">Test Click</button>
+    <button onclick="tab('profile')" style="background: white; padding: 5px 10px;">Tab Profile</button>
+    <span id="test-status" style="color: white; margin-left: 10px;">Loading...</span>
+</div>
+
+<script>
+    document.getElementById('test-status').innerText = 'JS Loaded';
+    console.log('✅ JavaScript loaded');
+    console.log('typeof tab:', typeof tab);
+    console.log('typeof processAI:', typeof processAI);
+    console.log('typeof openOrganizerView:', typeof openOrganizerView);
+    console.log('user object exists:', typeof user !== 'undefined');
+</script>
     <!-- ========== ПРОФИЛЬ ========== -->
     <div id="profile" class="page active">
         <div class="profile-header-block">
