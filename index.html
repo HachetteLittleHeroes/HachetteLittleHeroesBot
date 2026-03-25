@@ -6256,21 +6256,59 @@
     
     const cell = org.cells[cellIndex];
     if (cell && cell.markers) {
+        // Удаляем маркер
         cell.markers.splice(markerIndex, 1);
         saveInventory();
         
-        // Немедленное обновление интерфейса
-        // 1. Обновляем отображение ячейки в сетке
+        // 1. Обновляем сетку органайзера (чтобы обновилось число в ячейке)
         openOrganizerView(orgId);
         
-        // 2. Обновляем текущую модалку (перерисовываем список маркеров)
+        // 2. Обновляем текущую открытую модалку (если она открыта)
         const modal = document.getElementById('organizerCellModal');
         if (modal && modal.style.display === 'flex') {
-            // Просто обновляем содержимое модалки, не закрывая её
-            const currentOrgId = currentOrganizerCellData?.orgId;
-            const currentCellIdx = currentOrganizerCellData?.cellIndex;
-            if (currentOrgId === orgId && currentCellIdx === cellIndex) {
-                openOrganizerCellModal(orgId, cellIndex);
+            // Получаем текущий выбранный бренд в фильтре, если есть
+            const filterSelect = document.getElementById('markerBrandFilter');
+            const currentFilter = filterSelect ? filterSelect.value : 'all';
+            
+            // Перерисовываем содержимое модалки
+            const markers = cell.markers || [];
+            
+            // Обновляем заголовок
+            document.getElementById('organizerCellModalTitle').innerText = `Ячейка ${Math.floor(cellIndex / org.cols) + 1}:${(cellIndex % org.cols) + 1}`;
+            
+            const listContainer = document.getElementById('organizerCellMarkersList');
+            if (listContainer) {
+                // Обновляем список маркеров
+                const markersListDiv = document.getElementById('organizerMarkersList');
+                if (markersListDiv) {
+                    // Применяем фильтр
+                    const filteredMarkers = currentFilter === 'all' ? markers : markers.filter(m => m.brand === currentFilter);
+                    
+                    markersListDiv.innerHTML = '';
+                    
+                    if (filteredMarkers.length === 0) {
+                        markersListDiv.innerHTML = '<div class="no-results">Нет маркеров в этой ячейке</div>';
+                    } else {
+                        filteredMarkers.forEach((marker, idx) => {
+                            const originalIdx = markers.findIndex(m => m === marker);
+                            const hasColor = getMarkerColor(marker.brand, marker.number);
+                            const markerDiv = document.createElement('div');
+                            markerDiv.className = 'organizer-cell-marker-item';
+                            markerDiv.style.cssText = 'display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid var(--border-color);';
+                            markerDiv.innerHTML = `
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <div class="color-circle" style="width: 32px; height: 32px; background-color: ${hasColor || '#ccc'}; border: none;"></div>
+                                    <div>
+                                        <strong>${marker.brand}</strong> №${marker.number}
+                                        <div style="font-size: 11px; color: var(--text-gray);">x${marker.count || 1}</div>
+                                    </div>
+                                </div>
+                                <button class="delete-marker-btn" onclick="deleteMarkerFromOrganizerCell('${orgId}', ${cellIndex}, ${originalIdx})">🗑️ Удалить</button>
+                            `;
+                            markersListDiv.appendChild(markerDiv);
+                        });
+                    }
+                }
             }
         }
         
