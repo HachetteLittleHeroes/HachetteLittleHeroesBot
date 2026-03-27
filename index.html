@@ -502,7 +502,6 @@
             font-weight: 800;
             font-size: 16px;
         }
-
         /* ==========================================
            7. ЗАДАНИЯ (ВЕТКИ)
            ========================================== */
@@ -690,6 +689,7 @@
             font-size: 12px;
             margin-top: 5px;
         }
+
         /* ==========================================
            8. ВИТРИНА ДОСТИЖЕНИЙ
            ========================================== */
@@ -862,7 +862,6 @@
             gap: 10px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
-
         /* ==========================================
            10. ТЕМЫ ОФОРМЛЕНИЯ
            ========================================== */
@@ -1078,6 +1077,7 @@
             font-size: 12px;
             margin-top: 4px;
         }
+
         /* ==========================================
            13. МАРКЕРЫ
            ========================================== */
@@ -1358,7 +1358,6 @@
                 font-size: 12px;
             }
         }
-        
         /* ==========================================
            15. КОРЗИНА
            ========================================== */
@@ -1671,6 +1670,7 @@
             border-radius: 10px;
             font-weight: 900;
         }
+
         /* ==========================================
            18. МОДАЛЬНЫЕ ОКНА
            ========================================== */
@@ -1774,7 +1774,6 @@
             color: var(--text);
             font-size: 16px;
         }
-
         /* ==========================================
            19. ИНВЕНТАРЬ И ОРГАНАЙЗЕРЫ
            ========================================== */
@@ -2156,23 +2155,30 @@
         .friend-header h3 {
             font-size: 18px;
             margin: 0 0 4px 0;
+            font-weight: 700;
         }
 
         .friend-header p {
-            font-size: 12px;
-            opacity: 0.9;
+            font-size: 14px;
+            opacity: 0.95;
             margin: 0;
+            font-weight: 500;
         }
 
         .friend-reward {
             background: #ffd700;
             color: #333;
             display: inline-block;
-            padding: 4px 12px;
+            padding: 6px 12px;
             border-radius: 20px;
             font-size: 12px;
             margin-top: 8px;
             font-weight: 600;
+            width: auto;
+            max-width: 100%;
+            white-space: normal;
+            word-wrap: break-word;
+            line-height: 1.4;
         }
 
         .friend-task-btn {
@@ -2565,7 +2571,6 @@
             </div>
             <div class="showcase-info" onclick="openAchievementsGallery()">Нажмите для просмотра всех достижений</div>
         </div>
-
         <!-- ========== МОЙ ИНВЕНТАРЬ ========== -->
         <div class="inventory-main-block">
             <div class="inventory-header" onclick="toggleInventoryBlock()">
@@ -2580,7 +2585,6 @@
                         <i class="fas fa-chevron-down" id="organizersArrow"></i>
                     </div>
                     <div id="organizersBlockContent" class="subblock-content">
-                        <!-- Поиск маркеров -->
                         <div class="search-box" style="margin-bottom: 15px;">
                             <i class="fas fa-search"></i>
                             <input type="text" id="markerSearchInOrganizers" placeholder="Поиск маркера по номеру..." oninput="searchMarkerInOrganizers()">
@@ -2706,6 +2710,7 @@
             </div>
         </div>
     </div>
+
     <!-- ========== НАВИГАЦИЯ ========== -->
     <nav class="nav">
         <button id="btn-profile" class="nav-btn active" onclick="tab('profile')"><i class="fas fa-user"></i><span>Профиль</span></button>
@@ -2714,7 +2719,6 @@
         <button id="btn-aipalette" class="nav-btn" onclick="tab('aipalette')"><i class="fas fa-magic"></i><span>ИИ Палитра</span></button>
         <button id="btn-cart" class="nav-btn" onclick="tab('cart')"><i class="fas fa-shopping-cart"></i><span>Корзина</span><span id="cartBadge" class="badge" style="display:none;">0</span></button>
     </nav>
-
     <!-- ========== МОДАЛЬНЫЕ ОКНА ========== -->
 
     <!-- Модалка изменения имени -->
@@ -2906,7 +2910,7 @@
         // Глобальные переменные для отправки фото
         let currentUploadBranch = null;
         let currentUploadLevel = null;
-        let currentSubtaskData = null; // Для подпунктов
+        let currentSubtaskData = null;
         let tempPhotos = [];
         let isUploading = false;
         
@@ -3221,6 +3225,7 @@
                 console.error('Error checking status unlocks:', error);
             }
         }
+        
         // ==========================================
         // ОТПРАВКА ФОТО НА ПРОВЕРКУ (ОБЫЧНЫЕ ЗАДАНИЯ)
         // ==========================================
@@ -3503,6 +3508,7 @@
         // ==========================================
         
         function renderBranchTasks() {
+            console.log('🔄 renderBranchTasks called');
             const container = document.getElementById('branchTasksList');
             if (!container) {
                 console.error('Container branchTasksList not found');
@@ -3658,7 +3664,7 @@
                 container.appendChild(branchCard);
             }
             
-            console.log('✅ Задания отрисованы (с подпунктами)');
+            console.log('✅ Задания отрисованы');
         }
         
         // ==========================================
@@ -3893,7 +3899,7 @@
             {
                 id: 'friend_anna',
                 title: 'Кчау! Первым выполни любую ветку заданий',
-                description: 'YouTube-канал "Colour with Anna"',
+                description: 'от YouTube-канала "Colour with Anna"',
                 rewardStatus: 'Молния',
                 rewardAchievement: 'Молния',
                 rewardTom: 'Любой A4 том Hachette',
@@ -3955,9 +3961,9 @@
                 taskCard.innerHTML = `
                     <div class="friend-badge">🎁 Спецзадание</div>
                     <div class="friend-header">
-                        <h3>📺 ${task.title}</h3>
-                        <p>${task.description}</p>
-                        <div class="friend-reward">🎁 Призы: ${task.rewardTom} + статус "${task.rewardStatus}" + достижение "${task.rewardAchievement}"</div>
+                        <h3>Кчау! Первым выполни любую ветку заданий</h3>
+                        <p>от YouTube-канала "Colour with Anna"</p>
+                        <div class="friend-reward">🎁 Призы: Любой A4 том Hachette + статус и достижение "Молния"</div>
                     </div>
                     <div class="level-card">
                         ${!isCompleted ? `
@@ -3968,7 +3974,7 @@
                                 <i class="fab fa-youtube"></i> Канал Ани
                             </button>
                             <div class="level-desc" style="font-size: 12px; margin-top: 10px; color: var(--text-gray);">
-                                ⚡ Условие: первым выполнить любую ветку заданий (кроме "Благодетель")
+                                📌 Условия получения: После выполнения ветки задания пришли скриншот выполненной ветки
                             </div>
                         ` : `
                             <div style="text-align: center; padding: 12px; color: var(--status-green);">
@@ -4084,7 +4090,7 @@
         
         function openAnnaChannel() {
             const channelUrl = 'https://youtube.com/@colour_with_anna?si=sbSsNzagi0yj-RIi';
-            
+            console.log('Opening Anna channel:', channelUrl);
             if (tg && tg.openTelegramLink) {
                 tg.openTelegramLink(channelUrl);
             } else {
@@ -4132,6 +4138,7 @@
         }
         
         function renderShowcase() {
+            console.log('🔄 renderShowcase called');
             for (let i = 0; i < 3; i++) {
                 const slot = document.getElementById(`slot-${i}`);
                 if (!slot) continue;
@@ -4139,7 +4146,10 @@
                 slot.innerHTML = '';
                 slot.style.cursor = 'pointer';
                 slot.onclick = (function(index) {
-                    return function() { openShowcaseSelector(index); };
+                    return function() { 
+                        console.log('Showcase slot clicked:', index);
+                        openShowcaseSelector(index); 
+                    };
                 })(i);
                 
                 if (achId && ACHIEVEMENTS_DB[achId]) {
@@ -4160,6 +4170,7 @@
         }
         
         function openShowcaseSelector(slotIndex) {
+            console.log('openShowcaseSelector called, slotIndex:', slotIndex);
             const list = document.getElementById('showcaseAchievementsList');
             if (!list) return;
             list.innerHTML = '';
@@ -4721,7 +4732,6 @@
                 }
             }
             
-            // Расчет возможного бонуса
             let bonusAchetiki = 0;
             if (totalSum >= 10000) {
                 bonusAchetiki = 50;
@@ -5299,6 +5309,7 @@
                 if (arrow) arrow.style.transform = 'rotate(0deg)';
             }
         }
+        
         // ==========================================
         // ТЕМЫ
         // ==========================================
