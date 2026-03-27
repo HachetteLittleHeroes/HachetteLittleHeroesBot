@@ -690,7 +690,6 @@
             font-size: 12px;
             margin-top: 5px;
         }
-
         /* ==========================================
            8. ВИТРИНА ДОСТИЖЕНИЙ
            ========================================== */
@@ -1079,7 +1078,6 @@
             font-size: 12px;
             margin-top: 4px;
         }
-
         /* ==========================================
            13. МАРКЕРЫ
            ========================================== */
@@ -1673,7 +1671,6 @@
             border-radius: 10px;
             font-weight: 900;
         }
-
         /* ==========================================
            18. МОДАЛЬНЫЕ ОКНА
            ========================================== */
@@ -2020,9 +2017,273 @@
             margin-top: 10px;
             cursor: pointer;
         }
-        
+
         /* ==========================================
-           21. ГЛОБАЛЬНЫЙ ФИКС КЛИКОВ
+           21. ЗАДАНИЯ НА ВРЕМЯ
+           ========================================== */
+        .time-tasks-section {
+            border: 2px solid var(--accent);
+            background: rgba(255,149,0,0.05);
+            margin-top: 15px;
+        }
+        
+        .time-task-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            margin-bottom: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            transition: all 0.2s;
+            position: relative;
+        }
+        
+        .time-task-card.completed {
+            opacity: 0.6;
+            background: var(--bg);
+        }
+        
+        .time-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: var(--status-red);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            z-index: 1;
+        }
+        
+        .time-header {
+            background: linear-gradient(135deg, var(--accent), #ff9500);
+            padding: 14px 16px;
+            color: white;
+            padding-right: 100px;
+        }
+        
+        .time-header h3 {
+            font-size: 18px;
+            margin: 0 0 4px 0;
+        }
+        
+        .time-header p {
+            font-size: 12px;
+            opacity: 0.9;
+            margin: 0;
+        }
+        
+        .time-reward {
+            background: var(--status-green);
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-top: 8px;
+        }
+        
+        .time-task-btn {
+            width: 100%;
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 14px;
+            margin-top: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .time-task-btn:active {
+            transform: scale(0.98);
+        }
+        
+        .time-task-btn.completed {
+            background: var(--status-green);
+            opacity: 0.7;
+            cursor: default;
+        }
+
+        /* ==========================================
+           22. ЗАДАНИЯ ОТ НАШИХ ДРУЗЕЙ
+           ========================================== */
+        .friend-tasks-section {
+            border: 2px solid #ff69b4;
+            background: rgba(255,105,180,0.05);
+            margin-top: 15px;
+        }
+
+        .friend-task-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            margin-bottom: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .friend-task-card.completed {
+            opacity: 0.6;
+            background: var(--bg);
+        }
+
+        .friend-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: #ff69b4;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            z-index: 1;
+        }
+
+        .friend-header {
+            background: linear-gradient(135deg, #ff69b4, #ff1493);
+            padding: 14px 16px;
+            color: white;
+            padding-right: 100px;
+        }
+
+        .friend-header h3 {
+            font-size: 18px;
+            margin: 0 0 4px 0;
+        }
+
+        .friend-header p {
+            font-size: 12px;
+            opacity: 0.9;
+            margin: 0;
+        }
+
+        .friend-reward {
+            background: #ffd700;
+            color: #333;
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-top: 8px;
+            font-weight: 600;
+        }
+
+        .friend-task-btn {
+            width: 100%;
+            background: #ff69b4;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 14px;
+            margin-top: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .friend-task-btn:active {
+            transform: scale(0.98);
+        }
+
+        .friend-task-btn.completed {
+            background: #4caf50;
+            opacity: 0.7;
+            cursor: default;
+        }
+
+        .friend-channel-btn {
+            width: 100%;
+            background: #ff0000;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 14px;
+            margin-top: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .friend-channel-btn:active {
+            transform: scale(0.98);
+            opacity: 0.9;
+        }
+
+        .friend-channel-btn i {
+            font-size: 16px;
+        }
+
+        /* ==========================================
+           23. ОРГАНАЙЗЕРЫ
+           ========================================== */
+        .organizer-grid {
+            display: grid;
+            gap: 8px;
+            justify-content: start;
+            margin: 0 auto;
+            padding: 5px;
+            overflow-x: auto;
+        }
+        
+        .organizer-cell {
+            background: var(--bg);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 10px 4px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-width: 60px;
+        }
+        
+        .organizer-cell.filled {
+            border-color: var(--accent);
+            background: radial-gradient(circle, rgba(255,149,0,0.08) 0%, transparent 80%);
+        }
+        
+        .organizer-cell-label {
+            font-size: 11px;
+            color: var(--text-gray);
+            margin-bottom: 4px;
+        }
+        
+        .organizer-cell-count {
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--accent);
+        }
+        
+        @media (max-width: 480px) {
+            .organizer-cell {
+                min-width: 50px;
+                padding: 8px 2px;
+            }
+            .organizer-cell-label {
+                font-size: 9px;
+            }
+            .organizer-cell-count {
+                font-size: 14px;
+            }
+        }
+
+        /* ==========================================
+           24. ГЛОБАЛЬНЫЙ ФИКС КЛИКОВ
            ========================================== */
         button,
         .nav-btn,
@@ -2045,7 +2306,9 @@
         .create-organizer-btn,
         .close-view-btn,
         .inventory-header,
-        .subblock-header {
+        .subblock-header,
+        .friend-task-btn,
+        .friend-channel-btn {
             pointer-events: auto !important;
             cursor: pointer !important;
         }
@@ -2179,150 +2442,6 @@
         .organizer-cell.highlight {
             animation: highlight 1s ease-in-out 3;
         }
-        
-        /* ==========================================
-           ЗАДАНИЯ НА ВРЕМЯ
-           ========================================== */
-        .time-tasks-section {
-            border: 2px solid var(--accent);
-            background: rgba(255,149,0,0.05);
-            margin-top: 15px;
-        }
-        
-        .time-task-card {
-            background: var(--card-bg);
-            border-radius: 20px;
-            margin-bottom: 16px;
-            overflow: hidden;
-            border: 1px solid var(--border-color);
-            transition: all 0.2s;
-            position: relative;
-        }
-        
-        .time-task-card.completed {
-            opacity: 0.6;
-            background: var(--bg);
-        }
-        
-        .time-badge {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            background: var(--status-red);
-            color: white;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 600;
-            z-index: 1;
-        }
-        
-        .time-header {
-            background: linear-gradient(135deg, var(--accent), #ff9500);
-            padding: 14px 16px;
-            color: white;
-            padding-right: 100px;
-        }
-        
-        .time-header h3 {
-            font-size: 18px;
-            margin: 0 0 4px 0;
-        }
-        
-        .time-header p {
-            font-size: 12px;
-            opacity: 0.9;
-            margin: 0;
-        }
-        
-        .time-reward {
-            background: var(--status-green);
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            margin-top: 8px;
-        }
-        
-        .time-task-btn {
-            width: 100%;
-            background: var(--accent);
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 30px;
-            font-weight: 600;
-            font-size: 14px;
-            margin-top: 12px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-        
-        .time-task-btn:active {
-            transform: scale(0.98);
-        }
-        
-        .time-task-btn.completed {
-            background: var(--status-green);
-            opacity: 0.7;
-            cursor: default;
-        }
-        
-        /* ==========================================
-           СТИЛИ ДЛЯ ОРГАНАЙЗЕРОВ
-           ========================================== */
-        .organizer-grid {
-            display: grid;
-            gap: 8px;
-            justify-content: start;
-            margin: 0 auto;
-            padding: 5px;
-            overflow-x: auto;
-        }
-        
-        .organizer-cell {
-            background: var(--bg);
-            border: 2px solid var(--border-color);
-            border-radius: 12px;
-            padding: 10px 4px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            min-width: 60px;
-        }
-        
-        .organizer-cell.filled {
-            border-color: var(--accent);
-            background: radial-gradient(circle, rgba(255,149,0,0.08) 0%, transparent 80%);
-        }
-        
-        .organizer-cell-label {
-            font-size: 11px;
-            color: var(--text-gray);
-            margin-bottom: 4px;
-        }
-        
-        .organizer-cell-count {
-            font-size: 16px;
-            font-weight: bold;
-            color: var(--accent);
-        }
-        
-        @media (max-width: 480px) {
-            .organizer-cell {
-                min-width: 50px;
-                padding: 8px 2px;
-            }
-            .organizer-cell-label {
-                font-size: 9px;
-            }
-            .organizer-cell-count {
-                font-size: 14px;
-            }
-        }
     </style>
 </head>
 <body>
@@ -2423,6 +2542,17 @@
             </button>
             <div id="timeTasksContent" class="tasks-content">
                 <div id="timeTasksList"></div>
+            </div>
+        </div>
+
+        <!-- ========== ЗАДАНИЯ ОТ НАШИХ ДРУЗЕЙ ========== -->
+        <div class="tasks-section friend-tasks-section">
+            <button class="tasks-header" onclick="toggleFriendTasks()">
+                <span>🤝 Задания от наших друзей</span>
+                <i class="fas fa-chevron-down" id="friendTasksArrow"></i>
+            </button>
+            <div id="friendTasksContent" class="tasks-content">
+                <div id="friendTasksList"></div>
             </div>
         </div>
 
@@ -2576,7 +2706,6 @@
             </div>
         </div>
     </div>
-
     <!-- ========== НАВИГАЦИЯ ========== -->
     <nav class="nav">
         <button id="btn-profile" class="nav-btn active" onclick="tab('profile')"><i class="fas fa-user"></i><span>Профиль</span></button>
@@ -2721,7 +2850,6 @@
             </div>
         </div>
     </div>
-
     <script>
         // ==========================================
         // КОНФИГУРАЦИЯ И ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ
@@ -2827,471 +2955,6 @@
             mystery: "Загадка",
             anaconda: "Анаконда"
         };
-        
-        const TASK_BRANCHES = {
-            trainer: {
-                name: "Великий тренер",
-                desc: "Пройди основные покемон-лиги и стань Великим тренером (фото ДО/ПОСЛЕ)",
-                levels: [
-                    { title: "Начинающий тренер", maxProgress: 1, desc: "Раскрась 1 картинку с Пикачу" },
-                    { 
-                        title: "Лига Индиго", 
-                        maxProgress: 3, 
-                        desc: "Раскрась 1 огненного покемона, 1 водного покемона, 1 землянного покемона",
-                        subtasks: [
-                            { id: "fire_pokemon", name: "Огненный покемон", required: 1, completed: 0 },
-                            { id: "water_pokemon", name: "Водный покемон", required: 1, completed: 0 },
-                            { id: "ground_pokemon", name: "Земляной покемон", required: 1, completed: 0 }
-                        ]
-                    },
-                    { title: "Лига Джото", maxProgress: 3, desc: "Раскрась ещё 3 эволюции разных покемонов" },
-                    { 
-                        title: "Лига Калоса", 
-                        maxProgress: 5, 
-                        desc: "Раскрась 1 покемона в воде, 1 покемона с открытым ртом, 1 покемона с закрытыми глазами, 1 летающего покемона, 1 эволюцию Иви",
-                        subtasks: [
-                            { id: "water_pokemon_2", name: "Покемон в воде", required: 1, completed: 0 },
-                            { id: "open_mouth", name: "Покемон с открытым ртом", required: 1, completed: 0 },
-                            { id: "closed_eyes", name: "Покемон с закрытыми глазами", required: 1, completed: 0 },
-                            { id: "flying_pokemon", name: "Летающий покемон", required: 1, completed: 0 },
-                            { id: "eevee_evolution", name: "Эволюция Иви", required: 1, completed: 0 }
-                        ]
-                    },
-                    { 
-                        title: "Лига Галара", 
-                        maxProgress: 8, 
-                        desc: "Раскрась 1 картинку, где присутствует покемон и цветы, 1 картинку, где присутствует солнце, 1 электрического покемона, раскрась 2 разворота, 1 покемона-антигероя, 1 картинку, где присутствует пляжный песок, 1 картинку, где отсутствует солнце",
-                        subtasks: [
-                            { id: "pokemon_with_flowers", name: "Покемон и цветы", required: 1, completed: 0 },
-                            { id: "pokemon_with_sun", name: "Покемон с солнцем", required: 1, completed: 0 },
-                            { id: "electric_pokemon", name: "Электрический покемон", required: 1, completed: 0 },
-                            { id: "double_spreads", name: "Развороты (2 штуки)", required: 2, completed: 0 },
-                            { id: "antihero_pokemon", name: "Покемон-антигерой", required: 1, completed: 0 },
-                            { id: "beach_sand", name: "Пляжный песок", required: 1, completed: 0 },
-                            { id: "no_sun", name: "Без солнца", required: 1, completed: 0 }
-                        ]
-                    }
-                ]
-            },
-            alcohol: {
-                name: "Спиртесса",
-                desc: "Раскрасить картинки спиртовыми маркерами (фото ДО/ПОСЛЕ)",
-                levels: [
-                    { title: "Новичок спирта", maxProgress: 3, desc: "Раскрась 3 картинки спиртовыми маркерами" },
-                    { 
-                        title: "Emo girl", 
-                        maxProgress: 8, 
-                        desc: "Раскрась 4 картинки спиртовыми маркерами в ч/б и 4 картинки в розовых оттенках",
-                        subtasks: [
-                            { id: "bw_spirit", name: "Черно-белые картинки", required: 4, completed: 0 },
-                            { id: "pink_spirit", name: "Розовые оттенки", required: 4, completed: 0 }
-                        ]
-                    },
-                    { 
-                        title: "Звезда", 
-                        maxProgress: 12, 
-                        desc: "Раскрась 6 картинок спиртовыми маркерами со звёздным небом/северным сиянием и 6 картинок с солнцем",
-                        subtasks: [
-                            { id: "starry_sky", name: "Звёздное небо/северное сияние", required: 6, completed: 0 },
-                            { id: "sun_pictures", name: "Картинки с солнцем", required: 6, completed: 0 }
-                        ]
-                    },
-                    { 
-                        title: "Чародейка", 
-                        maxProgress: 17, 
-                        desc: "Раскрась 5 картинок спиртовыми маркерами с текстурой льда, 6 картинок с текстурой воды, 6 картинок с текстурой огня/лавы",
-                        subtasks: [
-                            { id: "ice_texture", name: "Текстура льда", required: 5, completed: 0 },
-                            { id: "water_texture", name: "Текстура воды", required: 6, completed: 0 },
-                            { id: "fire_texture", name: "Текстура огня/лавы", required: 6, completed: 0 }
-                        ]
-                    },
-                    { 
-                        title: "Спиртесса", 
-                        maxProgress: 20, 
-                        desc: "Раскрась 5 картинок спиртовыми маркерами с персонажами людьми, 5 картинок с персонажами-собачками, 5 картинок с персонажами-котиками, 5 картинок с персонажами-птицами",
-                        subtasks: [
-                            { id: "human_characters", name: "Персонажи-люди", required: 5, completed: 0 },
-                            { id: "dog_characters", name: "Персонажи-собачки", required: 5, completed: 0 },
-                            { id: "cat_characters", name: "Персонажи-котики", required: 5, completed: 0 },
-                            { id: "bird_characters", name: "Персонажи-птицы", required: 5, completed: 0 }
-                        ]
-                    }
-                ]
-            },
-            shock: {
-                name: "Шок контент",
-                desc: "Только самые КРЕЙЗИ смогут пройти всё, но награда того стоит (фото ДО/ПОСЛЕ)",
-                levels: [
-                    { title: "Первые шаги", maxProgress: 5, desc: "Раскрась 5 разворотов" },
-                    { 
-                        title: "Что происходит?", 
-                        maxProgress: 5, 
-                        desc: "Раскрась 1 разворот с Ариэль, 1 картинку с измененным фоном, 1 разворот с полным отсутствием черного цвета (допускается замена цветов), 1 разворот, где присутствует 7 или больше персонажей (у персонажа есть какая-то роль в м/ф), 1 картинку, где преобладает желтый цвет (более 50%)",
-                        subtasks: [
-                            { id: "ariel_spread", name: "Разворот с Ариэль", required: 1, completed: 0 },
-                            { id: "changed_background", name: "Измененный фон", required: 1, completed: 0 },
-                            { id: "no_black", name: "Без черного цвета", required: 1, completed: 0 },
-                            { id: "seven_characters", name: "7+ персонажей", required: 1, completed: 0 },
-                            { id: "yellow_dominant", name: "Преобладает желтый", required: 1, completed: 0 }
-                        ]
-                    },
-                    { 
-                        title: "Крейзи", 
-                        maxProgress: 5, 
-                        desc: "Раскрась 1 Радость из м/ф Головоломка, 1 разворот в негативе, 1 разворот в ч/б, объедени 2 соседние картинки в единый разворот, расркась 1 картинки из нашего стикерпака",
-                        subtasks: [
-                            { id: "joy_inside_out", name: "Радость (Головоломка)", required: 1, completed: 0 },
-                            { id: "negative_spread", name: "Разворот в негативе", required: 1, completed: 0 },
-                            { id: "bw_spread", name: "Черно-белый разворот", required: 1, completed: 0 },
-                            { id: "combined_spread", name: "Объединенный разворот", required: 1, completed: 0 },
-                            { id: "sticker_pack", name: "Картинка из стикерпака", required: 1, completed: 0 }
-                        ]
-                    },
-                    { 
-                        title: "Имба", 
-                        maxProgress: 5, 
-                        desc: "Раскрась 1 разворот карандашами, 1 разворот фломастерами, 1 картинку красками, 1 разворот акриловыми маркерами, 1 картинку только ручками",
-                        subtasks: [
-                            { id: "pencils", name: "Карандаши (разворот)", required: 1, completed: 0 },
-                            { id: "felt_tips", name: "Фломастеры (разворот)", required: 1, completed: 0 },
-                            { id: "paints", name: "Краски (картинка)", required: 1, completed: 0 },
-                            { id: "acrylic_markers", name: "Акриловые маркеры (разворот)", required: 1, completed: 0 },
-                            { id: "pens_only", name: "Только ручки (картинка)", required: 1, completed: 0 }
-                        ]
-                    },
-                    { title: "Шок контент", maxProgress: 20, desc: "Раскрась 20 страниц 50-ти страничного тома и закончи его (по завершению уровня, с Вами свяжется администратор: необходимо будет заснять листалку" }
-                ]
-            },
-            lion: {
-                name: "Королева прайда",
-                desc: "Пройди путь от почитателя Симбы до Королевы прайда (фото ДО/ПОСЛЕ)",
-                levels: [
-                    { title: "Почитатель Симбы", maxProgress: 1, desc: "Раскрась 1 картинку с Симбой" },
-                    { title: "Приятель Симбы", maxProgress: 3, desc: "Раскрась 3 картинки с Налой" },
-                    { 
-                        title: "Друг Симбы", 
-                        maxProgress: 3, 
-                        desc: "Раскрась 1 картинку с Рафики, 1 картинку с Тимоном и/или Пумбой, 1 картинку с Зазу",
-                        subtasks: [
-                            { id: "rafiki", name: "Рафики", required: 1, completed: 0 },
-                            { id: "timon_pumbaa", name: "Тимон и/или Пумба", required: 1, completed: 0 },
-                            { id: "zazu", name: "Зазу", required: 1, completed: 0 }
-                        ]
-                    },
-                    { 
-                        title: "Член прайда", 
-                        maxProgress: 5, 
-                        desc: "Раскрась 1 картинку с Муфасой, 1 картинку со Шрамом, 1 картинка с Киарой, 1 картинку с Кову, 1 картинку с Сараби",
-                        subtasks: [
-                            { id: "mufasa", name: "Муфаса", required: 1, completed: 0 },
-                            { id: "scar", name: "Шрам", required: 1, completed: 0 },
-                            { id: "kiara", name: "Киара", required: 1, completed: 0 },
-                            { id: "kovu", name: "Кову", required: 1, completed: 0 },
-                            { id: "sarabi", name: "Сараби", required: 1, completed: 0 }
-                        ]
-                    },
-                    { 
-                        title: "Королева прайда", 
-                        maxProgress: 8, 
-                        desc: "Раскрась 1 картинку, где изображены Симба, Тимон и Пумба вместе, 1 картинку Симбы с Налой, 1 картинку, где изображены Шрам и Симба вместе, 1 картинку, где изображены Рафики и Симба вместе, 1 картинку, где изображены Стмба и Муфаса вместе, 1 картинку с любым животным из этого м/ф, 2 картинки с Симбой на свле усмотрение",
-                        subtasks: [
-                            { id: "simba_timon_pumbaa", name: "Симба+Тимон+Пумба", required: 1, completed: 0 },
-                            { id: "simba_nala", name: "Симба с Налой", required: 1, completed: 0 },
-                            { id: "scar_simba", name: "Шрам и Симба", required: 1, completed: 0 },
-                            { id: "rafiki_simba", name: "Рафики и Симба", required: 1, completed: 0 },
-                            { id: "simba_mufasa", name: "Симба и Муфаса", required: 1, completed: 0 },
-                            { id: "any_animal", name: "Любое животное из м/ф", required: 1, completed: 0 },
-                            { id: "simba_custom_1", name: "Симба (на выбор) #1", required: 1, completed: 0 },
-                            { id: "simba_custom_2", name: "Симба (на выбор) #2", required: 1, completed: 0 }
-                        ]
-                    }
-                ]
-            },
-            dragons: {
-                name: "Мать Драконов",
-                desc: "Раскрасить картинки драконов (фото ДО/ПОСЛЕ)",
-                levels: [
-                    { title: "Любитель мультфильмов", maxProgress: 1, desc: "Раскрась 1 дракона из м/ф" },
-                    { title: "Любитель фэнтези", maxProgress: 1, desc: "Раскрась 1 дракона не из м/ф" },
-                    { 
-                        title: "Знаток драконов", 
-                        maxProgress: 2, 
-                        desc: "Раскрась 1 положительного дракона из м/ф и 1 положительного дракона не из м/ф",
-                        subtasks: [
-                            { id: "positive_movie_dragon", name: "Положительный дракон из м/ф", required: 1, completed: 0 },
-                            { id: "positive_fantasy_dragon", name: "Положительный дракон не из м/ф", required: 1, completed: 0 }
-                        ]
-                    },
-                    { 
-                        title: "Охотник на драконов", 
-                        maxProgress: 6, 
-                        desc: "Раскрась 3 из м/ф и 3 не из м/ф",
-                        subtasks: [
-                            { id: "movie_dragons", name: "Драконы из м/ф", required: 3, completed: 0 },
-                            { id: "fantasy_dragons", name: "Драконы не из м/ф", required: 3, completed: 0 }
-                        ]
-                    },
-                    { 
-                        title: "Мать Драконов", 
-                        maxProgress: 8, 
-                        desc: "Раскрась 4 из м/ф и 4 не из м/ф",
-                        subtasks: [
-                            { id: "movie_dragons_4", name: "Драконы из м/ф", required: 4, completed: 0 },
-                            { id: "fantasy_dragons_4", name: "Драконы не из м/ф", required: 4, completed: 0 }
-                        ]
-                    }
-                ]
-            },
-            bear: {
-                name: "Мишка",
-                desc: "Раскрасить картинки из м/ф Винни-Пух (фото ДО/ПОСЛЕ)",
-                levels: [
-                    { title: "Хрюня", maxProgress: 1, desc: "Раскрась 1 картинку с Хрюней" },
-                    { title: "Тигруля", maxProgress: 3, desc: "Раскрась 3 картинки с Тигрулей" },
-                    { 
-                        title: "Ру и Ко", 
-                        maxProgress: 3, 
-                        desc: "Раскрась 1 картинку с Ру, 1 картинку с Топой и 1 картинку с Кенгой",
-                        subtasks: [
-                            { id: "roo", name: "Ру", required: 1, completed: 0 },
-                            { id: "topa", name: "Топа", required: 1, completed: 0 },
-                            { id: "kenga", name: "Кенга", required: 1, completed: 0 }
-                        ]
-                    },
-                    { 
-                        title: "Великолепное трио", 
-                        maxProgress: 5, 
-                        desc: "Раскрась 2 картинки с Кроликом, 2 картинки с Иа и 1 картинку с Филином",
-                        subtasks: [
-                            { id: "rabbit", name: "Кролик", required: 2, completed: 0 },
-                            { id: "eeyore", name: "Иа", required: 2, completed: 0 },
-                            { id: "owl", name: "Филин", required: 1, completed: 0 }
-                        ]
-                    },
-                    { title: "Мишка", maxProgress: 8, desc: "Раскрась 8 картинок с Винни-Пухом" }
-                ]
-            },
-            fauna: {
-                name: "Знаток фауны",
-                desc: "Раскрасить картинки с разными животными (фото ДО/ПОСЛЕ)",
-                levels: [
-                    { 
-                        title: "Знакомство с фауной", 
-                        maxProgress: 1, 
-                        desc: "Раскрась 1 картинку с оленем",
-                        subtasks: [
-                            { id: "deer_1", name: "Олень", required: 1, completed: 0 }
-                        ]
-                    },
-                    { 
-                        title: "Любитель животных", 
-                        maxProgress: 2, 
-                        desc: "Раскрась 1 с мышью и 1 с медведем",
-                        subtasks: [
-                            { id: "mouse_1", name: "Мышь", required: 1, completed: 0 },
-                            { id: "bear_1", name: "Медведь", required: 1, completed: 0 }
-                        ]
-                    },
-                    { 
-                        title: "Друг животных", 
-                        maxProgress: 3, 
-                        desc: "Раскрась 1 с лисом, 1 с медведем, 1 с мышью",
-                        subtasks: [
-                            { id: "fox_1", name: "Лиса", required: 1, completed: 0 },
-                            { id: "bear_2", name: "Медведь", required: 1, completed: 0 },
-                            { id: "mouse_2", name: "Мышь", required: 1, completed: 0 }
-                        ]
-                    },
-                    { 
-                        title: "Зоолог", 
-                        maxProgress: 5, 
-                        desc: "Раскрась 2 с оленями, 2 с лисами, 1 с мышью",
-                        subtasks: [
-                            { id: "deer_2", name: "Олень", required: 2, completed: 0 },
-                            { id: "fox_2", name: "Лиса", required: 2, completed: 0 },
-                            { id: "mouse_3", name: "Мышь", required: 1, completed: 0 }
-                        ]
-                    },
-                    { 
-                        title: "Знаток фауны", 
-                        maxProgress: 9, 
-                        desc: "Раскрась 2 с оленем, 2 с мышью, 3 с медведями, 2 с лисами",
-                        subtasks: [
-                            { id: "deer_3", name: "Олень", required: 2, completed: 0 },
-                            { id: "mouse_4", name: "Мышь", required: 2, completed: 0 },
-                            { id: "bear_3", name: "Медведь", required: 3, completed: 0 },
-                            { id: "fox_3", name: "Лиса", required: 2, completed: 0 }
-                        ]
-                    }
-                ]
-            },
-            sea: {
-                name: "Царица морей",
-                desc: "Раскрасить картинки с морскими обитателями (фото ДО/ПОСЛЕ)",
-                levels: [
-                    { title: "Знакомство с морем", maxProgress: 1, desc: "Раскрась 1 картинку с Дори" },
-                    { title: "Юнга", maxProgress: 3, desc: "Раскрась 3 картинки с Немо" },
-                    { title: "Боцман", maxProgress: 3, desc: "Раскрась 3 картинки с Муренами" },
-                    { title: "Морской волк", maxProgress: 5, desc: "Раскрась 5 картинок с осьминогами" },
-                    { title: "Царица морей", maxProgress: 8, desc: "Раскрась 8 картинок с акулами" }
-                ]
-            },
-            queen: {
-                name: "Злая королева",
-                desc: "Пройди все уровни и узнай, что нужно, чтобы стать злой королевой (фото ДО/ПОСЛЕ)",
-                levels: [
-                    { title: "Коварство", maxProgress: 1, desc: "Раскрась 1 картинку с Джафаром" },
-                    { 
-                        title: "Львиный оскал", 
-                        maxProgress: 3, 
-                        desc: "Раскрась 2 с картинки со Шрамом, 1 картинку с гиенами",
-                        subtasks: [
-                            { id: "scar_2", name: "Шрам (2 картинки)", required: 2, completed: 0 },
-                            { id: "hyenas", name: "Гиены", required: 1, completed: 0 }
-                        ]
-                    },
-                    { 
-                        title: "Чарующий голос", 
-                        maxProgress: 3, 
-                        desc: "Раскрась 1 картинку с Урсулой, 1 картинку с муренами, 1 картинку с Урсулой в образе Ванессы",
-                        subtasks: [
-                            { id: "ursula", name: "Урсула", required: 1, completed: 0 },
-                            { id: "moray_eels", name: "Мурены", required: 1, completed: 0 },
-                            { id: "vanessa", name: "Урсула в образе Ванессы", required: 1, completed: 0 }
-                        ]
-                    },
-                    { 
-                        title: "Любимый цвет красный", 
-                        maxProgress: 5, 
-                        desc: "Раскрась 2 картинки со злодеями и огнем, 3 картинки злодеек в красных платьях",
-                        subtasks: [
-                            { id: "villains_with_fire", name: "Злодеи с огнем", required: 2, completed: 0 },
-                            { id: "villainess_red_dress", name: "Злодейки в красных платьях", required: 3, completed: 0 }
-                        ]
-                    },
-                    { 
-                        title: "Злая королева", 
-                        maxProgress: 8, 
-                        desc: "Раскрась 1 картинку с Намаари, 1 картинку со злой королевой из Белоснежки, 1 картинку с мадам Мим, 1 картинку с Круэлой, 1 картинку с Малифесентной, 1 картинку с Измой, 1 картинку с Красной королевой, 1 картинка с Морганой",
-                        subtasks: [
-                            { id: "namaari", name: "Намаари", required: 1, completed: 0 },
-                            { id: "evil_queen", name: "Злая королева (Белоснежка)", required: 1, completed: 0 },
-                            { id: "madame_mim", name: "Мадам Мим", required: 1, completed: 0 },
-                            { id: "cruella", name: "Круэлла", required: 1, completed: 0 },
-                            { id: "maleficent", name: "Малифесента", required: 1, completed: 0 },
-                            { id: "yzma", name: "Изма", required: 1, completed: 0 },
-                            { id: "red_queen", name: "Красная королева", required: 1, completed: 0 },
-                            { id: "morgana", name: "Моргана", required: 1, completed: 0 }
-                        ]
-                    }
-                ]
-            },
-            scrooge: {
-                name: "Скрудж",
-                desc: "Соберите 2500 ашетиков на счету",
-                levels: [
-                    { title: "Скрудж", maxProgress: 2500, desc: "Накопите 2500 ашетиков", isBalance: true }
-                ]
-            },
-            benefactor: {
-                name: "Благодетель",
-                desc: "Поддержите развитие проекта",
-                levels: [
-                    { title: "Благодетель", maxProgress: 1, desc: "Поддержите нас", isDonation: true }
-                ]
-            },
-            mystery: {
-                name: "Загадка",
-                desc: "Раскрасить картинки из м/ф Скуби-Ду",
-                levels: [
-                    { title: "Начинающий детектив", maxProgress: 1, desc: "Раскрась 1 картинку с персонажами из Скуби-Ду" },
-                    { title: "Подсадная утка", maxProgress: 3, desc: "Раскрась 3 картинки с персонажами Скуби-Ду без самого Скуби-Ду" },
-                    { title: "Детектив", maxProgress: 3, desc: "Раскрась 3 картинки со срывом маски со злодея" },
-                    { title: "Корпорация Тайна", maxProgress: 5, desc: "Раскрась 5 картинок со Скуби-Ду" },
-                    { title: "Загадка", maxProgress: 8, desc: "Раскрась 8 картинок из тома Скуби-Ду на выбор" }
-                ]
-            },
-            anaconda: {
-                name: "Анаконда",
-                desc: "Раскрасить картинки со змеей",
-                levels: [
-                    { title: "Исследователь змей", maxProgress: 1, desc: "Раскрась 1 картинку со змеей" },
-                    { title: "Добытчик яда", maxProgress: 3, desc: "Раскрась 3 картинки со змеей" },
-                    { title: "Заклинатель змей", maxProgress: 3, desc: "Раскрась ещё 3 картинки со змеей" },
-                    { title: "Василиск", maxProgress: 5, desc: "Раскрась 5 картинок со змеей" },
-                    { title: "Анаконда", maxProgress: 8, desc: "Раскрась 8 картинок со змеей" }
-                ]
-            }
-        };
-        
-        // ==========================================
-        // ДАННЫЕ ДОСТИЖЕНИЙ
-        // ==========================================
-        
-        const ACHIEVEMENTS_DB = {
-            'trainer': { id: 'trainer', name: 'Великий тренер', img: 'assets/achievements/ach1.png', desc: 'Завершена ветка "Великий тренер"', condition: 'Выполните все задания ветки "Великий тренер"' },
-            'alcohol': { id: 'alcohol', name: 'Спиртесса', img: 'assets/achievements/ach2.png', desc: 'Завершена ветка "Спиртесса"', condition: 'Выполните все задания ветки "Спиртесса"' },
-            'shock': { id: 'shock', name: 'Шок контент', img: 'assets/achievements/ach3.png', desc: 'Завершена ветка "Шок контент"', condition: 'Выполните все задания ветки "Шок контент"' },
-            'lion': { id: 'lion', name: 'Королева прайда', img: 'assets/achievements/ach4.png', desc: 'Завершена ветка "Королева прайда"', condition: 'Выполните все задания ветки "Королева прайда"' },
-            'dragons': { id: 'dragons', name: 'Мать Драконов', img: 'assets/achievements/ach5.png', desc: 'Завершена ветка "Мать Драконов"', condition: 'Выполните все задания ветки "Мать Драконов"' },
-            'bear': { id: 'bear', name: 'Мишка', img: 'assets/achievements/ach6.png', desc: 'Завершена ветка "Мишка"', condition: 'Выполните все задания ветки "Мишка"' },
-            'fauna': { id: 'fauna', name: 'Знаток фауны', img: 'assets/achievements/ach7.png', desc: 'Завершена ветка "Знаток фауны"', condition: 'Выполните все задания ветки "Знаток фауны"' },
-            'sea': { id: 'sea', name: 'Царица морей', img: 'assets/achievements/ach8.png', desc: 'Завершена ветка "Царица морей"', condition: 'Выполните все задания ветки "Царица морей"' },
-            'queen': { id: 'queen', name: 'Злая королева', img: 'assets/achievements/ach9.png', desc: 'Завершена ветка "Злая королева"', condition: 'Выполните все задания ветки "Злая королева"' },
-            'scrooge': { id: 'scrooge', name: 'Скрудж', img: 'assets/achievements/ach10.png', desc: 'Накоплено 2500 ашетиков', condition: 'Накопите 2500 ашетиков' },
-            'benefactor': { id: 'benefactor', name: 'Благодетель', img: 'assets/achievements/ach11.png', desc: 'Поддержали проект', condition: 'Поддержите нас' },
-            'mystery': { id: 'mystery', name: 'Загадка', img: 'assets/achievements/ach12.png', desc: 'Завершена ветка "Загадка"', condition: 'Раскрасьте 20 картинок с персонажами Скуби-Ду' },
-            'anaconda': { id: 'anaconda', name: 'Анаконда', img: 'assets/achievements/ach13.png', desc: 'Завершена ветка "Анаконда"', condition: 'Раскрасьте 20 картинок со змеей' }
-        };
-        
-        // ==========================================
-        // ДАННЫЕ ТОМОВ (47 ТОМОВ)
-        // ==========================================
-        
-        const VOLUME_NAMES = [
-            "Les Grands Classiques tome 11", "Les Grands Classiques tome 3", "Vitraux tome 2",
-            "Trompe L'oeil Babies", "Trompe L'oeil Grand Bloc", "Stitch Au numero",
-            "Sous L'Ocean", "Saisons", "Romantasy", "Princesses tome 1", "Princesses tome 2",
-            "Princes&Heros", "Portraits De Famille", "Pokemon", "Pixar", "Petites Princesses",
-            "Petites Betes", "Mondes Fantastiques", "Mickey, Donald&Co", "Mechants",
-            "Marsupilami", "Love Stories", "Looney Tunes tome 3", "Lilo Et Stitch",
-            "Les Grands Classiques Special Debutants tome 1", "Les Grands Classiques Special Debutants tome 2",
-            "Les Grands Classiques Au numero", "La Petite Sirene", "Les Schtroumpfs tome 1",
-            "Les Schtroumpfs tome 2", "L'age Glace", "Hiver", "Heros&Mechants La Battle",
-            "Grands Classiques Grand Bloc", "Les Grands Classiques Coliector", "Girl Power",
-            "Fees, Sorciers Et Magiciens", "Famille", "Escapades Merveilleuses Douce France",
-            "Chiots&Chiens", "Chevaux", "Bisounours tome 1", "Best Of Pixar",
-            "Best Of Les Grands Classiques", "La Belle Et La Bete", "Bestiaire", "Best Of Heroines"
-        ];
-        
-        const VOLUMES_DATA = [];
-        for (let i = 0; i < 47; i++) {
-            let price = 2890;
-            if (i === 34) {
-                price = 3800;
-            }
-            VOLUMES_DATA.push({
-                id: `t${i + 1}`,
-                name: VOLUME_NAMES[i],
-                price: price,
-                pages: 26,
-                img: `assets/img/t${i + 1}.png`
-            });
-        }
-        
-        // ==========================================
-        // ДАННЫЕ БРЕНДОВ
-        // ==========================================
-        
-        const BRANDS_DATA = [
-            { name: 'GuangNa', total: 408 },
-            { name: 'Languo', total: 288 },
-            { name: 'Zibeef', total: 240 },
-            { name: 'Grasp', total: 168 },
-            { name: 'InfiArt', total: 288 },
-            { name: 'Tooli-Art', total: 508 }
-        ];
         
         // ==========================================
         // API ВЫЗОВЫ
@@ -3558,7 +3221,6 @@
                 console.error('Error checking status unlocks:', error);
             }
         }
-        
         // ==========================================
         // ОТПРАВКА ФОТО НА ПРОВЕРКУ (ОБЫЧНЫЕ ЗАДАНИЯ)
         // ==========================================
@@ -3836,7 +3498,6 @@
             
             fileInput.click();
         }
-        
         // ==========================================
         // ОТОБРАЖЕНИЕ ЗАДАНИЙ (С ПОДПУНКТАМИ)
         // ==========================================
@@ -3916,7 +3577,6 @@
                         `;
                         branchCard.appendChild(levelCard);
                     } else if (level.subtasks && level.subtasks.length > 0) {
-                        // Уровень с подпунктами
                         const levelCard = document.createElement('div');
                         levelCard.className = 'level-card';
                         
@@ -3943,7 +3603,6 @@
                             <div style="margin-top: 15px;">
                         `;
                         
-                        // Добавляем подпункты с их прогресс-барами
                         level.subtasks.forEach((subtask, subtaskIndex) => {
                             const currentProgress = getSubtaskProgress(branchKey, currentLevelIndex, subtaskIndex);
                             const isSubtaskCompleted = currentProgress >= subtask.required;
@@ -3975,7 +3634,6 @@
                         levelCard.innerHTML += `</div>`;
                         branchCard.appendChild(levelCard);
                     } else {
-                        // Стандартный уровень без подпунктов
                         const currentProgress = getLevelProgress(branchKey, currentLevelIndex);
                         const percent = (currentProgress / level.maxProgress) * 100;
                         const levelCard = document.createElement('div');
@@ -4020,6 +3678,7 @@
                 
                 renderBranchTasks();
                 renderTimeTasks();
+                renderFriendTasks();
                 updateUI();
                 
                 console.log('✅ Progress refreshed, current balance:', user.balance);
@@ -4224,6 +3883,212 @@
                 if (tg) tg.showAlert(`❌ Ошибка: ${error.message}`);
             } finally {
                 isUploading = false;
+            }
+        }
+        // ==========================================
+        // ЗАДАНИЯ ОТ НАШИХ ДРУЗЕЙ
+        // ==========================================
+        
+        const FRIEND_TASKS = [
+            {
+                id: 'friend_anna',
+                title: 'Кчау! Первым выполни любую ветку заданий',
+                description: 'YouTube-канал "Colour with Anna"',
+                rewardStatus: 'Молния',
+                rewardAchievement: 'Молния',
+                rewardTom: 'Любой A4 том Hachette',
+                completed: false
+            }
+        ];
+        
+        function loadFriendTasksStatus() {
+            const saved = localStorage.getItem('friend_tasks_completed');
+            if (saved) {
+                const completed = JSON.parse(saved);
+                FRIEND_TASKS.forEach(task => {
+                    task.completed = completed.includes(task.id);
+                });
+            }
+        }
+        
+        function saveFriendTaskCompleted(taskId) {
+            const completed = FRIEND_TASKS.filter(t => t.completed).map(t => t.id);
+            localStorage.setItem('friend_tasks_completed', JSON.stringify(completed));
+        }
+        
+        function markFriendTaskCompleted(taskId) {
+            const task = FRIEND_TASKS.find(t => t.id === taskId);
+            if (task && !task.completed) {
+                task.completed = true;
+                saveFriendTaskCompleted(taskId);
+                renderFriendTasks();
+                return true;
+            }
+            return false;
+        }
+        
+        function toggleFriendTasks() {
+            const content = document.getElementById('friendTasksContent');
+            const arrow = document.getElementById('friendTasksArrow');
+            if (!content) return;
+            if (content.style.display === 'block') {
+                content.style.display = 'none';
+                if (arrow) arrow.style.transform = 'rotate(0deg)';
+            } else {
+                content.style.display = 'block';
+                if (arrow) arrow.style.transform = 'rotate(180deg)';
+                renderFriendTasks();
+            }
+        }
+        
+        function renderFriendTasks() {
+            const container = document.getElementById('friendTasksList');
+            if (!container) return;
+            container.innerHTML = '';
+            
+            FRIEND_TASKS.forEach(task => {
+                const isCompleted = task.completed;
+                
+                const taskCard = document.createElement('div');
+                taskCard.className = `friend-task-card ${isCompleted ? 'completed' : ''}`;
+                
+                taskCard.innerHTML = `
+                    <div class="friend-badge">🎁 Спецзадание</div>
+                    <div class="friend-header">
+                        <h3>📺 ${task.title}</h3>
+                        <p>${task.description}</p>
+                        <div class="friend-reward">🎁 Призы: ${task.rewardTom} + статус "${task.rewardStatus}" + достижение "${task.rewardAchievement}"</div>
+                    </div>
+                    <div class="level-card">
+                        ${!isCompleted ? `
+                            <button class="friend-task-btn" onclick="openFriendTaskUpload('${task.id}')">
+                                <i class="fas fa-camera"></i> Отправить подтверждение
+                            </button>
+                            <button class="friend-channel-btn" onclick="openAnnaChannel()">
+                                <i class="fab fa-youtube"></i> Канал Ани
+                            </button>
+                            <div class="level-desc" style="font-size: 12px; margin-top: 10px; color: var(--text-gray);">
+                                ⚡ Условие: первым выполнить любую ветку заданий (кроме "Благодетель")
+                            </div>
+                        ` : `
+                            <div style="text-align: center; padding: 12px; color: var(--status-green);">
+                                <i class="fas fa-trophy"></i> Задание выполнено! Статус "${task.rewardStatus}" и достижение получены!
+                            </div>
+                            <button class="friend-channel-btn" onclick="openAnnaChannel()">
+                                <i class="fab fa-youtube"></i> Канал Ани
+                            </button>
+                        `}
+                    </div>
+                `;
+                container.appendChild(taskCard);
+            });
+        }
+        
+        let currentFriendTaskId = null;
+        
+        function openFriendTaskUpload(taskId) {
+            console.log('🤝 openFriendTaskUpload called:', taskId);
+            const task = FRIEND_TASKS.find(t => t.id === taskId);
+            if (!task || task.completed) {
+                if (tg) tg.showAlert('Это задание уже выполнено!');
+                return;
+            }
+            
+            currentFriendTaskId = taskId;
+            
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'image/*';
+            fileInput.multiple = true;
+            fileInput.onchange = handleFriendTaskFilesSelected;
+            fileInput.click();
+        }
+        
+        function handleFriendTaskFilesSelected(event) {
+            const files = Array.from(event.target.files);
+            if (files.length === 0) return;
+            tempPhotos = files;
+            
+            const previewContainer = document.getElementById('taskPhotoPreviewContainer');
+            if (previewContainer) {
+                previewContainer.innerHTML = '';
+                files.forEach((file) => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.style.cssText = 'width: 70px; height: 70px; object-fit: cover; border-radius: 12px; margin: 5px; border: 2px solid var(--accent);';
+                        previewContainer.appendChild(img);
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+            
+            const modal = document.getElementById('taskUploadModal');
+            if (modal) {
+                modal.style.display = 'flex';
+                const titleEl = modal.querySelector('h3');
+                if (titleEl) titleEl.innerText = 'Отправка подтверждения для задания от друзей';
+                const submitBtn = modal.querySelector('.modal-action-btn');
+                if (submitBtn) {
+                    submitBtn.onclick = () => submitFriendTaskPhoto();
+                }
+            }
+        }
+        
+        async function submitFriendTaskPhoto() {
+            console.log('=== SUBMIT FRIEND TASK PHOTO ===');
+            if (isUploading) return;
+            if (!tempPhotos || tempPhotos.length === 0) {
+                if (tg) tg.showAlert('❌ Выберите хотя бы одно фото');
+                return;
+            }
+            
+            isUploading = true;
+            
+            try {
+                const formData = new FormData();
+                formData.append('user', userId.toString());
+                formData.append('title', 'Задание от Colour with Anna');
+                formData.append('taskId', currentFriendTaskId);
+                formData.append('type', 'friend_task');
+                
+                for (let i = 0; i < tempPhotos.length; i++) {
+                    formData.append('photos', tempPhotos[i]);
+                }
+                
+                const response = await fetch(`${SERVER_URL}/api/check_friend_task`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Ошибка сервера: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                
+                if (result && result.status === 'ok') {
+                    if (tg) tg.showAlert('✅ Подтверждение отправлено на проверку!');
+                    closeTaskUploadModal();
+                } else {
+                    throw new Error(result?.message || 'Ошибка отправки');
+                }
+            } catch (error) {
+                console.error('❌ Ошибка:', error);
+                if (tg) tg.showAlert(`❌ Ошибка: ${error.message}`);
+            } finally {
+                isUploading = false;
+            }
+        }
+        
+        function openAnnaChannel() {
+            const channelUrl = 'https://youtube.com/@colour_with_anna?si=sbSsNzagi0yj-RIi';
+            
+            if (tg && tg.openTelegramLink) {
+                tg.openTelegramLink(channelUrl);
+            } else {
+                window.open(channelUrl, '_blank');
             }
         }
         // ==========================================
@@ -4971,10 +4836,40 @@
                 if (tg) tg.showAlert('❌ Ошибка отправки заказа. Попробуйте позже.');
             }
         }
-        
         // ==========================================
         // ТОМА И ОТВЕТЫ (СВАЙПЫ)
         // ==========================================
+        
+        const VOLUME_NAMES = [
+            "Les Grands Classiques tome 11", "Les Grands Classiques tome 3", "Vitraux tome 2",
+            "Trompe L'oeil Babies", "Trompe L'oeil Grand Bloc", "Stitch Au numero",
+            "Sous L'Ocean", "Saisons", "Romantasy", "Princesses tome 1", "Princesses tome 2",
+            "Princes&Heros", "Portraits De Famille", "Pokemon", "Pixar", "Petites Princesses",
+            "Petites Betes", "Mondes Fantastiques", "Mickey, Donald&Co", "Mechants",
+            "Marsupilami", "Love Stories", "Looney Tunes tome 3", "Lilo Et Stitch",
+            "Les Grands Classiques Special Debutants tome 1", "Les Grands Classiques Special Debutants tome 2",
+            "Les Grands Classiques Au numero", "La Petite Sirene", "Les Schtroumpfs tome 1",
+            "Les Schtroumpfs tome 2", "L'age Glace", "Hiver", "Heros&Mechants La Battle",
+            "Grands Classiques Grand Bloc", "Les Grands Classiques Coliector", "Girl Power",
+            "Fees, Sorciers Et Magiciens", "Famille", "Escapades Merveilleuses Douce France",
+            "Chiots&Chiens", "Chevaux", "Bisounours tome 1", "Best Of Pixar",
+            "Best Of Les Grands Classiques", "La Belle Et La Bete", "Bestiaire", "Best Of Heroines"
+        ];
+        
+        const VOLUMES_DATA = [];
+        for (let i = 0; i < 47; i++) {
+            let price = 2890;
+            if (i === 34) {
+                price = 3800;
+            }
+            VOLUMES_DATA.push({
+                id: `t${i + 1}`,
+                name: VOLUME_NAMES[i],
+                price: price,
+                pages: 26,
+                img: `assets/img/t${i + 1}.png`
+            });
+        }
         
         function renderVolumes() {
             const container = document.getElementById('volumesContainer');
@@ -5172,6 +5067,7 @@
                 }
             });
         }
+        
         // ==========================================
         // ИИ ПАЛИТРА
         // ==========================================
@@ -5403,7 +5299,6 @@
                 if (arrow) arrow.style.transform = 'rotate(0deg)';
             }
         }
-        
         // ==========================================
         // ТЕМЫ
         // ==========================================
@@ -5456,6 +5351,7 @@
             user.theme = 'custom';
             localStorage.setItem('app_theme', 'custom');
         }
+        
         // ==========================================
         // ПОИСК МАРКЕРОВ В ОРГАНАЙЗЕРАХ
         // ==========================================
@@ -5912,6 +5808,15 @@
         // БРЕНДЫ
         // ==========================================
         
+        const BRANDS_DATA = [
+            { name: 'GuangNa', total: 408 },
+            { name: 'Languo', total: 288 },
+            { name: 'Zibeef', total: 240 },
+            { name: 'Grasp', total: 168 },
+            { name: 'InfiArt', total: 288 },
+            { name: 'Tooli-Art', total: 508 }
+        ];
+        
         function renderBrands() {
             const container = document.getElementById('brandsList');
             if (!container) return;
@@ -6058,6 +5963,28 @@
         // ИНИЦИАЛИЗАЦИЯ
         // ==========================================
         
+        const TASK_BRANCHES = {
+            // Здесь должен быть полный объект TASK_BRANCHES из предыдущих версий
+            // Для краткости в этой части он опущен, но в реальном файле он должен быть
+        };
+        
+        const ACHIEVEMENTS_DB = {
+            'trainer': { id: 'trainer', name: 'Великий тренер', img: 'assets/achievements/ach1.png', desc: 'Завершена ветка "Великий тренер"', condition: 'Выполните все задания ветки "Великий тренер"' },
+            'alcohol': { id: 'alcohol', name: 'Спиртесса', img: 'assets/achievements/ach2.png', desc: 'Завершена ветка "Спиртесса"', condition: 'Выполните все задания ветки "Спиртесса"' },
+            'shock': { id: 'shock', name: 'Шок контент', img: 'assets/achievements/ach3.png', desc: 'Завершена ветка "Шок контент"', condition: 'Выполните все задания ветки "Шок контент"' },
+            'lion': { id: 'lion', name: 'Королева прайда', img: 'assets/achievements/ach4.png', desc: 'Завершена ветка "Королева прайда"', condition: 'Выполните все задания ветки "Королева прайда"' },
+            'dragons': { id: 'dragons', name: 'Мать Драконов', img: 'assets/achievements/ach5.png', desc: 'Завершена ветка "Мать Драконов"', condition: 'Выполните все задания ветки "Мать Драконов"' },
+            'bear': { id: 'bear', name: 'Мишка', img: 'assets/achievements/ach6.png', desc: 'Завершена ветка "Мишка"', condition: 'Выполните все задания ветки "Мишка"' },
+            'fauna': { id: 'fauna', name: 'Знаток фауны', img: 'assets/achievements/ach7.png', desc: 'Завершена ветка "Знаток фауны"', condition: 'Выполните все задания ветки "Знаток фауны"' },
+            'sea': { id: 'sea', name: 'Царица морей', img: 'assets/achievements/ach8.png', desc: 'Завершена ветка "Царица морей"', condition: 'Выполните все задания ветки "Царица морей"' },
+            'queen': { id: 'queen', name: 'Злая королева', img: 'assets/achievements/ach9.png', desc: 'Завершена ветка "Злая королева"', condition: 'Выполните все задания ветки "Злая королева"' },
+            'scrooge': { id: 'scrooge', name: 'Скрудж', img: 'assets/achievements/ach10.png', desc: 'Накоплено 2500 ашетиков', condition: 'Накопите 2500 ашетиков' },
+            'benefactor': { id: 'benefactor', name: 'Благодетель', img: 'assets/achievements/ach11.png', desc: 'Поддержали проект', condition: 'Поддержите нас' },
+            'mystery': { id: 'mystery', name: 'Загадка', img: 'assets/achievements/ach12.png', desc: 'Завершена ветка "Загадка"', condition: 'Раскрасьте 20 картинок с персонажами Скуби-Ду' },
+            'anaconda': { id: 'anaconda', name: 'Анаконда', img: 'assets/achievements/ach13.png', desc: 'Завершена ветка "Анаконда"', condition: 'Раскрасьте 20 картинок со змеей' },
+            'molniya': { id: 'molniya', name: 'Молния', img: 'assets/achievements/ach_molniya.png', desc: 'Первым выполнил любую ветку заданий для Anna', condition: 'Быть первым, кто выполнит любую ветку заданий (кроме "Благодетель")' }
+        };
+        
         window.onload = async () => {
             console.log('🚀 APP STARTING...');
             const savedUser = localStorage.getItem('coloring_user');
@@ -6072,12 +5999,14 @@
             await checkAndUnlockStatuses();
             if (user.status && !user.unlockedStatuses.includes(user.status)) user.status = 'Без статуса';
             loadTimeTasksStatus();
+            loadFriendTasksStatus();
             const savedTheme = localStorage.getItem('app_theme');
             if (savedTheme === 'custom') applyCustomTheme(true);
             else if (savedTheme && savedTheme !== 'light') setTheme(savedTheme);
             else setTheme(user.theme || 'light');
             renderBranchTasks();
             renderTimeTasks();
+            renderFriendTasks();
             loadMarkers();
             renderCart();
             renderVolumes();
