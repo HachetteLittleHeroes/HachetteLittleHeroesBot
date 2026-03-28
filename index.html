@@ -6022,10 +6022,12 @@
             }
         }
         function openAnnaChannel() {
-    const channelUrl = 'https://youtube.com/@colour_with_anna?si=sbSsNzagi0yj-RIi';
+    // Используем специальную ссылку для Telegram
+    const channelUsername = 'colour_with_anna';
+    const channelUrl = `https://t.me/${channelUsername}`;
     
-    if (tg && tg.openTelegramLink) {
-        tg.openTelegramLink(channelUrl);
+    if (window.Telegram && window.Telegram.WebApp) {
+        window.Telegram.WebApp.openTelegramLink(channelUrl);
     } else {
         window.open(channelUrl, '_blank');
     }
