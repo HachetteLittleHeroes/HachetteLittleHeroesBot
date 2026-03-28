@@ -3638,7 +3638,7 @@
                             </div>
                         `;
                         branchCard.appendChild(levelCard);
-                    } else if (level.subtasks && level.subtasks.length > 0) {
+                  } else if (level.subtasks && level.subtasks.length > 0) {
                         const levelCard = document.createElement('div');
                         levelCard.className = 'level-card';
                         
@@ -3670,28 +3670,27 @@
                             const isSubtaskCompleted = currentProgress >= subtask.required;
                             const subtaskPercent = (currentProgress / subtask.required) * 100;
                             
-                            // Внутри цикла по subtasks, найдите создание subtaskDiv
-const subtaskDiv = document.createElement('div');
-subtaskDiv.style.cssText = 'margin-bottom: 15px; padding: 10px; background: var(--bg); border-radius: 12px; text-align: left;';
-
-subtaskDiv.innerHTML = `
-  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; text-align: left;">
-        <span style="font-weight: 600; font-size: 14px; text-align: left;">${subtask.name}</span>
-        <span style="font-size: 12px; color: var(--accent); text-align: right;">${currentProgress}/${subtask.required}</span>
-    </div>
-    <div class="progress-bar-container" style="height: 6px; margin: 0 0 8px 0;">
-        <div class="progress-bar-fill" style="width: ${subtaskPercent}%; height: 100%;"></div>
-    </div>
-    ${!isSubtaskCompleted ? `
-        <button class="task-submit-btn" style="padding: 8px; font-size: 12px; margin-top: 5px;" onclick="openSubtaskUpload('${branchKey}', ${currentLevelIndex}, ${subtaskIndex}, '${subtask.name}')">
-            <i class="fas fa-camera"></i> Отправить фото: ${subtask.name}
-        </button>
-    ` : `
-        <div style="text-align: center; color: var(--status-green); font-size: 12px; margin-top: 5px;">
-            <i class="fas fa-check-circle"></i> Выполнено!
-        </div>
-    `}
-`;
+                            const subtaskDiv = document.createElement('div');
+                            subtaskDiv.style.cssText = 'margin-bottom: 15px; padding: 10px; background: var(--bg); border-radius: 12px; text-align: left;';
+                            
+                            subtaskDiv.innerHTML = `
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                                    <span style="font-weight: 600; font-size: 14px;">${subtask.name}</span>
+                                    <span style="font-size: 12px; color: var(--accent);">${currentProgress}/${subtask.required}</span>
+                                </div>
+                                <div class="progress-bar-container" style="height: 6px; margin: 0 0 8px 0;">
+                                    <div class="progress-bar-fill" style="width: ${subtaskPercent}%; height: 100%;"></div>
+                                </div>
+                                ${!isSubtaskCompleted ? `
+                                    <button class="task-submit-btn" style="padding: 8px; font-size: 12px; margin-top: 5px;" onclick="openSubtaskUpload('${branchKey}', ${currentLevelIndex}, ${subtaskIndex}, '${subtask.name}')">
+                                        <i class="fas fa-camera"></i> Отправить фото: ${subtask.name}
+                                    </button>
+                                ` : `
+                                    <div style="text-align: center; color: var(--status-green); font-size: 12px; margin-top: 5px;">
+                                        <i class="fas fa-check-circle"></i> Выполнено!
+                                    </div>
+                                `}
+                            `;
                             levelCard.appendChild(subtaskDiv);
                         });
                         
