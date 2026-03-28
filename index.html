@@ -3931,8 +3931,8 @@
         const FRIEND_TASKS = [
             {
                 id: 'friend_anna',
-                title: 'Кчау! Первым выполни любую ветку заданий',
-                description: 'YouTube-канал "Colour with Anna"',
+                title: 'Первым выполни любую ветку заданий',
+                description: 'от YouTube-канала "Colour with Anna"',
                 rewardStatus: 'Молния',
                 rewardAchievement: 'Молния',
                 rewardTom: 'Любой A4 том Hachette',
@@ -3996,7 +3996,7 @@
             <div class="friend-header">
                 <h3>${task.title}</h3>
                 <p>${task.description}</p>
-                <div class="friend-reward">🎁 Призы: Любой А4 том Hachette от Ани и статус и достижение «Молния» от нас</div>
+                <div class="friend-reward">🎁 Призы: ${task.rewardTom} от Ани и статус и достижение «${task.rewardStatus}» от нас</div>
             </div>
             <div class="level-card">
                 ${!isCompleted ? `
@@ -4007,11 +4007,11 @@
                         <i class="fab fa-youtube"></i> Канал Ани
                     </button>
                     <div class="level-desc" style="font-size: 12px; margin-top: 10px; color: var(--text-gray);">
-                        📌После выполнения любой ветки заданий отправь скриншот, что ветка выполнена (кроме задания "Благодетель")
+                        📌 После выполнения любой ветки заданий отправь скриншот, что ветка выполнена (кроме задания "Благодетель")
                     </div>
                 ` : `
                     <div style="text-align: center; padding: 12px; color: var(--status-green);">
-                        <i class="fas fa-trophy"></i> Задание выполнено! Статус "Молния" и достижение получены!
+                        <i class="fas fa-trophy"></i> Задание выполнено! Статус "${task.rewardStatus}" и достижение получены!
                     </div>
                     <button class="friend-channel-btn" onclick="openAnnaChannel()">
                         <i class="fab fa-youtube"></i> Канал Ани
@@ -4021,6 +4021,7 @@
         `;
         container.appendChild(taskCard);
     });
+}
 }
         
         let currentFriendTaskId = null;
