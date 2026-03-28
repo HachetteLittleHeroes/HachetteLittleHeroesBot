@@ -506,13 +506,19 @@
         /* ==========================================
            7. ЗАДАНИЯ (ВЕТКИ)
            ========================================== */
-        .tasks-section {
-            background: var(--bg-header);
-            border-radius: 24px;
-            margin: 15px;
-            overflow: hidden;
-            border: 1px solid var(--border-color);
-        }
+       .tasks-section {
+    background: var(--bg-header);
+    border-radius: 24px;
+    margin: 15px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+}
+
+/* Добавляем обводку цветом акцента */
+.tasks-section {
+    border: 2px solid var(--accent);
+    background: rgba(255,149,0,0.05);
+}
 
         .tasks-header {
             display: flex;
