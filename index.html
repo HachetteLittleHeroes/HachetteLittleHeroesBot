@@ -6024,18 +6024,14 @@
         function openAnnaChannel() {
     const channelUrl = 'https://www.youtube.com/@colour_with_anna';
     
-    // Для мобильных устройств в Telegram Mini App
+    // Проверяем, есть ли Telegram WebApp
     if (window.Telegram && window.Telegram.WebApp) {
-        try {
-            window.Telegram.WebApp.openLink(channelUrl);
-        } catch(e) {
-            console.log('Error opening link:', e);
-            window.open(channelUrl, '_blank');
-        }
+        // Пытаемся открыть через Telegram
+        window.Telegram.WebApp.openLink(channelUrl);
     } else {
+        // Обычное открытие
         window.open(channelUrl, '_blank');
     }
-}
 }
         // ==========================================
         // ИНИЦИАЛИЗАЦИЯ
