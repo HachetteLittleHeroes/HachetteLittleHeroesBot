@@ -2556,15 +2556,15 @@
             </div>
         </div>
 
-        <div class="showcase-container">
-            <h3>Витрина Топ-3</h3>
-            <div class="showcase-grid">
-                <div class="showcase-slot" id="slot-0"><i class="fas fa-plus"></i></div>
-                <div class="showcase-slot" id="slot-1"><i class="fas fa-plus"></i></div>
-                <div class="showcase-slot" id="slot-2"><i class="fas fa-plus"></i></div>
-            </div>
-            <div class="showcase-info" onclick="openAchievementsGallery()">Нажмите для просмотра всех достижений</div>
-        </div>
+       <div class="showcase-container">
+    <h3>Витрина Топ-3</h3>
+    <div class="showcase-grid">
+        <div class="showcase-slot" id="slot-0" onclick="openShowcaseSelector(0)"><i class="fas fa-plus"></i></div>
+        <div class="showcase-slot" id="slot-1" onclick="openShowcaseSelector(1)"><i class="fas fa-plus"></i></div>
+        <div class="showcase-slot" id="slot-2" onclick="openShowcaseSelector(2)"><i class="fas fa-plus"></i></div>
+    </div>
+    <div class="showcase-info" onclick="openAchievementsGallery()">Нажмите для просмотра всех достижений</div>
+</div>
 
         <!-- ========== МОЙ ИНВЕНТАРЬ ========== -->
         <div class="inventory-main-block">
@@ -4132,32 +4132,30 @@
         }
         
         function renderShowcase() {
-            for (let i = 0; i < 3; i++) {
-                const slot = document.getElementById(`slot-${i}`);
-                if (!slot) continue;
-                const achId = user.showcase && user.showcase[i] ? user.showcase[i] : null;
-                slot.innerHTML = '';
-                slot.style.cursor = 'pointer';
-                slot.onclick = (function(index) {
-                    return function() { openShowcaseSelector(index); };
-                })(i);
-                
-                if (achId && ACHIEVEMENTS_DB[achId]) {
-                    const img = document.createElement('img');
-                    img.src = ACHIEVEMENTS_DB[achId].img;
-                    img.alt = ACHIEVEMENTS_DB[achId].name;
-                    img.style.width = '100%';
-                    img.style.height = '100%';
-                    img.style.objectFit = 'contain';
-                    img.style.objectPosition = 'center';
-                    slot.appendChild(img);
-                    slot.classList.add('filled');
-                } else {
-                    slot.innerHTML = '<i class="fas fa-plus"></i>';
-                    slot.classList.remove('filled');
-                }
-            }
+    for (let i = 0; i < 3; i++) {
+        const slot = document.getElementById(`slot-${i}`);
+        if (!slot) continue;
+        const achId = user.showcase && user.showcase[i] ? user.showcase[i] : null;
+        
+        // Очищаем содержимое, но onclick атрибут остается в HTML
+        slot.innerHTML = '';
+        
+        if (achId && ACHIEVEMENTS_DB[achId]) {
+            const img = document.createElement('img');
+            img.src = ACHIEVEMENTS_DB[achId].img;
+            img.alt = ACHIEVEMENTS_DB[achId].name;
+            img.style.width = '100%';
+            img.style.height = '100%';
+            img.style.objectFit = 'contain';
+            img.style.objectPosition = 'center';
+            slot.appendChild(img);
+            slot.classList.add('filled');
+        } else {
+            slot.innerHTML = '<i class="fas fa-plus"></i>';
+            slot.classList.remove('filled');
         }
+    }
+}
         
         function openShowcaseSelector(slotIndex) {
             const list = document.getElementById('showcaseAchievementsList');
