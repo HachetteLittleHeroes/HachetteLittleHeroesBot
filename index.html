@@ -6000,7 +6000,15 @@
                 }
             }
         }
-        
+        function openAnnaChannel() {
+    const channelUrl = 'https://youtube.com/@colour_with_anna?si=sbSsNzagi0yj-RIi';
+    
+    if (tg && tg.openTelegramLink) {
+        tg.openTelegramLink(channelUrl);
+    } else {
+        window.open(channelUrl, '_blank');
+    }
+}
         // ==========================================
         // ИНИЦИАЛИЗАЦИЯ
         // ==========================================
