@@ -3828,9 +3828,9 @@
                                 <i class="fas fa-camera"></i> Отправить фото на проверку
                             </button>
                         ` : isCompleted ? `
-                            <div style="text-align: center; padding: 12px; color: var(--status-green);">
-                                <i class="fas fa-check-circle"></i> Задание выполнено! +${task.reward} ашетиков получено
-                            </div>
+                          <div style="text-align: center; padding: 12px; color: var(--status-green);">
+    <i class="fas fa-trophy"></i> Задание выполнено! Статус "${task.rewardStatus}" и достижение получены!
+</div>
                         ` : `
                             <div style="text-align: center; padding: 12px; color: var(--status-red);">
                                 <i class="fas fa-clock"></i> Время выполнения истекло
@@ -4087,50 +4087,72 @@
         }
         
         async function submitFriendTaskPhoto() {
-            console.log('=== SUBMIT FRIEND TASK PHOTO ===');
-            if (isUploading) return;
-            if (!tempPhotos || tempPhotos.length === 0) {
-                if (tg) tg.showAlert('❌ Выберите хотя бы одно фото');
-                return;
-            }
-            
-            isUploading = true;
-            
-            try {
-                const formData = new FormData();
-                formData.append('user', userId.toString());
-                formData.append('title', 'Задание от Colour with Anna');
-                formData.append('taskId', currentFriendTaskId);
-                formData.append('type', 'friend_task');
-                
-                for (let i = 0; i < tempPhotos.length; i++) {
-                    formData.append('photos', tempPhotos[i]);
-                }
-                
-                const response = await fetch(`${SERVER_URL}/api/check_friend_task`, {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`Ошибка сервера: ${response.status}`);
-                }
-                
-                const result = await response.json();
-                
-                if (result && result.status === 'ok') {
-                    if (tg) tg.showAlert('✅ Подтверждение отправлено на проверку!');
-                    closeTaskUploadModal();
-                } else {
-                    throw new Error(result?.message || 'Ошибка отправки');
-                }
-            } catch (error) {
-                console.error('❌ Ошибка:', error);
-                if (tg) tg.showAlert(`❌ Ошибка: ${error.message}`);
-            } finally {
-                isUploading = false;
-            }
+    console.log('=== SUBMIT FRIEND TASK PHOTO ===');
+    if (isUploading) return;
+    if (!tempPhotos || tempPhotos.length === 0) {
+        if (tg) tg.showAlert('❌ Выберите хотя бы одно фото');
+        return;
+    }
+    
+    isUploading = true;
+    
+    try {
+        const formData = new FormData();
+        formData.append('user', userId.toString());
+        formData.append('title', 'Задание от Colour with Anna');
+        formData.append('taskId', currentFriendTaskId);
+        formData.append('type', 'friend_task');
+        
+        for (let i = 0; i < tempPhotos.length; i++) {
+            formData.append('photos', tempPhotos[i]);
         }
+        
+        const response = await fetch(`${SERVER_URL}/api/check_friend_task`, {
+            method: 'POST',
+            body: formData
+        });
+        
+        if (!response.ok) {
+            throw new Error(`Ошибка сервера: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        
+        if (result && result.status === 'ok') {
+            // Разблокируем статус "Молния"
+            if (!user.unlockedStatuses.includes('Молния')) {
+                user.unlockedStatuses.push('Молния');
+            }
+            
+            // Разблокируем достижение "Молния"
+            if (!user.achievements.includes('molniya')) {
+                user.achievements.push('molniya');
+            }
+            
+            saveUserData();
+            updateUI();
+            
+            // Обновляем статус задания
+            markFriendTaskCompleted(currentFriendTaskId);
+            
+            // Показываем уведомление
+            if (tg) {
+                tg.showAlert('✅ Задание выполнено! Получен статус "Молния" и достижение!');
+                if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+            }
+            
+            closeTaskUploadModal();
+            renderFriendTasks();
+        } else {
+            throw new Error(result?.message || 'Ошибка отправки');
+        }
+    } catch (error) {
+        console.error('❌ Ошибка:', error);
+        if (tg) tg.showAlert(`❌ Ошибка: ${error.message}`);
+    } finally {
+        isUploading = false;
+    }
+}
         
         function openAnnaChannel() {
     console.log('Opening Anna channel...');
