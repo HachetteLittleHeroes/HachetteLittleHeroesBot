@@ -2109,27 +2109,58 @@
             cursor: default;
         }
 
-  /* ==========================================
+/* ==========================================
    22. ЗАДАНИЯ ОТ НАШИХ ДРУЗЕЙ
    ========================================== */
+
+/* Основная секция */
 .friend-tasks-section {
     border: 2px solid var(--accent);
     background: rgba(255,149,0,0.05);
     margin: 15px;
     border-radius: 24px;
     overflow: hidden;
-    width: auto;
 }
 
+/* Заголовок секции - как в других блоках */
 .friend-tasks-section .tasks-header {
     width: 100%;
-    background: transparent;
+    background: var(--bg-header);
     padding: 18px 20px;
+    border: none;
+    color: var(--text);
+    font-weight: 700;
+    font-size: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
 }
 
+.friend-tasks-section .tasks-header span {
+    color: var(--text);
+}
+
+.friend-tasks-section .tasks-header i {
+    transition: transform 0.3s;
+    color: var(--text-gray);
+}
+
+/* Контент секции */
 .friend-tasks-section .tasks-content {
     padding: 0 20px 20px;
     background: var(--bg-header);
+}
+
+/* Карточка задания - такой же градиент как во временных заданиях */
+.friend-header {
+    background: var(--accent-gradient);
+    padding: 12px 16px;
+    color: white;
+    width: 100%;
+    box-sizing: border-box;
+    position: relative;
+    border-radius: 20px 20px 0 0;
 }
 
 .friend-task-card {
@@ -2147,12 +2178,6 @@
     background: var(--bg);
 }
 
-/* Убираем бейдж - можно удалить или закомментировать */
-.friend-badge {
-    display: none;
-}
-
-/* Заголовок - убираем отступ справа, теперь на всю ширину */
 .friend-header h3 {
     font-size: 16px;
     margin: 0 0 4px 0;
@@ -2160,7 +2185,6 @@
     word-break: break-word;
 }
 
-/* Описание - теперь на всю ширину, как желтый блок */
 .friend-header p {
     font-size: 13px;
     font-weight: 500;
@@ -2171,7 +2195,6 @@
     width: 100%;
 }
 
-/* Желтый блок - оставляем как есть */
 .friend-reward {
     background: #ffd700;
     color: #333;
@@ -2187,16 +2210,6 @@
     word-break: break-word;
     text-align: center;
     line-height: 1.3;
-}
-
-/* Убираем лишние отступы у родителя */
-.friend-header {
-    background: var(--accent-gradient);
-    padding: 12px 16px;
-    color: white;
-    width: 100%;
-    box-sizing: border-box;
-    position: relative;
 }
 
 .friend-task-btn {
@@ -2218,12 +2231,6 @@
 
 .friend-task-btn:active {
     transform: scale(0.98);
-}
-
-.friend-task-btn.completed {
-    background: #4caf50;
-    opacity: 0.7;
-    cursor: default;
 }
 
 .friend-channel-btn {
@@ -2249,10 +2256,6 @@
     opacity: 0.9;
 }
 
-.friend-channel-btn i {
-    font-size: 16px;
-}
-
 .friend-task-card .level-card {
     padding: 16px;
     border-top: none;
@@ -2264,6 +2267,11 @@
     color: var(--text-gray);
     margin-top: 12px;
     text-align: center;
+}
+
+/* Убираем бейдж */
+.friend-badge {
+    display: none;
 }
 
         /* ==========================================
