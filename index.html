@@ -2937,7 +2937,7 @@
         // КОНФИГУРАЦИЯ И ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ
         // ==========================================
         
-        const SERVER_URL = 'https://bot-hachettelittleheroes.amvera.io';
+        const SERVER_URL = 'https://hlhbot-hachettelittleheroes.amvera.io';
         const MARKER_PRICE = 75;
         
         // Telegram WebApp
@@ -3639,63 +3639,97 @@
                 `;
                 branchCard.appendChild(levelCard);
             } else if (level.subtasks && level.subtasks.length > 0) {
-                const levelCard = document.createElement('div');
-                levelCard.className = 'level-card';
-                
-                let totalCompleted = 0;
-                let totalRequired = 0;
-                
-                level.subtasks.forEach((subtask, subtaskIndex) => {
-                    const currentProgress = getSubtaskProgress(branchKey, currentLevelIndex, subtaskIndex);
-                    totalCompleted += Math.min(currentProgress, subtask.required);
-                    totalRequired += subtask.required;
-                });
-                
-                const totalPercent = (totalCompleted / totalRequired) * 100;
-                
-                levelCard.innerHTML = `
-                    <div class="level-header">
-                        <span class="level-title">Уровень ${currentLevelIndex + 1}: ${level.title}</span>
-                        <span class="level-progress">${totalCompleted}/${totalRequired}</span>
-                    </div>
-                    <div class="level-desc">${level.desc}</div>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar-fill" style="width: ${totalPercent}%"></div>
-                    </div>
-                    <div style="margin-top: 15px;"></div>
-                `;
-                
-                level.subtasks.forEach((subtask, subtaskIndex) => {
-                    const currentProgress = getSubtaskProgress(branchKey, currentLevelIndex, subtaskIndex);
-                    const isSubtaskCompleted = currentProgress >= subtask.required;
-                    const subtaskPercent = (currentProgress / subtask.required) * 100;
+                // Проверяем, сколько подзаданий
+                if (level.subtasks.length === 1) {
+                    // Одно подзадание - показываем как обычный уровень
+                    const subtask = level.subtasks[0];
+                    const currentProgress = getSubtaskProgress(branchKey, currentLevelIndex, 0);
+                    const isCompleted = currentProgress >= subtask.required;
+                    const percent = (currentProgress / subtask.required) * 100;
                     
-                    const subtaskDiv = document.createElement('div');
-                    subtaskDiv.style.cssText = 'margin-bottom: 15px; padding: 10px; background: var(--bg); border-radius: 12px;';
-                    
-                    subtaskDiv.innerHTML = `
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                            <span style="font-weight: 600; font-size: 14px;">${subtask.name}</span>
-                            <span style="font-size: 12px; color: var(--accent);">${currentProgress}/${subtask.required}</span>
+                    const levelCard = document.createElement('div');
+                    levelCard.className = 'level-card';
+                    levelCard.innerHTML = `
+                        <div class="level-header">
+                            <span class="level-title">${level.title}</span>
+                            <span class="level-progress">${currentProgress}/${subtask.required}</span>
                         </div>
-                        <div class="progress-bar-container" style="height: 6px; margin: 0 0 8px 0;">
-                            <div class="progress-bar-fill" style="width: ${subtaskPercent}%; height: 100%;"></div>
+                        <div class="level-desc">${level.desc}</div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill" style="width: ${percent}%"></div>
                         </div>
-                        ${!isSubtaskCompleted ? `
-                            <button class="task-submit-btn" style="padding: 8px; font-size: 12px; margin-top: 5px;" onclick="openSubtaskUpload('${branchKey}', ${currentLevelIndex}, ${subtaskIndex}, '${subtask.name}')">
-                                <i class="fas fa-camera"></i> Отправить фото: ${subtask.name}
+                        ${!isCompleted ? `
+                            <button class="task-submit-btn" onclick="openSubtaskUpload('${branchKey}', ${currentLevelIndex}, 0, '${subtask.name}')">
+                                <i class="fas fa-camera"></i> Отправить фото на проверку
                             </button>
                         ` : `
-                            <div style="text-align: center; color: var(--status-green); font-size: 12px; margin-top: 5px;">
-                                <i class="fas fa-check-circle"></i> Выполнено!
+                            <div style="text-align: center; padding: 12px; color: var(--status-green);">
+                                <i class="fas fa-check-circle"></i> Задание выполнено!
                             </div>
                         `}
                     `;
-                    levelCard.appendChild(subtaskDiv);
-                });
-                
-                branchCard.appendChild(levelCard);
+                    branchCard.appendChild(levelCard);
+                } else {
+                    // Несколько подзаданий
+                    const levelCard = document.createElement('div');
+                    levelCard.className = 'level-card';
+                    
+                    let totalCompleted = 0;
+                    let totalRequired = 0;
+                    
+                    level.subtasks.forEach((subtask, idx) => {
+                        const prog = getSubtaskProgress(branchKey, currentLevelIndex, idx);
+                        totalCompleted += Math.min(prog, subtask.required);
+                        totalRequired += subtask.required;
+                    });
+                    
+                    const totalPercent = (totalCompleted / totalRequired) * 100;
+                    
+                    levelCard.innerHTML = `
+                        <div class="level-header">
+                            <span class="level-title">Уровень ${currentLevelIndex + 1}: ${level.title}</span>
+                            <span class="level-progress">${totalCompleted}/${totalRequired}</span>
+                        </div>
+                        <div class="level-desc">${level.desc}</div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill" style="width: ${totalPercent}%"></div>
+                        </div>
+                        <div style="margin-top: 15px;"></div>
+                    `;
+                    
+                    level.subtasks.forEach((subtask, idx) => {
+                        const currentProgress = getSubtaskProgress(branchKey, currentLevelIndex, idx);
+                        const isCompleted = currentProgress >= subtask.required;
+                        const subtaskPercent = (currentProgress / subtask.required) * 100;
+                        
+                        const subtaskDiv = document.createElement('div');
+                        subtaskDiv.style.cssText = 'margin-bottom: 15px; padding: 10px; background: var(--bg); border-radius: 12px;';
+                        
+                        subtaskDiv.innerHTML = `
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                                <span style="font-weight: 600; font-size: 14px;">${subtask.name}</span>
+                                <span style="font-size: 12px; color: var(--accent);">${currentProgress}/${subtask.required}</span>
+                            </div>
+                            <div class="progress-bar-container" style="height: 6px; margin: 0 0 8px 0;">
+                                <div class="progress-bar-fill" style="width: ${subtaskPercent}%; height: 100%;"></div>
+                            </div>
+                            ${!isCompleted ? `
+                                <button class="task-submit-btn" style="padding: 8px; font-size: 12px; margin-top: 5px;" onclick="openSubtaskUpload('${branchKey}', ${currentLevelIndex}, ${idx}, '${subtask.name}')">
+                                    <i class="fas fa-camera"></i> Отправить фото: ${subtask.name}
+                                </button>
+                            ` : `
+                                <div style="text-align: center; color: var(--status-green); font-size: 12px; margin-top: 5px;">
+                                    <i class="fas fa-check-circle"></i> Выполнено!
+                                </div>
+                            `}
+                        `;
+                        levelCard.appendChild(subtaskDiv);
+                    });
+                    
+                    branchCard.appendChild(levelCard);
+                }
             } else {
+                // Обычный уровень без подзаданий
                 const currentProgress = getLevelProgress(branchKey, currentLevelIndex);
                 const percent = (currentProgress / level.maxProgress) * 100;
                 const levelCard = document.createElement('div');
@@ -3766,11 +3800,11 @@
         const TIME_TASKS = [
             {
                 id: 'time_task_1',
-                title: 'Дом Мадригаль',
-                description: 'Раскрасьте картинку с домом Мадригаль из мультфильма "Энканто" (разворот в 11 томе)',
+                title: 'Цвет настроения - зеленый',
+                description: 'Раскрась любую картинку с Бризгливостью из м/ф "Головоломка"',
                 reward: 5,
                 deadline: '2026-03-29',
-                deadlineText: 'ДО 29.03.2026',
+                deadlineText: 'ДО 05.04.2026',
                 completed: false
             }
         ];
@@ -3921,7 +3955,7 @@
                 formData.append('title', `Временное задание: ${TIME_TASKS.find(t => t.id === currentTimeTaskId)?.title}`);
                 formData.append('id', currentTimeTaskId);
                 formData.append('level', '1');
-                formData.append('reward', currentTimeTaskReward.toString());
+                formData.append('points', currentTimeTaskReward.toString());
                 formData.append('type', 'time_task');
                 for (let i = 0; i < tempPhotos.length; i++) {
                     formData.append('photos', tempPhotos[i]);
