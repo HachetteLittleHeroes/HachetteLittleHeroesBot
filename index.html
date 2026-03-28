@@ -3672,10 +3672,10 @@
                             
                             // Внутри цикла по subtasks, найдите создание subtaskDiv
 const subtaskDiv = document.createElement('div');
-subtaskDiv.style.cssText = 'margin-bottom: 15px; padding: 10px; background: var(--bg); border-radius: 12px; text-align: left;'; // Добавьте text-align: left
+subtaskDiv.style.cssText = 'margin-bottom: 15px; padding: 10px; background: var(--bg); border-radius: 12px; text-align: left;';
 
 subtaskDiv.innerHTML = `
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; text-align: left;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; text-align: left;">
         <span style="font-weight: 600; font-size: 14px; text-align: left;">${subtask.name}</span>
         <span style="font-size: 12px; color: var(--accent); text-align: right;">${currentProgress}/${subtask.required}</span>
     </div>
@@ -3697,26 +3697,27 @@ subtaskDiv.innerHTML = `
                         
                         levelCard.innerHTML += `</div>`;
                         branchCard.appendChild(levelCard);
-                    } else {
-                        const currentProgress = getLevelProgress(branchKey, currentLevelIndex);
-                        const percent = (currentProgress / level.maxProgress) * 100;
-                        const levelCard = document.createElement('div');
-                        levelCard.className = 'level-card';
-                        levelCard.innerHTML = `
-                            <div class="level-header">
-                                <span class="level-title">Уровень ${currentLevelIndex + 1}: ${level.title}</span>
-                                <span class="level-progress">${currentProgress}/${level.maxProgress}</span>
-                            </div>
-                            <div class="level-desc">${level.desc}</div>
-                            <div class="progress-bar-container">
-                                <div class="progress-bar-fill" style="width: ${percent}%"></div>
-                            </div>
-                            <button class="task-submit-btn" onclick="openTaskUpload('${branchKey}', ${currentLevelIndex})">
-                                <i class="fas fa-camera"></i> Отправить фото на проверку
-                            </button>
-                        `;
-                        branchCard.appendChild(levelCard);
-                    }
+                  } else {
+    const currentProgress = getLevelProgress(branchKey, currentLevelIndex);
+    const percent = (currentProgress / level.maxProgress) * 100;
+    const levelCard = document.createElement('div');
+    levelCard.className = 'level-card';
+    levelCard.style.textAlign = 'left';  // <-- ДОБАВЬТЕ ЭТУ СТРОКУ
+    levelCard.innerHTML = `
+        <div class="level-header">
+            <span class="level-title">Уровень ${currentLevelIndex + 1}: ${level.title}</span>
+            <span class="level-progress">${currentProgress}/${level.maxProgress}</span>
+        </div>
+        <div class="level-desc">${level.desc}</div>
+        <div class="progress-bar-container">
+            <div class="progress-bar-fill" style="width: ${percent}%"></div>
+        </div>
+        <button class="task-submit-btn" onclick="openTaskUpload('${branchKey}', ${currentLevelIndex})">
+            <i class="fas fa-camera"></i> Отправить фото на проверку
+        </button>
+    `;
+    branchCard.appendChild(levelCard);
+}
                 }
                 
                 container.appendChild(branchCard);
