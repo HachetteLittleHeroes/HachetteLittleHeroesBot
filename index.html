@@ -4133,14 +4133,22 @@
         }
         
         function openAnnaChannel() {
-            const channelUrl = 'https://youtube.com/@colour_with_anna?si=sbSsNzagi0yj-RIi';
-            
-            if (tg && tg.openTelegramLink) {
-                tg.openTelegramLink(channelUrl);
-            } else {
-                window.open(channelUrl, '_blank');
-            }
-        }
+    console.log('openAnnaChannel called'); // Для отладки
+    const channelUrl = 'https://youtube.com/@colour_with_anna?si=sbSsNzagi0yj-RIi';
+    
+    // Проверяем, есть ли Telegram WebApp
+    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openTelegramLink) {
+        window.Telegram.WebApp.openTelegramLink(channelUrl);
+    } 
+    // Проверяем, есть ли tg объект
+    else if (tg && tg.openTelegramLink) {
+        tg.openTelegramLink(channelUrl);
+    }
+    // Иначе открываем в новой вкладке
+    else {
+        window.open(channelUrl, '_blank');
+    }
+}
         // ==========================================
         // ПРОФИЛЬ И UI
         // ==========================================
