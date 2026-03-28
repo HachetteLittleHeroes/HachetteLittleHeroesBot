@@ -2147,43 +2147,31 @@
     background: var(--bg);
 }
 
+/* Убираем бейдж - можно удалить или закомментировать */
 .friend-badge {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    background: var(--accent);
-    color: white;
-    padding: 4px 8px;
-    border-radius: 20px;
-    font-size: 10px;
-    font-weight: 600;
-    z-index: 1;
-    white-space: nowrap;
+    display: none;
 }
 
-.friend-header {
-    background: var(--accent-gradient);
-    padding: 12px 16px;
-    color: white;
-    width: 100%;
-    box-sizing: border-box;
-    position: relative;
-}
-
+/* Заголовок - убираем отступ справа, теперь на всю ширину */
 .friend-header h3 {
     font-size: 16px;
-    margin: 0 80px 4px 0;
+    margin: 0 0 4px 0;
     line-height: 1.3;
     word-break: break-word;
 }
 
+/* Описание - теперь на всю ширину, как желтый блок */
 .friend-header p {
-    font-size: 11px;
-    opacity: 0.9;
-    margin: 0 80px 4px 0;
+    font-size: 13px;
+    font-weight: 500;
+    opacity: 0.95;
+    margin: 0 0 6px 0;
     word-break: break-word;
+    display: block;
+    width: 100%;
 }
 
+/* Желтый блок - оставляем как есть */
 .friend-reward {
     background: #ffd700;
     color: #333;
@@ -2199,6 +2187,16 @@
     word-break: break-word;
     text-align: center;
     line-height: 1.3;
+}
+
+/* Убираем лишние отступы у родителя */
+.friend-header {
+    background: var(--accent-gradient);
+    padding: 12px 16px;
+    color: white;
+    width: 100%;
+    box-sizing: border-box;
+    position: relative;
 }
 
 .friend-task-btn {
