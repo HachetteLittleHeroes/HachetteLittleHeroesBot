@@ -664,32 +664,58 @@
             transform: scale(0.98);
         }
         
-        /* Стили для подпунктов заданий */
-        .subtask-card {
-            margin-bottom: 15px;
-            padding: 10px;
-            background: var(--bg);
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-        }
-        
-        .subtask-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 6px;
-        }
-        
-        .subtask-name {
-            font-weight: 600;
-            font-size: 14px;
-            color: var(--text);
-        }
-        
-        .subtask-progress {
-            font-size: 12px;
-            color: var(--accent);
-        }
+        /* Выравнивание текста в подзаданиях */
+.subtask-card {
+    margin-bottom: 15px;
+    padding: 10px;
+    background: var(--bg);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    text-align: left; /* Добавьте эту строку */
+}
+
+.subtask-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+    text-align: left; /* Добавьте эту строку */
+}
+
+.subtask-name {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text);
+    text-align: left; /* Добавьте эту строку */
+}
+
+.subtask-progress {
+    font-size: 12px;
+    color: var(--accent);
+    text-align: right; /* Это оставляем справа */
+}
+
+.level-desc {
+    font-size: 13px;
+    color: var(--text-gray);
+    margin-bottom: 12px;
+    text-align: left; /* Добавьте эту строку */
+}
+
+.level-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    text-align: left; /* Добавьте эту строку */
+}
+
+.level-title {
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--text);
+    text-align: left; /* Добавьте эту строку */
+}
         
         .subtask-btn {
             padding: 8px;
