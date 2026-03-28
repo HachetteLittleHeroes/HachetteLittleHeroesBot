@@ -6022,15 +6022,20 @@
             }
         }
         function openAnnaChannel() {
-    // Используем специальную ссылку для Telegram
-    const channelUsername = 'colour_with_anna';
-    const channelUrl = `https://t.me/${channelUsername}`;
+    const channelUrl = 'https://www.youtube.com/@colour_with_anna';
     
+    // Для мобильных устройств в Telegram Mini App
     if (window.Telegram && window.Telegram.WebApp) {
-        window.Telegram.WebApp.openTelegramLink(channelUrl);
+        try {
+            window.Telegram.WebApp.openLink(channelUrl);
+        } catch(e) {
+            console.log('Error opening link:', e);
+            window.open(channelUrl, '_blank');
+        }
     } else {
         window.open(channelUrl, '_blank');
     }
+}
 }
         // ==========================================
         // ИНИЦИАЛИЗАЦИЯ
