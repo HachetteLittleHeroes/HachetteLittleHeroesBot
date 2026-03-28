@@ -3942,47 +3942,47 @@
         }
         
         function renderFriendTasks() {
-            const container = document.getElementById('friendTasksList');
-            if (!container) return;
-            container.innerHTML = '';
-            
-            FRIEND_TASKS.forEach(task => {
-                const isCompleted = task.completed;
-                
-                const taskCard = document.createElement('div');
-                taskCard.className = `friend-task-card ${isCompleted ? 'completed' : ''}`;
-                
-                taskCard.innerHTML = `
-                    <div class="friend-badge">🎁 Спецзадание</div>
-                    <div class="friend-header">
-                        <h3>📺 ${task.title}</h3>
-                        <p>${task.description}</p>
-                        <div class="friend-reward">🎁 Призы: ${task.rewardTom} + статус "${task.rewardStatus}" + достижение "${task.rewardAchievement}"</div>
+    const container = document.getElementById('friendTasksList');
+    if (!container) return;
+    container.innerHTML = '';
+    
+    FRIEND_TASKS.forEach(task => {
+        const isCompleted = task.completed;
+        
+        const taskCard = document.createElement('div');
+        taskCard.className = `friend-task-card ${isCompleted ? 'completed' : ''}`;
+        
+        taskCard.innerHTML = `
+            <div class="friend-badge">🎁 Спецзадание</div>
+            <div class="friend-header">
+                <h3>${task.title}</h3>
+                <p>${task.description}</p>
+                <div class="friend-reward">🎁 Призы: Любой А4 том Hachette от Ани и статус и достижение «Молния» от нас</div>
+            </div>
+            <div class="level-card">
+                ${!isCompleted ? `
+                    <button class="friend-task-btn" onclick="openFriendTaskUpload('${task.id}')">
+                        <i class="fas fa-camera"></i> Отправить подтверждение
+                    </button>
+                    <button class="friend-channel-btn" onclick="openAnnaChannel()">
+                        <i class="fab fa-youtube"></i> Канал Ани
+                    </button>
+                    <div class="level-desc" style="font-size: 12px; margin-top: 10px; color: var(--text-gray);">
+                        📌После выполнения любой ветки заданий отправь скриншот, что ветка выполнена (кроме задания "Благодетель")
                     </div>
-                    <div class="level-card">
-                        ${!isCompleted ? `
-                            <button class="friend-task-btn" onclick="openFriendTaskUpload('${task.id}')">
-                                <i class="fas fa-camera"></i> Отправить подтверждение
-                            </button>
-                            <button class="friend-channel-btn" onclick="openAnnaChannel()">
-                                <i class="fab fa-youtube"></i> Канал Ани
-                            </button>
-                            <div class="level-desc" style="font-size: 12px; margin-top: 10px; color: var(--text-gray);">
-                                ⚡ Условие: первым выполнить любую ветку заданий (кроме "Благодетель")
-                            </div>
-                        ` : `
-                            <div style="text-align: center; padding: 12px; color: var(--status-green);">
-                                <i class="fas fa-trophy"></i> Задание выполнено! Статус "${task.rewardStatus}" и достижение получены!
-                            </div>
-                            <button class="friend-channel-btn" onclick="openAnnaChannel()">
-                                <i class="fab fa-youtube"></i> Канал Ани
-                            </button>
-                        `}
+                ` : `
+                    <div style="text-align: center; padding: 12px; color: var(--status-green);">
+                        <i class="fas fa-trophy"></i> Задание выполнено! Статус "Молния" и достижение получены!
                     </div>
-                `;
-                container.appendChild(taskCard);
-            });
-        }
+                    <button class="friend-channel-btn" onclick="openAnnaChannel()">
+                        <i class="fab fa-youtube"></i> Канал Ани
+                    </button>
+                `}
+            </div>
+        `;
+        container.appendChild(taskCard);
+    });
+}
         
         let currentFriendTaskId = null;
         
