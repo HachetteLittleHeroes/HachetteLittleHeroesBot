@@ -4136,18 +4136,23 @@
     console.log('Opening Anna channel...');
     const channelUrl = 'https://youtube.com/@colour_with_anna?si=sbSsNzagi0yj-RIi';
     
-    // Пробуем открыть через Telegram WebApp
+    // Для мобильных устройств в Telegram
     if (window.Telegram && window.Telegram.WebApp) {
-        if (window.Telegram.WebApp.openTelegramLink) {
-            window.Telegram.WebApp.openTelegramLink(channelUrl);
-        } else if (window.Telegram.WebApp.openLink) {
+        // Пробуем открыть через Telegram
+        try {
             window.Telegram.WebApp.openLink(channelUrl);
-        } else {
-            window.open(channelUrl, '_blank');
+        } catch(e) {
+            console.log('openLink error:', e);
+            // Альтернативный способ
+            window.location.href = channelUrl;
         }
-    } else if (tg && tg.openTelegramLink) {
-        tg.openTelegramLink(channelUrl);
-    } else {
+    } 
+    // Если есть объект tg
+    else if (tg && tg.openLink) {
+        tg.openLink(channelUrl);
+    }
+    // Для компьютера или если не Telegram
+    else {
         window.open(channelUrl, '_blank');
     }
 }
