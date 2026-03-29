@@ -2524,215 +2524,6 @@
         .organizer-cell.highlight {
             animation: highlight 1s ease-in-out 3;
         }
-        /* ==========================================
-   SEASON PASS СТИЛИ
-   ========================================== */
-.season-pass-section {
-    background: var(--bg-header);
-    margin: 15px;
-    border-radius: 24px;
-    overflow: hidden;
-    border: 2px solid var(--accent);
-    background: rgba(255,149,0,0.05);
-}
-
-.season-pass-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 18px 20px;
-    cursor: pointer;
-    font-weight: 700;
-    font-size: 16px;
-    background: var(--bg-header);
-    width: 100%;
-    border: none;
-    color: var(--text);
-}
-
-.season-pass-header-left {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.season-badge {
-    background: var(--accent);
-    color: white;
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 600;
-}
-
-.season-pass-content {
-    padding: 0 20px 20px;
-    border-top: 1px solid var(--border-color);
-}
-
-.season-pass-info {
-    background: var(--card-bg);
-    border-radius: 20px;
-    padding: 15px;
-    margin-bottom: 20px;
-    text-align: center;
-}
-
-.season-pass-progress {
-    margin-bottom: 15px;
-}
-
-.season-pass-level {
-    font-weight: 700;
-    font-size: 18px;
-    color: var(--text);
-    margin-bottom: 8px;
-}
-
-.season-pass-xp {
-    font-size: 12px;
-    color: var(--text-gray);
-    margin-top: 8px;
-}
-
-.premium-status {
-    text-align: center;
-    padding: 10px;
-    border-radius: 20px;
-    background: var(--card-bg);
-    font-size: 13px;
-    font-weight: 600;
-    margin-top: 10px;
-}
-
-.premium-status i {
-    margin-right: 5px;
-}
-
-.season-pass-levels {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    max-height: 500px;
-    overflow-y: auto;
-}
-
-.sp-level-card {
-    background: var(--card-bg);
-    border-radius: 16px;
-    padding: 12px;
-    border: 1px solid var(--border-color);
-    position: relative;
-}
-
-.sp-level-card.locked {
-    opacity: 0.6;
-}
-
-.sp-level-card.completed {
-    background: rgba(52, 199, 89, 0.1);
-    border-color: var(--status-green);
-}
-
-.sp-level-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-}
-
-.sp-level-number {
-    font-weight: 800;
-    font-size: 16px;
-    color: var(--accent);
-}
-
-.sp-level-xp {
-    font-size: 12px;
-    color: var(--text-gray);
-}
-
-.sp-tasks-list {
-    margin: 10px 0;
-}
-
-.sp-task-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 0;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.sp-task-item:last-child {
-    border-bottom: none;
-}
-
-.sp-task-name {
-    font-size: 13px;
-    color: var(--text);
-}
-
-.sp-task-status {
-    font-size: 11px;
-    padding: 4px 8px;
-    border-radius: 20px;
-    background: var(--status-green);
-    color: white;
-}
-
-.sp-task-status.pending {
-    background: var(--accent);
-    cursor: pointer;
-}
-
-.sp-rewards {
-    display: flex;
-    gap: 10px;
-    margin-top: 10px;
-    padding-top: 10px;
-    border-top: 1px solid var(--border-color);
-}
-
-.sp-reward {
-    flex: 1;
-    text-align: center;
-    padding: 8px;
-    border-radius: 12px;
-    background: var(--bg);
-    font-size: 12px;
-}
-
-.sp-reward.free {
-    border: 1px solid var(--accent);
-}
-
-.sp-reward.premium {
-    border: 1px solid #ffd700;
-    opacity: 0.5;
-}
-
-.sp-reward.premium.unlocked {
-    opacity: 1;
-    background: rgba(255,215,0,0.1);
-}
-
-.sp-reward-claimed {
-    color: var(--status-green);
-    font-size: 10px;
-    margin-top: 4px;
-}
-
-.sp-reward-btn {
-    background: var(--accent);
-    color: white;
-    border: none;
-    padding: 4px 8px;
-    border-radius: 20px;
-    font-size: 10px;
-    cursor: pointer;
-    margin-top: 5px;
-}
     </style>
 </head>
 <body>
@@ -2846,32 +2637,7 @@
                 <div id="friendTasksList"></div>
             </div>
         </div>
-<!-- ========== SEASON PASS ========== -->
-<div class="season-pass-section" id="seasonPassSection">
-    <div class="season-pass-header" onclick="toggleSeasonPass()">
-        <div class="season-pass-header-left">
-            <i class="fas fa-calendar-alt"></i>
-            <span>Сезонный пропуск 🌸</span>
-            <span class="season-badge" id="seasonBadge">Весна 2026</span>
-        </div>
-        <i class="fas fa-chevron-down" id="seasonPassArrow"></i>
-    </div>
-    <div id="seasonPassContent" class="season-pass-content" style="display: none;">
-        <div class="season-pass-info">
-            <div class="season-pass-progress">
-                <div class="season-pass-level">Уровень <span id="spCurrentLevel">1</span> / 10</div>
-                <div class="progress-bar-container">
-                    <div class="progress-bar-fill" id="spProgressFill" style="width: 0%"></div>
-                </div>
-                <div class="season-pass-xp"><span id="spCurrentXP">0</span> / <span id="spRequiredXP">100</span> XP</div>
-            </div>
-            <div class="premium-status" id="premiumStatus">
-                <i class="fas fa-lock"></i> Премиум не активен
-            </div>
-        </div>
-        <div id="seasonPassLevelsList" class="season-pass-levels"></div>
-    </div>
-</div>
+
        <div class="showcase-container">
     <h3>Витрина Топ-3</h3>
     <div class="showcase-grid">
@@ -3171,7 +2937,7 @@
         // КОНФИГУРАЦИЯ И ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ
         // ==========================================
         
-        const SERVER_URL = 'https://bot-hachettelittleheroes.amvera.io/';
+        const SERVER_URL = 'https://hlhbot-hachettelittleheroes.amvera.io';
         const MARKER_PRICE = 75;
         
         // Telegram WebApp
@@ -4008,7 +3774,7 @@
                 
                 renderBranchTasks();
                 renderTimeTasks();
-    renderSeasonPass();
+                renderFriendTasks();
                 updateUI();
                 
                 console.log('✅ Progress refreshed, current balance:', user.balance);
@@ -4037,7 +3803,7 @@
                 title: 'Цвет настроения - зеленый',
                 description: 'Раскрась любую картинку с Бризгливостью из м/ф "Головоломка"',
                 reward: 5,
-                deadline: '2026-03-29',
+                deadline: '2026-04-05',
                 deadlineText: 'ДО 05.04.2026',
                 completed: false
             }
@@ -4084,42 +3850,53 @@
         }
         
         function renderTimeTasks() {
-            const container = document.getElementById('timeTasksList');
-            if (!container) return;
-            container.innerHTML = '';
-            TIME_TASKS.forEach(task => {
-                const isCompleted = task.completed;
-                const today = new Date();
-                const deadline = new Date(task.deadline);
-                const isExpired = today > deadline && !isCompleted;
-                const taskCard = document.createElement('div');
-                taskCard.className = `time-task-card ${isCompleted ? 'completed' : ''}`;
-                taskCard.innerHTML = `
-                    <div class="time-badge">${task.deadlineText}</div>
-                    <div class="time-header">
-                        <h3>${task.title}</h3>
-                        <p>${task.description}</p>
-                        <div class="time-reward">🎁 Награда: +${task.reward} ашетиков</div>
+    const container = document.getElementById('timeTasksList');
+    if (!container) return;
+    container.innerHTML = '';
+    
+    TIME_TASKS.forEach(task => {
+        const isCompleted = task.completed;
+        const now = new Date();
+        
+        // Устанавливаем часовой пояс Москвы (UTC+3)
+        const moscowOffset = 3 * 60 * 60 * 1000; // 3 часа в миллисекундах
+        const nowMoscow = new Date(now.getTime() + moscowOffset);
+        
+        // Парсим дату дедлайна (формат YYYY-MM-DD)
+        const [year, month, day] = task.deadline.split('-');
+        const deadlineMoscow = new Date(Date.UTC(year, month - 1, day, 0, 0, 0));
+        
+        // Сравниваем: если сейчас >= дата дедлайна (00:00 следующего дня), то время истекло
+        const isExpired = nowMoscow >= deadlineMoscow;
+        
+        const taskCard = document.createElement('div');
+        taskCard.className = `time-task-card ${isCompleted ? 'completed' : ''}`;
+        taskCard.innerHTML = `
+            <div class="time-badge">${task.deadlineText}</div>
+            <div class="time-header">
+                <h3>${task.title}</h3>
+                <p>${task.description}</p>
+                <div class="time-reward">🎁 Награда: +${task.reward} ашетиков</div>
+            </div>
+            <div class="level-card">
+                ${!isCompleted && !isExpired ? `
+                    <button class="time-task-btn" onclick="openTimeTaskUpload('${task.id}', ${task.reward})">
+                        <i class="fas fa-camera"></i> Отправить фото на проверку
+                    </button>
+                ` : isCompleted ? `
+                    <div style="text-align: center; padding: 12px; color: var(--status-green);">
+                        <i class="fas fa-check-circle"></i> Задание выполнено! +${task.reward} ашетиков получено
                     </div>
-                    <div class="level-card">
-                        ${!isCompleted && !isExpired ? `
-                            <button class="time-task-btn" onclick="openTimeTaskUpload('${task.id}', ${task.reward})">
-                                <i class="fas fa-camera"></i> Отправить фото на проверку
-                            </button>
-                        ` : isCompleted ? `
-                          <div style="text-align: center; padding: 12px; color: var(--status-green);">
-    <i class="fas fa-trophy"></i> Задание выполнено! Статус "${task.rewardStatus}" и достижение получены!
-</div>
-                        ` : `
-                            <div style="text-align: center; padding: 12px; color: var(--status-red);">
-                                <i class="fas fa-clock"></i> Время выполнения истекло
-                            </div>
-                        `}
+                ` : `
+                    <div style="text-align: center; padding: 12px; color: var(--status-red);">
+                        <i class="fas fa-clock"></i> Время выполнения истекло
                     </div>
-                `;
-                container.appendChild(taskCard);
-            });
-        }
+                `}
+            </div>
+        `;
+        container.appendChild(taskCard);
+    });
+}
         
         let currentTimeTaskId = null;
         let currentTimeTaskReward = null;
@@ -6754,475 +6531,7 @@ const ACHIEVEMENTS_DB = {
     'anaconda': { id: 'anaconda', name: 'Анаконда', img: 'assets/achievements/ach13.png', desc: 'Завершена ветка "Анаконда"', condition: 'Раскрасьте 20 картинок со змеей' },
     'molniya': { id: 'molniya', name: 'Молния', img: 'assets/achievements/ach_molniya.png', desc: 'Первым выполнил любую ветку заданий для Anna', condition: 'Быть первым, кто выполнит любую ветку заданий (кроме "Благодетель")' }
 };
-        // ==========================================
-// SEASON PASS СИСТЕМА - 10 УРОВНЕЙ
-// ==========================================
-
-const SEASON_PASS = {
-    isActive: true,
-    seasonName: "Весенний сезон 2026",
-    startDate: "2026-03-01",
-    endDate: "2026-04-30",
-    levels: [
-        {
-            level: 1,
-            tasks: [
-                { id: 'sp_1_1', name: 'Раскрась 1 картинку с цветами', required: 1, xp: 50 },
-                { id: 'sp_1_2', name: 'Отправь 1 фото раскрашенной страницы', required: 1, xp: 50 },
-                { id: 'sp_1_3', name: 'Раскрась 1 картинку с животным', required: 1, xp: 50 }
-            ],
-            totalXP: 150,
-            freeReward: { type: 'achetiki', amount: 50, icon: '💰', name: '50 ашетиков' },
-            premiumReward: { type: 'status', reward: 'Весенний новичок', icon: '🌱', name: 'Статус "Весенний новичок"' }
-        },
-        {
-            level: 2,
-            tasks: [
-                { id: 'sp_2_1', name: 'Раскрась 2 картинки с животными', required: 2, xp: 50 },
-                { id: 'sp_2_2', name: 'Раскрась 1 картинку с драконом', required: 1, xp: 50 },
-                { id: 'sp_2_3', name: 'Отправь 2 фото', required: 2, xp: 50 },
-                { id: 'sp_2_4', name: 'Раскрась 1 разворот', required: 1, xp: 50 }
-            ],
-            totalXP: 200,
-            freeReward: { type: 'achetiki', amount: 75, icon: '💰', name: '75 ашетиков' },
-            premiumReward: { type: 'achievement', reward: 'Друг животных', icon: '🐾', name: 'Достижение "Друг животных"' }
-        },
-        {
-            level: 3,
-            tasks: [
-                { id: 'sp_3_1', name: 'Раскрась 1 картинку с цветами', required: 1, xp: 50 },
-                { id: 'sp_3_2', name: 'Раскрась 1 картинку с принцессой', required: 1, xp: 50 },
-                { id: 'sp_3_3', name: 'Отправь 2 фото с разными техниками', required: 2, xp: 50 },
-                { id: 'sp_3_4', name: 'Раскрась 1 картинку со злодеем', required: 1, xp: 50 }
-            ],
-            totalXP: 200,
-            freeReward: { type: 'achetiki', amount: 100, icon: '💰', name: '100 ашетиков' },
-            premiumReward: { type: 'achetiki', amount: 150, icon: '💰', name: '150 ашетиков' }
-        },
-        {
-            level: 4,
-            tasks: [
-                { id: 'sp_4_1', name: 'Раскрась 1 разворот спиртовыми маркерами', required: 1, xp: 75 },
-                { id: 'sp_4_2', name: 'Раскрась 2 картинки с градиентом', required: 2, xp: 75 },
-                { id: 'sp_4_3', name: 'Отправь 2 фото с деталями', required: 2, xp: 75 },
-                { id: 'sp_4_4', name: 'Раскрась 1 картинку с текстурой', required: 1, xp: 75 }
-            ],
-            totalXP: 300,
-            freeReward: { type: 'achetiki', amount: 125, icon: '💰', name: '125 ашетиков' },
-            premiumReward: { type: 'status', reward: 'Мастер цвета', icon: '🎨', name: 'Статус "Мастер цвета"' }
-        },
-        {
-            level: 5,
-            tasks: [
-                { id: 'sp_5_1', name: 'Раскрась 2 картинки с персонажами Disney', required: 2, xp: 75 },
-                { id: 'sp_5_2', name: 'Раскрась 1 картинку с покемоном', required: 1, xp: 75 },
-                { id: 'sp_5_3', name: 'Отправь 3 фото', required: 3, xp: 75 },
-                { id: 'sp_5_4', name: 'Раскрась 1 картинку с эффектом свечения', required: 1, xp: 75 }
-            ],
-            totalXP: 300,
-            freeReward: { type: 'achetiki', amount: 150, icon: '💰', name: '150 ашетиков' },
-            premiumReward: { type: 'achievement', reward: 'Золотые руки', icon: '✨', name: 'Достижение "Золотые руки"' }
-        },
-        {
-            level: 6,
-            tasks: [
-                { id: 'sp_6_1', name: 'Раскрась 3 картинки с драконами', required: 3, xp: 100 },
-                { id: 'sp_6_2', name: 'Раскрась 1 разворот с огнем', required: 1, xp: 100 },
-                { id: 'sp_6_3', name: 'Отправь 2 фото со сложными деталями', required: 2, xp: 100 }
-            ],
-            totalXP: 300,
-            freeReward: { type: 'achetiki', amount: 175, icon: '💰', name: '175 ашетиков' },
-            premiumReward: { type: 'achetiki', amount: 250, icon: '💰', name: '250 ашетиков' }
-        },
-        {
-            level: 7,
-            tasks: [
-                { id: 'sp_7_1', name: 'Раскрась 1 картинку со злодеем', required: 1, xp: 100 },
-                { id: 'sp_7_2', name: 'Раскрась 1 картинку с королевой', required: 1, xp: 100 },
-                { id: 'sp_7_3', name: 'Отправь 2 фото с контрастом', required: 2, xp: 100 },
-                { id: 'sp_7_4', name: 'Раскрась 1 картинку с темной атмосферой', required: 1, xp: 100 }
-            ],
-            totalXP: 400,
-            freeReward: { type: 'achetiki', amount: 200, icon: '💰', name: '200 ашетиков' },
-            premiumReward: { type: 'status', reward: 'Тёмный рыцарь', icon: '⚔️', name: 'Статус "Тёмный рыцарь"' }
-        },
-        {
-            level: 8,
-            tasks: [
-                { id: 'sp_8_1', name: 'Раскрась 2 картинки с морской тематикой', required: 2, xp: 100 },
-                { id: 'sp_8_2', name: 'Раскрась 1 картинку с подводным миром', required: 1, xp: 100 },
-                { id: 'sp_8_3', name: 'Отправь 3 фото с водой', required: 3, xp: 100 },
-                { id: 'sp_8_4', name: 'Раскрась 1 картинку с русалкой', required: 1, xp: 100 }
-            ],
-            totalXP: 400,
-            freeReward: { type: 'achetiki', amount: 225, icon: '💰', name: '225 ашетиков' },
-            premiumReward: { type: 'achievement', reward: 'Повелитель волн', icon: '🌊', name: 'Достижение "Повелитель волн"' }
-        },
-        {
-            level: 9,
-            tasks: [
-                { id: 'sp_9_1', name: 'Раскрась 1 разворот с текстурой', required: 1, xp: 125 },
-                { id: 'sp_9_2', name: 'Раскрась 2 картинки с неоном', required: 2, xp: 125 },
-                { id: 'sp_9_3', name: 'Отправь 2 фото с эффектами', required: 2, xp: 125 },
-                { id: 'sp_9_4', name: 'Раскрась 1 картинку в пастельных тонах', required: 1, xp: 125 }
-            ],
-            totalXP: 500,
-            freeReward: { type: 'achetiki', amount: 250, icon: '💰', name: '250 ашетиков' },
-            premiumReward: { type: 'achetiki', amount: 350, icon: '💰', name: '350 ашетиков' }
-        },
-        {
-            level: 10,
-            tasks: [
-                { id: 'sp_10_1', name: 'Раскрась 1 шедевр (сложную картинку)', required: 1, xp: 150 },
-                { id: 'sp_10_2', name: 'Раскрась 1 разворот с золотыми деталями', required: 1, xp: 150 },
-                { id: 'sp_10_3', name: 'Отправь 3 фото процесса раскрашивания', required: 3, xp: 150 },
-                { id: 'sp_10_4', name: 'Раскрась 1 картинку с рассказом о технике', required: 1, xp: 150 },
-                { id: 'sp_10_5', name: 'Раскрась 1 картинку с фэнтези сюжетом', required: 1, xp: 150 }
-            ],
-            totalXP: 750,
-            freeReward: { type: 'achetiki', amount: 500, icon: '💰', name: '500 ашетиков' },
-            premiumReward: { type: 'achievement', reward: 'Мастер сезона', icon: '👑', name: 'Достижение "Мастер сезона" + эксклюзивный том' }
-        }
-    ]
-};
-
-// Данные пользователя для Season Pass
-let userSeasonPass = {
-    isPremium: false,
-    currentLevel: 1,
-    currentXP: 0,
-    completedTasks: [],
-    claimedRewards: { free: [], premium: [] },
-    lastUpdated: Date.now()
-};
-
-function loadSeasonPassData() {
-    const saved = localStorage.getItem(`season_pass_${userId}`);
-    if (saved) {
-        try {
-            const data = JSON.parse(saved);
-            userSeasonPass = { ...userSeasonPass, ...data };
-        } catch(e) {}
-    }
-    renderSeasonPass();
-}
-
-function saveSeasonPassData() {
-    localStorage.setItem(`season_pass_${userId}`, JSON.stringify(userSeasonPass));
-}
-
-function toggleSeasonPass() {
-    const content = document.getElementById('seasonPassContent');
-    const arrow = document.getElementById('seasonPassArrow');
-    if (!content) return;
-    if (content.style.display === 'none' || content.style.display === '') {
-        content.style.display = 'block';
-        if (arrow) arrow.style.transform = 'rotate(180deg)';
-        renderSeasonPass();
-    } else {
-        content.style.display = 'none';
-        if (arrow) arrow.style.transform = 'rotate(0deg)';
-    }
-}
-
-function renderSeasonPass() {
-    const container = document.getElementById('seasonPassLevelsList');
-    const currentLevelSpan = document.getElementById('spCurrentLevel');
-    const currentXPSpan = document.getElementById('spCurrentXP');
-    const requiredXPSpan = document.getElementById('spRequiredXP');
-    const progressFill = document.getElementById('spProgressFill');
-    const premiumStatusSpan = document.getElementById('premiumStatus');
-    
-    if (!container) return;
-    
-    const currentLevelData = SEASON_PASS.levels[userSeasonPass.currentLevel - 1];
-    if (currentLevelData) {
-        if (currentLevelSpan) currentLevelSpan.innerText = userSeasonPass.currentLevel;
-        if (currentXPSpan) currentXPSpan.innerText = userSeasonPass.currentXP;
-        if (requiredXPSpan) requiredXPSpan.innerText = currentLevelData.totalXP;
-        const percent = (userSeasonPass.currentXP / currentLevelData.totalXP) * 100;
-        if (progressFill) progressFill.style.width = `${Math.min(percent, 100)}%`;
-    }
-    
-    if (premiumStatusSpan) {
-        if (userSeasonPass.isPremium) {
-            premiumStatusSpan.innerHTML = '<i class="fas fa-crown"></i> Премиум активен 🌟';
-            premiumStatusSpan.style.color = '#ffd700';
-        } else {
-            premiumStatusSpan.innerHTML = '<i class="fas fa-lock"></i> Премиум не активен';
-            premiumStatusSpan.style.color = 'var(--text-gray)';
-        }
-    }
-    
-    container.innerHTML = '';
-    
-    for (let i = 0; i < SEASON_PASS.levels.length; i++) {
-        const levelData = SEASON_PASS.levels[i];
-        const levelNum = i + 1;
-        const isLocked = levelNum > userSeasonPass.currentLevel;
-        const isCompleted = levelNum < userSeasonPass.currentLevel;
-        const isCurrent = levelNum === userSeasonPass.currentLevel;
         
-        // Вычисляем прогресс по всем заданиям уровня
-        let totalCompletedXP = 0;
-        let allTasksCompleted = true;
-        
-        levelData.tasks.forEach((task) => {
-            const taskKey = `${levelNum}_${task.id}`;
-            const isTaskCompleted = userSeasonPass.completedTasks.includes(taskKey);
-            if (isTaskCompleted) {
-                totalCompletedXP += task.xp;
-            } else {
-                allTasksCompleted = false;
-            }
-        });
-        
-        const levelCard = document.createElement('div');
-        levelCard.className = `sp-level-card ${isLocked ? 'locked' : ''} ${isCompleted ? 'completed' : ''}`;
-        
-        // Создаем HTML для всех заданий уровня
-        let tasksHtml = '<div class="sp-tasks-list">';
-        levelData.tasks.forEach((task) => {
-            const taskKey = `${levelNum}_${task.id}`;
-            const isTaskCompleted = userSeasonPass.completedTasks.includes(taskKey);
-            
-            tasksHtml += `
-                <div class="sp-task-item">
-                    <span class="sp-task-name">📋 ${task.name}</span>
-                    ${isTaskCompleted ? 
-                        `<span class="sp-task-status">✅ Выполнено +${task.xp} XP</span>` : 
-                        (isCurrent && !isLocked ? 
-                            `<span class="sp-task-status pending" onclick="openSeasonTaskUpload(${levelNum}, '${task.id}', '${task.name}', ${task.required}, ${task.xp})">📸 Отправить фото (+${task.xp} XP)</span>` : 
-                            '<span class="sp-task-status" style="background: #666;">🔒 Заблокировано</span>'
-                        )
-                    }
-                </div>
-            `;
-        });
-        tasksHtml += '</div>';
-        
-        const freeClaimed = userSeasonPass.claimedRewards.free.includes(levelNum);
-        const premiumClaimed = userSeasonPass.claimedRewards.premium.includes(levelNum);
-        const premiumAvailable = userSeasonPass.isPremium && isCompleted;
-        
-        let rewardsHtml = `
-            <div class="sp-rewards">
-                <div class="sp-reward free">
-                    <div>🎁 ${levelData.freeReward.icon} ${levelData.freeReward.name}</div>
-                    ${!freeClaimed && isCompleted ? 
-                        `<button class="sp-reward-btn" onclick="claimSeasonReward(${levelNum}, 'free')">Получить</button>` : 
-                        (freeClaimed ? '<div class="sp-reward-claimed">✅ Получено</div>' : '<div class="sp-reward-claimed">🔒 Завершите уровень</div>')
-                    }
-                </div>
-                <div class="sp-reward premium ${premiumAvailable ? 'unlocked' : ''}">
-                    <div>👑 ${levelData.premiumReward.icon} ${levelData.premiumReward.name}</div>
-                    ${!premiumClaimed && premiumAvailable ? 
-                        `<button class="sp-reward-btn" onclick="claimSeasonReward(${levelNum}, 'premium')">Получить</button>` : 
-                        (premiumClaimed ? '<div class="sp-reward-claimed">✅ Получено</div>' : 
-                            (!userSeasonPass.isPremium ? '<div class="sp-reward-claimed">🔒 Требуется премиум</div>' : '<div class="sp-reward-claimed">🔒 Завершите уровень</div>')
-                        )
-                    }
-                </div>
-            </div>
-        `;
-        
-        levelCard.innerHTML = `
-            <div class="sp-level-header">
-                <span class="sp-level-number">Уровень ${levelNum}</span>
-                <span class="sp-level-xp">${totalCompletedXP}/${levelData.totalXP} XP</span>
-            </div>
-            ${tasksHtml}
-            ${rewardsHtml}
-            ${isCurrent && allTasksCompleted && !isCompleted ? 
-                `<button class="task-submit-btn" style="margin-top: 10px;" onclick="upgradeSeasonLevel()">
-                    <i class="fas fa-arrow-up"></i> Перейти на следующий уровень
-                </button>` : ''
-            }
-        `;
-        
-        container.appendChild(levelCard);
-    }
-}
-
-let currentSeasonTask = null;
-
-async function openSeasonTaskUpload(levelNum, taskId, taskName, requiredCount, xpReward) {
-    console.log('📸 Season task upload:', levelNum, taskId, taskName, 'XP:', xpReward);
-    
-    currentSeasonTask = { level: levelNum, taskId: taskId, taskName: taskName, requiredCount: requiredCount, xpReward: xpReward };
-    
-    const fileInput = document.createElement('input');
-    fileInput.type = 'file';
-    fileInput.accept = 'image/*';
-    fileInput.multiple = true;
-    fileInput.style.position = 'absolute';
-    fileInput.style.opacity = '0';
-    fileInput.style.pointerEvents = 'none';
-    document.body.appendChild(fileInput);
-    
-    fileInput.onchange = async function(event) {
-        const files = Array.from(event.target.files);
-        if (files.length === 0) return;
-        
-        if (tg) tg.showAlert('📤 Отправка фото на проверку...');
-        
-        try {
-            const formData = new FormData();
-            formData.append('user', userId.toString());
-            formData.append('type', 'season_task');
-            formData.append('level', levelNum.toString());
-            formData.append('taskId', taskId);
-            formData.append('taskName', taskName);
-            formData.append('requiredCount', requiredCount.toString());
-            formData.append('xpReward', xpReward.toString());
-            
-            for (let i = 0; i < files.length; i++) {
-                formData.append('photos', files[i]);
-            }
-            
-            const response = await fetch(`${SERVER_URL}/api/check_season_task`, {
-                method: 'POST',
-                body: formData
-            });
-            
-            const result = await response.json();
-            
-            if (result && result.status === 'ok') {
-                if (tg) tg.showAlert('✅ Фото отправлено на проверку!');
-                
-                if (!userSeasonPass.completedTasks.includes(`${levelNum}_${taskId}`)) {
-                    userSeasonPass.completedTasks.push(`${levelNum}_${taskId}`);
-                    userSeasonPass.currentXP += xpReward;
-                    saveSeasonPassData();
-                    renderSeasonPass();
-                    
-                    // Проверяем, все ли задания уровня выполнены
-                    const levelData = SEASON_PASS.levels[levelNum - 1];
-                    const allTasksCompleted = levelData.tasks.every(t => 
-                        userSeasonPass.completedTasks.includes(`${levelNum}_${t.id}`)
-                    );
-                    
-                    if (allTasksCompleted && userSeasonPass.currentXP >= levelData.totalXP) {
-                        if (tg) tg.showAlert(`🎉 Уровень ${levelNum} пройден! Нажмите "Перейти на следующий уровень"`);
-                    } else {
-                        if (tg) tg.showAlert(`✅ Задание выполнено! +${xpReward} XP`);
-                    }
-                }
-            } else {
-                throw new Error(result?.message || 'Ошибка отправки');
-            }
-        } catch (error) {
-            console.error('❌ Ошибка:', error);
-            if (tg) tg.showAlert(`❌ Ошибка: ${error.message}`);
-        } finally {
-            document.body.removeChild(fileInput);
-        }
-    };
-    
-    fileInput.click();
-}
-
-function upgradeSeasonLevel() {
-    const currentLevelData = SEASON_PASS.levels[userSeasonPass.currentLevel - 1];
-    if (!currentLevelData) return;
-    
-    // Проверяем, что все задания уровня выполнены
-    const allTasksCompleted = currentLevelData.tasks.every(t => 
-        userSeasonPass.completedTasks.includes(`${userSeasonPass.currentLevel}_${t.id}`)
-    );
-    
-    if (allTasksCompleted && userSeasonPass.currentXP >= currentLevelData.totalXP) {
-        userSeasonPass.currentLevel++;
-        userSeasonPass.currentXP = 0;
-        saveSeasonPassData();
-        renderSeasonPass();
-        if (tg) tg.showAlert(`🎉 Поздравляем! Вы достигли ${userSeasonPass.currentLevel} уровня!`);
-    } else {
-        if (tg) tg.showAlert('❌ Выполните все задания уровня, чтобы перейти дальше');
-    }
-}
-
-function upgradeSeasonLevel() {
-    const currentLevelData = SEASON_PASS.levels[userSeasonPass.currentLevel - 1];
-    if (!currentLevelData) return;
-    
-    const taskCompleted = userSeasonPass.completedTasks.includes(`${userSeasonPass.currentLevel}_${currentLevelData.tasks[0].id}`);
-    
-    if (userSeasonPass.currentXP >= currentLevelData.requiredXP && taskCompleted) {
-        userSeasonPass.currentLevel++;
-        userSeasonPass.currentXP = 0;
-        saveSeasonPassData();
-        renderSeasonPass();
-        if (tg) tg.showAlert(`🎉 Поздравляем! Вы достигли ${userSeasonPass.currentLevel} уровня!`);
-    } else {
-        if (tg) tg.showAlert('❌ Выполните задание уровня, чтобы перейти дальше');
-    }
-}
-
-function claimSeasonReward(levelNum, type) {
-    const levelData = SEASON_PASS.levels[levelNum - 1];
-    if (!levelData) return;
-    
-    const isLevelCompleted = levelNum < userSeasonPass.currentLevel;
-    
-    if (!isLevelCompleted) {
-        if (tg) tg.showAlert('❌ Сначала завершите этот уровень');
-        return;
-    }
-    
-    if (type === 'free') {
-        if (userSeasonPass.claimedRewards.free.includes(levelNum)) {
-            if (tg) tg.showAlert('❌ Награда уже получена');
-            return;
-        }
-        
-        if (levelData.freeReward.type === 'achetiki') {
-            user.balance += levelData.freeReward.amount;
-            saveUserData();
-            updateUI();
-            if (tg) tg.showAlert(`✅ Получено ${levelData.freeReward.amount} ашетиков!`);
-        }
-        
-        userSeasonPass.claimedRewards.free.push(levelNum);
-        saveSeasonPassData();
-        renderSeasonPass();
-        
-    } else if (type === 'premium') {
-        if (!userSeasonPass.isPremium) {
-            if (tg) tg.showAlert('❌ Премиум пропуск не активен');
-            return;
-        }
-        
-        if (userSeasonPass.claimedRewards.premium.includes(levelNum)) {
-            if (tg) tg.showAlert('❌ Награда уже получена');
-            return;
-        }
-        
-        const reward = levelData.premiumReward;
-        if (reward.type === 'status') {
-            if (!user.unlockedStatuses.includes(reward.reward)) {
-                user.unlockedStatuses.push(reward.reward);
-                saveUserData();
-                if (tg) tg.showAlert(`✅ Получен статус "${reward.reward}"!`);
-            }
-        } else if (reward.type === 'achievement') {
-            if (!user.achievements.includes(reward.reward)) {
-                user.achievements.push(reward.reward);
-                saveUserData();
-                if (tg) tg.showAlert(`✅ Получено достижение "${reward.reward}"!`);
-            }
-        } else if (reward.type === 'achetiki') {
-            user.balance += reward.amount;
-            saveUserData();
-            updateUI();
-            if (tg) tg.showAlert(`✅ Получено ${reward.amount} ашетиков!`);
-        }
-        
-        userSeasonPass.claimedRewards.premium.push(levelNum);
-        saveSeasonPassData();
-        renderSeasonPass();
-    }
-}
         window.onload = async () => {
             console.log('🚀 APP STARTING...');
             const savedUser = localStorage.getItem('coloring_user');
@@ -7249,7 +6558,6 @@ function claimSeasonReward(levelNum, type) {
             renderCart();
             renderVolumes();
             loadInventory();
-    loadSeasonPassData();
             updateUI();
             startProgressRefresh();
             initSwipeListeners();
