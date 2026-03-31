@@ -6868,113 +6868,15 @@
             }
         }
         
-        function renderSeasonPassTasks() {
-    const container = document.getElementById('seasonPassTasksList');
-    if (!container) return;
-    
-    const branch = TASK_BRANCHES.season_pass;
-    if (!branch) return;
-    
-    container.innerHTML = '';
-    
-    const isCompleted = isBranchCompleted('season_pass');
-    const currentLevelIndex = getCurrentLevelIndex('season_pass');
-    const levels = branch.levels;
-    
-    for (let i = 0; i < levels.length; i++) {
-        const level = levels[i];
-        const levelNum = i + 1;
-        const isLevelCompleted = levelNum < currentLevelIndex;
-        const isCurrentLevel = levelNum === currentLevelIndex;
-        const isLocked = levelNum > currentLevelIndex;
-        
-        let totalCompleted = 0;
-        let totalRequired = 0;
-        let allSubtasksCompleted = true;
-        
-        level.subtasks.forEach((subtask, idx) => {
-            const prog = getSubtaskProgress('season_pass', i, idx);
-            totalCompleted += Math.min(prog, subtask.required);
-            totalRequired += subtask.required;
-            if (prog < subtask.required) allSubtasksCompleted = false;
-        });
-        
-        const totalPercent = (totalCompleted / totalRequired) * 100;
-        
-        const levelCard = document.createElement('div');
-        levelCard.className = `sp-level-card ${isLocked ? 'locked' : ''} ${isLevelCompleted ? 'completed' : ''}`;
-        
-        let levelHtml = `
-            <div class="sp-level-header">
-                <span class="sp-level-number">Уровень ${levelNum}</span>
-                <span class="sp-level-xp">${totalCompleted}/${totalRequired}</span>
-            </div>
-            <div class="level-desc">${level.desc}</div>
-            <div class="progress-bar-container">
-                <div class="progress-bar-fill" style="width: ${totalPercent}%"></div>
-            </div>
-            <div style="margin-top: 15px;"></div>
-        `;
-        
-        level.subtasks.forEach((subtask, idx) => {
-            const currentProgress = getSubtaskProgress('season_pass', i, idx);
-            const isSubtaskCompleted = currentProgress >= subtask.required;
-            const subtaskPercent = (currentProgress / subtask.required) * 100;
-            
-            levelHtml += `
-                <div class="subtask-card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                        <span style="font-weight: 600; font-size: 14px;">📋 ${subtask.name}</span>
-                        <span style="font-size: 12px; color: var(--accent);">${currentProgress}/${subtask.required}</span>
-                    </div>
-                    <div class="progress-bar-container" style="height: 6px; margin: 0 0 12px 0;">
-                        <div class="progress-bar-fill" style="width: ${subtaskPercent}%; height: 100%;"></div>
-                    </div>
-                    ${!isSubtaskCompleted && isCurrentLevel ? `
-                        <button class="task-submit-btn" style="padding: 10px; font-size: 13px; margin-top: 8px;" onclick="openSubtaskUpload('season_pass', ${i}, ${idx}, '${subtask.name}')">
-                            <i class="fas fa-camera"></i> Отправить фото: ${subtask.name}
-                        </button>
-                    ` : isSubtaskCompleted ? `
-                        <div style="text-align: center; color: var(--status-green); font-size: 12px; margin-top: 8px;">
-                            <i class="fas fa-check-circle"></i> Выполнено!
-                        </div>
-                    ` : ''}
-                </div>
-            `;
-        });
-        
-        const freeClaimed = claimedSeasonRewards.free.includes(levelNum);
-        const premiumClaimed = claimedSeasonRewards.premium.includes(levelNum);
-        const canClaimFree = isLevelCompleted && !freeClaimed;
-        const canClaimPremium = userSeasonPremium && isLevelCompleted && !premiumClaimed;
-        
-        levelHtml += `
-            <div class="sp-level-rewards">
-                <div class="sp-reward-item free">
-                    <div>🎁 Бесплатная награда</div>
-                    <div><strong>${level.freeReward.name}</strong></div>
-                    ${!freeClaimed && isLevelCompleted ? 
-                        `<button class="sp-reward-btn" onclick="claimSeasonReward(${levelNum}, 'free')">Получить</button>` : 
-                        (freeClaimed ? '<div class="sp-reward-claimed">✅ Получено</div>' : '<div class="sp-reward-claimed">🔒 Завершите уровень</div>')
-                    }
-                </div>
-                <div class="sp-reward-item premium ${userSeasonPremium && isLevelCompleted ? 'unlocked' : ''}">
-                    <div>👑 Награда для тех, кто нас поддерживает</div>
-                    <div><strong>${level.premiumReward.name}</strong></div>
-                    ${!premiumClaimed && canClaimPremium ? 
-                        `<button class="sp-reward-btn" onclick="claimSeasonReward(${levelNum}, 'premium')">Получить</button>` : 
-                        (premiumClaimed ? '<div class="sp-reward-claimed">✅ Получено</div>' : 
-                            (!userSeasonPremium ? '<div class="sp-reward-claimed">🔒 Требуется премиум</div>' : '<div class="sp-reward-claimed">🔒 Завершите уровень</div>')
-                        )
-                    }
-                </div>
-            </div>
-        `;
-        
-        levelCard.innerHTML = levelHtml;
-        container.appendChild(levelCard);
-    }
-}
+        ${!isSubtaskCompleted && isCurrentLevel ? `
+    <button class="task-submit-btn" style="padding: 10px; font-size: 13px; margin-top: 8px;" onclick="openSubtaskUpload('season_pass', ${i}, ${idx}, '${subtask.name}')">
+        <i class="fas fa-camera"></i> Отправить фото: ${subtask.name}
+    </button>
+` : isSubtaskCompleted ? `
+    <div style="text-align: center; color: var(--status-green); font-size: 12px; margin-top: 8px;">
+        <i class="fas fa-check-circle"></i> Выполнено!
+    </div>
+` : ''}
         
         function claimSeasonReward(levelNum, type) {
             const branch = TASK_BRANCHES.season_pass;
