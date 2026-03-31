@@ -7036,15 +7036,35 @@ function claimSeasonReward(levelNum, type) {
         
         const reward = levelData.freeReward;
         if (reward.type === 'achetiki') {
+            // Начисляем локально
             user.balance += reward.amount;
             saveUserData();
             updateUI();
             
-            // Отправляем на сервер
-            fetchAPI('/api/add_balance', {
-                user_id: userId,
-                amount: reward.amount,
-                reason: `Season Pass уровень ${levelNum} награда`
+            // Отправляем на сервер и ждем ответа
+            fetch(`${SERVER_URL}/api/add_balance`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    user_id: userId,
+                    amount: reward.amount,
+                    reason: `Season Pass уровень ${levelNum} награда`
+                })
+            }).then(async response => {
+                const result = await response.json();
+                if (result && result.status === 'ok') {
+                    console.log('Баланс обновлен на сервере:', result.new_balance);
+                    // Обновляем локальный баланс из ответа сервера
+                    if (result.new_balance) {
+                        user.balance = result.new_balance;
+                        saveUserData();
+                        updateUI();
+                    }
+                } else {
+                    console.error('Ошибка обновления баланса на сервере');
+                }
+            }).catch(error => {
+                console.error('Ошибка запроса:', error);
             });
             
             if (tg) tg.showAlert(`✅ Получено ${reward.amount} ашетиков!`);
@@ -7071,11 +7091,14 @@ function claimSeasonReward(levelNum, type) {
                 user.unlockedStatuses.push(reward.reward);
                 saveUserData();
                 
-                // Отправляем на сервер
-                fetchAPI('/api/sync_status', {
-                    user_id: userId,
-                    status: reward.reward,
-                    action: 'unlock'
+                fetch(`${SERVER_URL}/api/sync_status`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        user_id: userId,
+                        status: reward.reward,
+                        action: 'unlock'
+                    })
                 });
                 
                 if (tg) tg.showAlert(`✅ Получен статус "${reward.reward}"!`);
@@ -7085,24 +7108,39 @@ function claimSeasonReward(levelNum, type) {
                 user.achievements.push(reward.reward);
                 saveUserData();
                 
-                // Отправляем на сервер
-                fetchAPI('/api/add_achievement', {
-                    user_id: userId,
-                    achievement: reward.reward
+                fetch(`${SERVER_URL}/api/add_achievement`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        user_id: userId,
+                        achievement: reward.reward
+                    })
                 });
                 
                 if (tg) tg.showAlert(`✅ Получено достижение "${reward.reward}"!`);
             }
         } else if (reward.type === 'achetiki') {
+            // Начисляем локально
             user.balance += reward.amount;
             saveUserData();
             updateUI();
             
             // Отправляем на сервер
-            fetchAPI('/api/add_balance', {
-                user_id: userId,
-                amount: reward.amount,
-                reason: `Season Pass уровень ${levelNum} премиум награда`
+            fetch(`${SERVER_URL}/api/add_balance`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    user_id: userId,
+                    amount: reward.amount,
+                    reason: `Season Pass уровень ${levelNum} премиум награда`
+                })
+            }).then(async response => {
+                const result = await response.json();
+                if (result && result.status === 'ok' && result.new_balance) {
+                    user.balance = result.new_balance;
+                    saveUserData();
+                    updateUI();
+                }
             });
             
             if (tg) tg.showAlert(`✅ Получено ${reward.amount} ашетиков!`);
