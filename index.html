@@ -6918,6 +6918,23 @@ function renderSeasonPassTasks() {
         const totalPercent = (totalCompleted / totalRequired) * 100;
         const allSubtasksDone = totalCompleted >= totalRequired;
         
+        // Если уровень только что пройден, добавляем достижение
+        if (allSubtasksDone && !user.achievements.includes(`season_pass_${levelNum}`)) {
+            user.achievements.push(`season_pass_${levelNum}`);
+            saveUserData();
+            
+            // Отправляем на сервер
+            if (typeof fetchAPI === 'function') {
+                fetchAPI('/api/add_achievement', {
+                    user_id: userId,
+                    achievement: `season_pass_${levelNum}`
+                });
+            }
+            
+            const achievementName = levelNum === 10 ? 'Мастер сезона' : level.freeReward.name;
+            if (tg) tg.showAlert(`🏆 Получено достижение "${achievementName}"!`);
+        }
+        
         const levelCard = document.createElement('div');
         levelCard.className = `sp-level-card ${isLocked ? 'locked' : ''} ${isLevelCompleted ? 'completed' : ''}`;
         
@@ -6931,17 +6948,6 @@ function renderSeasonPassTasks() {
                 <div class="progress-bar-fill" style="width: ${totalPercent}%"></div>
             </div>
             <div style="margin-top: 15px;"></div>
-        `;
-        
-        // Отладочная информация
-        levelHtml += `
-            <div style="background: #ffeecc; padding: 8px; margin: 5px 0; border-radius: 8px; font-size: 11px; border-left: 3px solid var(--accent);">
-                🔍 <strong>Отладка:</strong><br>
-                Прогресс: ${totalCompleted}/${totalRequired}<br>
-                Все подзадания выполнены: ${allSubtasksDone ? '✅ ДА' : '❌ НЕТ'}<br>
-                Уровень считается пройденным: ${isLevelCompleted ? '✅ ДА' : '❌ НЕТ'}<br>
-                Текущий уровень: ${currentLevelIndex + 1}
-            </div>
         `;
         
         level.subtasks.forEach((subtask, idx) => {
@@ -6974,7 +6980,6 @@ function renderSeasonPassTasks() {
         const freeClaimed = claimedSeasonRewards ? claimedSeasonRewards.free.includes(levelNum) : false;
         const premiumClaimed = claimedSeasonRewards ? claimedSeasonRewards.premium.includes(levelNum) : false;
         
-        // Используем allSubtasksDone для разблокировки наград
         const canClaimFree = allSubtasksDone && !freeClaimed;
         const canClaimPremium = userSeasonPremium && allSubtasksDone && !premiumClaimed;
         
@@ -7036,6 +7041,14 @@ function claimSeasonReward(levelNum, type) {
             user.balance += reward.amount;
             saveUserData();
             updateUI();
+            
+            // Отправляем на сервер
+            fetchAPI('/api/add_balance', {
+                user_id: userId,
+                amount: reward.amount,
+                reason: `Season Pass уровень ${levelNum} награда`
+            });
+            
             if (tg) tg.showAlert(`✅ Получено ${reward.amount} ашетиков!`);
         }
         
@@ -7059,18 +7072,41 @@ function claimSeasonReward(levelNum, type) {
             if (!user.unlockedStatuses.includes(reward.reward)) {
                 user.unlockedStatuses.push(reward.reward);
                 saveUserData();
+                
+                // Отправляем на сервер
+                fetchAPI('/api/sync_status', {
+                    user_id: userId,
+                    status: reward.reward,
+                    action: 'unlock'
+                });
+                
                 if (tg) tg.showAlert(`✅ Получен статус "${reward.reward}"!`);
             }
         } else if (reward.type === 'achievement') {
             if (!user.achievements.includes(reward.reward)) {
                 user.achievements.push(reward.reward);
                 saveUserData();
+                
+                // Отправляем на сервер
+                fetchAPI('/api/add_achievement', {
+                    user_id: userId,
+                    achievement: reward.reward
+                });
+                
                 if (tg) tg.showAlert(`✅ Получено достижение "${reward.reward}"!`);
             }
         } else if (reward.type === 'achetiki') {
             user.balance += reward.amount;
             saveUserData();
             updateUI();
+            
+            // Отправляем на сервер
+            fetchAPI('/api/add_balance', {
+                user_id: userId,
+                amount: reward.amount,
+                reason: `Season Pass уровень ${levelNum} премиум награда`
+            });
+            
             if (tg) tg.showAlert(`✅ Получено ${reward.amount} ашетиков!`);
         }
         
