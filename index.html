@@ -6662,141 +6662,71 @@
                 ]
             },
             season_pass: {
-                name: "🌸 Сезонный пропуск",
-                desc: "Выполняйте задания и получайте награды! Доступно до 30.04.2026",
-                levels: [
-                    {
-                        title: "Уровень 1",
-                        maxProgress: 3,
-                        desc: "Выполните 3 задания",
-                        subtasks: [
-                            { id: 'sp_1_1', name: 'Раскрась 1 картинку с цветами', required: 1 },
-                            { id: 'sp_1_2', name: 'Отправь 1 фото раскрашенной страницы', required: 1 },
-                            { id: 'sp_1_3', name: 'Раскрась 1 картинку с животным', required: 1 }
-                        ],
-                        freeReward: { type: 'achetiki', amount: 50, name: '50 ашетиков' },
-                        premiumReward: { type: 'status', reward: 'Весенний новичок', name: 'Статус "Весенний новичок"' }
-                    },
-                    {
-                        title: "Уровень 2",
-                        maxProgress: 4,
-                        desc: "Выполните 4 задания",
-                        subtasks: [
-                            { id: 'sp_2_1', name: 'Раскрась 2 картинки с животными', required: 2 },
-                            { id: 'sp_2_2', name: 'Раскрась 1 картинку с драконом', required: 1 },
-                            { id: 'sp_2_3', name: 'Отправь 2 фото', required: 2 },
-                            { id: 'sp_2_4', name: 'Раскрась 1 разворот', required: 1 }
-                        ],
-                        freeReward: { type: 'achetiki', amount: 75, name: '75 ашетиков' },
-                        premiumReward: { type: 'achievement', reward: 'Друг животных', name: 'Достижение "Друг животных"' }
-                    },
-                    {
-                        title: "Уровень 3",
-                        maxProgress: 4,
-                        desc: "Выполните 4 задания",
-                        subtasks: [
-                            { id: 'sp_3_1', name: 'Раскрась 1 картинку с цветами', required: 1 },
-                            { id: 'sp_3_2', name: 'Раскрась 1 картинку с принцессой', required: 1 },
-                            { id: 'sp_3_3', name: 'Отправь 2 фото с разными техниками', required: 2 },
-                            { id: 'sp_3_4', name: 'Раскрась 1 картинку со злодеем', required: 1 }
-                        ],
-                        freeReward: { type: 'achetiki', amount: 100, name: '100 ашетиков' },
-                        premiumReward: { type: 'achetiki', amount: 150, name: '150 ашетиков' }
-                    },
-                    {
-                        title: "Уровень 4",
-                        maxProgress: 4,
-                        desc: "Выполните 4 задания",
-                        subtasks: [
-                            { id: 'sp_4_1', name: 'Раскрась 1 разворот спиртовыми маркерами', required: 1 },
-                            { id: 'sp_4_2', name: 'Раскрась 2 картинки с градиентом', required: 2 },
-                            { id: 'sp_4_3', name: 'Отправь 2 фото с деталями', required: 2 },
-                            { id: 'sp_4_4', name: 'Раскрась 1 картинку с текстурой', required: 1 }
-                        ],
-                        freeReward: { type: 'achetiki', amount: 125, name: '125 ашетиков' },
-                        premiumReward: { type: 'status', reward: 'Мастер цвета', name: 'Статус "Мастер цвета"' }
-                    },
-                    {
-                        title: "Уровень 5",
-                        maxProgress: 4,
-                        desc: "Выполните 4 задания",
-                        subtasks: [
-                            { id: 'sp_5_1', name: 'Раскрась 2 картинки с персонажами Disney', required: 2 },
-                            { id: 'sp_5_2', name: 'Раскрась 1 картинку с покемоном', required: 1 },
-                            { id: 'sp_5_3', name: 'Отправь 3 фото', required: 3 },
-                            { id: 'sp_5_4', name: 'Раскрась 1 картинку с эффектом свечения', required: 1 }
-                        ],
-                        freeReward: { type: 'achetiki', amount: 150, name: '150 ашетиков' },
-                        premiumReward: { type: 'achievement', reward: 'Золотые руки', name: 'Достижение "Золотые руки"' }
-                    },
-                    {
-                        title: "Уровень 6",
-                        maxProgress: 3,
-                        desc: "Выполните 3 задания",
-                        subtasks: [
-                            { id: 'sp_6_1', name: 'Раскрась 3 картинки с драконами', required: 3 },
-                            { id: 'sp_6_2', name: 'Раскрась 1 разворот с огнем', required: 1 },
-                            { id: 'sp_6_3', name: 'Отправь 2 фото со сложными деталями', required: 2 }
-                        ],
-                        freeReward: { type: 'achetiki', amount: 175, name: '175 ашетиков' },
-                        premiumReward: { type: 'achetiki', amount: 250, name: '250 ашетиков' }
-                    },
-                    {
-                        title: "Уровень 7",
-                        maxProgress: 4,
-                        desc: "Выполните 4 задания",
-                        subtasks: [
-                            { id: 'sp_7_1', name: 'Раскрась 1 картинку со злодеем', required: 1 },
-                            { id: 'sp_7_2', name: 'Раскрась 1 картинку с королевой', required: 1 },
-                            { id: 'sp_7_3', name: 'Отправь 2 фото с контрастом', required: 2 },
-                            { id: 'sp_7_4', name: 'Раскрась 1 картинку с темной атмосферой', required: 1 }
-                        ],
-                        freeReward: { type: 'achetiki', amount: 200, name: '200 ашетиков' },
-                        premiumReward: { type: 'status', reward: 'Тёмный рыцарь', name: 'Статус "Тёмный рыцарь"' }
-                    },
-                    {
-                        title: "Уровень 8",
-                        maxProgress: 4,
-                        desc: "Выполните 4 задания",
-                        subtasks: [
-                            { id: 'sp_8_1', name: 'Раскрась 2 картинки с морской тематикой', required: 2 },
-                            { id: 'sp_8_2', name: 'Раскрась 1 картинку с подводным миром', required: 1 },
-                            { id: 'sp_8_3', name: 'Отправь 3 фото с водой', required: 3 },
-                            { id: 'sp_8_4', name: 'Раскрась 1 картинку с русалкой', required: 1 }
-                        ],
-                        freeReward: { type: 'achetiki', amount: 225, name: '225 ашетиков' },
-                        premiumReward: { type: 'achievement', reward: 'Повелитель волн', name: 'Достижение "Повелитель волн"' }
-                    },
-                    {
-                        title: "Уровень 9",
-                        maxProgress: 4,
-                        desc: "Выполните 4 задания",
-                        subtasks: [
-                            { id: 'sp_9_1', name: 'Раскрась 1 разворот с текстурой', required: 1 },
-                            { id: 'sp_9_2', name: 'Раскрась 2 картинки с неоном', required: 2 },
-                            { id: 'sp_9_3', name: 'Отправь 2 фото с эффектами', required: 2 },
-                            { id: 'sp_9_4', name: 'Раскрась 1 картинку в пастельных тонах', required: 1 }
-                        ],
-                        freeReward: { type: 'achetiki', amount: 250, name: '250 ашетиков' },
-                        premiumReward: { type: 'achetiki', amount: 350, name: '350 ашетиков' }
-                    },
-                    {
-                        title: "Уровень 10",
-                        maxProgress: 5,
-                        desc: "Выполните 5 заданий",
-                        subtasks: [
-                            { id: 'sp_10_1', name: 'Раскрась 1 шедевр (сложную картинку)', required: 1 },
-                            { id: 'sp_10_2', name: 'Раскрась 1 разворот с золотыми деталями', required: 1 },
-                            { id: 'sp_10_3', name: 'Отправь 3 фото процесса раскрашивания', required: 3 },
-                            { id: 'sp_10_4', name: 'Раскрась 1 картинку с рассказом о технике', required: 1 },
-                            { id: 'sp_10_5', name: 'Раскрась 1 картинку с фэнтези сюжетом', required: 1 }
-                        ],
-                        freeReward: { type: 'achetiki', amount: 500, name: '500 ашетиков' },
-                        premiumReward: { type: 'achievement', reward: 'Мастер сезона', name: 'Достижение "Мастер сезона" + эксклюзивный том' }
-                    }
-                ]
+        name: "🌸 Сезонный пропуск",
+        desc: "Выполняйте задания и получайте награды! Доступно до 30.04.2026",
+        levels: [
+            {
+                title: "Уровень 1 - Весеннее настроение",
+                maxProgress: 3,
+                desc: "Раскрасьте 3 весенние картинки",
+                subtasks: [
+                    { id: 'sp_1_1', name: '🌷 Раскрась картинку с цветами', required: 1 },
+                    { id: 'sp_1_2', name: '☀️ Раскрась картинку с солнцем', required: 1 },
+                    { id: 'sp_1_3', name: '🦋 Раскрась картинку с бабочкой или птицей', required: 1 }
+                ],
+                freeReward: { type: 'achetiki', amount: 10, name: '10 ашетиков' },
+                premiumReward: { type: 'achetiki', amount: 10, name: '10 ашетиков' }
+            },
+            {
+                title: "Уровень 2 - В мире животных",
+                maxProgress: 3,
+                desc: "Раскрасьте 3 картинки с животными",
+                subtasks: [
+                    { id: 'sp_2_1', name: '🐱 Раскрась картинку с котиком или собачкой', required: 1 },
+                    { id: 'sp_2_2', name: '🦁 Раскрась картинку с лесным животным (лиса, медведь, олень)', required: 1 },
+                    { id: 'sp_2_3', name: '🐉 Раскрась картинку с мифическим существом (дракон, единорог)', required: 1 }
+                ],
+                freeReward: { type: 'achievement_with_achetiki', achievement: 'Туточек', amount: 10, name: 'Достижение "Туточек" + 10 ашетиков' },
+                premiumReward: { type: 'achievement_with_achetiki', achievement: 'Бемби', amount: 10, name: 'Достижение "Бемби" + 10 ашетиков' }
+            },
+            {
+                title: "Уровень 3 - Волшебный мир",
+                maxProgress: 3,
+                desc: "Раскрасьте 3 картинки из мира фэнтези",
+                subtasks: [
+                    { id: 'sp_3_1', name: '👸 Раскрась картинку с принцессой или рыцарем', required: 1 },
+                    { id: 'sp_3_2', name: '🏰 Раскрась картинку с замком или волшебным лесом', required: 1 },
+                    { id: 'sp_3_3', name: '✨ Раскрась картинку с магическим эффектом (свечение, звезды)', required: 1 }
+                ],
+                freeReward: { type: 'achetiki', amount: 15, name: '15 ашетиков' },
+                premiumReward: { type: 'achetiki', amount: 15, name: '15 ашетиков' }
+            },
+            {
+                title: "Уровень 4 - Мастерство",
+                maxProgress: 3,
+                desc: "Раскрасьте 3 сложные картинки с особыми техниками",
+                subtasks: [
+                    { id: 'sp_4_1', name: '🎨 Раскрась разворот', required: 1 },
+                    { id: 'sp_4_2', name: '🌈 Раскрась картинку с градиентом или плавным переходом цветов', required: 1 },
+                    { id: 'sp_4_3', name: '💎 Раскрась картинку с текстурой (мрамор, лед, вода)', required: 1 }
+                ],
+                freeReward: { type: 'lottery_with_achetiki', lottery: 'Билет на розыгрыш Funko Pop Винни-Пух', amount: 15, name: '🎫 Билет на розыгрыш Funko Pop Винни-Пух + 15 ашетиков' },
+                premiumReward: { type: 'achievement_with_achetiki', achievement: 'Топотун', amount: 15, name: 'Достижение "Топотун" + 15 ашетиков' }
+            },
+            {
+                title: "Уровень 5 - Легенда сезона",
+                maxProgress: 3,
+                desc: "Раскрасьте 3 финальные работы — покажите всё свое мастерство!",
+                subtasks: [
+                    { id: 'sp_5_1', name: '🏆 Создай свою уникальную композицию', required: 1 },
+                    { id: 'sp_5_2', name: '🌟 Раскрась картинку с эффектом свечения', required: 1 },
+                    { id: 'sp_5_3', name: '🎭 Раскрась сложный разворот с множеством деталей', required: 1 }
+                ],
+                freeReward: { type: 'status_with_lottery', status: 'Нежность', lottery: 'Билет на розыгрыш любого тома Hachette А4', name: 'Статус "Нежность" + 🎫 Билет на розыгрыш тома Hachette А4' },
+                premiumReward: { type: 'lottery', reward: 'Билет на розыгрыш эксклюзивной раскраски среди донов', name: '🎫 Билет на розыгрыш эксклюзивной раскраски (только для благодетелей)' }
             }
-        };
+        ]
+    },
         
         // ==========================================
         // ДОСТИЖЕНИЯ
@@ -6817,14 +6747,12 @@
             'mystery': { id: 'mystery', name: 'Загадка', img: 'assets/achievements/ach12.png', desc: 'Завершена ветка "Загадка"', condition: 'Раскрасьте 20 картинок с персонажами Скуби-Ду' },
             'anaconda': { id: 'anaconda', name: 'Анаконда', img: 'assets/achievements/ach13.png', desc: 'Завершена ветка "Анаконда"', condition: 'Раскрасьте 20 картинок со змеей' },
             'molniya': { id: 'molniya', name: 'Молния', img: 'assets/achievements/ach_molniya.png', desc: 'Первым выполнил любую ветку заданий для Anna', condition: 'Быть первым, кто выполнит любую ветку заданий (кроме "Благодетель")' },
-            'season_pass_1': { id: 'season_pass_1', name: 'Весенний новичок', img: 'assets/achievements/sp1.png', desc: 'Завершен уровень 1 Season Pass', condition: 'Выполните все задания уровня 1 Season Pass' },
-            'season_pass_2': { id: 'season_pass_2', name: 'Друг животных', img: 'assets/achievements/sp2.png', desc: 'Завершен уровень 2 Season Pass', condition: 'Выполните все задания уровня 2 Season Pass' },
-            'season_pass_3': { id: 'season_pass_3', name: 'Мастер цвета', img: 'assets/achievements/sp3.png', desc: 'Завершен уровень 3 Season Pass', condition: 'Выполните все задания уровня 3 Season Pass' },
-            'season_pass_4': { id: 'season_pass_4', name: 'Золотые руки', img: 'assets/achievements/sp4.png', desc: 'Завершен уровень 4 Season Pass', condition: 'Выполните все задания уровня 4 Season Pass' },
-            'season_pass_5': { id: 'season_pass_5', name: 'Повелитель волн', img: 'assets/achievements/sp5.png', desc: 'Завершен уровень 5 Season Pass', condition: 'Выполните все задания уровня 5 Season Pass' },
-            'season_pass_6': { id: 'season_pass_6', name: 'Тёмный рыцарь', img: 'assets/achievements/sp6.png', desc: 'Завершен уровень 6 Season Pass', condition: 'Выполните все задания уровня 6 Season Pass' },
-            'season_pass_7': { id: 'season_pass_7', name: 'Лесной хранитель', img: 'assets/achievements/sp7.png', desc: 'Завершен уровень 7 Season Pass', condition: 'Выполните все задания уровня 7 Season Pass' },
-            'season_pass_8': { id: 'season_pass_8', name: 'Мастер сезона', img: 'assets/achievements/sp8.png', desc: 'Завершен Season Pass полностью', condition: 'Выполните все задания Season Pass' }
+    // Новые достижения для Season Pass
+    'Туточек': { id: 'Туточек', name: 'Туточек', img: 'assets/achievements/tutochek.png', desc: 'Получено за прохождение 2 уровня Season Pass', condition: 'Выполните все задания 2 уровня Season Pass' },
+    'Бемби': { id: 'Бемби', name: 'Бемби', img: 'assets/achievements/bembi.png', desc: 'Получено за прохождение 2 уровня Season Pass (премиум)', condition: 'Выполните все задания 2 уровня Season Pass (премиум)' },
+    'Топотун': { id: 'Топотун', name: 'Топотун', img: 'assets/achievements/topotun.png', desc: 'Получено за прохождение 4 уровня Season Pass (премиум)', condition: 'Выполните все задания 4 уровня Season Pass (премиум)' },
+    'Нежность': { id: 'Нежность', name: 'Нежность', img: 'assets/achievements/nezhnost.png', desc: 'Получено за прохождение 5 уровня Season Pass', condition: 'Выполните все задания 5 уровня Season Pass' }
+};
         };
         // ==========================================
         // SEASON PASS ФУНКЦИИ
