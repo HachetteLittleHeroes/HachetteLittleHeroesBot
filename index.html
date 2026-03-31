@@ -7011,11 +7011,17 @@ function claimSeasonReward(levelNum, type) {
     const levelData = branch.levels[levelNum - 1];
     if (!levelData) return;
     
-    const currentLevelIndex = getCurrentLevelIndex('season_pass');
-    const isLevelCompleted = levelNum < currentLevelIndex;
+    // Проверяем, выполнены ли все подзадания уровня
+    let allSubtasksCompleted = true;
+    levelData.subtasks.forEach((subtask, idx) => {
+        const progress = getSubtaskProgress('season_pass', levelNum - 1, idx);
+        if (progress < subtask.required) {
+            allSubtasksCompleted = false;
+        }
+    });
     
-    if (!isLevelCompleted) {
-        if (tg) tg.showAlert('❌ Сначала завершите этот уровень');
+    if (!allSubtasksCompleted) {
+        if (tg) tg.showAlert('❌ Сначала выполните все задания уровня');
         return;
     }
     
