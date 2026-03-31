@@ -3264,10 +3264,14 @@
         // ==========================================
         
         function getSubtaskProgress(branchKey, levelIndex, subtaskIndex) {
-            const progress = userProgress || {};
-            const subtaskKey = `branch_${branchKey}_level_${levelIndex}_subtask_${subtaskIndex}`;
-            return progress[subtaskKey] || 0;
-        }
+    const progress = userProgress || {};
+    const subtaskKey = `branch_${branchKey}_level_${levelIndex}_subtask_${subtaskIndex}`;
+    const value = progress[subtaskKey] || 0;
+    if (branchKey === 'season_pass') {
+        console.log(`[getSubtaskProgress] Уровень ${levelIndex + 1}, подзадание ${subtaskIndex + 1}: ${value}`);
+    }
+    return value;
+}
         
         function updateSubtaskProgress(branchKey, levelIndex, subtaskIndex, increment = 1) {
             const progress = userProgress || {};
@@ -3309,41 +3313,57 @@
         }
         
         function isLevelCompleted(branchKey, levelIndex) {
-            const level = TASK_BRANCHES[branchKey]?.levels[levelIndex];
-            if (!level) return false;
-            
-            if (level.subtasks) {
-                let totalCompleted = 0;
-                let totalRequired = 0;
-                
-                level.subtasks.forEach((subtask, subtaskIndex) => {
-                    const completed = getSubtaskProgress(branchKey, levelIndex, subtaskIndex);
-                    totalCompleted += Math.min(completed, subtask.required);
-                    totalRequired += subtask.required;
-                });
-                
-                return totalCompleted >= totalRequired;
-            }
-            
-            const currentProgress = getLevelProgress(branchKey, levelIndex);
-            return currentProgress >= level.maxProgress;
+    const level = TASK_BRANCHES[branchKey]?.levels[levelIndex];
+    if (!level) return false;
+    
+    // Если есть подзадания
+    if (level.subtasks && level.subtasks.length > 0) {
+        let totalCompleted = 0;
+        let totalRequired = 0;
+        
+        level.subtasks.forEach((subtask, subtaskIndex) => {
+            const completed = getSubtaskProgress(branchKey, levelIndex, subtaskIndex);
+            totalCompleted += Math.min(completed, subtask.required);
+            totalRequired += subtask.required;
+        });
+        
+        const isCompleted = totalCompleted >= totalRequired;
+        if (branchKey === 'season_pass') {
+            console.log(`[isLevelCompleted] Уровень ${levelIndex + 1}: completed=${totalCompleted}, required=${totalRequired}, result=${isCompleted}`);
         }
+        return isCompleted;
+    }
+    
+    // Для уровней без подзаданий
+    const currentProgress = getLevelProgress(branchKey, levelIndex);
+    const isCompleted = currentProgress >= level.maxProgress;
+    if (branchKey === 'season_pass') {
+        console.log(`[isLevelCompleted] Уровень ${levelIndex + 1} (без подзаданий): progress=${currentProgress}, max=${level.maxProgress}, result=${isCompleted}`);
+    }
+    return isCompleted;
+}
         
         function getCurrentLevelIndex(branchKey) {
-            if (branchKey === 'scrooge') {
-                return user.balance >= 2500 ? 1 : 0;
+    if (branchKey === 'scrooge') {
+        return user.balance >= 2500 ? 1 : 0;
+    }
+    if (branchKey === 'benefactor') {
+        return user.unlockedStatuses.includes('Благодетель') ? 1 : 0;
+    }
+    const levels = TASK_BRANCHES[branchKey].levels;
+    for (let i = 0; i < levels.length; i++) {
+        if (!isLevelCompleted(branchKey, i)) {
+            if (branchKey === 'season_pass') {
+                console.log(`[getCurrentLevelIndex] Первый незавершенный уровень: ${i + 1}`);
             }
-            if (branchKey === 'benefactor') {
-                return user.unlockedStatuses.includes('Благодетель') ? 1 : 0;
-            }
-            const levels = TASK_BRANCHES[branchKey].levels;
-            for (let i = 0; i < levels.length; i++) {
-                if (!isLevelCompleted(branchKey, i)) {
-                    return i;
-                }
-            }
-            return levels.length;
+            return i;
         }
+    }
+    if (branchKey === 'season_pass') {
+        console.log(`[getCurrentLevelIndex] Все уровни завершены, возвращаем ${levels.length}`);
+    }
+    return levels.length;
+}
         
         function isBranchCompleted(branchKey) {
             if (branchKey === 'scrooge') {
