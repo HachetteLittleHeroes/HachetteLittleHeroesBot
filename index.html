@@ -6918,7 +6918,7 @@ function renderSeasonPassTasks() {
         const totalPercent = (totalCompleted / totalRequired) * 100;
         const allSubtasksDone = totalCompleted >= totalRequired;
         
-        // Если уровень только что пройден, добавляем достижение
+        // Если уровень пройден, добавляем достижение (БЕЗ УВЕДОМЛЕНИЯ)
         if (allSubtasksDone && !user.achievements.includes(`season_pass_${levelNum}`)) {
             user.achievements.push(`season_pass_${levelNum}`);
             saveUserData();
@@ -6930,9 +6930,7 @@ function renderSeasonPassTasks() {
                     achievement: `season_pass_${levelNum}`
                 });
             }
-            
-            const achievementName = levelNum === 10 ? 'Мастер сезона' : level.freeReward.name;
-            if (tg) tg.showAlert(`🏆 Получено достижение "${achievementName}"!`);
+            // УВЕДОМЛЕНИЕ УДАЛЕНО - теперь оно будет только при нажатии на кнопку "Получить"
         }
         
         const levelCard = document.createElement('div');
