@@ -7009,7 +7009,7 @@ function renderSeasonPassTasks() {
     }
 }
 
-function claimSeasonReward(levelNum, type) {
+   function claimSeasonReward(levelNum, type) {
     const branch = TASK_BRANCHES.season_pass;
     const levelData = branch.levels[levelNum - 1];
     if (!levelData) return;
@@ -7036,38 +7036,43 @@ function claimSeasonReward(levelNum, type) {
         
         const reward = levelData.freeReward;
         if (reward.type === 'achetiki') {
-            // Начисляем локально
-            user.balance += reward.amount;
-            saveUserData();
-            updateUI();
-            
-            // Отправляем на сервер и ждем ответа
+            // Отправляем запрос на сервер для начисления ашетиков
             fetch(`${SERVER_URL}/api/add_balance`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     user_id: userId,
                     amount: reward.amount,
-                    reason: `Season Pass уровень ${levelNum} награда`
+                    reason: `Season Pass уровень ${levelNum} бесплатная награда`
                 })
             }).then(async response => {
                 const result = await response.json();
                 if (result && result.status === 'ok') {
-                    console.log('Баланс обновлен на сервере:', result.new_balance);
-                    // Обновляем локальный баланс из ответа сервера
-                    if (result.new_balance) {
+                    // Обновляем баланс из ответа сервера
+                    if (result.new_balance !== undefined) {
                         user.balance = result.new_balance;
-                        saveUserData();
-                        updateUI();
+                    } else {
+                        user.balance += reward.amount;
                     }
+                    saveUserData();
+                    updateUI();
+                    
+                    if (tg) tg.showAlert(`✅ Получено ${reward.amount} ашетиков!`);
                 } else {
-                    console.error('Ошибка обновления баланса на сервере');
+                    // Если ошибка, пробуем начислить локально
+                    user.balance += reward.amount;
+                    saveUserData();
+                    updateUI();
+                    if (tg) tg.showAlert(`⚠️ Начислено локально: ${reward.amount} ашетиков. Синхронизация может отсутствовать.`);
                 }
             }).catch(error => {
                 console.error('Ошибка запроса:', error);
+                // При ошибке сети начисляем локально
+                user.balance += reward.amount;
+                saveUserData();
+                updateUI();
+                if (tg) tg.showAlert(`⚠️ Начислено локально: ${reward.amount} ашетиков. Проверьте подключение к интернету.`);
             });
-            
-            if (tg) tg.showAlert(`✅ Получено ${reward.amount} ашетиков!`);
         }
         
         claimedSeasonRewards.free.push(levelNum);
@@ -7120,12 +7125,7 @@ function claimSeasonReward(levelNum, type) {
                 if (tg) tg.showAlert(`✅ Получено достижение "${reward.reward}"!`);
             }
         } else if (reward.type === 'achetiki') {
-            // Начисляем локально
-            user.balance += reward.amount;
-            saveUserData();
-            updateUI();
-            
-            // Отправляем на сервер
+            // Отправляем запрос на сервер для начисления ашетиков
             fetch(`${SERVER_URL}/api/add_balance`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -7136,14 +7136,32 @@ function claimSeasonReward(levelNum, type) {
                 })
             }).then(async response => {
                 const result = await response.json();
-                if (result && result.status === 'ok' && result.new_balance) {
-                    user.balance = result.new_balance;
+                if (result && result.status === 'ok') {
+                    // Обновляем баланс из ответа сервера
+                    if (result.new_balance !== undefined) {
+                        user.balance = result.new_balance;
+                    } else {
+                        user.balance += reward.amount;
+                    }
                     saveUserData();
                     updateUI();
+                    
+                    if (tg) tg.showAlert(`✅ Получено ${reward.amount} ашетиков!`);
+                } else {
+                    // Если ошибка, пробуем начислить локально
+                    user.balance += reward.amount;
+                    saveUserData();
+                    updateUI();
+                    if (tg) tg.showAlert(`⚠️ Начислено локально: ${reward.amount} ашетиков. Синхронизация может отсутствовать.`);
                 }
+            }).catch(error => {
+                console.error('Ошибка запроса:', error);
+                // При ошибке сети начисляем локально
+                user.balance += reward.amount;
+                saveUserData();
+                updateUI();
+                if (tg) tg.showAlert(`⚠️ Начислено локально: ${reward.amount} ашетиков. Проверьте подключение к интернету.`);
             });
-            
-            if (tg) tg.showAlert(`✅ Получено ${reward.amount} ашетиков!`);
         }
         
         claimedSeasonRewards.premium.push(levelNum);
@@ -7151,7 +7169,6 @@ function claimSeasonReward(levelNum, type) {
         renderSeasonPassTasks();
     }
 }
-        
         // ==========================================
         // ИНИЦИАЛИЗАЦИЯ
         // ==========================================
