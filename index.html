@@ -6899,7 +6899,20 @@ function renderSeasonPassTasks() {
         
         const levelCard = document.createElement('div');
         levelCard.className = `sp-level-card ${isLocked ? 'locked' : ''} ${isLevelCompleted ? 'completed' : ''}`;
+           // Проверяем, все ли подзадания уровня выполнены
+        const allSubtasksCompleted = level.subtasks.every((subtask, idx) => {
+            return getSubtaskProgress('season_pass', i, idx) >= subtask.required;
+        });
         
+        console.log(`Уровень ${levelNum}: isLevelCompleted=${isLevelCompleted}, allSubtasksCompleted=${allSubtasksCompleted}, currentLevelIndex=${currentLevelIndex}`);
+        
+        // Временно показываем кнопки, если все подзадания выполнены
+        const showRewards = allSubtasksCompleted;
+        
+        const freeClaimed = claimedSeasonRewards.free.includes(levelNum);
+        const premiumClaimed = claimedSeasonRewards.premium.includes(levelNum);
+        const canClaimFree = showRewards && !freeClaimed;
+        const canClaimPremium = userSeasonPremium && showRewards && !premiumClaimed;
         let levelHtml = `
             <div class="sp-level-header">
                 <span class="sp-level-number">Уровень ${levelNum}</span>
