@@ -7162,7 +7162,9 @@ function claimSeasonReward(levelNum, type) {
             if (savedUser) Object.assign(user, JSON.parse(savedUser));
             const savedCart = localStorage.getItem('coloring_cart');
             if (savedCart) cart = JSON.parse(savedCart);
-            await loadUserBalance();
+            // После загрузки всех данных, дополнительно загружаем баланс с сервера
+await loadUserBalance();
+updateUI();
             await loadUserProgress();
             await loadUnlockedStatuses();
             await loadUserAchievements();
