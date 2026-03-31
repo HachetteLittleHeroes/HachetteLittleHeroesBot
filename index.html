@@ -6204,51 +6204,57 @@
                 ]
             },
             alcohol: {
-                name: "Спиртесса",
-                desc: "Раскрасить картинки спиртовыми маркерами (фото ДО/ПОСЛЕ)",
-                levels: [
-                    { title: "Новичок спирта", maxProgress: 3, desc: "Раскрась 3 картинки спиртовыми маркерами" },
-                    {
-                        title: "Emo girl",
-                        maxProgress: 8,
-                        desc: "Раскрась 4 картинки спиртовыми маркерами в ч/б и 4 картинки в розовых оттенках",
-                        subtasks: [
-                            { id: 'bw_spirit', name: 'Черно-белые картинки', required: 4 },
-                            { id: 'pink_spirit', name: 'Розовые оттенки', required: 4 }
-                        ]
-                    },
-                    {
-                        title: "Звезда",
-                        maxProgress: 12,
-                        desc: "Раскрась 6 картинок спиртовыми маркерами со звёздным небом/северным сиянием и 6 картинок с солнцем",
-                        subtasks: [
-                            { id: 'starry_sky', name: 'Звёздное небо/северное сияние', required: 6 },
-                            { id: 'sun_pictures', name: 'Картинки с солнцем', required: 6 }
-                        ]
-                    },
-                    {
-                        title: "Чародейка",
-                        maxProgress: 17,
-                        desc: "Раскрась 5 картинок спиртовыми маркерами с текстурой льда, 6 картинок с текстурой воды, 6 картинок с текстурой огня/лавы",
-                        subtasks: [
-                            { id: 'ice_texture', name: 'Текстура льда', required: 5 },
-                            { id: 'water_texture', name: 'Текстура воды', required: 6 },
-                            { id: 'fire_texture', name: 'Текстура огня/лавы', required: 6 }
-                        ]
-                    },
-                    {
-                        title: "Спиртесса",
-                        maxProgress: 20,
-                        desc: "Раскрась 5 картинок спиртовыми маркерами с персонажами людьми, 5 картинок с персонажами-собачками, 5 картинок с персонажами-котиками, 5 картинок с персонажами-птицами",
-                        subtasks: [
-                            { id: 'human_characters', name: 'Персонажи-люди', required: 5 },
-                            { id: 'dog_characters', name: 'Персонажи-собачки', required: 5 },
-                            { id: 'cat_characters', name: 'Персонажи-котики', required: 5 },
-                            { id: 'bird_characters', name: 'Персонажи-птицы', required: 5 }
-                        ]
-                    }
-                ]
-            },
+    name: "Спиртесса",
+    desc: "Раскрасить картинки спиртовыми маркерами (фото ДО/ПОСЛЕ)",
+    levels: [
+        { title: "Новичок спирта", maxProgress: 3, desc: "Раскрась 3 картинки спиртовыми маркерами" },
+        {
+            title: "Emo girl",
+            maxProgress: 8,
+            desc: "Раскрась 4 картинки спиртовыми маркерами в ч/б и 4 картинки в розовых оттенках",
+            subtasks: [
+                { id: 'bw_spirit', name: 'Черно-белые картинки', required: 4 },
+                { id: 'pink_spirit', name: 'Розовые оттенки', required: 4 }
+            ]
+        },
+        {
+            title: "Звезда",
+            maxProgress: 12,
+            desc: "Раскрась 6 картинок спиртовыми маркерами со звёздным небом/северным сиянием и 6 картинок с солнцем",
+            subtasks: [
+                { id: 'starry_sky', name: 'Звёздное небо/северное сияние', required: 6 },
+                { id: 'sun_pictures', name: 'Картинки с солнцем', required: 6 }
+            ]
+        },
+        {
+            title: "Чародейка",
+            maxProgress: 17,
+            desc: "Раскрась 5 картинок спиртовыми маркерами с текстурой льда, 6 картинок с текстурой воды, 6 картинок с текстурой огня/лавы",
+            subtasks: [
+                { id: 'ice_texture', name: 'Текстура льда', required: 5 },
+                { id: 'water_texture', name: 'Текстура воды', required: 6 },
+                { id: 'fire_texture', name: 'Текстура огня/лавы', required: 6 }
+            ]
+        },
+        {
+            title: "Мастер спирта",
+            maxProgress: 20,
+            desc: "Выполните 10 специальных заданий",
+            subtasks: [
+                { id: 'statue_characters', name: 'Адаптируй и раскрась 2 персонажей под статуи', required: 2 },
+                { id: 'neon_pictures', name: 'Раскрась 2 картинки в неоне', required: 2 },
+                { id: 'transparency_texture', name: 'Раскрась 2 картинки с текстурой прозрачности', required: 2 },
+                { id: 'room_without_character', name: 'Раскрась 3 картинки с комнатой без персонажа', required: 3 },
+                { id: 'roof_tiles', name: 'Раскрась 1 картинку с черепицей на крыше дома', required: 1 },
+                { id: 'bird_characters', name: 'Раскрась 3 персонажей-птиц', required: 3 },
+                { id: 'glow_effect', name: 'Раскрась 2 картинки с эффектом свечения какого-либо объекта', required: 2 },
+                { id: 'moss_texture', name: 'Раскрась 2 картинки с мхом', required: 2 },
+                { id: 'marble_texture', name: 'Раскрась 1 картинку с текстурой мрамора', required: 1 },
+                { id: 'human_characters_2', name: 'Раскрась 2 картинки с персонажами-людьми', required: 2 }
+            ]
+        }
+    ]
+},
             shock: {
                 name: "Шок контент",
                 desc: "Только самые КРЕЙЗИ смогут пройти всё, но награда того стоит (фото ДО/ПОСЛЕ)",
