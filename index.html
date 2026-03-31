@@ -6842,108 +6842,203 @@
         };
         
         function loadClaimedRewards() {
-            const saved = localStorage.getItem(`season_rewards_${userId}`);
-            if (saved) {
-                try {
-                    claimedSeasonRewards = JSON.parse(saved);
-                } catch(e) {}
-            }
-        }
+    const saved = localStorage.getItem(`season_rewards_${userId}`);
+    if (saved) {
+        try {
+            claimedSeasonRewards = JSON.parse(saved);
+        } catch(e) {}
+    }
+}
+
+function saveClaimedRewards() {
+    localStorage.setItem(`season_rewards_${userId}`, JSON.stringify(claimedSeasonRewards));
+}
+
+function toggleSeasonPass() {
+    const content = document.getElementById('seasonPassContent');
+    const arrow = document.getElementById('seasonPassArrow');
+    if (!content) return;
+    if (content.style.display === 'none' || content.style.display === '') {
+        content.style.display = 'block';
+        if (arrow) arrow.style.transform = 'rotate(180deg)';
+        renderSeasonPassTasks();
+    } else {
+        content.style.display = 'none';
+        if (arrow) arrow.style.transform = 'rotate(0deg)';
+    }
+}
+
+function renderSeasonPassTasks() {
+    const container = document.getElementById('seasonPassTasksList');
+    if (!container) return;
+    
+    const branch = TASK_BRANCHES.season_pass;
+    if (!branch) return;
+    
+    container.innerHTML = '';
+    
+    const currentLevelIndex = getCurrentLevelIndex('season_pass');
+    const levels = branch.levels;
+    
+    for (let i = 0; i < levels.length; i++) {
+        const level = levels[i];
+        const levelNum = i + 1;
+        const isLevelCompleted = levelNum < currentLevelIndex;
+        const isLocked = levelNum > currentLevelIndex;
         
-        function saveClaimedRewards() {
-            localStorage.setItem(`season_rewards_${userId}`, JSON.stringify(claimedSeasonRewards));
-        }
+        let totalCompleted = 0;
+        let totalRequired = 0;
         
-        function toggleSeasonPass() {
-            const content = document.getElementById('seasonPassContent');
-            const arrow = document.getElementById('seasonPassArrow');
-            if (!content) return;
-            if (content.style.display === 'none' || content.style.display === '') {
-                content.style.display = 'block';
-                if (arrow) arrow.style.transform = 'rotate(180deg)';
-                renderSeasonPassTasks();
-            } else {
-                content.style.display = 'none';
-                if (arrow) arrow.style.transform = 'rotate(0deg)';
-            }
-        }
+        level.subtasks.forEach((subtask, idx) => {
+            const prog = getSubtaskProgress('season_pass', i, idx);
+            totalCompleted += Math.min(prog, subtask.required);
+            totalRequired += subtask.required;
+        });
         
-        ${!isSubtaskCompleted && isCurrentLevel ? `
-    <button class="task-submit-btn" style="padding: 10px; font-size: 13px; margin-top: 8px;" onclick="openSubtaskUpload('season_pass', ${i}, ${idx}, '${subtask.name}')">
-        <i class="fas fa-camera"></i> Отправить фото: ${subtask.name}
-    </button>
-` : isSubtaskCompleted ? `
-    <div style="text-align: center; color: var(--status-green); font-size: 12px; margin-top: 8px;">
-        <i class="fas fa-check-circle"></i> Выполнено!
-    </div>
-` : ''}
+        const totalPercent = (totalCompleted / totalRequired) * 100;
         
-        function claimSeasonReward(levelNum, type) {
-            const branch = TASK_BRANCHES.season_pass;
-            const levelData = branch.levels[levelNum - 1];
-            if (!levelData) return;
+        const levelCard = document.createElement('div');
+        levelCard.className = `sp-level-card ${isLocked ? 'locked' : ''} ${isLevelCompleted ? 'completed' : ''}`;
+        
+        let levelHtml = `
+            <div class="sp-level-header">
+                <span class="sp-level-number">Уровень ${levelNum}</span>
+                <span class="sp-level-xp">${totalCompleted}/${totalRequired}</span>
+            </div>
+            <div class="level-desc">${level.desc}</div>
+            <div class="progress-bar-container">
+                <div class="progress-bar-fill" style="width: ${totalPercent}%"></div>
+            </div>
+            <div style="margin-top: 15px;"></div>
+        `;
+        
+        level.subtasks.forEach((subtask, idx) => {
+            const currentProgress = getSubtaskProgress('season_pass', i, idx);
+            const isSubtaskCompleted = currentProgress >= subtask.required;
+            const subtaskPercent = (currentProgress / subtask.required) * 100;
             
-            const isLevelCompleted = levelNum < getCurrentLevelIndex('season_pass');
-            
-            if (!isLevelCompleted) {
-                if (tg) tg.showAlert('❌ Сначала завершите этот уровень');
-                return;
-            }
-            
-            if (type === 'free') {
-                if (claimedSeasonRewards.free.includes(levelNum)) {
-                    if (tg) tg.showAlert('❌ Награда уже получена');
-                    return;
-                }
-                
-                const reward = levelData.freeReward;
-                if (reward.type === 'achetiki') {
-                    user.balance += reward.amount;
-                    saveUserData();
-                    updateUI();
-                    if (tg) tg.showAlert(`✅ Получено ${reward.amount} ашетиков!`);
-                }
-                
-                claimedSeasonRewards.free.push(levelNum);
-                saveClaimedRewards();
-                renderSeasonPassTasks();
-                
-            } else if (type === 'premium') {
-                if (!userSeasonPremium) {
-                    if (tg) tg.showAlert('❌ Премиум пропуск не активен');
-                    return;
-                }
-                
-                if (claimedSeasonRewards.premium.includes(levelNum)) {
-                    if (tg) tg.showAlert('❌ Награда уже получена');
-                    return;
-                }
-                
-                const reward = levelData.premiumReward;
-                if (reward.type === 'status') {
-                    if (!user.unlockedStatuses.includes(reward.reward)) {
-                        user.unlockedStatuses.push(reward.reward);
-                        saveUserData();
-                        if (tg) tg.showAlert(`✅ Получен статус "${reward.reward}"!`);
+            levelHtml += `
+                <div class="subtask-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <span style="font-weight: 600; font-size: 14px;">📋 ${subtask.name}</span>
+                        <span style="font-size: 12px; color: var(--accent);">${currentProgress}/${subtask.required}</span>
+                    </div>
+                    <div class="progress-bar-container" style="height: 6px; margin: 0 0 12px 0;">
+                        <div class="progress-bar-fill" style="width: ${subtaskPercent}%; height: 100%;"></div>
+                    </div>
+                    ${!isSubtaskCompleted ? `
+                        <button class="task-submit-btn" style="padding: 10px; font-size: 13px; margin-top: 8px;" onclick="openSubtaskUpload('season_pass', ${i}, ${idx}, '${subtask.name}')">
+                            <i class="fas fa-camera"></i> Отправить фото: ${subtask.name}
+                        </button>
+                    ` : `
+                        <div style="text-align: center; color: var(--status-green); font-size: 12px; margin-top: 8px;">
+                            <i class="fas fa-check-circle"></i> Выполнено!
+                        </div>
+                    `}
+                </div>
+            `;
+        });
+        
+        const freeClaimed = claimedSeasonRewards.free.includes(levelNum);
+        const premiumClaimed = claimedSeasonRewards.premium.includes(levelNum);
+        const canClaimFree = isLevelCompleted && !freeClaimed;
+        const canClaimPremium = userSeasonPremium && isLevelCompleted && !premiumClaimed;
+        
+        levelHtml += `
+            <div class="sp-level-rewards">
+                <div class="sp-reward-item free">
+                    <div>🎁 Бесплатная награда</div>
+                    <div><strong>${level.freeReward.name}</strong></div>
+                    ${!freeClaimed && isLevelCompleted ? 
+                        `<button class="sp-reward-btn" onclick="claimSeasonReward(${levelNum}, 'free')">Получить</button>` : 
+                        (freeClaimed ? '<div class="sp-reward-claimed">✅ Получено</div>' : '<div class="sp-reward-claimed">🔒 Завершите уровень</div>')
                     }
-                } else if (reward.type === 'achievement') {
-                    if (!user.achievements.includes(reward.reward)) {
-                        user.achievements.push(reward.reward);
-                        saveUserData();
-                        if (tg) tg.showAlert(`✅ Получено достижение "${reward.reward}"!`);
+                </div>
+                <div class="sp-reward-item premium ${userSeasonPremium && isLevelCompleted ? 'unlocked' : ''}">
+                    <div>👑 Награда для тех, кто нас поддерживает</div>
+                    <div><strong>${level.premiumReward.name}</strong></div>
+                    ${!premiumClaimed && canClaimPremium ? 
+                        `<button class="sp-reward-btn" onclick="claimSeasonReward(${levelNum}, 'premium')">Получить</button>` : 
+                        (premiumClaimed ? '<div class="sp-reward-claimed">✅ Получено</div>' : 
+                            (!userSeasonPremium ? '<div class="sp-reward-claimed">🔒 Требуется премиум</div>' : '<div class="sp-reward-claimed">🔒 Завершите уровень</div>')
+                        )
                     }
-                } else if (reward.type === 'achetiki') {
-                    user.balance += reward.amount;
-                    saveUserData();
-                    updateUI();
-                    if (tg) tg.showAlert(`✅ Получено ${reward.amount} ашетиков!`);
-                }
-                
-                claimedSeasonRewards.premium.push(levelNum);
-                saveClaimedRewards();
-                renderSeasonPassTasks();
-            }
+                </div>
+            </div>
+        `;
+        
+        levelCard.innerHTML = levelHtml;
+        container.appendChild(levelCard);
+    }
+}
+
+function claimSeasonReward(levelNum, type) {
+    const branch = TASK_BRANCHES.season_pass;
+    const levelData = branch.levels[levelNum - 1];
+    if (!levelData) return;
+    
+    const currentLevelIndex = getCurrentLevelIndex('season_pass');
+    const isLevelCompleted = levelNum < currentLevelIndex;
+    
+    if (!isLevelCompleted) {
+        if (tg) tg.showAlert('❌ Сначала завершите этот уровень');
+        return;
+    }
+    
+    if (type === 'free') {
+        if (claimedSeasonRewards.free.includes(levelNum)) {
+            if (tg) tg.showAlert('❌ Награда уже получена');
+            return;
         }
+        
+        const reward = levelData.freeReward;
+        if (reward.type === 'achetiki') {
+            user.balance += reward.amount;
+            saveUserData();
+            updateUI();
+            if (tg) tg.showAlert(`✅ Получено ${reward.amount} ашетиков!`);
+        }
+        
+        claimedSeasonRewards.free.push(levelNum);
+        saveClaimedRewards();
+        renderSeasonPassTasks();
+        
+    } else if (type === 'premium') {
+        if (!userSeasonPremium) {
+            if (tg) tg.showAlert('❌ Премиум пропуск не активен');
+            return;
+        }
+        
+        if (claimedSeasonRewards.premium.includes(levelNum)) {
+            if (tg) tg.showAlert('❌ Награда уже получена');
+            return;
+        }
+        
+        const reward = levelData.premiumReward;
+        if (reward.type === 'status') {
+            if (!user.unlockedStatuses.includes(reward.reward)) {
+                user.unlockedStatuses.push(reward.reward);
+                saveUserData();
+                if (tg) tg.showAlert(`✅ Получен статус "${reward.reward}"!`);
+            }
+        } else if (reward.type === 'achievement') {
+            if (!user.achievements.includes(reward.reward)) {
+                user.achievements.push(reward.reward);
+                saveUserData();
+                if (tg) tg.showAlert(`✅ Получено достижение "${reward.reward}"!`);
+            }
+        } else if (reward.type === 'achetiki') {
+            user.balance += reward.amount;
+            saveUserData();
+            updateUI();
+            if (tg) tg.showAlert(`✅ Получено ${reward.amount} ашетиков!`);
+        }
+        
+        claimedSeasonRewards.premium.push(levelNum);
+        saveClaimedRewards();
+        renderSeasonPassTasks();
+    }
+}
         
         // ==========================================
         // ИНИЦИАЛИЗАЦИЯ
