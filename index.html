@@ -6916,6 +6916,7 @@ function renderSeasonPassTasks() {
         });
         
         const totalPercent = (totalCompleted / totalRequired) * 100;
+        const allSubtasksDone = totalCompleted >= totalRequired;
         
         const levelCard = document.createElement('div');
         levelCard.className = `sp-level-card ${isLocked ? 'locked' : ''} ${isLevelCompleted ? 'completed' : ''}`;
@@ -6930,6 +6931,17 @@ function renderSeasonPassTasks() {
                 <div class="progress-bar-fill" style="width: ${totalPercent}%"></div>
             </div>
             <div style="margin-top: 15px;"></div>
+        `;
+        
+        // Отладочная информация
+        levelHtml += `
+            <div style="background: #ffeecc; padding: 8px; margin: 5px 0; border-radius: 8px; font-size: 11px; border-left: 3px solid var(--accent);">
+                🔍 <strong>Отладка:</strong><br>
+                Прогресс: ${totalCompleted}/${totalRequired}<br>
+                Все подзадания выполнены: ${allSubtasksDone ? '✅ ДА' : '❌ НЕТ'}<br>
+                Уровень считается пройденным: ${isLevelCompleted ? '✅ ДА' : '❌ НЕТ'}<br>
+                Текущий уровень: ${currentLevelIndex + 1}
+            </div>
         `;
         
         level.subtasks.forEach((subtask, idx) => {
@@ -6959,25 +6971,27 @@ function renderSeasonPassTasks() {
             `;
         });
         
-        const freeClaimed = claimedSeasonRewards.free.includes(levelNum);
-        const premiumClaimed = claimedSeasonRewards.premium.includes(levelNum);
-        const canClaimFree = isLevelCompleted && !freeClaimed;
-        const canClaimPremium = userSeasonPremium && isLevelCompleted && !premiumClaimed;
+        const freeClaimed = claimedSeasonRewards ? claimedSeasonRewards.free.includes(levelNum) : false;
+        const premiumClaimed = claimedSeasonRewards ? claimedSeasonRewards.premium.includes(levelNum) : false;
+        
+        // Используем allSubtasksDone для разблокировки наград
+        const canClaimFree = allSubtasksDone && !freeClaimed;
+        const canClaimPremium = userSeasonPremium && allSubtasksDone && !premiumClaimed;
         
         levelHtml += `
             <div class="sp-level-rewards">
                 <div class="sp-reward-item free">
                     <div>🎁 Бесплатная награда</div>
                     <div><strong>${level.freeReward.name}</strong></div>
-                    ${!freeClaimed && isLevelCompleted ? 
+                    ${canClaimFree ? 
                         `<button class="sp-reward-btn" onclick="claimSeasonReward(${levelNum}, 'free')">Получить</button>` : 
                         (freeClaimed ? '<div class="sp-reward-claimed">✅ Получено</div>' : '<div class="sp-reward-claimed">🔒 Завершите уровень</div>')
                     }
                 </div>
-                <div class="sp-reward-item premium ${userSeasonPremium && isLevelCompleted ? 'unlocked' : ''}">
+                <div class="sp-reward-item premium ${userSeasonPremium && allSubtasksDone ? 'unlocked' : ''}">
                     <div>👑 Награда для тех, кто нас поддерживает</div>
                     <div><strong>${level.premiumReward.name}</strong></div>
-                    ${!premiumClaimed && canClaimPremium ? 
+                    ${canClaimPremium ? 
                         `<button class="sp-reward-btn" onclick="claimSeasonReward(${levelNum}, 'premium')">Получить</button>` : 
                         (premiumClaimed ? '<div class="sp-reward-claimed">✅ Получено</div>' : 
                             (!userSeasonPremium ? '<div class="sp-reward-claimed">🔒 Требуется премиум</div>' : '<div class="sp-reward-claimed">🔒 Завершите уровень</div>')
