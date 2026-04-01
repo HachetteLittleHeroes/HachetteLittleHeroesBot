@@ -6974,18 +6974,6 @@ const showSubmitButton = !isSubtaskCompleted && !isLocked;
                     </div>
                 `;
             });
-            
-            // Кнопка перехода на следующий уровень
-            // Показываем только если уровень текущий, все подзадания выполнены, и это не последний уровень
-            if (isCurrent && allSubtasksDone && levelNum < 5) {
-                levelHtml += `
-                    <div style="text-align: center; margin-top: 20px; padding: 10px;">
-                        <button class="task-submit-btn" style="background: var(--status-green); padding: 12px 20px; font-size: 14px;" onclick="unlockNextLevel(${levelNum})">
-                            🎉 Перейти к уровню ${levelNum + 1}
-                        </button>
-                    </div>
-                `;
-            }
         } else {
             // Для заблокированных уровней показываем плейсхолдер
             levelHtml += `
