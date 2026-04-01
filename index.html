@@ -6645,72 +6645,71 @@
         ]
     },
     season_pass: {
-        name: "🌸 Сезонный пропуск",
-        desc: "Выполняйте задания и получайте награды! Доступно до 30.04.2026",
-        levels: [
-            {
-                title: "Уровень 1 - Весеннее настроение",
-                maxProgress: 3,
-                desc: "Раскрасьте 3 весенние картинки",
-                subtasks: [
-                    { id: 'sp_1_1', name: '🌷 Раскрась картинку с цветами', required: 1 },
-                    { id: 'sp_1_2', name: '☀️ Раскрась картинку с солнцем', required: 1 },
-                    { id: 'sp_1_3', name: '🦋 Раскрась картинку с бабочкой или птицей', required: 1 }
-                ],
-                freeReward: { type: 'achetiki', amount: 10, name: '10 ашетиков' },
-                premiumReward: { type: 'achetiki', amount: 10, name: '10 ашетиков' }
-            },
-            {
-                title: "Уровень 2 - В мире животных",
-                maxProgress: 3,
-                desc: "Раскрасьте 3 картинки с животными",
-                subtasks: [
-                    { id: 'sp_2_1', name: '🐱 Раскрась картинку с котиком или собачкой', required: 1 },
-                    { id: 'sp_2_2', name: '🦁 Раскрась картинку с лесным животным (лиса, медведь, олень)', required: 1 },
-                    { id: 'sp_2_3', name: '🐉 Раскрась картинку с мифическим существом (дракон, единорог)', required: 1 }
-                ],
-                freeReward: { type: 'achievement_with_achetiki', achievement: 'Туточек', amount: 10, name: 'Достижение "Туточек" + 10 ашетиков' },
-                premiumReward: { type: 'achievement_with_achetiki', achievement: 'Бемби', amount: 10, name: 'Достижение "Бемби" + 10 ашетиков' }
-            },
-            {
-                title: "Уровень 3 - Волшебный мир",
-                maxProgress: 3,
-                desc: "Раскрасьте 3 картинки из мира фэнтези",
-                subtasks: [
-                    { id: 'sp_3_1', name: '👸 Раскрась картинку с принцессой или рыцарем', required: 1 },
-                    { id: 'sp_3_2', name: '🏰 Раскрась картинку с замком или волшебным лесом', required: 1 },
-                    { id: 'sp_3_3', name: '✨ Раскрась картинку с магическим эффектом (свечение, звезды)', required: 1 }
-                ],
-                freeReward: { type: 'achetiki', amount: 15, name: '15 ашетиков' },
-                premiumReward: { type: 'achetiki', amount: 15, name: '15 ашетиков' }
-            },
-            {
-                title: "Уровень 4 - Мастерство",
-                maxProgress: 3,
-                desc: "Раскрасьте 3 сложные картинки с особыми техниками",
-                subtasks: [
-                    { id: 'sp_4_1', name: '🎨 Раскрась разворот', required: 1 },
-                    { id: 'sp_4_2', name: '🌈 Раскрась картинку с градиентом или плавным переходом цветов', required: 1 },
-                    { id: 'sp_4_3', name: '💎 Раскрась картинку с текстурой (мрамор, лед, вода)', required: 1 }
-                ],
-                freeReward: { type: 'lottery_with_achetiki', lottery: 'Билет на розыгрыш Funko Pop Винни-Пух', amount: 15, name: '🎫 Билет на розыгрыш Funko Pop Винни-Пух + 15 ашетиков' },
-                premiumReward: { type: 'achievement_with_achetiki', achievement: 'Топотун', amount: 15, name: 'Достижение "Топотун" + 15 ашетиков' }
-            },
-            {
-                title: "Уровень 5 - Легенда сезона",
-                maxProgress: 3,
-                desc: "Раскрасьте 3 финальные работы — покажите всё свое мастерство!",
-                subtasks: [
-                    { id: 'sp_5_1', name: '🏆 Создай свою уникальную композицию', required: 1 },
-                    { id: 'sp_5_2', name: '🌟 Раскрась картинку с эффектом свечения', required: 1 },
-                    { id: 'sp_5_3', name: '🎭 Раскрась сложный разворот с множеством деталей', required: 1 }
-                ],
-                freeReward: { type: 'status_with_lottery', status: 'Нежность', lottery: 'Билет на розыгрыш любого тома Hachette А4', name: 'Статус "Нежность" + 🎫 Билет на розыгрыш тома Hachette А4' },
-                premiumReward: { type: 'lottery', reward: 'Билет на розыгрыш эксклюзивной раскраски среди донов', name: '🎫 Билет на розыгрыш эксклюзивной раскраски (только для благодетелей)' }
-            }
-        ]
-    }
-};   // ← ВАЖНО: ЗАКРЫВАЕМ TASK_BRANCHES!
+    name: "🌸 Сезонный пропуск",
+    desc: "Выполняйте задания и получайте награды! Доступно до 30.04.2026",
+    levels: [
+        {
+            title: "Уровень 1 - Весеннее настроение",
+            maxProgress: 3,
+            desc: "Раскрасьте 3 весенние картинки",
+            subtasks: [
+                { id: 'sp_1_1', name: 'Раскрась картинку с цветами', required: 1 },
+                { id: 'sp_1_2', name: 'Раскрась картинку с солнцем', required: 1 },
+                { id: 'sp_1_3', name: 'Раскрась картинку с бабочкой или птицей', required: 1 }
+            ],
+            freeReward: { type: 'achetiki', amount: 10, name: '10 ашетиков' },
+            premiumReward: { type: 'achetiki', amount: 10, name: '10 ашетиков' }
+        },
+        {
+            title: "Уровень 2 - В мире животных",
+            maxProgress: 3,
+            desc: "Раскрасьте 3 картинки с животными",
+            subtasks: [
+                { id: 'sp_2_1', name: 'Раскрась картинку с котиком или собачкой', required: 1 },
+                { id: 'sp_2_2', name: 'Раскрась картинку с лесным животным (лиса, медведь, олень)', required: 1 },
+                { id: 'sp_2_3', name: 'Раскрась картинку с мифическим существом (дракон, единорог)', required: 1 }
+            ],
+            freeReward: { type: 'achievement_with_achetiki', achievement: 'Туточек', amount: 10, name: 'Достижение "Туточек" + 10 ашетиков' },
+            premiumReward: { type: 'achievement_with_achetiki', achievement: 'Бемби', amount: 10, name: 'Достижение "Бемби" + 10 ашетиков' }
+        },
+        {
+            title: "Уровень 3 - Волшебный мир",
+            maxProgress: 3,
+            desc: "Раскрасьте 3 картинки из мира фэнтези",
+            subtasks: [
+                { id: 'sp_3_1', name: 'Раскрась картинку с принцессой или рыцарем', required: 1 },
+                { id: 'sp_3_2', name: 'Раскрась картинку с замком или волшебным лесом', required: 1 },
+                { id: 'sp_3_3', name: 'Раскрась картинку с магическим эффектом (свечение, звезды)', required: 1 }
+            ],
+            freeReward: { type: 'achetiki', amount: 15, name: '15 ашетиков' },
+            premiumReward: { type: 'achetiki', amount: 15, name: '15 ашетиков' }
+        },
+        {
+            title: "Уровень 4 - Мастерство",
+            maxProgress: 3,
+            desc: "Раскрасьте 3 сложные картинки с особыми техниками",
+            subtasks: [
+                { id: 'sp_4_1', name: 'Раскрась разворот', required: 1 },
+                { id: 'sp_4_2', name: 'Раскрась картинку с градиентом или плавным переходом цветов', required: 1 },
+                { id: 'sp_4_3', name: 'Раскрась картинку с текстурой (мрамор, лед, вода)', required: 1 }
+            ],
+            freeReward: { type: 'lottery_with_achetiki', lottery: 'Билет на розыгрыш Funko Pop Винни-Пух', amount: 15, name: 'Билет на розыгрыш Funko Pop Винни-Пух + 15 ашетиков' },
+            premiumReward: { type: 'achievement_with_achetiki', achievement: 'Топотун', amount: 15, name: 'Достижение "Топотун" + 15 ашетиков' }
+        },
+        {
+            title: "Уровень 5 - Легенда сезона",
+            maxProgress: 3,
+            desc: "Раскрасьте 3 финальные работы — покажите всё свое мастерство!",
+            subtasks: [
+                { id: 'sp_5_1', name: 'Создай свою уникальную композицию', required: 1 },
+                { id: 'sp_5_2', name: 'Раскрась картинку с эффектом свечения', required: 1 },
+                { id: 'sp_5_3', name: 'Раскрась сложный разворот с множеством деталей', required: 1 }
+            ],
+            freeReward: { type: 'status_with_lottery', status: 'Нежность', lottery: 'Билет на розыгрыш любого тома Hachette А4', name: 'Статус "Нежность" + Билет на розыгрыш тома Hachette А4' },
+            premiumReward: { type: 'lottery', reward: 'Билет на розыгрыш эксклюзивной раскраски среди донов', name: 'Билет на розыгрыш эксклюзивной раскраски (только для благодетелей)' }
+        }
+    ]
+}
         
         // ==========================================
         // ДОСТИЖЕНИЯ
