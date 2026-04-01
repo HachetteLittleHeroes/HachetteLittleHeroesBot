@@ -6969,6 +6969,18 @@ function renderSeasonPassTasks() {
                     </div>
                 `;
             });
+            
+            // Кнопка перехода на следующий уровень
+            // Показываем только если уровень текущий, все подзадания выполнены, и это не последний уровень
+            if (isCurrent && allSubtasksDone && levelNum < 5) {
+                levelHtml += `
+                    <div style="text-align: center; margin-top: 20px; padding: 10px;">
+                        <button class="task-submit-btn" style="background: var(--status-green); padding: 12px 20px; font-size: 14px;" onclick="unlockNextLevel(${levelNum})">
+                            🎉 Перейти к уровню ${levelNum + 1}
+                        </button>
+                    </div>
+                `;
+            }
         } else {
             // Для заблокированных уровней показываем плейсхолдер
             levelHtml += `
@@ -7444,6 +7456,35 @@ if (levelNum < 5) {
             }
         }
         // ======================================================
+    }
+}
+function unlockNextLevel(currentLevel) {
+    console.log(`🔓 Разблокировка уровня ${currentLevel + 1}`);
+    
+    // Принудительно обновляем прогресс
+    refreshUserProgress();
+    
+    // Дополнительно проверяем, что текущий уровень действительно пройден
+    const branch = TASK_BRANCHES.season_pass;
+    const levelData = branch.levels[currentLevel - 1];
+    
+    if (levelData) {
+        let allSubtasksDone = true;
+        levelData.subtasks.forEach((subtask, idx) => {
+            const prog = getSubtaskProgress('season_pass', currentLevel - 1, idx);
+            if (prog < subtask.required) {
+                allSubtasksDone = false;
+            }
+        });
+        
+        if (allSubtasksDone) {
+            console.log(`✅ Уровень ${currentLevel} пройден, разблокируем уровень ${currentLevel + 1}`);
+            renderSeasonPassTasks();
+            if (tg) tg.showAlert(`🎉 Уровень ${currentLevel} пройден! Открыт уровень ${currentLevel + 1}!`);
+        } else {
+            console.log(`❌ Уровень ${currentLevel} еще не пройден полностью`);
+            if (tg) tg.showAlert(`❌ Сначала выполните все задания уровня ${currentLevel}`);
+        }
     }
 }
         // ==========================================
