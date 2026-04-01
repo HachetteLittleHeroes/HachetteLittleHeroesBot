@@ -7031,6 +7031,38 @@ function renderSeasonPassTasks() {
         container.appendChild(levelCard);
     }
 }
+function checkAndFixSeasonPassProgress() {
+    console.log('🔍 Проверка прогресса Season Pass...');
+    
+    let anyLevelUnlocked = false;
+    
+    for (let level = 0; level < 5; level++) {
+        const levelData = TASK_BRANCHES.season_pass.levels[level];
+        if (!levelData) continue;
+        
+        let allSubtasksDone = true;
+        if (levelData.subtasks) {
+            levelData.subtasks.forEach((subtask, idx) => {
+                const prog = getSubtaskProgress('season_pass', level, idx);
+                if (prog < subtask.required) {
+                    allSubtasksDone = false;
+                }
+            });
+        }
+        
+        if (allSubtasksDone && level < 4) {
+            console.log(`✅ Уровень ${level+1} пройден, разблокируем уровень ${level+2}`);
+            anyLevelUnlocked = true;
+        }
+    }
+    
+    if (anyLevelUnlocked) {
+        renderSeasonPassTasks();
+        console.log('🎉 Уровни разблокированы!');
+    }
+    
+    return anyLevelUnlocked;
+}
 
    function claimSeasonReward(levelNum, type) {
     const branch = TASK_BRANCHES.season_pass;
