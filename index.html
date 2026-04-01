@@ -2537,7 +2537,16 @@
     z-index: 10;
     pointer-events: none;
 }
+/* Первый уровень никогда не размываем */
+.sp-level-card:first-child {
+    filter: none !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+}
 
+.sp-level-card:first-child::after {
+    display: none;
+}
 /* Заблокированные подзадания внутри уровня */
 .sp-level-card.locked .subtask-card {
     filter: blur(4px);
@@ -6876,9 +6885,10 @@ function renderSeasonPassTasks() {
         // isLocked - уровень заблокирован (требуется выполнить предыдущий)
         // isCurrent - текущий активный уровень
         
-        const isCompleted = levelNum < currentLevelIndex;  // Уровни меньше текущего - пройдены
-        const isLocked = levelNum > currentLevelIndex;     // Уровни больше текущего - заблокированы
-        const isCurrent = levelNum === currentLevelIndex;   // Текущий уровень
+        const isCompleted = levelNum < currentLevelIndex;
+// Первый уровень (1) никогда не блокируем
+const isLocked = levelNum > 1 && levelNum > currentLevelIndex;
+const isCurrent = levelNum === currentLevelIndex;
         
         let totalCompleted = 0;
         let totalRequired = 0;
