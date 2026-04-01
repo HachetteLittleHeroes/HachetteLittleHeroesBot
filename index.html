@@ -7461,10 +7461,7 @@ if (levelNum < 5) {
 function unlockNextLevel(currentLevel) {
     console.log(`🔓 Разблокировка уровня ${currentLevel + 1}`);
     
-    // Принудительно обновляем прогресс
-    refreshUserProgress();
-    
-    // Дополнительно проверяем, что текущий уровень действительно пройден
+    // Проверяем, что текущий уровень действительно пройден
     const branch = TASK_BRANCHES.season_pass;
     const levelData = branch.levels[currentLevel - 1];
     
@@ -7479,8 +7476,15 @@ function unlockNextLevel(currentLevel) {
         
         if (allSubtasksDone) {
             console.log(`✅ Уровень ${currentLevel} пройден, разблокируем уровень ${currentLevel + 1}`);
-            renderSeasonPassTasks();
-            if (tg) tg.showAlert(`🎉 Уровень ${currentLevel} пройден! Открыт уровень ${currentLevel + 1}!`);
+            
+            // Принудительно обновляем прогресс с сервера и локально
+            refreshUserProgress().then(() => {
+                // Дополнительно принудительно обновляем локальный currentLevelIndex
+                // Перерисовываем с новым currentLevelIndex
+                renderSeasonPassTasks();
+                
+                if (tg) tg.showAlert(`🎉 Уровень ${currentLevel} пройден! Открыт уровень ${currentLevel + 1}!`);
+            });
         } else {
             console.log(`❌ Уровень ${currentLevel} еще не пройден полностью`);
             if (tg) tg.showAlert(`❌ Сначала выполните все задания уровня ${currentLevel}`);
