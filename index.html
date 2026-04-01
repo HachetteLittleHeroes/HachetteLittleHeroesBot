@@ -6946,9 +6946,8 @@ const isLocked = levelNum > 1 && currentLevelIndex < (levelNum - 1);
                 const isSubtaskCompleted = currentProgress >= subtask.required;
                 const subtaskPercent = (currentProgress / subtask.required) * 100;
                 
-                // Условие для кнопки: для 1 уровня всегда показываем кнопку (если задание не выполнено)
-                // Для остальных уровней — только если уровень текущий
-                const showSubmitButton = !isSubtaskCompleted && (levelNum === 1 || isCurrent);
+                // Кнопка показывается, если задание не выполнено И уровень не заблокирован
+const showSubmitButton = !isSubtaskCompleted && !isLocked;
                 
                 levelHtml += `
                     <div class="subtask-card">
