@@ -6881,16 +6881,7 @@ function renderSeasonPassTasks() {
         const level = levels[i];
         const levelNum = i + 1;
         
-        // Определяем статус уровня:
-        // isCompleted - уровень полностью пройден (все подзадания выполнены)
-        // isLocked - уровень заблокирован (требуется выполнить предыдущий)
-        // isCurrent - текущий активный уровень
-        
-        const isCompleted = allSubtasksDone;
-        // Первый уровень (1) никогда не блокируем
-        const isLocked = levelNum > 1 && levelNum > currentLevelIndex;
-        const isCurrent = levelNum === currentLevelIndex;
-        
+        // Сначала вычисляем прогресс
         let totalCompleted = 0;
         let totalRequired = 0;
         
@@ -6904,6 +6895,12 @@ function renderSeasonPassTasks() {
         
         const totalPercent = (totalCompleted / totalRequired) * 100;
         const allSubtasksDone = totalCompleted >= totalRequired;
+        
+        // Теперь определяем статус уровня (ПОСЛЕ объявления allSubtasksDone)
+        const isCompleted = allSubtasksDone;
+        // Первый уровень (1) никогда не блокируем
+        const isLocked = levelNum > 1 && levelNum > currentLevelIndex;
+        const isCurrent = levelNum === currentLevelIndex;
         
         console.log(`Уровень ${levelNum}: isCurrent=${isCurrent}, isCompleted=${isCompleted}, isLocked=${isLocked}, progress=${totalCompleted}/${totalRequired}`);
         
