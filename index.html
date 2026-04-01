@@ -6801,7 +6801,7 @@
             'mystery': { id: 'mystery', name: 'Загадка', img: 'assets/achievements/ach12.png', desc: 'Завершена ветка "Загадка"', condition: 'Раскрасьте 20 картинок с персонажами Скуби-Ду' },
             'anaconda': { id: 'anaconda', name: 'Анаконда', img: 'assets/achievements/ach13.png', desc: 'Завершена ветка "Анаконда"', condition: 'Раскрасьте 20 картинок со змеей' },
             'molniya': { id: 'molniya', name: 'Молния', img: 'assets/achievements/ach_molniya.png', desc: 'Первым выполнил любую ветку заданий для Anna', condition: 'Быть первым, кто выполнит любую ветку заданий (кроме "Благодетель")' },
-    // Новые достижения для Season Pass
+// Новые достижения для Season Pass
     'Цветочек': { id: 'Цветочек', name: 'Цветочек', img: 'assets/achievements/tutochek.png', desc: 'Получено за прохождение 2 уровня Season Pass', condition: 'Выполните все задания 2 уровня Season Pass' },
     'Бемби': { id: 'Бемби', name: 'Бемби', img: 'assets/achievements/bembi.png', desc: 'Получено за прохождение 2 уровня Season Pass (Благодетель)', condition: 'Выполните все задания 2 уровня Season Pass (Благодетель)' },
     'Топотун': { id: 'Топотун', name: 'Топотун', img: 'assets/achievements/topotun.png', desc: 'Получено за прохождение 4 уровня Season Pass (Благодетель)', condition: 'Выполните все задания 4 уровня Season Pass (Благодетель)' }
@@ -6886,7 +6886,7 @@ function renderSeasonPassTasks() {
         // isLocked - уровень заблокирован (требуется выполнить предыдущий)
         // isCurrent - текущий активный уровень
         
-        const isCompleted = levelNum < currentLevelIndex;
+        const isCompleted = allSubtasksDone;
         // Первый уровень (1) никогда не блокируем
         const isLocked = levelNum > 1 && levelNum > currentLevelIndex;
         const isCurrent = levelNum === currentLevelIndex;
@@ -7252,22 +7252,27 @@ function renderSeasonPassTasks() {
         renderSeasonPassTasks();
         
         // ========== РАЗБЛОКИРОВКА СЛЕДУЮЩЕГО УРОВНЯ ==========
-        if (levelNum < 5) {
-            // Проверяем, что текущий уровень полностью пройден
-            const currentLevel = levelNum - 1;
-            const allCurrentSubtasksDone = levelData.subtasks.every((subtask, idx) => {
-                const prog = getSubtaskProgress('season_pass', currentLevel, idx);
-                return prog >= subtask.required;
-            });
-            
-            if (allCurrentSubtasksDone) {
-                console.log(`✅ Уровень ${levelNum} пройден, разблокируем следующий уровень ${levelNum + 1}`);
-                // Принудительно обновляем отображение
-                renderSeasonPassTasks();
-                if (tg) tg.showAlert(`🎉 Уровень ${levelNum} пройден! Открыт уровень ${levelNum + 1}!`);
-            }
-        }
-        // ======================================================
+if (levelNum < 5) {
+    // Проверяем, что текущий уровень полностью пройден
+    const currentLevel = levelNum - 1;
+    const allCurrentSubtasksDone = levelData.subtasks.every((subtask, idx) => {
+        const prog = getSubtaskProgress('season_pass', currentLevel, idx);
+        return prog >= subtask.required;
+    });
+    
+    if (allCurrentSubtasksDone) {
+        console.log(`✅ Уровень ${levelNum} пройден, разблокируем следующий уровень ${levelNum + 1}`);
+        
+        // Принудительно обновляем userProgress
+        saveUserData();
+        
+        // Обновляем отображение
+        renderSeasonPassTasks();
+        
+        if (tg) tg.showAlert(`🎉 Уровень ${levelNum} пройден! Открыт уровень ${levelNum + 1}!`);
+    }
+}
+// ======================================================
         
     } else if (type === 'premium') {
         if (!userSeasonPremium) {
