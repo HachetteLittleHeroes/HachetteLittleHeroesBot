@@ -6902,7 +6902,10 @@ function renderSeasonPassTasks() {
         // Теперь определяем статус уровня (ПОСЛЕ объявления allSubtasksDone)
         const isCompleted = allSubtasksDone;
         // Первый уровень (1) никогда не блокируем
-        const isLocked = levelNum > 1 && levelNum > currentLevelIndex;
+// Текущий уровень — это индекс (0-based), поэтому:
+// уровень 2 (levelNum=2) блокируется, если currentLevelIndex < 1
+// уровень 3 (levelNum=3) блокируется, если currentLevelIndex < 2
+const isLocked = levelNum > 1 && currentLevelIndex < (levelNum - 1);
         const isCurrent = levelNum === currentLevelIndex;
         
         console.log(`Уровень ${levelNum}: isCurrent=${isCurrent}, isCompleted=${isCompleted}, isLocked=${isLocked}, progress=${totalCompleted}/${totalRequired}`);
