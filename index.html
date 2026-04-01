@@ -7003,7 +7003,7 @@ const isCurrent = levelNum === currentLevelIndex;
                     ${canClaimPremium ? 
                         `<button class="sp-reward-btn" onclick="claimSeasonReward(${levelNum}, 'premium')">Получить</button>` : 
                         (premiumClaimed ? '<div class="sp-reward-claimed">✅ Получено</div>' : 
-                            (!userSeasonPremium ? '<div class="sp-reward-claimed">🔒 Требуется премиум</div>' : 
+                            (!userSeasonPremium ? '<div class="sp-reward-claimed">🔒 Только для благодетелей</div>' : 
                                 (isLocked ? '<div class="sp-reward-claimed">🔒 Уровень заблокирован</div>' : '<div class="sp-reward-claimed">🔒 Завершите уровень</div>')))
                     }
                 </div>
