@@ -6862,6 +6862,8 @@ function toggleSeasonPass() {
 }
 
 function renderSeasonPassTasks() {
+    // Принудительно обновляем currentLevelIndex
+    const currentLevelIndex = getCurrentLevelIndex('season_pass');
     const container = document.getElementById('seasonPassTasksList');
     if (!container) return;
     
@@ -7250,6 +7252,24 @@ function renderSeasonPassTasks() {
         saveClaimedRewards();
         renderSeasonPassTasks();
         
+        // ========== РАЗБЛОКИРОВКА СЛЕДУЮЩЕГО УРОВНЯ ==========
+        if (levelNum < 5) {
+            // Проверяем, что текущий уровень полностью пройден
+            const currentLevel = levelNum - 1;
+            const allCurrentSubtasksDone = levelData.subtasks.every((subtask, idx) => {
+                const prog = getSubtaskProgress('season_pass', currentLevel, idx);
+                return prog >= subtask.required;
+            });
+            
+            if (allCurrentSubtasksDone) {
+                console.log(`✅ Уровень ${levelNum} пройден, разблокируем следующий уровень ${levelNum + 1}`);
+                // Принудительно обновляем отображение
+                renderSeasonPassTasks();
+                if (tg) tg.showAlert(`🎉 Уровень ${levelNum} пройден! Открыт уровень ${levelNum + 1}!`);
+            }
+        }
+        // ======================================================
+        
     } else if (type === 'premium') {
         if (!userSeasonPremium) {
             if (tg) tg.showAlert('❌ Премиум пропуск не активен');
@@ -7405,6 +7425,24 @@ function renderSeasonPassTasks() {
         claimedSeasonRewards.premium.push(levelNum);
         saveClaimedRewards();
         renderSeasonPassTasks();
+        
+        // ========== РАЗБЛОКИРОВКА СЛЕДУЮЩЕГО УРОВНЯ ==========
+        if (levelNum < 5) {
+            // Проверяем, что текущий уровень полностью пройден
+            const currentLevel = levelNum - 1;
+            const allCurrentSubtasksDone = levelData.subtasks.every((subtask, idx) => {
+                const prog = getSubtaskProgress('season_pass', currentLevel, idx);
+                return prog >= subtask.required;
+            });
+            
+            if (allCurrentSubtasksDone) {
+                console.log(`✅ Уровень ${levelNum} пройден, разблокируем следующий уровень ${levelNum + 1}`);
+                // Принудительно обновляем отображение
+                renderSeasonPassTasks();
+                if (tg) tg.showAlert(`🎉 Уровень ${levelNum} пройден! Открыт уровень ${levelNum + 1}!`);
+            }
+        }
+        // ======================================================
     }
 }
         // ==========================================
