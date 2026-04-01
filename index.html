@@ -6862,8 +6862,9 @@ function toggleSeasonPass() {
 }
 
 function renderSeasonPassTasks() {
-    // Принудительно обновляем currentLevelIndex
+    // Получаем текущий уровень
     const currentLevelIndex = getCurrentLevelIndex('season_pass');
+    
     const container = document.getElementById('seasonPassTasksList');
     if (!container) return;
     
@@ -6871,8 +6872,6 @@ function renderSeasonPassTasks() {
     if (!branch) return;
     
     container.innerHTML = '';
-    
-    const currentLevelIndex = getCurrentLevelIndex('season_pass');
     const levels = branch.levels;
     
     console.log('Season Pass - currentLevelIndex:', currentLevelIndex);
