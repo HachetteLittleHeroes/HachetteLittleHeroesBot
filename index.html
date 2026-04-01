@@ -3251,25 +3251,39 @@
         }
         
         async function loadUserProgress() {
-            try {
-                const savedProgress = localStorage.getItem(`coloring_progress_${userId}`);
-                if (savedProgress) {
-                    userProgress = JSON.parse(savedProgress);
-                }
-                
-                const response = await fetch(`${SERVER_URL}/api/stats?user_id=${userId}`);
-                const stats = await response.json();
-                console.log('📊 Loaded stats from server:', stats);
-                if (stats) {
-                    userProgress = { ...userProgress, ...stats };
-                    localStorage.setItem(`coloring_progress_${userId}`, JSON.stringify(userProgress));
-                }
-                return userProgress;
-            } catch (error) {
-                console.error('Ошибка загрузки прогресса:', error);
-                return {};
-            }
+    try {
+        const savedProgress = localStorage.getItem(`coloring_progress_${userId}`);
+        if (savedProgress) {
+            userProgress = JSON.parse(savedProgress);
         }
+        
+        const response = await fetch(`${SERVER_URL}/api/stats?user_id=${userId}`);
+        const stats = await response.json();
+        console.log('📊 Loaded stats from server:', stats);
+        
+        if (stats) {
+            // Объединяем данные с сервера с локальными
+            userProgress = { ...userProgress, ...stats };
+            
+            // Особенно важно для Season Pass — проверяем подзадания
+            for (let level = 0; level < 5; level++) {
+                for (let subtask = 0; subtask < 3; subtask++) {
+                    const serverKey = `branch_season_pass_level_${level}_subtask_${subtask}`;
+                    if (stats[serverKey] !== undefined) {
+                        userProgress[serverKey] = stats[serverKey];
+                        console.log(`📥 Загружено подзадание ${level+1}.${subtask+1}: ${stats[serverKey]}`);
+                    }
+                }
+            }
+            
+            localStorage.setItem(`coloring_progress_${userId}`, JSON.stringify(userProgress));
+        }
+        return userProgress;
+    } catch (error) {
+        console.error('Ошибка загрузки прогресса:', error);
+        return {};
+    }
+}
         
         async function loadUnlockedStatuses() {
             try {
@@ -3994,38 +4008,27 @@
         // ==========================================
         
         async function refreshUserProgress() {
-            console.log('🔄 Refreshing user progress...');
-            
-            try {
-                await loadUserBalance();
-                await loadUserProgress();
-                await loadUnlockedStatuses();
-                await loadUserAchievements();
-                await checkBalanceStatus();
-                await checkAndUnlockStatuses();
-                
-                renderBranchTasks();
-                renderTimeTasks();
-                renderFriendTasks();
-                renderSeasonPassTasks();
-                updateUI();
-                
-                console.log('✅ Progress refreshed, current balance:', user.balance);
-            } catch (error) {
-                console.error('Error refreshing progress:', error);
-            }
-        }
+    console.log('🔄 Refreshing user progress...');
+    
+    try {
+        await loadUserBalance();
+        await loadUserProgress();
+        await loadUnlockedStatuses();
+        await loadUserAchievements();
+        await checkBalanceStatus();
+        await checkAndUnlockStatuses();
         
-        let refreshInterval = null;
+        renderBranchTasks();
+        renderTimeTasks();
+        renderFriendTasks();
+        renderSeasonPassTasks();  // ← обязательно
+        updateUI();
         
-        function startProgressRefresh() {
-            if (refreshInterval) clearInterval(refreshInterval);
-            refreshInterval = setInterval(() => {
-                refreshUserProgress();
-            }, 30000);
-            console.log('✅ Progress refresh started (every 30 seconds)');
-        }
-        
+        console.log('✅ Progress refreshed, current balance:', user.balance);
+    } catch (error) {
+        console.error('Error refreshing progress:', error);
+    }
+}
         // ==========================================
         // ВРЕМЕННЫЕ ЗАДАНИЯ
         // ==========================================
