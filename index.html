@@ -6886,9 +6886,9 @@ function renderSeasonPassTasks() {
         // isCurrent - текущий активный уровень
         
         const isCompleted = levelNum < currentLevelIndex;
-// Первый уровень (1) никогда не блокируем
-const isLocked = levelNum > 1 && levelNum > currentLevelIndex;
-const isCurrent = levelNum === currentLevelIndex;
+        // Первый уровень (1) никогда не блокируем
+        const isLocked = levelNum > 1 && levelNum > currentLevelIndex;
+        const isCurrent = levelNum === currentLevelIndex;
         
         let totalCompleted = 0;
         let totalRequired = 0;
@@ -6942,6 +6942,10 @@ const isCurrent = levelNum === currentLevelIndex;
                 const isSubtaskCompleted = currentProgress >= subtask.required;
                 const subtaskPercent = (currentProgress / subtask.required) * 100;
                 
+                // Условие для кнопки: для 1 уровня всегда показываем кнопку (если задание не выполнено)
+                // Для остальных уровней — только если уровень текущий
+                const showSubmitButton = !isSubtaskCompleted && (levelNum === 1 || isCurrent);
+                
                 levelHtml += `
                     <div class="subtask-card">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
@@ -6951,7 +6955,7 @@ const isCurrent = levelNum === currentLevelIndex;
                         <div class="progress-bar-container" style="height: 6px; margin: 0 0 12px 0;">
                             <div class="progress-bar-fill" style="width: ${subtaskPercent}%; height: 100%;"></div>
                         </div>
-                        ${!isSubtaskCompleted && !isCompleted && isCurrent ? `
+                        ${showSubmitButton ? `
                             <button class="task-submit-btn" style="padding: 10px; font-size: 13px; margin-top: 8px;" onclick="openSubtaskUpload('season_pass', ${i}, ${idx}, '${subtask.name}')">
                                 <i class="fas fa-camera"></i> Отправить фото: ${subtask.name}
                             </button>
