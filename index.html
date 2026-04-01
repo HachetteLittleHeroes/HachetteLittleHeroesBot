@@ -6843,12 +6843,21 @@ function renderSeasonPassTasks() {
     const currentLevelIndex = getCurrentLevelIndex('season_pass');
     const levels = branch.levels;
     
+    console.log('Season Pass - currentLevelIndex:', currentLevelIndex);
+    console.log('Season Pass - levels count:', levels.length);
+    
     for (let i = 0; i < levels.length; i++) {
         const level = levels[i];
         const levelNum = i + 1;
-        const isLevelCompleted = levelNum < currentLevelIndex;
-        const isLocked = levelNum > currentLevelIndex;
-        const isCurrent = levelNum === currentLevelIndex;
+        
+        // Определяем статус уровня:
+        // isCompleted - уровень полностью пройден (все подзадания выполнены)
+        // isLocked - уровень заблокирован (требуется выполнить предыдущий)
+        // isCurrent - текущий активный уровень
+        
+        const isCompleted = levelNum < currentLevelIndex;  // Уровни меньше текущего - пройдены
+        const isLocked = levelNum > currentLevelIndex;     // Уровни больше текущего - заблокированы
+        const isCurrent = levelNum === currentLevelIndex;   // Текущий уровень
         
         let totalCompleted = 0;
         let totalRequired = 0;
@@ -6864,6 +6873,8 @@ function renderSeasonPassTasks() {
         const totalPercent = (totalCompleted / totalRequired) * 100;
         const allSubtasksDone = totalCompleted >= totalRequired;
         
+        console.log(`Уровень ${levelNum}: isCurrent=${isCurrent}, isCompleted=${isCompleted}, isLocked=${isLocked}, progress=${totalCompleted}/${totalRequired}`);
+        
         // Если уровень пройден, добавляем достижение
         if (allSubtasksDone && !user.achievements.includes(`season_pass_${levelNum}`)) {
             user.achievements.push(`season_pass_${levelNum}`);
@@ -6878,7 +6889,8 @@ function renderSeasonPassTasks() {
         }
         
         const levelCard = document.createElement('div');
-        levelCard.className = `sp-level-card ${isLocked ? 'locked' : ''} ${isLevelCompleted ? 'completed' : ''}`;
+        // Применяем класс locked ТОЛЬКО для заблокированных уровней (isLocked)
+        levelCard.className = `sp-level-card ${isLocked ? 'locked' : ''} ${isCompleted ? 'completed' : ''}`;
         
         let levelHtml = `
             <div class="sp-level-header">
@@ -6892,7 +6904,7 @@ function renderSeasonPassTasks() {
             <div style="margin-top: 15px;"></div>
         `;
         
-        // Показываем подзадания только для текущего или пройденного уровня
+        // Показываем подзадания только для текущего или пройденного уровня (не заблокированного)
         if (!isLocked) {
             level.subtasks.forEach((subtask, idx) => {
                 const currentProgress = getSubtaskProgress('season_pass', i, idx);
@@ -6908,13 +6920,17 @@ function renderSeasonPassTasks() {
                         <div class="progress-bar-container" style="height: 6px; margin: 0 0 12px 0;">
                             <div class="progress-bar-fill" style="width: ${subtaskPercent}%; height: 100%;"></div>
                         </div>
-                        ${!isSubtaskCompleted && !isLevelCompleted ? `
+                        ${!isSubtaskCompleted && !isCompleted && isCurrent ? `
                             <button class="task-submit-btn" style="padding: 10px; font-size: 13px; margin-top: 8px;" onclick="openSubtaskUpload('season_pass', ${i}, ${idx}, '${subtask.name}')">
                                 <i class="fas fa-camera"></i> Отправить фото: ${subtask.name}
                             </button>
                         ` : isSubtaskCompleted ? `
                             <div style="text-align: center; color: var(--status-green); font-size: 12px; margin-top: 8px;">
                                 <i class="fas fa-check-circle"></i> Выполнено!
+                            </div>
+                        ` : !isCurrent && !isCompleted ? `
+                            <div style="text-align: center; color: var(--text-gray); font-size: 12px; margin-top: 8px;">
+                                <i class="fas fa-lock"></i> Выполните предыдущий уровень
                             </div>
                         ` : ''}
                     </div>
@@ -6946,7 +6962,8 @@ function renderSeasonPassTasks() {
                     <div><strong>${level.freeReward.name}</strong></div>
                     ${canClaimFree ? 
                         `<button class="sp-reward-btn" onclick="claimSeasonReward(${levelNum}, 'free')">Получить</button>` : 
-                        (freeClaimed ? '<div class="sp-reward-claimed">✅ Получено</div>' : '<div class="sp-reward-claimed">🔒 Завершите уровень</div>')
+                        (freeClaimed ? '<div class="sp-reward-claimed">✅ Получено</div>' : 
+                            (isLocked ? '<div class="sp-reward-claimed">🔒 Уровень заблокирован</div>' : '<div class="sp-reward-claimed">🔒 Завершите уровень</div>'))
                     }
                 </div>
                 <div class="sp-reward-item premium ${userSeasonPremium && allSubtasksDone && !isLocked ? 'unlocked' : ''}">
@@ -6956,8 +6973,7 @@ function renderSeasonPassTasks() {
                         `<button class="sp-reward-btn" onclick="claimSeasonReward(${levelNum}, 'premium')">Получить</button>` : 
                         (premiumClaimed ? '<div class="sp-reward-claimed">✅ Получено</div>' : 
                             (!userSeasonPremium ? '<div class="sp-reward-claimed">🔒 Требуется премиум</div>' : 
-                                (isLocked ? '<div class="sp-reward-claimed">🔒 Уровень заблокирован</div>' : '<div class="sp-reward-claimed">🔒 Завершите уровень</div>'))
-                        )
+                                (isLocked ? '<div class="sp-reward-claimed">🔒 Уровень заблокирован</div>' : '<div class="sp-reward-claimed">🔒 Завершите уровень</div>')))
                     }
                 </div>
             </div>
