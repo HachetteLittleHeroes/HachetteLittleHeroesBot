@@ -7698,14 +7698,38 @@ const COLLECTION_FIGURES = [
 
 let userCollection = [];
 
-function loadCollection() {
-    const saved = localStorage.getItem(`collection_${userId}`);
-    if (saved) {
-        userCollection = JSON.parse(saved);
-    } else {
-        userCollection = COLLECTION_FIGURES.map(f => ({ id: f.id, unlocked: false }));
+async function loadCollection() {
+    try {
+        // Загружаем с сервера
+        const response = await fetch(`${SERVER_URL}/api/get_collection?user_id=${userId}`);
+        const serverCollection = await response.json();
+        
+        if (serverCollection && Array.isArray(serverCollection)) {
+            userCollection = COLLECTION_FIGURES.map(f => ({ 
+                id: f.id, 
+                unlocked: serverCollection.includes(f.id.toString()) 
+            }));
+        } else {
+            // Fallback на localStorage
+            const saved = localStorage.getItem(`collection_${userId}`);
+            if (saved) {
+                userCollection = JSON.parse(saved);
+            } else {
+                userCollection = COLLECTION_FIGURES.map(f => ({ id: f.id, unlocked: false }));
+            }
+        }
+        renderCollection();
+    } catch (error) {
+        console.error('Ошибка загрузки коллекции:', error);
+        // Fallback на localStorage
+        const saved = localStorage.getItem(`collection_${userId}`);
+        if (saved) {
+            userCollection = JSON.parse(saved);
+        } else {
+            userCollection = COLLECTION_FIGURES.map(f => ({ id: f.id, unlocked: false }));
+        }
+        renderCollection();
     }
-    renderCollection();
 }
 
 function saveCollection() {
@@ -7892,13 +7916,29 @@ async function submitCollectionPhoto() {
     }
 }
 
-function unlockCollectionFigure(figureId) {
+async function unlockCollectionFigure(figureId) {
     const figure = userCollection.find(f => f.id === figureId);
     if (figure && !figure.unlocked) {
         figure.unlocked = true;
         saveCollection();
         renderCollection();
+        
+        // Отправляем на сервер
+        try {
+            await fetch(`${SERVER_URL}/api/unlock_figure`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    user_id: userId,
+                    figure_id: figureId.toString()
+                })
+            });
+        } catch (error) {
+            console.error('Ошибка сохранения на сервере:', error);
+        }
+        
         console.log(`🎉 Фигурка ${figureId} открыта!`);
+        if (tg) tg.showAlert(`🎉 Фигурка открыта в коллекции!`);
     }
 }
         // ==========================================
