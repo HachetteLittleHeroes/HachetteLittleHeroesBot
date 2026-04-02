@@ -2706,6 +2706,121 @@
             margin-bottom: 12px;
             text-align: left;
         }
+        /* ==========================================
+   КОЛЛЕКЦИЯ
+   ========================================== */
+.collection-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    padding: 15px;
+}
+
+.collection-figure {
+    aspect-ratio: 1/1;
+    background: var(--bg-header);
+    border-radius: 16px;
+    border: 2px solid var(--border-color);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    position: relative;
+    overflow: hidden;
+}
+
+.collection-figure.locked {
+    filter: blur(8px);
+    background: var(--bg);
+}
+
+.collection-figure.locked::after {
+    content: "?";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 32px;
+    font-weight: bold;
+    color: var(--accent);
+    background: none;
+    filter: none;
+}
+
+.collection-figure.unlocked {
+    border-color: var(--accent);
+    background: linear-gradient(135deg, rgba(255,149,0,0.1), transparent);
+}
+
+.collection-figure img {
+    width: 70%;
+    height: 70%;
+    object-fit: contain;
+}
+
+.collection-figure-name {
+    font-size: 10px;
+    text-align: center;
+    margin-top: 5px;
+    color: var(--text);
+}
+
+.collection-figure.unlocked .collection-figure-name {
+    color: var(--accent);
+    font-weight: 600;
+}
+
+/* Модалка фигурки */
+#figureModal .modal-content {
+    max-width: 350px;
+    text-align: center;
+}
+
+.figure-modal-img {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+    margin: 10px auto;
+    background: #f0f0f0;
+    border-radius: 20px;
+}
+
+.figure-modal-img.locked {
+    filter: blur(12px);
+}
+
+.figure-status {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    margin: 10px 0;
+}
+
+.figure-status.locked {
+    background: #666;
+    color: white;
+}
+
+.figure-status.unlocked {
+    background: var(--status-green);
+    color: white;
+}
+
+.figure-submit-btn {
+    width: 100%;
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 30px;
+    font-weight: 600;
+    margin-top: 15px;
+    cursor: pointer;
+}
     </style>
 </head>
 <body>
@@ -2980,7 +3095,14 @@
             </div>
         </div>
     </div>
-
+<!-- ========== КОЛЛЕКЦИЯ ========== -->
+    <div id="collection" class="page">
+        <div class="header">
+            Коллекция
+            <span style="font-size: 12px; background: var(--accent); padding: 4px 12px; border-radius: 20px;" id="collectionCount">0/50</span>
+        </div>
+        <div id="collectionGrid" class="collection-grid"></div>
+    </div>
     <!-- ========== НАВИГАЦИЯ ========== -->
     <nav class="nav">
         <button id="btn-profile" class="nav-btn active" onclick="tab('profile')"><i class="fas fa-user"></i><span>Профиль</span></button>
@@ -2988,6 +3110,7 @@
         <button id="btn-answers" class="nav-btn" onclick="tab('answers')"><i class="fas fa-book"></i><span>Ответы</span></button>
         <button id="btn-aipalette" class="nav-btn" onclick="tab('aipalette')"><i class="fas fa-magic"></i><span>ИИ Палитра</span></button>
         <button id="btn-cart" class="nav-btn" onclick="tab('cart')"><i class="fas fa-shopping-cart"></i><span>Корзина</span><span id="cartBadge" class="badge" style="display:none;">0</span></button>
+        <button id="btn-collection" class="nav-btn" onclick="tab('collection')"><i class="fas fa-gem"></i><span>Коллекция</span></button>
     </nav>
     <!-- ========== МОДАЛЬНЫЕ ОКНА ========== -->
 
@@ -7515,6 +7638,270 @@ function unlockNextLevel(currentLevel) {
         }
     }
 }
+// ==========================================
+// КОЛЛЕКЦИЯ ФИГУРОК
+// ==========================================
+
+const COLLECTION_FIGURES = [
+    { id: 1, name: "Микки Маус", desc: "Легендарный мышонок в стиле Funko Pop", img: "assets/collection/mickey.png" },
+    { id: 2, name: "Минни Маус", desc: "Очаровательная подружка Микки", img: "assets/collection/minnie.png" },
+    { id: 3, name: "Дональд Дак", desc: "Знаменитая утка в синей матроске", img: "assets/collection/donald.png" },
+    { id: 4, name: "Дейзи Дак", desc: "Подружка Дональда с бантиком", img: "assets/collection/daisy.png" },
+    { id: 5, name: "Гуфи", desc: "Верный друг Микки", img: "assets/collection/goofy.png" },
+    { id: 6, name: "Плуто", desc: "Любимый пёс Микки", img: "assets/collection/pluto.png" },
+    { id: 7, name: "Скрудж Макдак", desc: "Самый богатый селезень в мире", img: "assets/collection/scrooge.png" },
+    { id: 8, name: "Винни-Пух", desc: "Медвежонок с опилками в голове", img: "assets/collection/winnie.png" },
+    { id: 9, name: "Пятачок", desc: "Маленький поросёнок, друг Винни", img: "assets/collection/piglet.png" },
+    { id: 10, name: "Тигра", desc: "Энергичный тигр с полосатым хвостом", img: "assets/collection/tigger.png" },
+    { id: 11, name: "Белоснежка", desc: "Первая принцесса Disney", img: "assets/collection/snowwhite.png" },
+    { id: 12, name: "Золушка", desc: "Принцесса, потерявшая хрустальную туфельку", img: "assets/collection/cinderella.png" },
+    { id: 13, name: "Аврора", desc: "Спящая красавица", img: "assets/collection/aurora.png" },
+    { id: 14, name: "Ариэль", desc: "Русалочка, мечтающая о суше", img: "assets/collection/ariel.png" },
+    { id: 15, name: "Белль", desc: "Красавица и Чудовище", img: "assets/collection/belle.png" },
+    { id: 16, name: "Жасмин", desc: "Принцесса Аграбы", img: "assets/collection/jasmine.png" },
+    { id: 17, name: "Покахонтас", desc: "Дочь вождя индейского племени", img: "assets/collection/pocahontas.png" },
+    { id: 18, name: "Мулан", desc: "Отважная воительница", img: "assets/collection/mulan.png" },
+    { id: 19, name: "Тиана", desc: "Принцесса из Нового Орлеана", img: "assets/collection/tiana.png" },
+    { id: 20, name: "Рапунцель", desc: "Девушка с длинными волосами", img: "assets/collection/rapunzel.png" },
+    { id: 21, name: "Мерида", desc: "Стрелок из Шотландии", img: "assets/collection/merida.png" },
+    { id: 22, name: "Эльза", desc: "Королева льда", img: "assets/collection/elsa.png" },
+    { id: 23, name: "Анна", desc: "Младшая сестра Эльзы", img: "assets/collection/anna.png" },
+    { id: 24, name: "Моана", desc: "Дочь вождя острова", img: "assets/collection/moana.png" },
+    { id: 25, name: "Райя", desc: "Хранительница дракона", img: "assets/collection/raya.png" },
+    { id: 26, name: "Мираж", desc: "Загадочная кошка", img: "assets/collection/mirage.png" },
+    { id: 27, name: "Симба", desc: "Будущий король прайда", img: "assets/collection/simba.png" },
+    { id: 28, name: "Нала", desc: "Подруга Симбы", img: "assets/collection/nala.png" },
+    { id: 29, name: "Шрам", desc: "Коварный дядя Симбы", img: "assets/collection/scar.png" },
+    { id: 30, name: "Муфаса", desc: "Великий король прайда", img: "assets/collection/mufasa.png" },
+    { id: 31, name: "Пумба", desc: "Дружелюбный бородавочник", img: "assets/collection/pumbaa.png" },
+    { id: 32, name: "Тимон", desc: "Сурикат, лучший друг Пумбы", img: "assets/collection/timon.png" },
+    { id: 33, name: "Аладдин", desc: "Уличный вор из Аграбы", img: "assets/collection/aladdin.png" },
+    { id: 34, name: "Джафар", desc: "Коварный визирь", img: "assets/collection/jafar.png" },
+    { id: 35, name: "Геркулес", desc: "Сын Зевса", img: "assets/collection/hercules.png" },
+    { id: 36, name: "Мег", desc: "Возлюбленная Геркулеса", img: "assets/collection/meg.png" },
+    { id: 37, name: "Хадес", desc: "Бог подземного мира", img: "assets/collection/hades.png" },
+    { id: 38, name: "Тарзан", desc: "Человек, выросший в джунглях", img: "assets/collection/tarzan.png" },
+    { id: 39, name: "Джейн", desc: "Возлюбленная Тарзана", img: "assets/collection/jane.png" },
+    { id: 40, name: "Кузнечик Хоппер", desc: "Главный злодей из Приключения Флика", img: "assets/collection/hopper.png" },
+    { id: 41, name: "Флик", desc: "Изобретательный муравей", img: "assets/collection/flik.png" },
+    { id: 42, name: "Принцесса Атта", desc: "Принцесса муравьёв", img: "assets/collection/atta.png" },
+    { id: 43, name: "Суперсемейка", desc: "Семья супергероев", img: "assets/collection/incredibles.png" },
+    { id: 44, name: "Мистер Исключительный", desc: "Глава семьи супергероев", img: "assets/collection/mrincredible.png" },
+    { id: 45, name: "Эластика", desc: "Мама-растяжка", img: "assets/collection/elastigirl.png" },
+    { id: 46, name: "Вайолет", desc: "Девушка-невидимка", img: "assets/collection/violet.png" },
+    { id: 47, name: "Дэш", desc: "Супер-скорость", img: "assets/collection/dash.png" },
+    { id: 48, name: "Джек-Джек", desc: "Малыш с множеством способностей", img: "assets/collection/jackjack.png" },
+    { id: 49, name: "Фрозен", desc: "Замороженный супергерой", img: "assets/collection/frozone.png" },
+    { id: 50, name: "Микки Маус (Золотой)", desc: "Золотая коллекционная фигурка", img: "assets/collection/mickey_gold.png" }
+];
+
+let userCollection = [];
+
+function loadCollection() {
+    const saved = localStorage.getItem(`collection_${userId}`);
+    if (saved) {
+        userCollection = JSON.parse(saved);
+    } else {
+        userCollection = COLLECTION_FIGURES.map(f => ({ id: f.id, unlocked: false }));
+    }
+    renderCollection();
+}
+
+function saveCollection() {
+    localStorage.setItem(`collection_${userId}`, JSON.stringify(userCollection));
+}
+
+function renderCollection() {
+    const container = document.getElementById('collectionGrid');
+    if (!container) return;
+    
+    container.innerHTML = '';
+    let unlockedCount = 0;
+    
+    COLLECTION_FIGURES.forEach(figure => {
+        const isUnlocked = userCollection.find(f => f.id === figure.id)?.unlocked || false;
+        if (isUnlocked) unlockedCount++;
+        
+        const div = document.createElement('div');
+        div.className = `collection-figure ${isUnlocked ? 'unlocked' : 'locked'}`;
+        div.onclick = () => openFigureModal(figure.id);
+        
+        if (isUnlocked) {
+            div.innerHTML = `
+                <img src="${figure.img}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23ff9500%22/%3E%3Ctext x=%2250%22 y=%2250%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2240%22%3E🎁%3C/text%3E%3C/svg%3E'">
+                <div class="collection-figure-name">${figure.name}</div>
+            `;
+        } else {
+            div.innerHTML = `
+                <div class="collection-figure-name">???</div>
+            `;
+        }
+        
+        container.appendChild(div);
+    });
+    
+    const countSpan = document.getElementById('collectionCount');
+    if (countSpan) countSpan.innerText = `${unlockedCount}/${COLLECTION_FIGURES.length}`;
+}
+
+let currentFigureId = null;
+
+function openFigureModal(figureId) {
+    const figure = COLLECTION_FIGURES.find(f => f.id === figureId);
+    if (!figure) return;
+    
+    currentFigureId = figureId;
+    const isUnlocked = userCollection.find(f => f.id === figureId)?.unlocked || false;
+    
+    const titleEl = document.getElementById('figureModalTitle');
+    const imgEl = document.getElementById('figureModalImg');
+    const descEl = document.getElementById('figureModalDesc');
+    const statusEl = document.getElementById('figureStatus');
+    const submitBtn = document.getElementById('figureSubmitBtn');
+    
+    if (titleEl) titleEl.innerText = figure.name;
+    if (descEl) descEl.innerText = figure.desc;
+    if (imgEl) {
+        imgEl.src = figure.img;
+        imgEl.className = `figure-modal-img ${isUnlocked ? 'unlocked' : 'locked'}`;
+        imgEl.onerror = function() {
+            this.src = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22120%22 height=%22120%22 viewBox=%220 0 120 120%22%3E%3Crect width=%22120%22 height=%22120%22 fill=%22%23ff9500%22/%3E%3Ctext x=%2260%22 y=%2260%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2440%22%3E🎁%3C/text%3E%3C/svg%3E';
+        };
+    }
+    
+    if (statusEl) {
+        if (isUnlocked) {
+            statusEl.innerText = '✅ Открыта';
+            statusEl.className = 'figure-status unlocked';
+        } else {
+            statusEl.innerText = '🔒 Не открыта';
+            statusEl.className = 'figure-status locked';
+        }
+    }
+    
+    if (submitBtn) {
+        if (!isUnlocked) {
+            submitBtn.style.display = 'block';
+            submitBtn.onclick = () => openCollectionUpload(figureId, figure.name);
+        } else {
+            submitBtn.style.display = 'none';
+        }
+    }
+    
+    const modal = document.getElementById('figureModal');
+    if (modal) modal.style.display = 'flex';
+}
+
+function closeFigureModal() {
+    const modal = document.getElementById('figureModal');
+    if (modal) modal.style.display = 'none';
+    currentFigureId = null;
+}
+
+let currentCollectionFigureId = null;
+let currentCollectionFigureName = null;
+
+function openCollectionUpload(figureId, figureName) {
+    currentCollectionFigureId = figureId;
+    currentCollectionFigureName = figureName;
+    
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/*';
+    fileInput.multiple = true;
+    fileInput.onchange = handleCollectionFilesSelected;
+    fileInput.click();
+}
+
+function handleCollectionFilesSelected(event) {
+    const files = Array.from(event.target.files);
+    if (files.length === 0) return;
+    tempPhotos = files;
+    
+    const previewContainer = document.getElementById('taskPhotoPreviewContainer');
+    if (previewContainer) {
+        previewContainer.innerHTML = '';
+        files.forEach((file) => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.style.cssText = 'width: 70px; height: 70px; object-fit: cover; border-radius: 12px; margin: 5px; border: 2px solid var(--accent);';
+                previewContainer.appendChild(img);
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+    
+    const modal = document.getElementById('taskUploadModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        const titleEl = modal.querySelector('h3');
+        if (titleEl) titleEl.innerText = `Отправка фото для "${currentCollectionFigureName}"`;
+        const submitBtn = modal.querySelector('.modal-action-btn');
+        if (submitBtn) {
+            submitBtn.onclick = () => submitCollectionPhoto();
+        }
+    }
+}
+
+async function submitCollectionPhoto() {
+    if (isUploading) return;
+    if (!tempPhotos || tempPhotos.length === 0) {
+        if (tg) tg.showAlert('❌ Выберите хотя бы одно фото');
+        return;
+    }
+    
+    isUploading = true;
+    
+    try {
+        const formData = new FormData();
+        formData.append('user', userId.toString());
+        formData.append('title', `Коллекция: ${currentCollectionFigureName}`);
+        formData.append('type', 'collection');
+        formData.append('figureId', currentCollectionFigureId.toString());
+        formData.append('figureName', currentCollectionFigureName);
+        
+        for (let i = 0; i < tempPhotos.length; i++) {
+            formData.append('photos', tempPhotos[i]);
+        }
+        
+        const response = await fetch(`${SERVER_URL}/api/check_collection`, {
+            method: 'POST',
+            body: formData
+        });
+        
+        if (!response.ok) {
+            throw new Error(`Ошибка сервера: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        
+        if (result && result.status === 'ok') {
+            if (tg) tg.showAlert('✅ Фото отправлено на проверку!');
+            closeTaskUploadModal();
+            closeFigureModal();
+        } else {
+            throw new Error(result?.message || 'Ошибка отправки');
+        }
+    } catch (error) {
+        console.error('❌ Ошибка:', error);
+        if (tg) tg.showAlert(`❌ Ошибка: ${error.message}`);
+    } finally {
+        isUploading = false;
+        tempPhotos = [];
+    }
+}
+
+function unlockCollectionFigure(figureId) {
+    const figure = userCollection.find(f => f.id === figureId);
+    if (figure && !figure.unlocked) {
+        figure.unlocked = true;
+        saveCollection();
+        renderCollection();
+        console.log(`🎉 Фигурка ${figureId} открыта!`);
+    }
+}
         // ==========================================
         // ИНИЦИАЛИЗАЦИЯ
         // ==========================================
@@ -7567,6 +7954,270 @@ updateUI();
             console.log('Unlocked statuses:', user.unlockedStatuses);
             console.log('Balance:', user.balance);
         };
+        // ==========================================
+// КОЛЛЕКЦИЯ ФИГУРОК
+// ==========================================
+
+const COLLECTION_FIGURES = [
+    { id: 1, name: "Микки Маус", desc: "Легендарный мышонок в стиле Funko Pop", img: "assets/collection/mickey.png" },
+    { id: 2, name: "Минни Маус", desc: "Очаровательная подружка Микки", img: "assets/collection/minnie.png" },
+    { id: 3, name: "Дональд Дак", desc: "Знаменитая утка в синей матроске", img: "assets/collection/donald.png" },
+    { id: 4, name: "Дейзи Дак", desc: "Подружка Дональда с бантиком", img: "assets/collection/daisy.png" },
+    { id: 5, name: "Гуфи", desc: "Верный друг Микки", img: "assets/collection/goofy.png" },
+    { id: 6, name: "Плуто", desc: "Любимый пёс Микки", img: "assets/collection/pluto.png" },
+    { id: 7, name: "Скрудж Макдак", desc: "Самый богатый селезень в мире", img: "assets/collection/scrooge.png" },
+    { id: 8, name: "Винни-Пух", desc: "Медвежонок с опилками в голове", img: "assets/collection/winnie.png" },
+    { id: 9, name: "Пятачок", desc: "Маленький поросёнок, друг Винни", img: "assets/collection/piglet.png" },
+    { id: 10, name: "Тигра", desc: "Энергичный тигр с полосатым хвостом", img: "assets/collection/tigger.png" },
+    { id: 11, name: "Белоснежка", desc: "Первая принцесса Disney", img: "assets/collection/snowwhite.png" },
+    { id: 12, name: "Золушка", desc: "Принцесса, потерявшая хрустальную туфельку", img: "assets/collection/cinderella.png" },
+    { id: 13, name: "Аврора", desc: "Спящая красавица", img: "assets/collection/aurora.png" },
+    { id: 14, name: "Ариэль", desc: "Русалочка, мечтающая о суше", img: "assets/collection/ariel.png" },
+    { id: 15, name: "Белль", desc: "Красавица и Чудовище", img: "assets/collection/belle.png" },
+    { id: 16, name: "Жасмин", desc: "Принцесса Аграбы", img: "assets/collection/jasmine.png" },
+    { id: 17, name: "Покахонтас", desc: "Дочь вождя индейского племени", img: "assets/collection/pocahontas.png" },
+    { id: 18, name: "Мулан", desc: "Отважная воительница", img: "assets/collection/mulan.png" },
+    { id: 19, name: "Тиана", desc: "Принцесса из Нового Орлеана", img: "assets/collection/tiana.png" },
+    { id: 20, name: "Рапунцель", desc: "Девушка с длинными волосами", img: "assets/collection/rapunzel.png" },
+    { id: 21, name: "Мерида", desc: "Стрелок из Шотландии", img: "assets/collection/merida.png" },
+    { id: 22, name: "Эльза", desc: "Королева льда", img: "assets/collection/elsa.png" },
+    { id: 23, name: "Анна", desc: "Младшая сестра Эльзы", img: "assets/collection/anna.png" },
+    { id: 24, name: "Моана", desc: "Дочь вождя острова", img: "assets/collection/moana.png" },
+    { id: 25, name: "Райя", desc: "Хранительница дракона", img: "assets/collection/raya.png" },
+    { id: 26, name: "Мираж", desc: "Загадочная кошка", img: "assets/collection/mirage.png" },
+    { id: 27, name: "Симба", desc: "Будущий король прайда", img: "assets/collection/simba.png" },
+    { id: 28, name: "Нала", desc: "Подруга Симбы", img: "assets/collection/nala.png" },
+    { id: 29, name: "Шрам", desc: "Коварный дядя Симбы", img: "assets/collection/scar.png" },
+    { id: 30, name: "Муфаса", desc: "Великий король прайда", img: "assets/collection/mufasa.png" },
+    { id: 31, name: "Пумба", desc: "Дружелюбный бородавочник", img: "assets/collection/pumbaa.png" },
+    { id: 32, name: "Тимон", desc: "Сурикат, лучший друг Пумбы", img: "assets/collection/timon.png" },
+    { id: 33, name: "Аладдин", desc: "Уличный вор из Аграбы", img: "assets/collection/aladdin.png" },
+    { id: 34, name: "Джафар", desc: "Коварный визирь", img: "assets/collection/jafar.png" },
+    { id: 35, name: "Геркулес", desc: "Сын Зевса", img: "assets/collection/hercules.png" },
+    { id: 36, name: "Мег", desc: "Возлюбленная Геркулеса", img: "assets/collection/meg.png" },
+    { id: 37, name: "Хадес", desc: "Бог подземного мира", img: "assets/collection/hades.png" },
+    { id: 38, name: "Тарзан", desc: "Человек, выросший в джунглях", img: "assets/collection/tarzan.png" },
+    { id: 39, name: "Джейн", desc: "Возлюбленная Тарзана", img: "assets/collection/jane.png" },
+    { id: 40, name: "Кузнечик Хоппер", desc: "Главный злодей из Приключения Флика", img: "assets/collection/hopper.png" },
+    { id: 41, name: "Флик", desc: "Изобретательный муравей", img: "assets/collection/flik.png" },
+    { id: 42, name: "Принцесса Атта", desc: "Принцесса муравьёв", img: "assets/collection/atta.png" },
+    { id: 43, name: "Суперсемейка", desc: "Семья супергероев", img: "assets/collection/incredibles.png" },
+    { id: 44, name: "Мистер Исключительный", desc: "Глава семьи супергероев", img: "assets/collection/mrincredible.png" },
+    { id: 45, name: "Эластика", desc: "Мама-растяжка", img: "assets/collection/elastigirl.png" },
+    { id: 46, name: "Вайолет", desc: "Девушка-невидимка", img: "assets/collection/violet.png" },
+    { id: 47, name: "Дэш", desc: "Супер-скорость", img: "assets/collection/dash.png" },
+    { id: 48, name: "Джек-Джек", desc: "Малыш с множеством способностей", img: "assets/collection/jackjack.png" },
+    { id: 49, name: "Фрозен", desc: "Замороженный супергерой", img: "assets/collection/frozone.png" },
+    { id: 50, name: "Микки Маус (Золотой)", desc: "Золотая коллекционная фигурка", img: "assets/collection/mickey_gold.png" }
+];
+
+let userCollection = [];
+
+function loadCollection() {
+    const saved = localStorage.getItem(`collection_${userId}`);
+    if (saved) {
+        userCollection = JSON.parse(saved);
+    } else {
+        userCollection = COLLECTION_FIGURES.map(f => ({ id: f.id, unlocked: false }));
+    }
+    renderCollection();
+}
+
+function saveCollection() {
+    localStorage.setItem(`collection_${userId}`, JSON.stringify(userCollection));
+}
+
+function renderCollection() {
+    const container = document.getElementById('collectionGrid');
+    if (!container) return;
+    
+    container.innerHTML = '';
+    let unlockedCount = 0;
+    
+    COLLECTION_FIGURES.forEach(figure => {
+        const isUnlocked = userCollection.find(f => f.id === figure.id)?.unlocked || false;
+        if (isUnlocked) unlockedCount++;
+        
+        const div = document.createElement('div');
+        div.className = `collection-figure ${isUnlocked ? 'unlocked' : 'locked'}`;
+        div.onclick = () => openFigureModal(figure.id);
+        
+        if (isUnlocked) {
+            div.innerHTML = `
+                <img src="${figure.img}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23ff9500%22/%3E%3Ctext x=%2250%22 y=%2250%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2240%22%3E🎁%3C/text%3E%3C/svg%3E'">
+                <div class="collection-figure-name">${figure.name}</div>
+            `;
+        } else {
+            div.innerHTML = `
+                <div class="collection-figure-name">???</div>
+            `;
+        }
+        
+        container.appendChild(div);
+    });
+    
+    const countSpan = document.getElementById('collectionCount');
+    if (countSpan) countSpan.innerText = `${unlockedCount}/${COLLECTION_FIGURES.length}`;
+}
+
+let currentFigureId = null;
+
+function openFigureModal(figureId) {
+    const figure = COLLECTION_FIGURES.find(f => f.id === figureId);
+    if (!figure) return;
+    
+    currentFigureId = figureId;
+    const isUnlocked = userCollection.find(f => f.id === figureId)?.unlocked || false;
+    
+    const titleEl = document.getElementById('figureModalTitle');
+    const imgEl = document.getElementById('figureModalImg');
+    const descEl = document.getElementById('figureModalDesc');
+    const statusEl = document.getElementById('figureStatus');
+    const submitBtn = document.getElementById('figureSubmitBtn');
+    
+    if (titleEl) titleEl.innerText = figure.name;
+    if (descEl) descEl.innerText = figure.desc;
+    if (imgEl) {
+        imgEl.src = figure.img;
+        imgEl.className = `figure-modal-img ${isUnlocked ? 'unlocked' : 'locked'}`;
+        imgEl.onerror = function() {
+            this.src = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22120%22 height=%22120%22 viewBox=%220 0 120 120%22%3E%3Crect width=%22120%22 height=%22120%22 fill=%22%23ff9500%22/%3E%3Ctext x=%2260%22 y=%2260%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2440%22%3E🎁%3C/text%3E%3C/svg%3E';
+        };
+    }
+    
+    if (statusEl) {
+        if (isUnlocked) {
+            statusEl.innerText = '✅ Открыта';
+            statusEl.className = 'figure-status unlocked';
+        } else {
+            statusEl.innerText = '🔒 Не открыта';
+            statusEl.className = 'figure-status locked';
+        }
+    }
+    
+    if (submitBtn) {
+        if (!isUnlocked) {
+            submitBtn.style.display = 'block';
+            submitBtn.onclick = () => openCollectionUpload(figureId, figure.name);
+        } else {
+            submitBtn.style.display = 'none';
+        }
+    }
+    
+    const modal = document.getElementById('figureModal');
+    if (modal) modal.style.display = 'flex';
+}
+
+function closeFigureModal() {
+    const modal = document.getElementById('figureModal');
+    if (modal) modal.style.display = 'none';
+    currentFigureId = null;
+}
+
+let currentCollectionFigureId = null;
+let currentCollectionFigureName = null;
+
+function openCollectionUpload(figureId, figureName) {
+    currentCollectionFigureId = figureId;
+    currentCollectionFigureName = figureName;
+    
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/*';
+    fileInput.multiple = true;
+    fileInput.onchange = handleCollectionFilesSelected;
+    fileInput.click();
+}
+
+function handleCollectionFilesSelected(event) {
+    const files = Array.from(event.target.files);
+    if (files.length === 0) return;
+    tempPhotos = files;
+    
+    const previewContainer = document.getElementById('taskPhotoPreviewContainer');
+    if (previewContainer) {
+        previewContainer.innerHTML = '';
+        files.forEach((file) => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.style.cssText = 'width: 70px; height: 70px; object-fit: cover; border-radius: 12px; margin: 5px; border: 2px solid var(--accent);';
+                previewContainer.appendChild(img);
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+    
+    const modal = document.getElementById('taskUploadModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        const titleEl = modal.querySelector('h3');
+        if (titleEl) titleEl.innerText = `Отправка фото для "${currentCollectionFigureName}"`;
+        const submitBtn = modal.querySelector('.modal-action-btn');
+        if (submitBtn) {
+            submitBtn.onclick = () => submitCollectionPhoto();
+        }
+    }
+}
+
+async function submitCollectionPhoto() {
+    if (isUploading) return;
+    if (!tempPhotos || tempPhotos.length === 0) {
+        if (tg) tg.showAlert('❌ Выберите хотя бы одно фото');
+        return;
+    }
+    
+    isUploading = true;
+    
+    try {
+        const formData = new FormData();
+        formData.append('user', userId.toString());
+        formData.append('title', `Коллекция: ${currentCollectionFigureName}`);
+        formData.append('type', 'collection');
+        formData.append('figureId', currentCollectionFigureId.toString());
+        formData.append('figureName', currentCollectionFigureName);
+        
+        for (let i = 0; i < tempPhotos.length; i++) {
+            formData.append('photos', tempPhotos[i]);
+        }
+        
+        const response = await fetch(`${SERVER_URL}/api/check_collection`, {
+            method: 'POST',
+            body: formData
+        });
+        
+        if (!response.ok) {
+            throw new Error(`Ошибка сервера: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        
+        if (result && result.status === 'ok') {
+            if (tg) tg.showAlert('✅ Фото отправлено на проверку!');
+            closeTaskUploadModal();
+            closeFigureModal();
+        } else {
+            throw new Error(result?.message || 'Ошибка отправки');
+        }
+    } catch (error) {
+        console.error('❌ Ошибка:', error);
+        if (tg) tg.showAlert(`❌ Ошибка: ${error.message}`);
+    } finally {
+        isUploading = false;
+        tempPhotos = [];
+    }
+}
+
+function unlockCollectionFigure(figureId) {
+    const figure = userCollection.find(f => f.id === figureId);
+    if (figure && !figure.unlocked) {
+        figure.unlocked = true;
+        saveCollection();
+        renderCollection();
+        console.log(`🎉 Фигурка ${figureId} открыта!`);
+    }
+}
     </script>
 </body>
 </html>
