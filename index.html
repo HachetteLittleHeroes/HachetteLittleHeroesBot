@@ -7869,7 +7869,13 @@ function handleCollectionFilesSelected(event) {
 }
 
 async function submitCollectionPhoto() {
-    if (isUploading) return;
+    console.log('=== SUBMIT COLLECTION PHOTO ===');
+    
+    if (isUploading) {
+        console.log('Already uploading');
+        return;
+    }
+    
     if (!tempPhotos || tempPhotos.length === 0) {
         if (tg) tg.showAlert('❌ Выберите хотя бы одно фото');
         return;
@@ -7880,8 +7886,6 @@ async function submitCollectionPhoto() {
     try {
         const formData = new FormData();
         formData.append('user', userId.toString());
-        formData.append('title', `Коллекция: ${currentCollectionFigureName}`);
-        formData.append('type', 'collection');
         formData.append('figureId', currentCollectionFigureId.toString());
         formData.append('figureName', currentCollectionFigureName);
         
@@ -7889,16 +7893,17 @@ async function submitCollectionPhoto() {
             formData.append('photos', tempPhotos[i]);
         }
         
+        console.log('Sending request to:', `${SERVER_URL}/api/check_collection`);
+        
         const response = await fetch(`${SERVER_URL}/api/check_collection`, {
             method: 'POST',
             body: formData
         });
         
-        if (!response.ok) {
-            throw new Error(`Ошибка сервера: ${response.status}`);
-        }
+        console.log('Response status:', response.status);
         
         const result = await response.json();
+        console.log('Response data:', result);
         
         if (result && result.status === 'ok') {
             if (tg) tg.showAlert('✅ Фото отправлено на проверку!');
