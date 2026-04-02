@@ -7733,9 +7733,7 @@ function renderCollection() {
                 <div class="collection-figure-name">${figure.name}</div>
             `;
         } else {
-            div.innerHTML = `
-                <div class="collection-figure-name">???</div>
-            `;
+            div.innerHTML = `<div class="collection-figure-name">???</div>`;
         }
         
         container.appendChild(div);
@@ -7938,6 +7936,7 @@ updateUI();
             loadInventory();
             loadSeasonPremiumStatus();
             loadClaimedRewards();
+            loadCollection();
             updateUI();
             startProgressRefresh();
             initSwipeListeners();
