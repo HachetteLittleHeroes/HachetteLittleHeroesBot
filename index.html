@@ -7832,7 +7832,17 @@ function openCollectionUpload(figureId, figureName) {
     fileInput.type = 'file';
     fileInput.accept = 'image/*';
     fileInput.multiple = true;
-    fileInput.onchange = handleCollectionFilesSelected;
+    fileInput.onchange = function(event) {
+        const files = event.target.files;
+        if (files.length > 0) {
+            tempPhotos = [];
+            for (let i = 0; i < files.length; i++) {
+                tempPhotos.push(files[i]);
+            }
+            // Сразу показываем превью и модалку
+            showCollectionPreview();
+        }
+    };
     fileInput.click();
 }
 
@@ -7869,56 +7879,40 @@ function handleCollectionFilesSelected(event) {
 }
 
 async function submitCollectionPhoto() {
-    console.log('=== SUBMIT COLLECTION PHOTO ===');
-    
-    if (isUploading) {
-        console.log('Already uploading');
-        return;
-    }
-    
     if (!tempPhotos || tempPhotos.length === 0) {
-        if (tg) tg.showAlert('❌ Выберите хотя бы одно фото');
+        if (tg) tg.showAlert('❌ Выберите фото');
         return;
     }
     
-    isUploading = true;
+    const formData = new FormData();
+    formData.append('user', userId.toString());
+    formData.append('figureId', currentCollectionFigureId.toString());
+    formData.append('figureName', currentCollectionFigureName);
+    
+    for (let i = 0; i < tempPhotos.length; i++) {
+        formData.append('photos', tempPhotos[i]);
+    }
     
     try {
-        const formData = new FormData();
-        formData.append('user', userId.toString());
-        formData.append('figureId', currentCollectionFigureId.toString());
-        formData.append('figureName', currentCollectionFigureName);
-        
-        for (let i = 0; i < tempPhotos.length; i++) {
-            formData.append('photos', tempPhotos[i]);
-        }
-        
-        console.log('Sending request to:', `${SERVER_URL}/api/check_collection`);
-        
         const response = await fetch(`${SERVER_URL}/api/check_collection`, {
             method: 'POST',
             body: formData
         });
         
-        console.log('Response status:', response.status);
-        
         const result = await response.json();
-        console.log('Response data:', result);
         
         if (result && result.status === 'ok') {
             if (tg) tg.showAlert('✅ Фото отправлено на проверку!');
             closeTaskUploadModal();
             closeFigureModal();
         } else {
-            throw new Error(result?.message || 'Ошибка отправки');
+            if (tg) tg.showAlert('❌ Ошибка отправки');
         }
     } catch (error) {
-        console.error('❌ Ошибка:', error);
-        if (tg) tg.showAlert(`❌ Ошибка: ${error.message}`);
-    } finally {
-        isUploading = false;
-        tempPhotos = [];
+        if (tg) tg.showAlert('❌ Ошибка соединения');
     }
+    
+    tempPhotos = [];
 }
 
 async function unlockCollectionFigure(figureId) {
@@ -7999,6 +7993,70 @@ updateUI();
             console.log('Unlocked statuses:', user.unlockedStatuses);
             console.log('Balance:', user.balance);
         };
+        function showCollectionPreview() {
+    // Находим модальное окно
+    let modal = document.getElementById('taskUploadModal');
+    if (!modal) {
+        // Если модалки нет, создаём
+        const modalHtml = `
+            <div id="taskUploadModal" class="modal-overlay" style="display:flex;">
+                <div class="modal-content">
+                    <h3 id="modalTitle">Отправка фото</h3>
+                    <div id="taskPhotoPreviewContainer" class="photo-preview-container"></div>
+                    <div class="modal-buttons-row">
+                        <button class="modal-close-btn" onclick="closeTaskUploadModal()">Отмена</button>
+                        <button class="modal-action-btn" id="collectionSubmitBtn">Отправить</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        modal = document.getElementById('taskUploadModal');
+    }
+    
+    // Устанавливаем заголовок
+    const titleEl = document.getElementById('modalTitle');
+    if (titleEl) {
+        titleEl.innerText = `📸 Отправка фото для "${currentCollectionFigureName}"`;
+    }
+    
+    // Показываем превью
+    const previewContainer = document.getElementById('taskPhotoPreviewContainer');
+    if (previewContainer) {
+        previewContainer.innerHTML = '';
+        for (let i = 0; i < tempPhotos.length; i++) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.style.cssText = 'width: 70px; height: 70px; object-fit: cover; border-radius: 12px; margin: 5px; border: 2px solid var(--accent);';
+                previewContainer.appendChild(img);
+            };
+            reader.readAsDataURL(tempPhotos[i]);
+        }
+    }
+    
+    // Настраиваем кнопку отправки
+    const submitBtn = document.getElementById('collectionSubmitBtn');
+    if (submitBtn) {
+        // Убираем старые обработчики
+        const newBtn = submitBtn.cloneNode(true);
+        submitBtn.parentNode.replaceChild(newBtn, submitBtn);
+        newBtn.onclick = function() {
+            submitCollectionPhoto();
+        };
+    }
+    
+    // Показываем модалку
+    modal.style.display = 'flex';
+}
+function closeTaskUploadModal() {
+    const modal = document.getElementById('taskUploadModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+    tempPhotos = [];
+}
     </script>
     <!-- Модалка фигурки коллекции -->
     <div id="figureModal" class="modal-overlay">
