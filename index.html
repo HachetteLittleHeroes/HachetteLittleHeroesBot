@@ -7805,77 +7805,47 @@ function openFigureModal(figureId, isUnlocked) {
     const figure = COLLECTION_FIGURES.find(f => f.id === figureId);
     if (!figure) return;
     
-    currentFigureForUpload = figure;
     currentCollectionFigureId = figure.id;
     currentCollectionFigureName = figure.name;
     
-    // Создаём или обновляем модальное окно фигурки
-    let modal = document.getElementById('figureDetailModal');
-    if (!modal) {
-        const modalHtml = `
-            <div id="figureDetailModal" class="modal-overlay">
-                <div class="modal-content" style="max-width: 350px; text-align: center;">
-                    <h3 id="figureModalTitle" style="margin-bottom: 10px; font-size: 20px;"></h3>
-                    <div style="position: relative; width: 150px; height: 150px; margin: 0 auto;">
-                        <img id="figureModalImg" style="width: 100%; height: 100%; object-fit: contain; border-radius: 20px;">
-                        <div id="figureBlurOverlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; backdrop-filter: blur(8px); background: rgba(0,0,0,0.3); border-radius: 20px; display: flex; align-items: center; justify-content: center; z-index: 10;">
+    // Удаляем старую модалку, если есть
+    const oldModal = document.getElementById('figureDetailModal');
+    if (oldModal) oldModal.remove();
+    
+    // Создаём новую модалку
+    const modalHtml = `
+        <div id="figureDetailModal" class="modal-overlay" style="display: flex;">
+            <div class="modal-content" style="max-width: 350px; text-align: center;">
+                <h3 style="margin-bottom: 10px; font-size: 20px; color: var(--accent);">${figure.name}</h3>
+                <div style="position: relative; width: 150px; height: 150px; margin: 0 auto;">
+                    <img src="${figure.img}" style="width: 100%; height: 100%; object-fit: contain; border-radius: 20px;" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22150%22 height=%22150%22 viewBox=%220 0 150 150%22%3E%3Crect width=%22150%22 height=%22150%22 fill=%22%23ff9500%22/%3E%3Ctext x=%2275%22 y=%2275%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2440%22%3E🎁%3C/text%3E%3C/svg%3E'">
+                    ${!isUnlocked ? `
+                        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; backdrop-filter: blur(8px); background: rgba(0,0,0,0.3); border-radius: 20px; display: flex; align-items: center; justify-content: center; z-index: 10;">
                             <i class="fas fa-lock" style="font-size: 40px; color: white; text-shadow: 0 0 10px black;"></i>
                         </div>
-                    </div>
-                    <p id="figureModalDesc" style="margin: 15px 0; color: var(--text-gray); font-size: 14px; line-height: 1.4;"></p>
-                    <div id="figureModalStatus" style="display: inline-block; padding: 6px 16px; border-radius: 20px; font-size: 13px; margin: 5px 0;"></div>
-                    <button id="figureUploadBtn" style="display: none; width: 100%; background: var(--accent); color: white; border: none; padding: 12px; border-radius: 30px; font-weight: 600; margin-top: 15px; cursor: pointer;">
+                    ` : ''}
+                </div>
+                <p style="margin: 15px 0; color: var(--text-gray); font-size: 14px; line-height: 1.4;">${figure.desc || 'Описание отсутствует'}</p>
+                <div style="display: inline-block; padding: 6px 16px; border-radius: 20px; font-size: 13px; margin: 5px 0; background: ${isUnlocked ? 'var(--status-green)' : '#666'}; color: white;">
+                    ${isUnlocked ? '✅ Открыта' : '🔒 Не открыта'}
+                </div>
+                ${!isUnlocked ? `
+                    <button id="collectionUploadBtn" style="width: 100%; background: var(--accent); color: white; border: none; padding: 12px; border-radius: 30px; font-weight: 600; margin-top: 15px; cursor: pointer;">
                         <i class="fas fa-camera"></i> Отправить фото на проверку
                     </button>
-                    <button class="modal-close-btn" onclick="closeFigureDetailModal()" style="width: 100%; margin-top: 10px;">Закрыть</button>
-                </div>
+                ` : ''}
+                <button class="modal-close-btn" onclick="closeFigureDetailModal()" style="width: 100%; margin-top: 10px;">Закрыть</button>
             </div>
-        `;
-        document.body.insertAdjacentHTML('beforeend', modalHtml);
-        modal = document.getElementById('figureDetailModal');
-    }
+        </div>
+    `;
     
-    // Заполняем данные фигурки
-    const titleEl = document.getElementById('figureModalTitle');
-    const descEl = document.getElementById('figureModalDesc');
-    const imgEl = document.getElementById('figureModalImg');
-    const blurOverlay = document.getElementById('figureBlurOverlay');
-    const statusEl = document.getElementById('figureModalStatus');
-    const uploadBtn = document.getElementById('figureUploadBtn');
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
     
-    // Устанавливаем название и описание
-    if (titleEl) titleEl.innerText = figure.name;
-    if (descEl) descEl.innerText = figure.desc;
-    
-    // Устанавливаем изображение
-    if (imgEl) {
-        imgEl.src = figure.img;
-        imgEl.onerror = function() {
-            this.src = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22150%22 height=%22150%22 viewBox=%220 0 150 150%22%3E%3Crect width=%22150%22 height=%22150%22 fill=%22%23ff9500%22/%3E%3Ctext x=%2275%22 y=%2275%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2440%22%3E🎁%3C/text%3E%3C/svg%3E';
-        };
-    }
-    
-    if (isUnlocked) {
-        // Фигурка открыта
-        if (blurOverlay) blurOverlay.style.display = 'none';
-        if (statusEl) {
-            statusEl.innerText = '✅ Открыта';
-            statusEl.style.background = 'var(--status-green)';
-            statusEl.style.color = 'white';
-        }
-        if (uploadBtn) uploadBtn.style.display = 'none';
-    } else {
-        // Фигурка закрыта - показываем кнопку отправки
-        if (blurOverlay) blurOverlay.style.display = 'flex';
-        if (statusEl) {
-            statusEl.innerText = '🔒 Не открыта';
-            statusEl.style.background = '#666';
-            statusEl.style.color = 'white';
-        }
+    // Добавляем обработчик для кнопки отправки
+    if (!isUnlocked) {
+        const uploadBtn = document.getElementById('collectionUploadBtn');
         if (uploadBtn) {
-            uploadBtn.style.display = 'block';
             uploadBtn.onclick = () => {
-                // Создаём input для выбора фото
                 const fileInput = document.createElement('input');
                 fileInput.type = 'file';
                 fileInput.accept = 'image/*';
@@ -7890,14 +7860,11 @@ function openFigureModal(figureId, isUnlocked) {
             };
         }
     }
-    
-    modal.style.display = 'flex';
 }
 
 function closeFigureDetailModal() {
     const modal = document.getElementById('figureDetailModal');
-    if (modal) modal.style.display = 'none';
-    currentFigureForUpload = null;
+    if (modal) modal.remove();
     currentCollectionFigureId = null;
     currentCollectionFigureName = null;
 }
