@@ -3096,13 +3096,15 @@
         </div>
     </div>
     <!-- ========== КОЛЛЕКЦИЯ ========== -->
-    <div id="collection" class="page">
-        <div class="header">
-            Коллекция
-            <span style="font-size: 12px; background: var(--accent); padding: 4px 12px; border-radius: 20px;" id="collectionCount">0/50</span>
-        </div>
-        <div id="collectionGrid" class="collection-grid"></div>
+<div id="collection" class="page">
+    <div class="header">
+        Коллекция фигурок
+        <span style="font-size: 12px; background: var(--accent); padding: 4px 12px; border-radius: 20px;" id="collectionCount">0/50</span>
     </div>
+    <div class="books-section" style="padding: 0 15px;">
+        <div id="collectionGrid" class="books-grid" style="grid-template-columns: repeat(3, 1fr);"></div>
+    </div>
+</div>
 
     <!-- ========== НАВИГАЦИЯ ========== -->
     <nav class="nav">
@@ -7747,20 +7749,25 @@ function renderCollection() {
         const isUnlocked = userCollection.find(f => f.id === figure.id)?.unlocked || false;
         if (isUnlocked) unlockedCount++;
         
-        const div = document.createElement('div');
-        div.className = `collection-figure ${isUnlocked ? 'unlocked' : 'locked'}`;
-        div.onclick = () => openFigureModal(figure.id);
+        const card = document.createElement('div');
+        card.className = `book-card ${isUnlocked ? '' : 'locked'}`;
+        card.style.position = 'relative';
+        card.style.cursor = 'pointer';
         
-        if (isUnlocked) {
-            div.innerHTML = `
-                <img src="${figure.img}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23ff9500%22/%3E%3Ctext x=%2250%22 y=%2250%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2240%22%3E🎁%3C/text%3E%3C/svg%3E'">
-                <div class="collection-figure-name">${figure.name}</div>
-            `;
-        } else {
-            div.innerHTML = `<div class="collection-figure-name">???</div>`;
+        if (!isUnlocked) {
+            card.style.filter = 'blur(4px)';
+            card.style.opacity = '0.7';
         }
         
-        container.appendChild(div);
+        card.onclick = () => openFigureModal(figure.id, isUnlocked);
+        
+        card.innerHTML = `
+            <img src="${figure.img}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%25%22 height=%22100%25%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%23ff9500%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2240%22%3E🎁%3C/text%3E%3C/svg%3E'">
+            <h4>${figure.name}</h4>
+            ${!isUnlocked ? '<div style="margin-top: 8px;"><i class="fas fa-lock"></i> <span style="font-size: 11px;">Не открыта</span></div>' : '<div style="margin-top: 8px;"><i class="fas fa-check-circle" style="color: var(--status-green);"></i> <span style="font-size: 11px;">Открыта</span></div>'}
+        `;
+        
+        container.appendChild(card);
     });
     
     const countSpan = document.getElementById('collectionCount');
@@ -7768,80 +7775,84 @@ function renderCollection() {
 }
 
 let currentFigureId = null;
+let currentFigureForUpload = null;
 
-function openFigureModal(figureId) {
+function openFigureModal(figureId, isUnlocked) {
     const figure = COLLECTION_FIGURES.find(f => f.id === figureId);
     if (!figure) return;
     
-    currentFigureId = figureId;
-    const isUnlocked = userCollection.find(f => f.id === figureId)?.unlocked || false;
+    currentFigureForUpload = figure;
     
-    const titleEl = document.getElementById('figureModalTitle');
+    // Создаём или обновляем модальное окно фигурки
+    let modal = document.getElementById('figureDetailModal');
+    if (!modal) {
+        const modalHtml = `
+            <div id="figureDetailModal" class="modal-overlay">
+                <div class="modal-content" style="max-width: 350px; text-align: center;">
+                    <h3 id="figureModalTitle"></h3>
+                    <img id="figureModalImg" style="width: 120px; height: 120px; object-fit: contain; margin: 10px auto; background: #f0f0f0; border-radius: 20px;">
+                    <p id="figureModalDesc"></p>
+                    <div id="figureModalStatus" class="figure-status" style="display: inline-block; padding: 4px 12px; border-radius: 20px; margin: 10px 0;"></div>
+                    <button id="figureUploadBtn" class="figure-submit-btn" style="display: none; width: 100%;">
+                        <i class="fas fa-camera"></i> Отправить фото на проверку
+                    </button>
+                    <button class="modal-close-btn" onclick="closeFigureDetailModal()">Закрыть</button>
+                </div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        modal = document.getElementById('figureDetailModal');
+    }
+    
+    document.getElementById('figureModalTitle').innerText = figure.name;
+    document.getElementById('figureModalDesc').innerText = figure.desc;
+    
     const imgEl = document.getElementById('figureModalImg');
-    const descEl = document.getElementById('figureModalDesc');
-    const statusEl = document.getElementById('figureStatus');
-    const submitBtn = document.getElementById('figureSubmitBtn');
+    imgEl.src = figure.img;
+    imgEl.onerror = function() {
+        this.src = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22120%22 height=%22120%22 viewBox=%220 0 120 120%22%3E%3Crect width=%22120%22 height=%22120%22 fill=%22%23ff9500%22/%3E%3Ctext x=%2260%22 y=%2260%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2440%22%3E🎁%3C/text%3E%3C/svg%3E';
+    };
     
-    if (titleEl) titleEl.innerText = figure.name;
-    if (descEl) descEl.innerText = figure.desc;
-    if (imgEl) {
-        imgEl.src = figure.img;
-        imgEl.className = `figure-modal-img ${isUnlocked ? 'unlocked' : 'locked'}`;
-        imgEl.onerror = function() {
-            this.src = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22120%22 height=%22120%22 viewBox=%220 0 120 120%22%3E%3Crect width=%22120%22 height=%22120%22 fill=%22%23ff9500%22/%3E%3Ctext x=%2260%22 y=%2260%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2440%22%3E🎁%3C/text%3E%3C/svg%3E';
-        };
+    const statusEl = document.getElementById('figureModalStatus');
+    const uploadBtn = document.getElementById('figureUploadBtn');
+    
+    if (isUnlocked) {
+        statusEl.innerText = '✅ Открыта';
+        statusEl.className = 'figure-status unlocked';
+        statusEl.style.background = 'var(--status-green)';
+        statusEl.style.color = 'white';
+        uploadBtn.style.display = 'none';
+    } else {
+        statusEl.innerText = '🔒 Не открыта';
+        statusEl.className = 'figure-status locked';
+        statusEl.style.background = '#666';
+        statusEl.style.color = 'white';
+        uploadBtn.style.display = 'block';
+        uploadBtn.onclick = () => openCollectionUploadForFigure();
     }
     
-    if (statusEl) {
-        if (isUnlocked) {
-            statusEl.innerText = '✅ Открыта';
-            statusEl.className = 'figure-status unlocked';
-        } else {
-            statusEl.innerText = '🔒 Не открыта';
-            statusEl.className = 'figure-status locked';
-        }
-    }
-    
-    if (submitBtn) {
-        if (!isUnlocked) {
-            submitBtn.style.display = 'block';
-            submitBtn.onclick = () => openCollectionUpload(figureId, figure.name);
-        } else {
-            submitBtn.style.display = 'none';
-        }
-    }
-    
-    const modal = document.getElementById('figureModal');
-    if (modal) modal.style.display = 'flex';
+    modal.style.display = 'flex';
 }
 
-function closeFigureModal() {
-    const modal = document.getElementById('figureModal');
+function closeFigureDetailModal() {
+    const modal = document.getElementById('figureDetailModal');
     if (modal) modal.style.display = 'none';
-    currentFigureId = null;
+    currentFigureForUpload = null;
 }
 
-let currentCollectionFigureId = null;
-let currentCollectionFigureName = null;
-
-function openCollectionUpload(figureId, figureName) {
-    currentCollectionFigureId = figureId;
-    currentCollectionFigureName = figureName;
+function openCollectionUploadForFigure() {
+    if (!currentFigureForUpload) return;
     
+    currentCollectionFigureId = currentFigureForUpload.id;
+    currentCollectionFigureName = currentFigureForUpload.name;
+    
+    // Используем существующую систему отправки
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
     fileInput.accept = 'image/*';
     fileInput.multiple = true;
     fileInput.onchange = function(event) {
-        const files = event.target.files;
-        if (files.length > 0) {
-            tempPhotos = [];
-            for (let i = 0; i < files.length; i++) {
-                tempPhotos.push(files[i]);
-            }
-            // Сразу показываем превью и модалку
-            showCollectionPreview();
-        }
+        handleCollectionFilesSelected(event);
     };
     fileInput.click();
 }
@@ -7849,6 +7860,7 @@ function openCollectionUpload(figureId, figureName) {
 function handleCollectionFilesSelected(event) {
     const files = Array.from(event.target.files);
     if (files.length === 0) return;
+    
     tempPhotos = files;
     
     const previewContainer = document.getElementById('taskPhotoPreviewContainer');
@@ -7870,7 +7882,8 @@ function handleCollectionFilesSelected(event) {
     if (modal) {
         modal.style.display = 'flex';
         const titleEl = modal.querySelector('h3');
-        if (titleEl) titleEl.innerText = `Отправка фото для "${currentCollectionFigureName}"`;
+        if (titleEl) titleEl.innerText = `Отправка фото для фигурки "${currentCollectionFigureName}"`;
+        
         const submitBtn = modal.querySelector('.modal-action-btn');
         if (submitBtn) {
             submitBtn.onclick = () => submitCollectionPhoto();
@@ -7880,7 +7893,7 @@ function handleCollectionFilesSelected(event) {
 
 async function submitCollectionPhoto() {
     if (!tempPhotos || tempPhotos.length === 0) {
-        if (tg) tg.showAlert('❌ Выберите фото');
+        if (tg) tg.showAlert('❌ Выберите хотя бы одно фото');
         return;
     }
     
@@ -7888,6 +7901,7 @@ async function submitCollectionPhoto() {
     formData.append('user', userId.toString());
     formData.append('figureId', currentCollectionFigureId.toString());
     formData.append('figureName', currentCollectionFigureName);
+    formData.append('type', 'collection');
     
     for (let i = 0; i < tempPhotos.length; i++) {
         formData.append('photos', tempPhotos[i]);
@@ -7904,40 +7918,15 @@ async function submitCollectionPhoto() {
         if (result && result.status === 'ok') {
             if (tg) tg.showAlert('✅ Фото отправлено на проверку!');
             closeTaskUploadModal();
-            closeFigureModal();
+            closeFigureDetailModal();
         } else {
-            if (tg) tg.showAlert('❌ Ошибка отправки');
+            throw new Error(result?.message || 'Ошибка отправки');
         }
     } catch (error) {
-        if (tg) tg.showAlert('❌ Ошибка соединения');
-    }
-    
-    tempPhotos = [];
-}
-
-async function unlockCollectionFigure(figureId) {
-    const figure = userCollection.find(f => f.id === figureId);
-    if (figure && !figure.unlocked) {
-        figure.unlocked = true;
-        saveCollection();
-        renderCollection();
-        
-        // Отправляем на сервер
-        try {
-            await fetch(`${SERVER_URL}/api/unlock_figure`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    user_id: userId,
-                    figure_id: figureId.toString()
-                })
-            });
-        } catch (error) {
-            console.error('Ошибка сохранения на сервере:', error);
-        }
-        
-        console.log(`🎉 Фигурка ${figureId} открыта!`);
-        if (tg) tg.showAlert(`🎉 Фигурка открыта в коллекции!`);
+        console.error('Ошибка:', error);
+        if (tg) tg.showAlert(`❌ Ошибка: ${error.message}`);
+    } finally {
+        tempPhotos = [];
     }
 }
         // ==========================================
