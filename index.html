@@ -2706,71 +2706,84 @@
             margin-bottom: 12px;
             text-align: left;
         }
-        /* ==========================================
-   КОЛЛЕКЦИЯ
+ /* ==========================================
+   КОЛЛЕКЦИЯ - ФИКСИРОВАННЫЕ КАРТОЧКИ
    ========================================== */
+.collection-page {
+    padding: 0 15px;
+}
+
 .collection-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 12px;
-    padding: 15px;
+    width: 100%;
 }
 
-.collection-figure {
-    aspect-ratio: 1/1;
+.collection-card {
     background: var(--bg-header);
     border-radius: 16px;
-    border: 2px solid var(--border-color);
+    padding: 12px 8px;
+    text-align: center;
+    border: 1px solid var(--border-color);
     cursor: pointer;
     transition: all 0.2s;
     display: flex;
     flex-direction: column;
     align-items: center;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.collection-card:active {
+    transform: scale(0.97);
+}
+
+.collection-card-image {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: center;
     justify-content: center;
-    padding: 8px;
-    position: relative;
-    overflow: hidden;
+    margin-bottom: 8px;
 }
 
-.collection-figure.locked {
-    filter: blur(8px);
-    background: var(--bg);
-}
-
-.collection-figure.locked::after {
-    content: "?";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 32px;
-    font-weight: bold;
-    color: var(--accent);
-    background: none;
-    filter: none;
-}
-
-.collection-figure.unlocked {
-    border-color: var(--accent);
-    background: linear-gradient(135deg, rgba(255,149,0,0.1), transparent);
-}
-
-.collection-figure img {
+.collection-card-image img {
     width: 70%;
     height: 70%;
     object-fit: contain;
+    border-radius: 12px;
 }
 
-.collection-figure-name {
-    font-size: 10px;
-    text-align: center;
-    margin-top: 5px;
-    color: var(--text);
-}
-
-.collection-figure.unlocked .collection-figure-name {
-    color: var(--accent);
+.collection-card-name {
+    font-size: 11px;
     font-weight: 600;
+    color: var(--text);
+    text-align: center;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    line-height: 1.3;
+    min-height: 28px;
+    margin-bottom: 4px;
+    padding: 0 4px;
+}
+
+.collection-card-status {
+    font-size: 10px;
+    margin-top: 4px;
+}
+
+.collection-card-status.locked {
+    color: var(--text-gray);
+}
+
+.collection-card-status.unlocked {
+    color: var(--status-green);
 }
 
 /* Модалка фигурки */
@@ -2820,62 +2833,6 @@
     font-weight: 600;
     margin-top: 15px;
     cursor: pointer;
-}
-
-.collection-card {
-    background: var(--bg-header);
-    border-radius: 16px;
-    padding: 12px;
-    text-align: center;
-    border: 1px solid var(--border-color);
-    cursor: pointer;
-    transition: all 0.2s;
-    display: flex;
-    flex-direction: column;
-    min-height: 200px;
-    width: 100%;
-    box-sizing: border-box;
-}
-
-.collection-card:active {
-    transform: scale(0.98);
-}
-.collection-card-image {
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 10px;
-}
-
-.collection-card-image img {
-    width: 80%;
-    height: 80%;
-    object-fit: contain;
-    border-radius: 12px;
-}
-
-.collection-card-name {
-    font-size: 13px;
-    font-weight: 600;
-    margin-bottom: 6px;
-    color: var(--text);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.collection-card-status {
-    font-size: 11px;
-}
-
-.collection-card-status.locked {
-    color: var(--text-gray);
-}
-
-.collection-card-status.unlocked {
-    color: var(--status-green);
 }
     </style>
 </head>
@@ -3151,13 +3108,15 @@
             </div>
         </div>
     </div>
-    <!-- ========== КОЛЛЕКЦИЯ ========== -->
+ <!-- ========== КОЛЛЕКЦИЯ ========== -->
 <div id="collection" class="page">
     <div class="header">
         Коллекция фигурок
         <span style="font-size: 12px; background: var(--accent); padding: 4px 12px; border-radius: 20px;" id="collectionCount">0/50</span>
     </div>
-    <div id="collectionGrid" class="collection-grid"></div>
+    <div class="collection-page">
+        <div id="collectionGrid" class="collection-grid"></div>
+    </div>
 </div>
 
     <!-- ========== НАВИГАЦИЯ ========== -->
@@ -7799,19 +7758,25 @@ function renderCollection() {
     container.innerHTML = '';
     let unlockedCount = 0;
     
-    COLLECTION_FIGURES.forEach(figure => {
-        const isUnlocked = userCollection.find(f => f.id === figure.id)?.unlocked || false;
+    // Сортируем фигурки по ID для стабильного порядка
+    const sortedFigures = [...COLLECTION_FIGURES].sort((a, b) => a.id - b.id);
+    
+    sortedFigures.forEach(figure => {
+        const figureData = userCollection.find(f => f.id === figure.id);
+        const isUnlocked = figureData ? figureData.unlocked : false;
         if (isUnlocked) unlockedCount++;
         
         const card = document.createElement('div');
         card.className = 'collection-card';
+        card.setAttribute('data-id', figure.id);
         card.onclick = () => openFigureModal(figure.id, isUnlocked);
         
+        // Используем одинаковую структуру для всех карточек
         card.innerHTML = `
             <div class="collection-card-image">
-                <img src="${figure.img}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%25%22 height=%22100%25%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%23ff9500%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2440%22%3E🎁%3C/text%3E%3C/svg%3E'">
+                <img src="${figure.img}" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%25%22 height=%22100%25%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%23ff9500%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2440%22%3E🎁%3C/text%3E%3C/svg%3E'">
             </div>
-            <div class="collection-card-name">${figure.name}</div>
+            <div class="collection-card-name">${escapeHtml(figure.name)}</div>
             <div class="collection-card-status ${isUnlocked ? 'unlocked' : 'locked'}">
                 ${isUnlocked ? '<i class="fas fa-check-circle"></i> Открыта' : '<i class="fas fa-lock"></i> Не открыта'}
             </div>
@@ -7822,6 +7787,13 @@ function renderCollection() {
     
     const countSpan = document.getElementById('collectionCount');
     if (countSpan) countSpan.innerText = `${unlockedCount}/${COLLECTION_FIGURES.length}`;
+}
+
+// Вспомогательная функция для безопасности
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
 }
 
 // Переменные для коллекции
