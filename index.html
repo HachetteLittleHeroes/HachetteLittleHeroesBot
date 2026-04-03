@@ -2821,6 +2821,28 @@
     margin-top: 15px;
     cursor: pointer;
 }
+.collection-card {
+    background: var(--bg-header);
+    border-radius: 16px;
+    padding: 12px;
+    text-align: center;
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    min-height: 180px;
+}
+
+.collection-card:active {
+    transform: scale(0.98);
+}
+
+#collectionGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
     </style>
 </head>
 <body>
@@ -7750,21 +7772,29 @@ function renderCollection() {
         if (isUnlocked) unlockedCount++;
         
         const card = document.createElement('div');
-        card.className = `book-card ${isUnlocked ? '' : 'locked'}`;
-        card.style.position = 'relative';
-        card.style.cursor = 'pointer';
-        
-        if (!isUnlocked) {
-            card.style.filter = 'blur(4px)';
-            card.style.opacity = '0.7';
-        }
+        card.className = 'collection-card';
+        card.style.cssText = `
+            background: var(--bg-header);
+            border-radius: 16px;
+            padding: 12px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            min-height: 180px;
+        `;
         
         card.onclick = () => openFigureModal(figure.id, isUnlocked);
         
+        // Изображение без блюра на карточке
         card.innerHTML = `
-            <img src="${figure.img}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%25%22 height=%22100%25%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%23ff9500%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2240%22%3E🎁%3C/text%3E%3C/svg%3E'">
-            <h4>${figure.name}</h4>
-            ${!isUnlocked ? '<div style="margin-top: 8px;"><i class="fas fa-lock"></i> <span style="font-size: 11px;">Не открыта</span></div>' : '<div style="margin-top: 8px;"><i class="fas fa-check-circle" style="color: var(--status-green);"></i> <span style="font-size: 11px;">Открыта</span></div>'}
+            <div style="width: 100%; aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; margin-bottom: 10px;">
+                <img src="${figure.img}" style="width: 80%; height: 80%; object-fit: contain; border-radius: 12px;" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%25%22 height=%22100%25%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%23ff9500%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2440%22%3E🎁%3C/text%3E%3C/svg%3E'">
+            </div>
+            <div style="font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--text);">${figure.name}</div>
+            ${!isUnlocked ? '<div style="font-size: 11px; color: var(--text-gray);"><i class="fas fa-lock"></i> Не открыта</div>' : '<div style="font-size: 11px; color: var(--status-green);"><i class="fas fa-check-circle"></i> Открыта</div>'}
         `;
         
         container.appendChild(card);
@@ -7789,14 +7819,19 @@ function openFigureModal(figureId, isUnlocked) {
         const modalHtml = `
             <div id="figureDetailModal" class="modal-overlay">
                 <div class="modal-content" style="max-width: 350px; text-align: center;">
-                    <h3 id="figureModalTitle"></h3>
-                    <img id="figureModalImg" style="width: 120px; height: 120px; object-fit: contain; margin: 10px auto; background: #f0f0f0; border-radius: 20px;">
-                    <p id="figureModalDesc"></p>
-                    <div id="figureModalStatus" class="figure-status" style="display: inline-block; padding: 4px 12px; border-radius: 20px; margin: 10px 0;"></div>
-                    <button id="figureUploadBtn" class="figure-submit-btn" style="display: none; width: 100%;">
+                    <h3 id="figureModalTitle" style="margin-bottom: 15px;"></h3>
+                    <div style="position: relative; width: 150px; height: 150px; margin: 0 auto;">
+                        <img id="figureModalImg" style="width: 100%; height: 100%; object-fit: contain; border-radius: 20px;">
+                        <div id="figureBlurOverlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; backdrop-filter: blur(8px); background: rgba(0,0,0,0.3); border-radius: 20px; display: flex; align-items: center; justify-content: center; z-index: 10;">
+                            <i class="fas fa-lock" style="font-size: 40px; color: white; text-shadow: 0 0 10px black;"></i>
+                        </div>
+                    </div>
+                    <p id="figureModalDesc" style="margin: 15px 0; color: var(--text-gray);"></p>
+                    <div id="figureModalStatus" style="display: inline-block; padding: 4px 12px; border-radius: 20px; margin: 10px 0;"></div>
+                    <button id="figureUploadBtn" style="display: none; width: 100%; background: var(--accent); color: white; border: none; padding: 12px; border-radius: 30px; font-weight: 600; margin-top: 15px; cursor: pointer;">
                         <i class="fas fa-camera"></i> Отправить фото на проверку
                     </button>
-                    <button class="modal-close-btn" onclick="closeFigureDetailModal()">Закрыть</button>
+                    <button class="modal-close-btn" onclick="closeFigureDetailModal()" style="width: 100%; margin-top: 10px;">Закрыть</button>
                 </div>
             </div>
         `;
@@ -7808,23 +7843,26 @@ function openFigureModal(figureId, isUnlocked) {
     document.getElementById('figureModalDesc').innerText = figure.desc;
     
     const imgEl = document.getElementById('figureModalImg');
-    imgEl.src = figure.img;
-    imgEl.onerror = function() {
-        this.src = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22120%22 height=%22120%22 viewBox=%220 0 120 120%22%3E%3Crect width=%22120%22 height=%22120%22 fill=%22%23ff9500%22/%3E%3Ctext x=%2260%22 y=%2260%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2440%22%3E🎁%3C/text%3E%3C/svg%3E';
-    };
-    
+    const blurOverlay = document.getElementById('figureBlurOverlay');
     const statusEl = document.getElementById('figureModalStatus');
     const uploadBtn = document.getElementById('figureUploadBtn');
     
+    imgEl.src = figure.img;
+    imgEl.onerror = function() {
+        this.src = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22150%22 height=%22150%22 viewBox=%220 0 150 150%22%3E%3Crect width=%22150%22 height=%22150%22 fill=%22%23ff9500%22/%3E%3Ctext x=%2275%22 y=%2275%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2440%22%3E🎁%3C/text%3E%3C/svg%3E';
+    };
+    
     if (isUnlocked) {
+        // Открыто — убираем блюр
+        if (blurOverlay) blurOverlay.style.display = 'none';
         statusEl.innerText = '✅ Открыта';
-        statusEl.className = 'figure-status unlocked';
         statusEl.style.background = 'var(--status-green)';
         statusEl.style.color = 'white';
         uploadBtn.style.display = 'none';
     } else {
+        // Закрыто — показываем блюр ТОЛЬКО на изображении
+        if (blurOverlay) blurOverlay.style.display = 'flex';
         statusEl.innerText = '🔒 Не открыта';
-        statusEl.className = 'figure-status locked';
         statusEl.style.background = '#666';
         statusEl.style.color = 'white';
         uploadBtn.style.display = 'block';
