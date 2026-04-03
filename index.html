@@ -2711,7 +2711,7 @@
    ========================================== */
 .collection-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 12px;
     padding: 15px;
 }
@@ -2821,6 +2821,7 @@
     margin-top: 15px;
     cursor: pointer;
 }
+
 .collection-card {
     background: var(--bg-header);
     border-radius: 16px;
@@ -2831,17 +2832,50 @@
     transition: all 0.2s;
     display: flex;
     flex-direction: column;
-    min-height: 180px;
+    min-height: 200px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .collection-card:active {
     transform: scale(0.98);
 }
+.collection-card-image {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+}
 
-#collectionGrid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
+.collection-card-image img {
+    width: 80%;
+    height: 80%;
+    object-fit: contain;
+    border-radius: 12px;
+}
+
+.collection-card-name {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.collection-card-status {
+    font-size: 11px;
+}
+
+.collection-card-status.locked {
+    color: var(--text-gray);
+}
+
+.collection-card-status.unlocked {
+    color: var(--status-green);
 }
     </style>
 </head>
@@ -3123,9 +3157,7 @@
         Коллекция фигурок
         <span style="font-size: 12px; background: var(--accent); padding: 4px 12px; border-radius: 20px;" id="collectionCount">0/50</span>
     </div>
-    <div class="books-section" style="padding: 0 15px;">
-        <div id="collectionGrid" class="books-grid" style="grid-template-columns: repeat(3, 1fr);"></div>
-    </div>
+    <div id="collectionGrid" class="collection-grid"></div>
 </div>
 
     <!-- ========== НАВИГАЦИЯ ========== -->
@@ -7773,28 +7805,16 @@ function renderCollection() {
         
         const card = document.createElement('div');
         card.className = 'collection-card';
-        card.style.cssText = `
-            background: var(--bg-header);
-            border-radius: 16px;
-            padding: 12px;
-            text-align: center;
-            border: 1px solid var(--border-color);
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            flex-direction: column;
-            min-height: 180px;
-        `;
-        
         card.onclick = () => openFigureModal(figure.id, isUnlocked);
         
-        // Изображение без блюра на карточке
         card.innerHTML = `
-            <div style="width: 100%; aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; margin-bottom: 10px;">
-                <img src="${figure.img}" style="width: 80%; height: 80%; object-fit: contain; border-radius: 12px;" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%25%22 height=%22100%25%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%23ff9500%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2440%22%3E🎁%3C/text%3E%3C/svg%3E'">
+            <div class="collection-card-image">
+                <img src="${figure.img}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%25%22 height=%22100%25%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%23ff9500%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2440%22%3E🎁%3C/text%3E%3C/svg%3E'">
             </div>
-            <div style="font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--text);">${figure.name}</div>
-            ${!isUnlocked ? '<div style="font-size: 11px; color: var(--text-gray);"><i class="fas fa-lock"></i> Не открыта</div>' : '<div style="font-size: 11px; color: var(--status-green);"><i class="fas fa-check-circle"></i> Открыта</div>'}
+            <div class="collection-card-name">${figure.name}</div>
+            <div class="collection-card-status ${isUnlocked ? 'unlocked' : 'locked'}">
+                ${isUnlocked ? '<i class="fas fa-check-circle"></i> Открыта' : '<i class="fas fa-lock"></i> Не открыта'}
+            </div>
         `;
         
         container.appendChild(card);
@@ -7804,16 +7824,20 @@ function renderCollection() {
     if (countSpan) countSpan.innerText = `${unlockedCount}/${COLLECTION_FIGURES.length}`;
 }
 
-let currentFigureId = null;
+// Переменные для коллекции
 let currentFigureForUpload = null;
+let currentCollectionFigureId = null;
+let currentCollectionFigureName = null;
 
 function openFigureModal(figureId, isUnlocked) {
     const figure = COLLECTION_FIGURES.find(f => f.id === figureId);
     if (!figure) return;
     
     currentFigureForUpload = figure;
+    currentCollectionFigureId = figure.id;
+    currentCollectionFigureName = figure.name;
     
-    // Создаём или обновляем модальное окно фигурки
+    // Создаём модальное окно
     let modal = document.getElementById('figureDetailModal');
     if (!modal) {
         const modalHtml = `
@@ -7839,6 +7863,7 @@ function openFigureModal(figureId, isUnlocked) {
         modal = document.getElementById('figureDetailModal');
     }
     
+    // Заполняем данные
     document.getElementById('figureModalTitle').innerText = figure.name;
     document.getElementById('figureModalDesc').innerText = figure.desc;
     
@@ -7853,20 +7878,31 @@ function openFigureModal(figureId, isUnlocked) {
     };
     
     if (isUnlocked) {
-        // Открыто — убираем блюр
         if (blurOverlay) blurOverlay.style.display = 'none';
         statusEl.innerText = '✅ Открыта';
         statusEl.style.background = 'var(--status-green)';
         statusEl.style.color = 'white';
         uploadBtn.style.display = 'none';
     } else {
-        // Закрыто — показываем блюр ТОЛЬКО на изображении
         if (blurOverlay) blurOverlay.style.display = 'flex';
         statusEl.innerText = '🔒 Не открыта';
         statusEl.style.background = '#666';
         statusEl.style.color = 'white';
         uploadBtn.style.display = 'block';
-        uploadBtn.onclick = () => openCollectionUploadForFigure();
+        uploadBtn.onclick = () => {
+            // Создаём input для выбора фото
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'image/*';
+            fileInput.multiple = true;
+            fileInput.onchange = (event) => {
+                const files = Array.from(event.target.files);
+                if (files.length > 0) {
+                    handleCollectionUpload(files);
+                }
+            };
+            fileInput.click();
+        };
     }
     
     modal.style.display = 'flex';
@@ -7876,31 +7912,14 @@ function closeFigureDetailModal() {
     const modal = document.getElementById('figureDetailModal');
     if (modal) modal.style.display = 'none';
     currentFigureForUpload = null;
+    currentCollectionFigureId = null;
+    currentCollectionFigureName = null;
 }
 
-function openCollectionUploadForFigure() {
-    if (!currentFigureForUpload) return;
-    
-    currentCollectionFigureId = currentFigureForUpload.id;
-    currentCollectionFigureName = currentFigureForUpload.name;
-    
-    // Используем существующую систему отправки
-    const fileInput = document.createElement('input');
-    fileInput.type = 'file';
-    fileInput.accept = 'image/*';
-    fileInput.multiple = true;
-    fileInput.onchange = function(event) {
-        handleCollectionFilesSelected(event);
-    };
-    fileInput.click();
-}
-
-function handleCollectionFilesSelected(event) {
-    const files = Array.from(event.target.files);
-    if (files.length === 0) return;
-    
+function handleCollectionUpload(files) {
     tempPhotos = files;
     
+    // Показываем превью в существующей модалке
     const previewContainer = document.getElementById('taskPhotoPreviewContainer');
     if (previewContainer) {
         previewContainer.innerHTML = '';
@@ -7916,15 +7935,19 @@ function handleCollectionFilesSelected(event) {
         });
     }
     
+    // Открываем модалку отправки
     const modal = document.getElementById('taskUploadModal');
     if (modal) {
         modal.style.display = 'flex';
         const titleEl = modal.querySelector('h3');
-        if (titleEl) titleEl.innerText = `Отправка фото для фигурки "${currentCollectionFigureName}"`;
+        if (titleEl) titleEl.innerText = `Отправка фото для "${currentCollectionFigureName}"`;
         
         const submitBtn = modal.querySelector('.modal-action-btn');
         if (submitBtn) {
-            submitBtn.onclick = () => submitCollectionPhoto();
+            // Убираем старый обработчик
+            const newBtn = submitBtn.cloneNode(true);
+            submitBtn.parentNode.replaceChild(newBtn, submitBtn);
+            newBtn.onclick = () => submitCollectionPhoto();
         }
     }
 }
@@ -7939,7 +7962,6 @@ async function submitCollectionPhoto() {
     formData.append('user', userId.toString());
     formData.append('figureId', currentCollectionFigureId.toString());
     formData.append('figureName', currentCollectionFigureName);
-    formData.append('type', 'collection');
     
     for (let i = 0; i < tempPhotos.length; i++) {
         formData.append('photos', tempPhotos[i]);
