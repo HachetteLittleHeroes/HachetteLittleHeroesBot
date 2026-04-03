@@ -7758,7 +7758,6 @@ function renderCollection() {
     container.innerHTML = '';
     let unlockedCount = 0;
     
-    // Сортируем фигурки по ID для стабильного порядка
     const sortedFigures = [...COLLECTION_FIGURES].sort((a, b) => a.id - b.id);
     
     sortedFigures.forEach(figure => {
@@ -7771,11 +7770,27 @@ function renderCollection() {
         card.setAttribute('data-id', figure.id);
         card.onclick = () => openFigureModal(figure.id, isUnlocked);
         
-        // Используем одинаковую структуру для всех карточек
+        // Для заблокированных фигурок - блюр + иконка замка поверх
+        let imageHtml = '';
+        if (!isUnlocked) {
+            imageHtml = `
+                <div style="position: relative; width: 100%; aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center;">
+                    <img src="${figure.img}" style="width: 70%; height: 70%; object-fit: contain; border-radius: 12px; filter: blur(6px);" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%25%22 height=%22100%25%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%23ff9500%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2440%22%3E🎁%3C/text%3E%3C/svg%3E'">
+                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.6); border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-lock" style="color: white; font-size: 14px;"></i>
+                    </div>
+                </div>
+            `;
+        } else {
+            imageHtml = `
+                <div style="width: 100%; aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center;">
+                    <img src="${figure.img}" style="width: 70%; height: 70%; object-fit: contain; border-radius: 12px;" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%25%22 height=%22100%25%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%23ff9500%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2440%22%3E🎁%3C/text%3E%3C/svg%3E'">
+                </div>
+            `;
+        }
+        
         card.innerHTML = `
-            <div class="collection-card-image">
-                <img src="${figure.img}" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%25%22 height=%22100%25%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%23ff9500%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2440%22%3E🎁%3C/text%3E%3C/svg%3E'">
-            </div>
+            ${imageHtml}
             <div class="collection-card-name">${escapeHtml(figure.name)}</div>
             <div class="collection-card-status ${isUnlocked ? 'unlocked' : 'locked'}">
                 ${isUnlocked ? '<i class="fas fa-check-circle"></i> Открыта' : '<i class="fas fa-lock"></i> Не открыта'}
