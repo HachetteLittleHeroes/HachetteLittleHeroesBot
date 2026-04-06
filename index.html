@@ -7876,87 +7876,108 @@ function escapeHtml(text) {
     div.textContent = text;
     return div.innerHTML;
 }
-
 // ==========================================
-// КОЛЛЕКЦИЯ - ПРОСТАЯ РАБОЧАЯ ВЕРСИЯ
+// КОЛЛЕКЦИЯ - ПРОШЛАЯ РАБОЧАЯ ВЕРСИЯ
 // ==========================================
 
-let currentFigureId = null;
-let currentFigureName = null;
+let currentCollectionFigureId = null;
+let currentCollectionFigureName = null;
 
 function openFigureModal(figureId, isUnlocked) {
     const figure = COLLECTION_FIGURES.find(f => f.id === figureId);
     if (!figure) return;
     
-    currentFigureId = figure.id;
-    currentFigureName = figure.name;
+    currentCollectionFigureId = figure.id;
+    currentCollectionFigureName = figure.name;
     
-    // Удаляем старую модалку
-    const oldModal = document.getElementById('simpleFigureModal');
+    // Удаляем старую модалку, если есть
+    const oldModal = document.getElementById('figureDetailModal');
     if (oldModal) oldModal.remove();
     
-    // Создаём модалку
+    // Создаём новую модалку
     const modalHtml = `
-        <div id="simpleFigureModal" class="modal-overlay" style="display: flex; z-index: 100000;">
-            <div class="modal-content" style="max-width: 350px; text-align: center; background: var(--bg-header); border-radius: 24px; padding: 20px;">
-                <h3 style="margin-bottom: 10px; color: var(--accent);">${figure.name}</h3>
-                
-                <div style="width: 100px; height: 100px; margin: 10px auto; background: var(--accent); border-radius: 20px; display: flex; align-items: center; justify-content: center;">
-                    <i class="fas fa-gem" style="font-size: 50px; color: white;"></i>
+        <div id="figureDetailModal" class="modal-overlay" style="display: flex; z-index: 10000;">
+            <div class="modal-content" style="max-width: 350px; text-align: center;">
+                <h3 style="margin-bottom: 10px;">${figure.name}</h3>
+                <div style="position: relative; width: 150px; height: 150px; margin: 0 auto;">
+                    <img src="${figure.img}" style="width: 100%; height: 100%; object-fit: contain; border-radius: 20px;" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22150%22 height=%22150%22 viewBox=%220 0 150 150%22%3E%3Crect width=%22150%22 height=%22150%22 fill=%22%23ff9500%22/%3E%3Ctext x=%2275%22 y=%2275%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2440%22%3E🎁%3C/text%3E%3C/svg%3E'">
+                    ${!isUnlocked ? `
+                        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; backdrop-filter: blur(8px); background: rgba(0,0,0,0.3); border-radius: 20px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-lock" style="font-size: 40px; color: white;"></i>
+                        </div>
+                    ` : ''}
                 </div>
-                
                 <p style="margin: 15px 0; color: var(--text-gray);">${figure.desc || 'Описание отсутствует'}</p>
-                
-                <div style="display: inline-block; padding: 6px 16px; border-radius: 20px; margin: 5px 0; background: ${isUnlocked ? '#34c759' : '#666'}; color: white;">
+                <div style="display: inline-block; padding: 6px 16px; border-radius: 20px; margin: 5px 0; background: ${isUnlocked ? 'var(--status-green)' : '#666'}; color: white;">
                     ${isUnlocked ? '✅ Открыта' : '🔒 Не открыта'}
                 </div>
-                
                 ${!isUnlocked ? `
-                    <div style="margin-top: 20px;">
-                        <input type="file" id="photoInput" accept="image/*" multiple style="margin: 10px 0; display: block; width: 100%; padding: 8px;">
-                        <button id="sendBtn" style="width: 100%; background: var(--accent); color: white; border: none; padding: 12px; border-radius: 30px; font-weight: 600; margin-top: 10px; cursor: pointer;">
-                            📤 Отправить на проверку
-                        </button>
-                    </div>
+                    <input type="file" id="collectionFileInput" accept="image/*" multiple style="display: none;">
+                    <button id="collectionUploadBtn" style="width: 100%; background: var(--accent); color: white; border: none; padding: 12px; border-radius: 30px; font-weight: 600; margin-top: 15px; cursor: pointer;">
+                        <i class="fas fa-camera"></i> Выбрать фото
+                    </button>
+                    <div id="collectionPreviewArea" style="margin-top: 15px; display: none; flex-wrap: wrap; gap: 8px; justify-content: center;"></div>
+                    <button id="collectionSendBtn" style="display: none; width: 100%; background: var(--status-green); color: white; border: none; padding: 12px; border-radius: 30px; font-weight: 600; margin-top: 10px; cursor: pointer;">
+                        <i class="fas fa-paper-plane"></i> Отправить на проверку
+                    </button>
                 ` : ''}
-                
-                <button onclick="document.getElementById('simpleFigureModal').remove()" style="width: 100%; margin-top: 15px; padding: 10px; background: none; border: 1px solid var(--border-color); border-radius: 30px; cursor: pointer;">
-                    Закрыть
-                </button>
+                <button class="modal-close-btn" onclick="document.getElementById('figureDetailModal').remove()" style="width: 100%; margin-top: 10px;">Закрыть</button>
             </div>
         </div>
     `;
     
     document.body.insertAdjacentHTML('beforeend', modalHtml);
     
+    // Если фигурка не открыта, настраиваем обработчики
     if (!isUnlocked) {
-        const fileInput = document.getElementById('photoInput');
-        const sendBtn = document.getElementById('sendBtn');
+        const fileInput = document.getElementById('collectionFileInput');
+        const uploadBtn = document.getElementById('collectionUploadBtn');
+        const previewArea = document.getElementById('collectionPreviewArea');
+        const sendBtn = document.getElementById('collectionSendBtn');
         
         let selectedFiles = [];
         
+        uploadBtn.onclick = () => {
+            fileInput.click();
+        };
+        
         fileInput.onchange = (event) => {
             selectedFiles = Array.from(event.target.files);
-            alert(`✅ Выбрано файлов: ${selectedFiles.length}`);
+            previewArea.innerHTML = '';
+            
+            if (selectedFiles.length > 0) {
+                selectedFiles.forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.style.cssText = 'width: 60px; height: 60px; object-fit: cover; border-radius: 8px; border: 2px solid var(--accent);';
+                        previewArea.appendChild(img);
+                    };
+                    reader.readAsDataURL(file);
+                });
+                previewArea.style.display = 'flex';
+                sendBtn.style.display = 'block';
+            }
         };
         
         sendBtn.onclick = async () => {
             if (!selectedFiles.length) {
-                alert('❌ Сначала выберите фото!');
+                alert('Выберите фото');
                 return;
             }
             
             const formData = new FormData();
             formData.append('user', userId.toString());
-            formData.append('figureId', currentFigureId.toString());
-            formData.append('figureName', currentFigureName);
+            formData.append('figureId', currentCollectionFigureId.toString());
+            formData.append('figureName', currentCollectionFigureName);
             
-            for (let file of selectedFiles) {
-                formData.append('photos', file);
+            for (let i = 0; i < selectedFiles.length; i++) {
+                formData.append('photos', selectedFiles[i]);
             }
             
             sendBtn.disabled = true;
-            sendBtn.innerText = '⏳ Отправка...';
+            sendBtn.innerText = 'Отправка...';
             
             try {
                 const response = await fetch(`${SERVER_URL}/api/check_collection`, {
@@ -7968,21 +7989,20 @@ function openFigureModal(figureId, isUnlocked) {
                 
                 if (result && result.status === 'ok') {
                     alert('✅ Фото отправлено на проверку!');
-                    document.getElementById('simpleFigureModal').remove();
+                    document.getElementById('figureDetailModal').remove();
                 } else {
-                    alert('❌ Ошибка: ' + (result?.message || 'Неизвестная ошибка'));
+                    throw new Error(result?.message || 'Ошибка отправки');
                 }
             } catch (error) {
-                alert('❌ Ошибка соединения: ' + error.message);
+                console.error('Ошибка:', error);
+                alert('❌ Ошибка: ' + error.message);
             } finally {
                 sendBtn.disabled = false;
-                sendBtn.innerText = '📤 Отправить на проверку';
+                sendBtn.innerText = 'Отправить на проверку';
             }
         };
     }
 }
-
-
         // ==========================================
         // ИНИЦИАЛИЗАЦИЯ
         // ==========================================
