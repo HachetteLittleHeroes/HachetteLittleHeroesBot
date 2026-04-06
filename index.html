@@ -7878,12 +7878,11 @@ function escapeHtml(text) {
 }
 
 // ==========================================
-// КОЛЛЕКЦИЯ - ИСПРАВЛЕННАЯ
+// КОЛЛЕКЦИЯ - УПРОЩЁННАЯ ВЕРСИЯ
 // ==========================================
 
 let currentCollectionFigureId = null;
 let currentCollectionFigureName = null;
-let tempCollectionPhotos = [];
 
 function openFigureModal(figureId, isUnlocked) {
     const figure = COLLECTION_FIGURES.find(f => f.id === figureId);
@@ -7892,190 +7891,117 @@ function openFigureModal(figureId, isUnlocked) {
     currentCollectionFigureId = figure.id;
     currentCollectionFigureName = figure.name;
     
-    // Находим или создаём модалку
-    let modal = document.getElementById('figureDetailModal');
-    if (!modal) {
-        const modalHtml = `
-            <div id="figureDetailModal" class="modal-overlay">
-                <div class="modal-content" style="max-width: 350px; text-align: center;">
-                    <h3 id="figureModalTitle" style="margin-bottom: 10px;"></h3>
-                    <div style="position: relative; width: 150px; height: 150px; margin: 0 auto;">
-                        <img id="figureModalImg" style="width: 100%; height: 100%; object-fit: contain; border-radius: 20px;">
-                        <div id="figureBlurOverlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; backdrop-filter: blur(8px); background: rgba(0,0,0,0.3); border-radius: 20px; display: flex; align-items: center; justify-content: center; z-index: 10;">
+    // Удаляем старую модалку, если есть
+    const oldModal = document.getElementById('figureDetailModal');
+    if (oldModal) oldModal.remove();
+    
+    // Создаём новую модалку
+    const modalHtml = `
+        <div id="figureDetailModal" class="modal-overlay" style="display: flex; z-index: 10000;">
+            <div class="modal-content" style="max-width: 350px; text-align: center;">
+                <h3 style="margin-bottom: 10px;">${figure.name}</h3>
+                <div style="position: relative; width: 150px; height: 150px; margin: 0 auto;">
+                    <img src="${figure.img}" style="width: 100%; height: 100%; object-fit: contain; border-radius: 20px;" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22150%22 height=%22150%22 viewBox=%220 0 150 150%22%3E%3Crect width=%22150%22 height=%22150%22 fill=%22%23ff9500%22/%3E%3Ctext x=%2275%22 y=%2275%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2440%22%3E🎁%3C/text%3E%3C/svg%3E'">
+                    ${!isUnlocked ? `
+                        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; backdrop-filter: blur(8px); background: rgba(0,0,0,0.3); border-radius: 20px; display: flex; align-items: center; justify-content: center;">
                             <i class="fas fa-lock" style="font-size: 40px; color: white;"></i>
                         </div>
-                    </div>
-                    <p id="figureModalDesc" style="margin: 15px 0; color: var(--text-gray);"></p>
-                    <div id="figureModalStatus" style="display: inline-block; padding: 6px 16px; border-radius: 20px; margin: 5px 0;"></div>
-                    <button id="figureUploadBtn" style="display: none; width: 100%; background: var(--accent); color: white; border: none; padding: 12px; border-radius: 30px; font-weight: 600; margin-top: 15px; cursor: pointer;">
-                        <i class="fas fa-camera"></i> Отправить фото на проверку
-                    </button>
-                    <button class="modal-close-btn" onclick="closeFigureDetailModal()">Закрыть</button>
+                    ` : ''}
                 </div>
+                <p style="margin: 15px 0; color: var(--text-gray);">${figure.desc || 'Описание отсутствует'}</p>
+                <div style="display: inline-block; padding: 6px 16px; border-radius: 20px; margin: 5px 0; background: ${isUnlocked ? 'var(--status-green)' : '#666'}; color: white;">
+                    ${isUnlocked ? '✅ Открыта' : '🔒 Не открыта'}
+                </div>
+                ${!isUnlocked ? `
+                    <input type="file" id="collectionFileInput" accept="image/*" multiple style="display: none;">
+                    <button id="collectionUploadBtn" style="width: 100%; background: var(--accent); color: white; border: none; padding: 12px; border-radius: 30px; font-weight: 600; margin-top: 15px; cursor: pointer;">
+                        <i class="fas fa-camera"></i> Выбрать фото
+                    </button>
+                    <div id="collectionPreviewArea" style="margin-top: 15px; display: none; flex-wrap: wrap; gap: 8px; justify-content: center;"></div>
+                    <button id="collectionSendBtn" style="display: none; width: 100%; background: var(--status-green); color: white; border: none; padding: 12px; border-radius: 30px; font-weight: 600; margin-top: 10px; cursor: pointer;">
+                        <i class="fas fa-paper-plane"></i> Отправить на проверку
+                    </button>
+                ` : ''}
+                <button class="modal-close-btn" onclick="document.getElementById('figureDetailModal').remove()" style="width: 100%; margin-top: 10px;">Закрыть</button>
             </div>
-        `;
-        document.body.insertAdjacentHTML('beforeend', modalHtml);
-        modal = document.getElementById('figureDetailModal');
-    }
+        </div>
+    `;
     
-    // Заполняем данные
-    document.getElementById('figureModalTitle').innerText = figure.name;
-    document.getElementById('figureModalDesc').innerText = figure.desc;
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
     
-    const imgEl = document.getElementById('figureModalImg');
-    const blurOverlay = document.getElementById('figureBlurOverlay');
-    const statusEl = document.getElementById('figureModalStatus');
-    const uploadBtn = document.getElementById('figureUploadBtn');
-    
-    imgEl.src = figure.img;
-    
-    if (isUnlocked) {
-        if (blurOverlay) blurOverlay.style.display = 'none';
-        statusEl.innerText = '✅ Открыта';
-        statusEl.style.background = 'var(--status-green)';
-        statusEl.style.color = 'white';
-        uploadBtn.style.display = 'none';
-    } else {
-        if (blurOverlay) blurOverlay.style.display = 'flex';
-        statusEl.innerText = '🔒 Не открыта';
-        statusEl.style.background = '#666';
-        statusEl.style.color = 'white';
-        uploadBtn.style.display = 'block';
+    // Если фигурка не открыта, настраиваем обработчики
+    if (!isUnlocked) {
+        const fileInput = document.getElementById('collectionFileInput');
+        const uploadBtn = document.getElementById('collectionUploadBtn');
+        const previewArea = document.getElementById('collectionPreviewArea');
+        const sendBtn = document.getElementById('collectionSendBtn');
         
-        // Убираем старые обработчики и добавляем новый
-        const newBtn = uploadBtn.cloneNode(true);
-        uploadBtn.parentNode.replaceChild(newBtn, uploadBtn);
-        newBtn.onclick = function() {
-            console.log('🔓 Кнопка нажата, открываем выбор фото');
-            const fileInput = document.createElement('input');
-            fileInput.type = 'file';
-            fileInput.accept = 'image/*';
-            fileInput.multiple = true;
-            fileInput.onchange = function(event) {
-                console.log('📸 Файлы выбраны:', event.target.files.length);
-                if (event.target.files.length > 0) {
-                    tempCollectionPhotos = Array.from(event.target.files);
-                    console.log('📦 tempCollectionPhotos:', tempCollectionPhotos.length);
-                    showCollectionPreviewModal();
-                } else {
-                    console.log('❌ Файлы не выбраны');
-                }
-            };
+        let selectedFiles = [];
+        
+        uploadBtn.onclick = () => {
             fileInput.click();
         };
-    }
-    
-    modal.style.display = 'flex';
-}
-
-function closeFigureDetailModal() {
-    const modal = document.getElementById('figureDetailModal');
-    if (modal) modal.style.display = 'none';
-    currentCollectionFigureId = null;
-    currentCollectionFigureName = null;
-    tempCollectionPhotos = [];
-}
-
-function showCollectionPreviewModal() {
-    console.log('🖼️ showCollectionPreviewModal вызвана, фото:', tempCollectionPhotos.length);
-    
-    // Создаём модалку для предпросмотра
-    let previewModal = document.getElementById('collectionPreviewModal');
-    if (!previewModal) {
-        const modalHtml = `
-            <div id="collectionPreviewModal" class="modal-overlay" style="display: flex; z-index: 10001;">
-                <div class="modal-content" style="max-width: 350px; text-align: center; background: var(--bg-header); border-radius: 24px; padding: 20px;">
-                    <h3 style="margin-bottom: 15px; color: var(--text);">📸 Отправка фото</h3>
-                    <div id="collectionPreviewContainer" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 15px 0; max-height: 300px; overflow-y: auto;"></div>
-                    <div style="display: flex; gap: 10px; margin-top: 15px;">
-                        <button class="modal-close-btn" onclick="closeCollectionPreviewModal()" style="flex: 1; background: #666; color: white; border: none; padding: 12px; border-radius: 16px; cursor: pointer;">Отмена</button>
-                        <button id="collectionSendBtn" class="modal-action-btn" style="flex: 1; background: var(--accent); color: white; border: none; padding: 12px; border-radius: 16px; cursor: pointer;">Отправить</button>
-                    </div>
-                </div>
-            </div>
-        `;
-        document.body.insertAdjacentHTML('beforeend', modalHtml);
-        previewModal = document.getElementById('collectionPreviewModal');
-    }
-    
-    // Показываем превью
-    const container = document.getElementById('collectionPreviewContainer');
-    if (container) {
-        container.innerHTML = '';
-        tempCollectionPhotos.forEach((file, index) => {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = document.createElement('img');
-                img.src = e.target.result;
-                img.style.cssText = 'width: 80px; height: 80px; object-fit: cover; border-radius: 12px; border: 2px solid var(--accent);';
-                container.appendChild(img);
-            };
-            reader.readAsDataURL(file);
-        });
-    }
-    
-    // Настраиваем кнопку отправки
-    const sendBtn = document.getElementById('collectionSendBtn');
-    if (sendBtn) {
-        const newBtn = sendBtn.cloneNode(true);
-        sendBtn.parentNode.replaceChild(newBtn, sendBtn);
-        newBtn.onclick = function() {
-            console.log('📤 Кнопка Отправить нажата');
-            submitCollectionPhoto();
+        
+        fileInput.onchange = (event) => {
+            selectedFiles = Array.from(event.target.files);
+            previewArea.innerHTML = '';
+            
+            if (selectedFiles.length > 0) {
+                selectedFiles.forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.style.cssText = 'width: 60px; height: 60px; object-fit: cover; border-radius: 8px; border: 2px solid var(--accent);';
+                        previewArea.appendChild(img);
+                    };
+                    reader.readAsDataURL(file);
+                });
+                previewArea.style.display = 'flex';
+                sendBtn.style.display = 'block';
+            }
         };
-    }
-    
-    previewModal.style.display = 'flex';
-    console.log('🖼️ Модалка предпросмотра открыта');
-}
-
-function closeCollectionPreviewModal() {
-    const modal = document.getElementById('collectionPreviewModal');
-    if (modal) modal.style.display = 'none';
-}
-
-async function submitCollectionPhoto() {
-    console.log('🚀 submitCollectionPhoto вызвана');
-    console.log('tempCollectionPhotos:', tempCollectionPhotos.length);
-    
-    if (!tempCollectionPhotos || tempCollectionPhotos.length === 0) {
-        if (tg) tg.showAlert('❌ Выберите фото');
-        return;
-    }
-    
-    const formData = new FormData();
-    formData.append('user', userId.toString());
-    formData.append('figureId', currentCollectionFigureId.toString());
-    formData.append('figureName', currentCollectionFigureName);
-    
-    for (let i = 0; i < tempCollectionPhotos.length; i++) {
-        formData.append('photos', tempCollectionPhotos[i]);
-    }
-    
-    console.log('📤 Отправка на сервер...');
-    
-    try {
-        const response = await fetch(`${SERVER_URL}/api/check_collection`, {
-            method: 'POST',
-            body: formData
-        });
         
-        console.log('📡 Ответ сервера:', response.status);
-        const result = await response.json();
-        console.log('📦 Результат:', result);
-        
-        if (result && result.status === 'ok') {
-            if (tg) tg.showAlert('✅ Фото отправлено на проверку!');
-            closeCollectionPreviewModal();
-            closeFigureDetailModal();
-        } else {
-            throw new Error(result?.message || 'Ошибка отправки');
-        }
-    } catch (error) {
-        console.error('❌ Ошибка:', error);
-        if (tg) tg.showAlert(`❌ Ошибка: ${error.message}`);
-    } finally {
-        tempCollectionPhotos = [];
+        sendBtn.onclick = async () => {
+            if (!selectedFiles.length) {
+                alert('Выберите фото');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('user', userId.toString());
+            formData.append('figureId', currentCollectionFigureId.toString());
+            formData.append('figureName', currentCollectionFigureName);
+            
+            for (let i = 0; i < selectedFiles.length; i++) {
+                formData.append('photos', selectedFiles[i]);
+            }
+            
+            sendBtn.disabled = true;
+            sendBtn.innerText = 'Отправка...';
+            
+            try {
+                const response = await fetch(`${SERVER_URL}/api/check_collection`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result && result.status === 'ok') {
+                    alert('✅ Фото отправлено на проверку!');
+                    document.getElementById('figureDetailModal').remove();
+                } else {
+                    throw new Error(result?.message || 'Ошибка отправки');
+                }
+            } catch (error) {
+                console.error('Ошибка:', error);
+                alert('❌ Ошибка: ' + error.message);
+            } finally {
+                sendBtn.disabled = false;
+                sendBtn.innerText = 'Отправить на проверку';
+            }
+        };
     }
 }
 
