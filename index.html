@@ -7878,7 +7878,7 @@ function escapeHtml(text) {
 }
 
 // ==========================================
-// КОЛЛЕКЦИЯ - РАБОЧИЕ ФУНКЦИИ
+// КОЛЛЕКЦИЯ - ИСПРАВЛЕННАЯ
 // ==========================================
 
 let currentCollectionFigureId = null;
@@ -7946,16 +7946,19 @@ function openFigureModal(figureId, isUnlocked) {
         const newBtn = uploadBtn.cloneNode(true);
         uploadBtn.parentNode.replaceChild(newBtn, uploadBtn);
         newBtn.onclick = function() {
-            console.log('Кнопка нажата, открываем выбор фото');
+            console.log('🔓 Кнопка нажата, открываем выбор фото');
             const fileInput = document.createElement('input');
             fileInput.type = 'file';
             fileInput.accept = 'image/*';
             fileInput.multiple = true;
             fileInput.onchange = function(event) {
-                console.log('Файлы выбраны:', event.target.files.length);
+                console.log('📸 Файлы выбраны:', event.target.files.length);
                 if (event.target.files.length > 0) {
                     tempCollectionPhotos = Array.from(event.target.files);
+                    console.log('📦 tempCollectionPhotos:', tempCollectionPhotos.length);
                     showCollectionPreviewModal();
+                } else {
+                    console.log('❌ Файлы не выбраны');
                 }
             };
             fileInput.click();
@@ -7974,17 +7977,19 @@ function closeFigureDetailModal() {
 }
 
 function showCollectionPreviewModal() {
+    console.log('🖼️ showCollectionPreviewModal вызвана, фото:', tempCollectionPhotos.length);
+    
     // Создаём модалку для предпросмотра
     let previewModal = document.getElementById('collectionPreviewModal');
     if (!previewModal) {
         const modalHtml = `
-            <div id="collectionPreviewModal" class="modal-overlay">
-                <div class="modal-content" style="max-width: 350px;">
-                    <h3>Отправка фото для "${currentCollectionFigureName}"</h3>
-                    <div id="collectionPreviewContainer" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 15px 0;"></div>
-                    <div class="modal-buttons-row" style="display: flex; gap: 10px;">
-                        <button class="modal-close-btn" onclick="closeCollectionPreviewModal()">Отмена</button>
-                        <button id="collectionSendBtn" class="modal-action-btn">Отправить</button>
+            <div id="collectionPreviewModal" class="modal-overlay" style="display: flex; z-index: 10001;">
+                <div class="modal-content" style="max-width: 350px; text-align: center; background: var(--bg-header); border-radius: 24px; padding: 20px;">
+                    <h3 style="margin-bottom: 15px; color: var(--text);">📸 Отправка фото</h3>
+                    <div id="collectionPreviewContainer" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 15px 0; max-height: 300px; overflow-y: auto;"></div>
+                    <div style="display: flex; gap: 10px; margin-top: 15px;">
+                        <button class="modal-close-btn" onclick="closeCollectionPreviewModal()" style="flex: 1; background: #666; color: white; border: none; padding: 12px; border-radius: 16px; cursor: pointer;">Отмена</button>
+                        <button id="collectionSendBtn" class="modal-action-btn" style="flex: 1; background: var(--accent); color: white; border: none; padding: 12px; border-radius: 16px; cursor: pointer;">Отправить</button>
                     </div>
                 </div>
             </div>
@@ -8015,11 +8020,13 @@ function showCollectionPreviewModal() {
         const newBtn = sendBtn.cloneNode(true);
         sendBtn.parentNode.replaceChild(newBtn, sendBtn);
         newBtn.onclick = function() {
+            console.log('📤 Кнопка Отправить нажата');
             submitCollectionPhoto();
         };
     }
     
     previewModal.style.display = 'flex';
+    console.log('🖼️ Модалка предпросмотра открыта');
 }
 
 function closeCollectionPreviewModal() {
@@ -8028,6 +8035,9 @@ function closeCollectionPreviewModal() {
 }
 
 async function submitCollectionPhoto() {
+    console.log('🚀 submitCollectionPhoto вызвана');
+    console.log('tempCollectionPhotos:', tempCollectionPhotos.length);
+    
     if (!tempCollectionPhotos || tempCollectionPhotos.length === 0) {
         if (tg) tg.showAlert('❌ Выберите фото');
         return;
@@ -8042,13 +8052,17 @@ async function submitCollectionPhoto() {
         formData.append('photos', tempCollectionPhotos[i]);
     }
     
+    console.log('📤 Отправка на сервер...');
+    
     try {
         const response = await fetch(`${SERVER_URL}/api/check_collection`, {
             method: 'POST',
             body: formData
         });
         
+        console.log('📡 Ответ сервера:', response.status);
         const result = await response.json();
+        console.log('📦 Результат:', result);
         
         if (result && result.status === 'ok') {
             if (tg) tg.showAlert('✅ Фото отправлено на проверку!');
@@ -8058,7 +8072,7 @@ async function submitCollectionPhoto() {
             throw new Error(result?.message || 'Ошибка отправки');
         }
     } catch (error) {
-        console.error('Ошибка:', error);
+        console.error('❌ Ошибка:', error);
         if (tg) tg.showAlert(`❌ Ошибка: ${error.message}`);
     } finally {
         tempCollectionPhotos = [];
