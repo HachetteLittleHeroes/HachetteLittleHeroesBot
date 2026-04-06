@@ -2909,10 +2909,10 @@
             <h3>Как получить ашетики</h3>
             <div class="earn-list">
                 <div class="earn-item"><div class="earn-left"><i class="fas fa-star"></i><span>За отзыв</span></div><div class="earn-right"><span class="earn-amount">+25</span><i class="fas fa-book-open gold-book"></i></div></div>
-                <div class="earn-item"><div class="earn-left"><i class="fas fa-shopping-cart"></i><span>За покупку от 3 000 ₽</span></div><div class="earn-right"><span class="earn-amount">+10</span><i class="fas fa-book-open gold-book"></i></div></div>
-                <div class="earn-item"><div class="earn-left"><i class="fas fa-shopping-cart"></i><span>За покупку от 5 000 ₽</span></div><div class="earn-right"><span class="earn-amount">+20</span><i class="fas fa-book-open gold-book"></i></div></div>
-                <div class="earn-item"><div class="earn-left"><i class="fas fa-shopping-cart"></i><span>За покупку от 7 500 ₽</span></div><div class="earn-right"><span class="earn-amount">+30</span><i class="fas fa-book-open gold-book"></i></div></div>
-                <div class="earn-item"><div class="earn-left"><i class="fas fa-shopping-cart"></i><span>За покупку от 10 000 ₽</span></div><div class="earn-right"><span class="earn-amount">+40</span><i class="fas fa-book-open gold-book"></i></div></div>
+                <div class="earn-item"><div class="earn-left"><i class="fas fa-shopping-cart"></i><span>За покупку от 3 000 ₽</span></div><div class="earn-right"><span class="earn-amount">+20</span><i class="fas fa-book-open gold-book"></i></div></div>
+                <div class="earn-item"><div class="earn-left"><i class="fas fa-shopping-cart"></i><span>За покупку от 5 000 ₽</span></div><div class="earn-right"><span class="earn-amount">+30</span><i class="fas fa-book-open gold-book"></i></div></div>
+                <div class="earn-item"><div class="earn-left"><i class="fas fa-shopping-cart"></i><span>За покупку от 7 500 ₽</span></div><div class="earn-right"><span class="earn-amount">+40</span><i class="fas fa-book-open gold-book"></i></div></div>
+                <div class="earn-item"><div class="earn-left"><i class="fas fa-shopping-cart"></i><span>За покупку от 10 000 ₽</span></div><div class="earn-right"><span class="earn-amount">+50</span><i class="fas fa-book-open gold-book"></i></div></div>
             </div>
         </div>
 
@@ -4168,202 +4168,278 @@
         console.error('Error refreshing progress:', error);
     }
 }
-        // ==========================================
-        // ВРЕМЕННЫЕ ЗАДАНИЯ
-        // ==========================================
-        
-        const TIME_TASKS = [
-            {
-                id: 'time_task_1',
-                title: 'Цвет настроения - зеленый',
-                description: 'Раскрась любую картинку с Бризгливостью из м/ф "Головоломка"',
-                reward: 5,
-                deadline: '2026-04-05',
-                deadlineText: 'ДО 05.04.2026',
-                completed: false
-            }
-        ];
-        
-        function loadTimeTasksStatus() {
-            const saved = localStorage.getItem('time_tasks_completed');
-            if (saved) {
-                const completed = JSON.parse(saved);
-                TIME_TASKS.forEach(task => {
-                    task.completed = completed.includes(task.id);
-                });
-            }
+    // ==========================================
+// ВРЕМЕННЫЕ ЗАДАНИЯ
+// ==========================================
+
+const TIME_TASKS = [
+    {
+        id: 'time_task_1',
+        title: 'Маленький мышонок',
+        description: 'Раскрась любую картинку с Микки Маусом, где он изображен один',
+        reward: 5,
+        deadline: '2026-04-12',
+        deadlineText: 'ДО 12.04.2026',
+        completed: false
+    }
+];
+
+function loadTimeTasksStatus() {
+    const saved = localStorage.getItem('time_tasks_completed');
+    if (saved) {
+        const completed = JSON.parse(saved);
+        TIME_TASKS.forEach(task => {
+            task.completed = completed.includes(task.id);
+        });
+    }
+}
+
+function saveTimeTaskCompleted(taskId) {
+    const completed = TIME_TASKS.filter(t => t.completed).map(t => t.id);
+    localStorage.setItem('time_tasks_completed', JSON.stringify(completed));
+}
+
+function markTimeTaskCompleted(taskId) {
+    const task = TIME_TASKS.find(t => t.id === taskId);
+    if (task && !task.completed) {
+        task.completed = true;
+        saveTimeTaskCompleted(taskId);
+        renderTimeTasks();
+        return true;
+    }
+    return false;
+}
+
+function toggleTimeTasks() {
+    const content = document.getElementById('timeTasksContent');
+    const arrow = document.getElementById('timeTasksArrow');
+    if (!content) return;
+    if (content.style.display === 'block') {
+        content.style.display = 'none';
+        if (arrow) arrow.style.transform = 'rotate(0deg)';
+    } else {
+        content.style.display = 'block';
+        if (arrow) arrow.style.transform = 'rotate(180deg)';
+        renderTimeTasks();
+    }
+}
+
+function renderTimeTasks() {
+    const container = document.getElementById('timeTasksList');
+    if (!container) return;
+    container.innerHTML = '';
+
+    // Текущая дата по Москве
+    const now = new Date();
+    const moscowOffset = 3 * 60 * 60 * 1000;
+    const nowMoscow = new Date(now.getTime() + moscowOffset);
+
+    // Ищем АКТИВНОЕ задание: не просрочено и не выполнено
+    let activeTask = null;
+    let activeTaskExpired = false;
+    let activeTaskCompleted = false;
+
+    for (const task of TIME_TASKS) {
+        const [year, month, day] = task.deadline.split('-');
+        const deadlineMoscow = new Date(Date.UTC(year, month - 1, day, 0, 0, 0));
+        const isExpired = nowMoscow >= deadlineMoscow;
+        const isCompleted = task.completed;
+
+        // Если задание уже выполнено — пропускаем
+        if (isCompleted) {
+            activeTaskCompleted = true;
+            activeTask = task;
+            break;
         }
-        
-        function saveTimeTaskCompleted(taskId) {
-            const completed = TIME_TASKS.filter(t => t.completed).map(t => t.id);
-            localStorage.setItem('time_tasks_completed', JSON.stringify(completed));
+
+        // Если задание не просрочено и не выполнено — это активное задание
+        if (!isExpired && !isCompleted) {
+            activeTask = task;
+            break;
         }
-        
-        function markTimeTaskCompleted(taskId) {
-            const task = TIME_TASKS.find(t => t.id === taskId);
-            if (task && !task.completed) {
-                task.completed = true;
-                saveTimeTaskCompleted(taskId);
-                renderTimeTasks();
-                return true;
-            }
-            return false;
+
+        // Если все задания просрочены — показываем последнее как истекшее
+        if (isExpired && !activeTask) {
+            activeTask = task;
+            activeTaskExpired = true;
         }
-        
-        function toggleTimeTasks() {
-            const content = document.getElementById('timeTasksContent');
-            const arrow = document.getElementById('timeTasksArrow');
-            if (!content) return;
-            if (content.style.display === 'block') {
-                content.style.display = 'none';
-                if (arrow) arrow.style.transform = 'rotate(0deg)';
-            } else {
-                content.style.display = 'block';
-                if (arrow) arrow.style.transform = 'rotate(180deg)';
-                renderTimeTasks();
-            }
+    }
+
+    // Если нет активного задания (все выполнены)
+    if (activeTaskCompleted && !activeTask) {
+        container.innerHTML = `
+            <div class="no-results" style="padding: 20px; text-align: center;">
+                ✅ Все временные задания выполнены!
+            </div>
+        `;
+        return;
+    }
+
+    // Если нет ни одного задания
+    if (!activeTask) {
+        container.innerHTML = `
+            <div class="no-results" style="padding: 20px; text-align: center;">
+                📭 Новое временное задание появится позже
+            </div>
+        `;
+        return;
+    }
+
+    // Отображаем активное (или последнее истекшее) задание
+    const isCompleted = activeTask.completed;
+    const [year, month, day] = activeTask.deadline.split('-');
+    const deadlineMoscow = new Date(Date.UTC(year, month - 1, day, 0, 0, 0));
+    const isExpired = nowMoscow >= deadlineMoscow && !isCompleted;
+
+    const taskCard = document.createElement('div');
+    taskCard.className = `time-task-card ${isCompleted ? 'completed' : ''}`;
+
+    if (isCompleted) {
+        taskCard.innerHTML = `
+            <div class="time-badge">${activeTask.deadlineText}</div>
+            <div class="time-header">
+                <h3>${activeTask.title}</h3>
+                <p>${activeTask.description}</p>
+                <div class="time-reward">🎁 Награда: +${activeTask.reward} ашетиков</div>
+            </div>
+            <div class="level-card">
+                <div style="text-align: center; padding: 12px; color: var(--status-green);">
+                    <i class="fas fa-check-circle"></i> Задание выполнено! +${activeTask.reward} ашетиков получено
+                </div>
+            </div>
+        `;
+    } else if (isExpired) {
+        taskCard.innerHTML = `
+            <div class="time-badge">${activeTask.deadlineText}</div>
+            <div class="time-header">
+                <h3>${activeTask.title}</h3>
+                <p>${activeTask.description}</p>
+                <div class="time-reward">🎁 Награда: +${activeTask.reward} ашетиков</div>
+            </div>
+            <div class="level-card">
+                <div style="text-align: center; padding: 12px; color: var(--status-red);">
+                    <i class="fas fa-clock"></i> Время выполнения истекло
+                </div>
+            </div>
+        `;
+    } else {
+        taskCard.innerHTML = `
+            <div class="time-badge">${activeTask.deadlineText}</div>
+            <div class="time-header">
+                <h3>${activeTask.title}</h3>
+                <p>${activeTask.description}</p>
+                <div class="time-reward">🎁 Награда: +${activeTask.reward} ашетиков</div>
+            </div>
+            <div class="level-card">
+                <button class="time-task-btn" onclick="openTimeTaskUpload('${activeTask.id}', ${activeTask.reward})">
+                    <i class="fas fa-camera"></i> Отправить фото на проверку
+                </button>
+            </div>
+        `;
+    }
+
+    container.appendChild(taskCard);
+}
+
+let currentTimeTaskId = null;
+let currentTimeTaskReward = null;
+
+function openTimeTaskUpload(taskId, reward) {
+    console.log('⏰ openTimeTaskUpload called:', taskId, reward);
+    const task = TIME_TASKS.find(t => t.id === taskId);
+    if (!task || task.completed) {
+        if (tg) tg.showAlert('Это задание уже выполнено!');
+        return;
+    }
+    const today = new Date();
+    const moscowOffset = 3 * 60 * 60 * 1000;
+    const nowMoscow = new Date(today.getTime() + moscowOffset);
+    const [year, month, day] = task.deadline.split('-');
+    const deadlineMoscow = new Date(Date.UTC(year, month - 1, day, 0, 0, 0));
+    if (nowMoscow >= deadlineMoscow) {
+        if (tg) tg.showAlert('Срок выполнения задания истек!');
+        return;
+    }
+    currentTimeTaskId = taskId;
+    currentTimeTaskReward = reward;
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/*';
+    fileInput.multiple = true;
+    fileInput.onchange = handleTimeTaskFilesSelected;
+    fileInput.click();
+}
+
+function handleTimeTaskFilesSelected(event) {
+    const files = Array.from(event.target.files);
+    if (files.length === 0) return;
+    tempPhotos = files;
+    const previewContainer = document.getElementById('taskPhotoPreviewContainer');
+    if (previewContainer) {
+        previewContainer.innerHTML = '';
+        files.forEach((file) => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.style.cssText = 'width: 70px; height: 70px; object-fit: cover; border-radius: 12px; margin: 5px; border: 2px solid var(--accent);';
+                previewContainer.appendChild(img);
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+    const modal = document.getElementById('taskUploadModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        const submitBtn = modal.querySelector('.modal-action-btn');
+        if (submitBtn) {
+            submitBtn.onclick = () => submitTimeTaskPhoto();
         }
-        
-        function renderTimeTasks() {
-            const container = document.getElementById('timeTasksList');
-            if (!container) return;
-            container.innerHTML = '';
-            
-            TIME_TASKS.forEach(task => {
-                const isCompleted = task.completed;
-                const now = new Date();
-                
-                const moscowOffset = 3 * 60 * 60 * 1000;
-                const nowMoscow = new Date(now.getTime() + moscowOffset);
-                
-                const [year, month, day] = task.deadline.split('-');
-                const deadlineMoscow = new Date(Date.UTC(year, month - 1, day, 0, 0, 0));
-                
-                const isExpired = nowMoscow >= deadlineMoscow;
-                
-                const taskCard = document.createElement('div');
-                taskCard.className = `time-task-card ${isCompleted ? 'completed' : ''}`;
-                taskCard.innerHTML = `
-                    <div class="time-badge">${task.deadlineText}</div>
-                    <div class="time-header">
-                        <h3>${task.title}</h3>
-                        <p>${task.description}</p>
-                        <div class="time-reward">🎁 Награда: +${task.reward} ашетиков</div>
-                    </div>
-                    <div class="level-card">
-                        ${!isCompleted && !isExpired ? `
-                            <button class="time-task-btn" onclick="openTimeTaskUpload('${task.id}', ${task.reward})">
-                                <i class="fas fa-camera"></i> Отправить фото на проверку
-                            </button>
-                        ` : isCompleted ? `
-                            <div style="text-align: center; padding: 12px; color: var(--status-green);">
-                                <i class="fas fa-check-circle"></i> Задание выполнено! +${task.reward} ашетиков получено
-                            </div>
-                        ` : `
-                            <div style="text-align: center; padding: 12px; color: var(--status-red);">
-                                <i class="fas fa-clock"></i> Время выполнения истекло
-                            </div>
-                        `}
-                    </div>
-                `;
-                container.appendChild(taskCard);
-            });
+    }
+}
+
+async function submitTimeTaskPhoto() {
+    console.log('=== SUBMIT TIME TASK PHOTO ===');
+    if (isUploading) return;
+    if (!tempPhotos || tempPhotos.length === 0) {
+        if (tg) tg.showAlert('❌ Выберите хотя бы одно фото');
+        return;
+    }
+    isUploading = true;
+    try {
+        const formData = new FormData();
+        formData.append('user', userId.toString());
+        formData.append('title', `Временное задание: ${TIME_TASKS.find(t => t.id === currentTimeTaskId)?.title}`);
+        formData.append('id', currentTimeTaskId);
+        formData.append('level', '1');
+        formData.append('points', currentTimeTaskReward.toString());
+        formData.append('type', 'time_task');
+        for (let i = 0; i < tempPhotos.length; i++) {
+            formData.append('photos', tempPhotos[i]);
         }
-        
-        let currentTimeTaskId = null;
-        let currentTimeTaskReward = null;
-        
-        function openTimeTaskUpload(taskId, reward) {
-            console.log('⏰ openTimeTaskUpload called:', taskId, reward);
-            const task = TIME_TASKS.find(t => t.id === taskId);
-            if (!task || task.completed) {
-                if (tg) tg.showAlert('Это задание уже выполнено!');
-                return;
-            }
-            const today = new Date();
-            const deadline = new Date(task.deadline);
-            if (today > deadline) {
-                if (tg) tg.showAlert('Срок выполнения задания истек!');
-                return;
-            }
-            currentTimeTaskId = taskId;
-            currentTimeTaskReward = reward;
-            const fileInput = document.createElement('input');
-            fileInput.type = 'file';
-            fileInput.accept = 'image/*';
-            fileInput.multiple = true;
-            fileInput.onchange = handleTimeTaskFilesSelected;
-            fileInput.click();
+        const response = await fetch(`${SERVER_URL}/api/check_time_task`, {
+            method: 'POST',
+            body: formData
+        });
+        if (!response.ok) {
+            throw new Error(`Ошибка сервера: ${response.status}`);
         }
-        
-        function handleTimeTaskFilesSelected(event) {
-            const files = Array.from(event.target.files);
-            if (files.length === 0) return;
-            tempPhotos = files;
-            const previewContainer = document.getElementById('taskPhotoPreviewContainer');
-            if (previewContainer) {
-                previewContainer.innerHTML = '';
-                files.forEach((file) => {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const img = document.createElement('img');
-                        img.src = e.target.result;
-                        img.style.cssText = 'width: 70px; height: 70px; object-fit: cover; border-radius: 12px; margin: 5px; border: 2px solid var(--accent);';
-                        previewContainer.appendChild(img);
-                    };
-                    reader.readAsDataURL(file);
-                });
-            }
-            const modal = document.getElementById('taskUploadModal');
-            if (modal) {
-                modal.style.display = 'flex';
-                const submitBtn = modal.querySelector('.modal-action-btn');
-                if (submitBtn) {
-                    submitBtn.onclick = () => submitTimeTaskPhoto();
-                }
-            }
+        const result = await response.json();
+        if (result && result.status === 'ok') {
+            // Помечаем задание как выполненное
+            markTimeTaskCompleted(currentTimeTaskId);
+            if (tg) tg.showAlert('✅ Фото отправлено на проверку!');
+            closeTaskUploadModal();
+        } else {
+            throw new Error(result?.message || 'Ошибка отправки');
         }
-        
-        async function submitTimeTaskPhoto() {
-            console.log('=== SUBMIT TIME TASK PHOTO ===');
-            if (isUploading) return;
-            if (!tempPhotos || tempPhotos.length === 0) {
-                if (tg) tg.showAlert('❌ Выберите хотя бы одно фото');
-                return;
-            }
-            isUploading = true;
-            try {
-                const formData = new FormData();
-                formData.append('user', userId.toString());
-                formData.append('title', `Временное задание: ${TIME_TASKS.find(t => t.id === currentTimeTaskId)?.title}`);
-                formData.append('id', currentTimeTaskId);
-                formData.append('level', '1');
-                formData.append('points', currentTimeTaskReward.toString());
-                formData.append('type', 'time_task');
-                for (let i = 0; i < tempPhotos.length; i++) {
-                    formData.append('photos', tempPhotos[i]);
-                }
-                const response = await fetch(`${SERVER_URL}/api/check_time_task`, {
-                    method: 'POST',
-                    body: formData
-                });
-                if (!response.ok) {
-                    throw new Error(`Ошибка сервера: ${response.status}`);
-                }
-                const result = await response.json();
-                if (result && result.status === 'ok') {
-                    if (tg) tg.showAlert('✅ Фото отправлено на проверку!');
-                    closeTaskUploadModal();
-                } else {
-                    throw new Error(result?.message || 'Ошибка отправки');
-                }
-            } catch (error) {
-                console.error('❌ Ошибка:', error);
-                if (tg) tg.showAlert(`❌ Ошибка: ${error.message}`);
-            } finally {
-                isUploading = false;
-            }
-        }
+    } catch (error) {
+        console.error('❌ Ошибка:', error);
+        if (tg) tg.showAlert(`❌ Ошибка: ${error.message}`);
+    } finally {
+        isUploading = false;
+    }
+}
         // ==========================================
         // ЗАДАНИЯ ОТ НАШИХ ДРУЗЕЙ
         // ==========================================
