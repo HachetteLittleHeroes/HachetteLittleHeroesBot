@@ -4444,17 +4444,7 @@ async function submitTimeTaskPhoto() {
         // ЗАДАНИЯ ОТ НАШИХ ДРУЗЕЙ
         // ==========================================
         
-        const FRIEND_TASKS = [
-            {
-                id: 'friend_anna',
-                title: 'Первым выполни любую ветку заданий',
-                description: 'от YouTube-канала "Colour with Anna"',
-                rewardStatus: 'Молния',
-                rewardAchievement: 'Молния',
-                rewardTom: 'Любой A4 том Hachette',
-                completed: false
-            }
-        ];
+        const FRIEND_TASKS = [];
         
         function loadFriendTasksStatus() {
             const saved = localStorage.getItem('friend_tasks_completed');
