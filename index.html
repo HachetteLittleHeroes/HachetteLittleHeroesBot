@@ -7962,45 +7962,54 @@ function openFigureModal(figureId, isUnlocked) {
         };
         
         sendBtn.onclick = async () => {
-            if (!selectedFiles.length) {
-                alert('Выберите фото');
-                return;
-            }
-            
-            const formData = new FormData();
-            formData.append('user', userId.toString());
-            formData.append('figureId', currentCollectionFigureId.toString());
-            formData.append('figureName', currentCollectionFigureName);
-            
-            for (let i = 0; i < selectedFiles.length; i++) {
-                formData.append('photos', selectedFiles[i]);
-            }
-            
-            sendBtn.disabled = true;
-            sendBtn.innerText = 'Отправка...';
-            
-            try {
-                const response = await fetch(`${SERVER_URL}/api/check_collection`, {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                const result = await response.json();
-                
-                if (result && result.status === 'ok') {
-                    alert('✅ Фото отправлено на проверку!');
-                    document.getElementById('figureDetailModal').remove();
-                } else {
-                    throw new Error(result?.message || 'Ошибка отправки');
-                }
-            } catch (error) {
-                console.error('Ошибка:', error);
-                alert('❌ Ошибка: ' + error.message);
-            } finally {
-                sendBtn.disabled = false;
-                sendBtn.innerText = 'Отправить на проверку';
-            }
-        };
+    alert('🔵 ШАГ 1: Кнопка нажата');
+    
+    if (!selectedFiles.length) {
+        alert('Выберите фото');
+        return;
+    }
+    
+    alert('🔵 ШАГ 2: Выбрано файлов: ' + selectedFiles.length);
+    
+    const formData = new FormData();
+    formData.append('user', userId.toString());
+    formData.append('figureId', currentCollectionFigureId.toString());
+    formData.append('figureName', currentCollectionFigureName);
+    
+    for (let i = 0; i < selectedFiles.length; i++) {
+        alert('🔵 ШАГ 3: Добавляем файл ' + (i+1) + ': ' + selectedFiles[i].name);
+        formData.append('photos', selectedFiles[i]);
+    }
+    
+    sendBtn.disabled = true;
+    sendBtn.innerText = 'Отправка...';
+    
+    try {
+        alert('🔵 ШАГ 4: Отправка на сервер...');
+        
+        const response = await fetch(`${SERVER_URL}/api/check_collection`, {
+            method: 'POST',
+            body: formData
+        });
+        
+        alert('🔵 ШАГ 5: Сервер ответил, статус: ' + response.status);
+        
+        const result = await response.json();
+        alert('🔵 ШАГ 6: Результат: ' + JSON.stringify(result));
+        
+        if (result && result.status === 'ok') {
+            alert('✅ Фото отправлено на проверку!');
+            document.getElementById('figureDetailModal').remove();
+        } else {
+            throw new Error(result?.message || 'Ошибка отправки');
+        }
+    } catch (error) {
+        alert('❌ Ошибка на шаге: ' + error.message);
+    } finally {
+        sendBtn.disabled = false;
+        sendBtn.innerText = 'Отправить на проверку';
+    }
+};
     }
 }
         // ==========================================
