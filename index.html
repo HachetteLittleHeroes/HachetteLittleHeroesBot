@@ -7878,13 +7878,15 @@ function escapeHtml(text) {
 }
 
 // ==========================================
-// КОЛЛЕКЦИЯ - УПРОЩЁННАЯ ВЕРСИЯ
+// КОЛЛЕКЦИЯ - С УВЕДОМЛЕНИЯМИ
 // ==========================================
 
 let currentCollectionFigureId = null;
 let currentCollectionFigureName = null;
 
 function openFigureModal(figureId, isUnlocked) {
+    alert('1️⃣ Открытие модалки фигурки: ' + figureId);
+    
     const figure = COLLECTION_FIGURES.find(f => f.id === figureId);
     if (!figure) return;
     
@@ -7928,9 +7930,12 @@ function openFigureModal(figureId, isUnlocked) {
     `;
     
     document.body.insertAdjacentHTML('beforeend', modalHtml);
+    alert('2️⃣ Модалка создана');
     
     // Если фигурка не открыта, настраиваем обработчики
     if (!isUnlocked) {
+        alert('3️⃣ Фигурка закрыта, настраиваем кнопки');
+        
         const fileInput = document.getElementById('collectionFileInput');
         const uploadBtn = document.getElementById('collectionUploadBtn');
         const previewArea = document.getElementById('collectionPreviewArea');
@@ -7939,10 +7944,12 @@ function openFigureModal(figureId, isUnlocked) {
         let selectedFiles = [];
         
         uploadBtn.onclick = () => {
+            alert('4️⃣ Нажата кнопка "Выбрать фото"');
             fileInput.click();
         };
         
         fileInput.onchange = (event) => {
+            alert('5️⃣ Файлы выбраны, количество: ' + event.target.files.length);
             selectedFiles = Array.from(event.target.files);
             previewArea.innerHTML = '';
             
@@ -7959,14 +7966,19 @@ function openFigureModal(figureId, isUnlocked) {
                 });
                 previewArea.style.display = 'flex';
                 sendBtn.style.display = 'block';
+                alert('6️⃣ Превью показано, кнопка отправки появилась');
             }
         };
         
         sendBtn.onclick = async () => {
+            alert('7️⃣ Нажата кнопка "Отправить"');
+            
             if (!selectedFiles.length) {
-                alert('Выберите фото');
+                alert('❌ Выберите фото');
                 return;
             }
+            
+            alert('8️⃣ Отправка на сервер...');
             
             const formData = new FormData();
             formData.append('user', userId.toString());
@@ -7981,12 +7993,15 @@ function openFigureModal(figureId, isUnlocked) {
             sendBtn.innerText = 'Отправка...';
             
             try {
+                alert('9️⃣ Вызов fetch: ' + SERVER_URL + '/api/check_collection');
                 const response = await fetch(`${SERVER_URL}/api/check_collection`, {
                     method: 'POST',
                     body: formData
                 });
                 
+                alert('🔟 Сервер ответил, статус: ' + response.status);
                 const result = await response.json();
+                alert('1️⃣1️⃣ Результат: ' + JSON.stringify(result));
                 
                 if (result && result.status === 'ok') {
                     alert('✅ Фото отправлено на проверку!');
@@ -7995,7 +8010,6 @@ function openFigureModal(figureId, isUnlocked) {
                     throw new Error(result?.message || 'Ошибка отправки');
                 }
             } catch (error) {
-                console.error('Ошибка:', error);
                 alert('❌ Ошибка: ' + error.message);
             } finally {
                 sendBtn.disabled = false;
