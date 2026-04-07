@@ -4440,11 +4440,11 @@ async function submitTimeTaskPhoto() {
         isUploading = false;
     }
 }
-        // ==========================================
-        // ЗАДАНИЯ ОТ НАШИХ ДРУЗЕЙ
-        // ==========================================
-        
-        const FRIEND_TASKS = [
+       // ==========================================
+// ЗАДАНИЯ ОТ НАШИХ ДРУЗЕЙ
+// ==========================================
+
+const FRIEND_TASKS = [
     {
         id: 'friend_abr1',
         title: 'Абрикосик - Уровень 1: Заготовка шашлыка',
@@ -4524,48 +4524,66 @@ async function submitTimeTaskPhoto() {
         ]
     }
 ];
-        
-        function loadFriendTasksStatus() {
-            const saved = localStorage.getItem('friend_tasks_completed');
-            if (saved) {
-                const completed = JSON.parse(saved);
-                FRIEND_TASKS.forEach(task => {
-                    task.completed = completed.includes(task.id);
-                });
-            }
-        }
-        
-        function saveFriendTaskCompleted(taskId) {
-            const completed = FRIEND_TASKS.filter(t => t.completed).map(t => t.id);
-            localStorage.setItem('friend_tasks_completed', JSON.stringify(completed));
-        }
-        
-        function markFriendTaskCompleted(taskId) {
-            const task = FRIEND_TASKS.find(t => t.id === taskId);
-            if (task && !task.completed) {
-                task.completed = true;
-                saveFriendTaskCompleted(taskId);
-                renderFriendTasks();
-                return true;
-            }
-            return false;
-        }
-        
-        function toggleFriendTasks() {
-            const content = document.getElementById('friendTasksContent');
-            const arrow = document.getElementById('friendTasksArrow');
-            if (!content) return;
-            if (content.style.display === 'block') {
-                content.style.display = 'none';
-                if (arrow) arrow.style.transform = 'rotate(0deg)';
-            } else {
-                content.style.display = 'block';
-                if (arrow) arrow.style.transform = 'rotate(180deg)';
-                renderFriendTasks();
-            }
-        }
-        
-        function renderFriendTasks() {
+
+function loadFriendTasksStatus() {
+    const saved = localStorage.getItem('friend_tasks_completed');
+    if (saved) {
+        const completed = JSON.parse(saved);
+        FRIEND_TASKS.forEach(task => {
+            task.completed = completed.includes(task.id);
+        });
+    }
+}
+
+function saveFriendTaskCompleted(taskId) {
+    const completed = FRIEND_TASKS.filter(t => t.completed).map(t => t.id);
+    localStorage.setItem('friend_tasks_completed', JSON.stringify(completed));
+}
+
+function markFriendTaskCompleted(taskId) {
+    const task = FRIEND_TASKS.find(t => t.id === taskId);
+    if (task && !task.completed) {
+        task.completed = true;
+        saveFriendTaskCompleted(taskId);
+        renderFriendTasks();
+        return true;
+    }
+    return false;
+}
+
+function toggleFriendTasks() {
+    const content = document.getElementById('friendTasksContent');
+    const arrow = document.getElementById('friendTasksArrow');
+    if (!content) return;
+    if (content.style.display === 'block') {
+        content.style.display = 'none';
+        if (arrow) arrow.style.transform = 'rotate(0deg)';
+    } else {
+        content.style.display = 'block';
+        if (arrow) arrow.style.transform = 'rotate(180deg)';
+        renderFriendTasks();
+    }
+}
+
+// Прогресс подзаданий для заданий от друзей
+function getFriendSubtaskProgress(taskId, levelIndex, subtaskIndex) {
+    const key = `friend_subtask_${taskId}_${levelIndex}_${subtaskIndex}`;
+    return parseInt(localStorage.getItem(key)) || 0;
+}
+
+function updateFriendSubtaskProgress(taskId, levelIndex, subtaskIndex, increment = 1) {
+    const key = `friend_subtask_${taskId}_${levelIndex}_${subtaskIndex}`;
+    const current = getFriendSubtaskProgress(taskId, levelIndex, subtaskIndex);
+    localStorage.setItem(key, current + increment);
+}
+
+// Переменные для отправки подзаданий
+let currentFriendTaskId = null;
+let currentFriendLevelIndex = null;
+let currentFriendSubtaskIndex = null;
+let currentFriendSubtaskName = null;
+
+function renderFriendTasks() {
     const container = document.getElementById('friendTasksList');
     if (!container) return;
     
@@ -4595,7 +4613,6 @@ async function submitTimeTaskPhoto() {
                 });
                 
                 const percent = (totalCompleted / totalRequired) * 100;
-                const isLevelCompleted = totalCompleted >= totalRequired;
                 
                 levelsHtml += `
                     <div class="level-card" style="margin-top: 15px;">
@@ -4664,17 +4681,6 @@ async function submitTimeTaskPhoto() {
         container.appendChild(taskCard);
     });
 }
-// Прогресс подзаданий для заданий от друзей
-function getFriendSubtaskProgress(taskId, levelIndex, subtaskIndex) {
-    const key = `friend_subtask_${taskId}_${levelIndex}_${subtaskIndex}`;
-    return parseInt(localStorage.getItem(key)) || 0;
-}
-
-function updateFriendSubtaskProgress(taskId, levelIndex, subtaskIndex, increment = 1) {
-    const key = `friend_subtask_${taskId}_${levelIndex}_${subtaskIndex}`;
-    const current = getFriendSubtaskProgress(taskId, levelIndex, subtaskIndex);
-    localStorage.setItem(key, current + increment);
-}
 
 function openFriendSubtaskUpload(taskId, levelIndex, subtaskIndex, subtaskName) {
     const task = FRIEND_TASKS.find(t => t.id === taskId);
@@ -4695,11 +4701,6 @@ function openFriendSubtaskUpload(taskId, levelIndex, subtaskIndex, subtaskName) 
     fileInput.onchange = handleFriendSubtaskFilesSelected;
     fileInput.click();
 }
-
-let currentFriendTaskId = null;
-let currentFriendLevelIndex = null;
-let currentFriendSubtaskIndex = null;
-let currentFriendSubtaskName = null;
 
 function handleFriendSubtaskFilesSelected(event) {
     const files = Array.from(event.target.files);
@@ -4776,151 +4777,15 @@ async function submitFriendSubtaskPhoto() {
         tempPhotos = [];
     }
 }
+
 function openPempuduProfile() {
-    // Открываем профиль пользователя в Telegram
     const username = 'Pempudu';
-    
     if (window.Telegram && window.Telegram.WebApp) {
-        // Через Telegram WebApp
         window.Telegram.WebApp.openLink(`tg://resolve?domain=${username}`);
     } else {
-        // Запасной вариант
         window.open(`https://t.me/${username}`, '_blank');
     }
 }
-        
-        let currentFriendTaskId = null;
-        
-        function openFriendTaskUpload(taskId) {
-            console.log('🤝 openFriendTaskUpload called:', taskId);
-            const task = FRIEND_TASKS.find(t => t.id === taskId);
-            if (!task || task.completed) {
-                if (tg) tg.showAlert('Это задание уже выполнено!');
-                return;
-            }
-            
-            currentFriendTaskId = taskId;
-            
-            const fileInput = document.createElement('input');
-            fileInput.type = 'file';
-            fileInput.accept = 'image/*';
-            fileInput.multiple = true;
-            fileInput.onchange = handleFriendTaskFilesSelected;
-            fileInput.click();
-        }
-        
-        function handleFriendTaskFilesSelected(event) {
-            const files = Array.from(event.target.files);
-            if (files.length === 0) return;
-            tempPhotos = files;
-            
-            const previewContainer = document.getElementById('taskPhotoPreviewContainer');
-            if (previewContainer) {
-                previewContainer.innerHTML = '';
-                files.forEach((file) => {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const img = document.createElement('img');
-                        img.src = e.target.result;
-                        img.style.cssText = 'width: 70px; height: 70px; object-fit: cover; border-radius: 12px; margin: 5px; border: 2px solid var(--accent);';
-                        previewContainer.appendChild(img);
-                    };
-                    reader.readAsDataURL(file);
-                });
-            }
-            
-            const modal = document.getElementById('taskUploadModal');
-            if (modal) {
-                modal.style.display = 'flex';
-                const titleEl = modal.querySelector('h3');
-                if (titleEl) titleEl.innerText = 'Отправка подтверждения для задания от друзей';
-                const submitBtn = modal.querySelector('.modal-action-btn');
-                if (submitBtn) {
-                    submitBtn.onclick = () => submitFriendTaskPhoto();
-                }
-            }
-        }
-        
-        async function submitFriendTaskPhoto() {
-            console.log('=== SUBMIT FRIEND TASK PHOTO ===');
-            if (isUploading) return;
-            if (!tempPhotos || tempPhotos.length === 0) {
-                if (tg) tg.showAlert('❌ Выберите хотя бы одно фото');
-                return;
-            }
-            
-            isUploading = true;
-            
-            try {
-                const formData = new FormData();
-                formData.append('user', userId.toString());
-                formData.append('title', 'Задание от Colour with Anna');
-                formData.append('taskId', currentFriendTaskId);
-                formData.append('type', 'friend_task');
-                
-                for (let i = 0; i < tempPhotos.length; i++) {
-                    formData.append('photos', tempPhotos[i]);
-                }
-                
-                const response = await fetch(`${SERVER_URL}/api/check_friend_task`, {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`Ошибка сервера: ${response.status}`);
-                }
-                
-                const result = await response.json();
-                
-                if (result && result.status === 'ok') {
-                    if (!user.unlockedStatuses.includes('Молния')) {
-                        user.unlockedStatuses.push('Молния');
-                    }
-                    
-                    if (!user.achievements.includes('molniya')) {
-                        user.achievements.push('molniya');
-                    }
-                    
-                    saveUserData();
-                    updateUI();
-                    markFriendTaskCompleted(currentFriendTaskId);
-                    
-                    if (tg) {
-                        tg.showAlert('✅ Задание выполнено! Получен статус "Молния" и достижение!');
-                        if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-                    }
-                    
-                    closeTaskUploadModal();
-                    renderFriendTasks();
-                } else {
-                    throw new Error(result?.message || 'Ошибка отправки');
-                }
-            } catch (error) {
-                console.error('❌ Ошибка:', error);
-                if (tg) tg.showAlert(`❌ Ошибка: ${error.message}`);
-            } finally {
-                isUploading = false;
-            }
-        }
-        
-        function openAnnaChannel() {
-            console.log('Opening Anna channel...');
-            const channelUrl = 'https://www.youtube.com/@colour_with_anna';
-            
-            if (window.Telegram && window.Telegram.WebApp) {
-                try {
-                    window.Telegram.WebApp.openLink(channelUrl);
-                } catch(e) {
-                    console.log('openLink error:', e);
-                    window.location.href = channelUrl;
-                }
-            } else if (tg && tg.openLink) {
-                tg.openLink(channelUrl);
-            } else {
-                window.open(channelUrl, '_blank');
-            }
-        }
         // ==========================================
         // ПРОФИЛЬ И UI
         // ==========================================
