@@ -4468,19 +4468,19 @@
         }
         
         function toggleFriendTasks() {
-            const content = document.getElementById('friendTasksContent');
-            const arrow = document.getElementById('friendTasksArrow');
-            if (!content) return;
-            if (content.style.display === 'block') {
-                content.style.display = 'none';
-                if (arrow) arrow.style.transform = 'rotate(0deg)';
-            } else {
-                content.style.display = 'block';
-                if (arrow) arrow.style.transform = 'rotate(180deg)';
-                loadFriendProgressFromServer();
-                renderFriendTasks();
-            }
-        }
+    const content = document.getElementById('friendTasksContent');
+    const arrow = document.getElementById('friendTasksArrow');
+    if (!content) return;
+    if (content.style.display === 'block') {
+        content.style.display = 'none';
+        if (arrow) arrow.style.transform = 'rotate(0deg)';
+    } else {
+        content.style.display = 'block';
+        if (arrow) arrow.style.transform = 'rotate(180deg)';
+        loadFriendProgressFromServer();  // Загружаем прогресс перед отображением
+        renderFriendTasks();
+    }
+}
         
         function renderFriendTasks() {
             const container = document.getElementById('friendTasksList');
@@ -4712,31 +4712,31 @@
         }
         
         async function loadFriendProgressFromServer() {
-            try {
-                const response = await fetch(`${SERVER_URL}/api/stats?user_id=${userId}`);
-                const stats = await response.json();
-                
-                if (stats && typeof stats === 'object') {
-                    let updated = false;
-                    for (const [key, value] of Object.entries(stats)) {
-                        if (key.startsWith('friend_subtask_')) {
-                            const originalKey = key.replace('friend_subtask_', '');
-                            if (friendTasksProgress[originalKey] !== value) {
-                                friendTasksProgress[originalKey] = value;
-                                updated = true;
-                            }
-                        }
-                    }
-                    if (updated) {
-                        saveFriendTasksProgress();
-                        renderFriendTasks();
-                        if (tg) tg.showAlert('✅ Прогресс обновлен!');
+    try {
+        const response = await fetch(`${SERVER_URL}/api/stats?user_id=${userId}`);
+        const stats = await response.json();
+        
+        if (stats && typeof stats === 'object') {
+            let updated = false;
+            for (const [key, value] of Object.entries(stats)) {
+                if (key.startsWith('friend_subtask_')) {
+                    const originalKey = key.replace('friend_subtask_', '');
+                    if (friendTasksProgress[originalKey] !== value) {
+                        friendTasksProgress[originalKey] = value;
+                        updated = true;
                     }
                 }
-            } catch (error) {
-                console.error('Ошибка загрузки прогресса:', error);
+            }
+            if (updated) {
+                saveFriendTasksProgress();
+                renderFriendTasks();
+                if (tg) tg.showAlert('✅ Прогресс обновлен!');
             }
         }
+    } catch (error) {
+        console.error('Ошибка загрузки прогресса:', error);
+    }
+}
         
         // ==========================================
         // ПРОФИЛЬ И UI
