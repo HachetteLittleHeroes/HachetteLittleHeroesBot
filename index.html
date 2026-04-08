@@ -4477,7 +4477,6 @@
     } else {
         content.style.display = 'block';
         if (arrow) arrow.style.transform = 'rotate(180deg)';
-        loadFriendProgressFromServer();  // Загружаем прогресс перед отображением
         renderFriendTasks();
     }
 }
@@ -4604,103 +4603,115 @@
         let currentFriendSubtaskName = null;
         
         function openFriendSubtaskUpload(taskId, levelIndex, subtaskIndex, subtaskName) {
-            const task = FRIEND_TASKS[0];
-            if (!task) return;
-            
-            const currentLevel = getCurrentFriendLevelIndex(taskId);
-            if (currentLevel !== levelIndex) {
-                if (tg) tg.showAlert('Этот уровень ещё не доступен! Выполните предыдущий уровень.');
-                return;
-            }
-            
-            currentFriendTaskId = taskId;
-            currentFriendLevelIndex = levelIndex;
-            currentFriendSubtaskIndex = subtaskIndex;
-            currentFriendSubtaskName = subtaskName;
-            
-            const fileInput = document.createElement('input');
-            fileInput.type = 'file';
-            fileInput.accept = 'image/*';
-            fileInput.multiple = true;
-            fileInput.onchange = handleFriendSubtaskFilesSelected;
-            fileInput.click();
-        }
+    const task = FRIEND_TASKS[0];
+    if (!task) return;
+    
+    const currentLevel = getCurrentFriendLevelIndex(taskId);
+    if (currentLevel !== levelIndex) {
+        if (tg) tg.showAlert('Этот уровень ещё не доступен! Выполните предыдущий уровень.');
+        return;
+    }
+    
+    currentFriendTaskId = taskId;
+    currentFriendLevelIndex = levelIndex;
+    currentFriendSubtaskIndex = subtaskIndex;
+    currentFriendSubtaskName = subtaskName;
+    
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/*';
+    fileInput.multiple = true;
+    fileInput.onchange = handleFriendSubtaskFilesSelected;
+    fileInput.click();
+}
         
         function handleFriendSubtaskFilesSelected(event) {
-            const files = Array.from(event.target.files);
-            if (files.length === 0) return;
-            tempPhotos = files;
-            
-            const previewContainer = document.getElementById('taskPhotoPreviewContainer');
-            if (previewContainer) {
-                previewContainer.innerHTML = '';
-                files.forEach((file) => {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const img = document.createElement('img');
-                        img.src = e.target.result;
-                        img.style.cssText = 'width: 70px; height: 70px; object-fit: cover; border-radius: 12px; margin: 5px; border: 2px solid var(--accent);';
-                        previewContainer.appendChild(img);
-                    };
-                    reader.readAsDataURL(file);
-                });
-            }
-            
-            const modal = document.getElementById('taskUploadModal');
-            if (modal) {
-                modal.style.display = 'flex';
-                const titleEl = modal.querySelector('h3');
-                if (titleEl) titleEl.innerText = `Отправка фото: ${currentFriendSubtaskName}`;
-                
-                const submitBtn = modal.querySelector('.modal-action-btn');
-                if (submitBtn) {
-                    const newBtn = submitBtn.cloneNode(true);
-                    submitBtn.parentNode.replaceChild(newBtn, submitBtn);
-                    newBtn.onclick = () => submitFriendSubtaskPhoto();
-                }
-            }
+    const files = Array.from(event.target.files);
+    if (files.length === 0) return;
+    tempPhotos = files;
+    
+    const previewContainer = document.getElementById('taskPhotoPreviewContainer');
+    if (previewContainer) {
+        previewContainer.innerHTML = '';
+        files.forEach((file) => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.style.cssText = 'width: 70px; height: 70px; object-fit: cover; border-radius: 12px; margin: 5px; border: 2px solid var(--accent);';
+                previewContainer.appendChild(img);
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+    
+    const modal = document.getElementById('taskUploadModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        const titleEl = modal.querySelector('h3');
+        if (titleEl) titleEl.innerText = `Отправка фото: ${currentFriendSubtaskName}`;
+        
+        const submitBtn = modal.querySelector('.modal-action-btn');
+        if (submitBtn) {
+            const newBtn = submitBtn.cloneNode(true);
+            submitBtn.parentNode.replaceChild(newBtn, submitBtn);
+            newBtn.onclick = () => submitFriendSubtaskPhoto();
         }
+    }
+}
         
         async function submitFriendSubtaskPhoto() {
-            if (!tempPhotos || tempPhotos.length === 0) {
-                if (tg) tg.showAlert('❌ Выберите хотя бы одно фото');
-                return;
-            }
-            
-            const formData = new FormData();
-            formData.append('user', userId.toString());
-            formData.append('title', `Задание от @Pempudu: ${currentFriendSubtaskName}`);
-            formData.append('taskId', currentFriendTaskId);
-            formData.append('levelIndex', currentFriendLevelIndex);
-            formData.append('subtaskIndex', currentFriendSubtaskIndex);
-            formData.append('subtaskName', currentFriendSubtaskName);
-            formData.append('type', 'friend_subtask');
-            
-            for (let i = 0; i < tempPhotos.length; i++) {
-                formData.append('photos', tempPhotos[i]);
-            }
-            
-            try {
-                const response = await fetch(`${SERVER_URL}/api/check_friend_subtask`, {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                const result = await response.json();
-                
-                if (result && result.status === 'ok') {
-                    if (tg) tg.showAlert('✅ Фото отправлено на проверку!');
-                    closeTaskUploadModal();
-                } else {
-                    throw new Error(result?.message || 'Ошибка отправки');
-                }
-            } catch (error) {
-                console.error('Ошибка:', error);
-                if (tg) tg.showAlert(`❌ Ошибка: ${error.message}`);
-            } finally {
-                tempPhotos = [];
-            }
+    if (!tempPhotos || tempPhotos.length === 0) {
+        if (tg) tg.showAlert('❌ Выберите хотя бы одно фото');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('user', userId.toString());
+    formData.append('title', `Задание от @Pempudu: ${currentFriendSubtaskName}`);
+    formData.append('taskId', currentFriendTaskId);
+    formData.append('levelIndex', currentFriendLevelIndex);
+    formData.append('subtaskIndex', currentFriendSubtaskIndex);
+    formData.append('subtaskName', currentFriendSubtaskName);
+    formData.append('type', 'friend_subtask');
+    
+    for (let i = 0; i < tempPhotos.length; i++) {
+        formData.append('photos', tempPhotos[i]);
+    }
+    
+    // Отключаем кнопку, чтобы не нажали дважды
+    const modal = document.getElementById('taskUploadModal');
+    const submitBtn = modal ? modal.querySelector('.modal-action-btn') : null;
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerText = 'Отправка...';
+    }
+    
+    try {
+        const response = await fetch(`${SERVER_URL}/api/check_friend_subtask`, {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+        
+        if (result && result.status === 'ok') {
+            if (tg) tg.showAlert('✅ Фото отправлено на проверку!');
+            closeTaskUploadModal();
+        } else {
+            throw new Error(result?.message || 'Ошибка отправки');
         }
+    } catch (error) {
+        console.error('Ошибка:', error);
+        if (tg) tg.showAlert(`❌ Ошибка: ${error.message}`);
+    } finally {
+        tempPhotos = [];
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerText = 'Отправить';
+        }
+    }
+}
         
         function openPempuduProfile() {
             const username = 'Pempudu';
