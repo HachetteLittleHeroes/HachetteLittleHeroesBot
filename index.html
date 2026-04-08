@@ -4048,27 +4048,30 @@
         // ==========================================
         
         async function refreshUserProgress() {
-            console.log('🔄 Refreshing user progress...');
-            
-            try {
-                await loadUserBalance();
-                await loadUserProgress();
-                await loadUnlockedStatuses();
-                await loadUserAchievements();
-                await checkBalanceStatus();
-                await checkAndUnlockStatuses();
-                
-                renderBranchTasks();
-                renderTimeTasks();
-                renderFriendTasks();
-                renderSeasonPassTasks();
-                updateUI();
-                
-                console.log('✅ Progress refreshed, current balance:', user.balance);
-            } catch (error) {
-                console.error('Error refreshing progress:', error);
-            }
-        }
+    console.log('🔄 Refreshing user progress...');
+    
+    try {
+        await loadUserBalance();
+        await loadUserProgress();
+        await loadUnlockedStatuses();
+        await loadUserAchievements();
+        await checkBalanceStatus();
+        await checkAndUnlockStatuses();
+        
+        renderBranchTasks();
+        renderTimeTasks();
+        renderFriendTasks();
+        renderSeasonPassTasks();
+        updateUI();
+        
+        // Добавляем обновление прогресса друзей
+        await loadFriendProgressFromServer();
+        
+        console.log('✅ Progress refreshed, current balance:', user.balance);
+    } catch (error) {
+        console.error('Error refreshing progress:', error);
+    }
+}
         
         // ==========================================
         // ВРЕМЕННЫЕ ЗАДАНИЯ
@@ -4477,7 +4480,10 @@
     } else {
         content.style.display = 'block';
         if (arrow) arrow.style.transform = 'rotate(180deg)';
-        renderFriendTasks();
+        // Обновляем прогресс перед показом
+        loadFriendProgressFromServer().then(() => {
+            renderFriendTasks();
+        });
     }
 }
         
@@ -5886,11 +5892,12 @@
                 case 'answers':
                     renderVolumes();
                     break;
+                
                 case 'profile':
-                    updateUI();
-                    refreshUserProgress();
-                    loadFriendProgressFromServer();
-                    break;
+    updateUI();
+    refreshUserProgress();
+    loadFriendProgressFromServer();  // Обновляем прогресс
+    break;
                 case 'aipalette':
                     if (userId === ADMIN_ID) {
                         const adminBlock = document.getElementById('adminAiBlock');
@@ -7593,6 +7600,14 @@
             console.log('User status:', user.status);
             console.log('Unlocked statuses:', user.unlockedStatuses);
             console.log('Balance:', user.balance);
+            // ==========================================
+    // АВТОМАТИЧЕСКОЕ ОБНОВЛЕНИЕ ПРОГРЕССА
+    // ==========================================
+    setInterval(() => {
+        if (document.querySelector('#profile.active') || document.querySelector('#friendTasksContent.active')) {
+            loadFriendProgressFromServer();
+        }
+    }, 30000);
         };
         
         function startProgressRefresh() {
