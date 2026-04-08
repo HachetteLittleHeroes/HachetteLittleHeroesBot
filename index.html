@@ -4573,7 +4573,33 @@ function isAllFriendLevelsCompleted(taskId) {
     }
     return true;
 }
-
+// Загрузка прогресса подзаданий от @Pempudu с сервера
+async function loadFriendProgressFromServer() {
+    try {
+        const response = await fetch(`${SERVER_URL}/api/stats?user_id=${userId}`);
+        const stats = await response.json();
+        
+        if (stats && typeof stats === 'object') {
+            let updated = false;
+            for (const [key, value] of Object.entries(stats)) {
+                if (key.startsWith('friend_subtask_')) {
+                    const originalKey = key.replace('friend_subtask_', '');
+                    if (friendTasksProgress[originalKey] !== value) {
+                        friendTasksProgress[originalKey] = value;
+                        updated = true;
+                    }
+                }
+            }
+            if (updated) {
+                saveFriendTasksProgress();
+                renderFriendTasks();
+                console.log('✅ Прогресс обновлен с сервера');
+            }
+        }
+    } catch (error) {
+        console.error('Ошибка загрузки прогресса:', error);
+    }
+}
 function toggleFriendTasks() {
     const content = document.getElementById('friendTasksContent');
     const arrow = document.getElementById('friendTasksArrow');
@@ -4584,7 +4610,10 @@ function toggleFriendTasks() {
     } else {
         content.style.display = 'block';
         if (arrow) arrow.style.transform = 'rotate(180deg)';
-        renderFriendTasks();
+        // Загружаем прогресс с сервера перед отображением
+        loadFriendProgressFromServer().then(() => {
+            renderFriendTasks();
+        });
     }
 }
 
@@ -5953,9 +5982,10 @@ function openPempuduProfile() {
                     renderVolumes();
                     break;
                 case 'profile':
-                    updateUI();
-                    refreshUserProgress();
-                    break;
+    updateUI();
+    refreshUserProgress();
+    loadFriendProgressFromServer();
+    break;
                 case 'aipalette':
                     if (userId === ADMIN_ID) {
                         const adminBlock = document.getElementById('adminAiBlock');
@@ -8209,6 +8239,12 @@ updateUI();
             console.log('User status:', user.status);
             console.log('Unlocked statuses:', user.unlockedStatuses);
             console.log('Balance:', user.balance);
+            // Автообновление прогресса каждые 30 секунд
+setInterval(() => {
+    if (document.querySelector('#profile.active') || document.querySelector('#friendTasksContent.active')) {
+        loadFriendProgressFromServer();
+    }
+}, 30000);
         };
         function showCollectionPreview() {
     // Находим модальное окно
