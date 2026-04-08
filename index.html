@@ -7371,9 +7371,7 @@
     container.innerHTML = '';
     let unlockedCount = 0;
     
-    // Проверяем, что COLLECTION_FIGURES существует
     if (!COLLECTION_FIGURES || COLLECTION_FIGURES.length === 0) {
-        console.error('COLLECTION_FIGURES not defined or empty');
         container.innerHTML = '<div class="no-results">Ошибка загрузки коллекции</div>';
         return;
     }
@@ -7390,18 +7388,28 @@
         card.setAttribute('data-id', figure.id);
         card.onclick = () => openFigureModal(figure.id, isUnlocked);
         
-        // Упрощённое изображение для теста
+        // Используем реальные картинки .png
+        const imgSrc = isUnlocked ? figure.img : figure.img;
+        const imgFilter = !isUnlocked ? 'filter: blur(6px);' : '';
+        
         card.innerHTML = `
             <div class="collection-card-image">
-                <div style="width: 70%; height: 70%; margin: 0 auto; background: ${isUnlocked ? 'var(--status-green)' : '#666'}; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
-                    <i class="fas fa-gem" style="font-size: 30px; color: white;"></i>
-                </div>
+                <img src="${imgSrc}" style="width: 70%; height: 70%; object-fit: contain; border-radius: 12px; ${imgFilter}" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%25%22 height=%22100%25%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%23ff9500%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2440%22%3E🎁%3C/text%3E%3C/svg%3E'">
             </div>
-            <div class="collection-card-name">${figure.name}</div>
+            <div class="collection-card-name">${escapeHtml(figure.name)}</div>
             <div class="collection-card-status ${isUnlocked ? 'unlocked' : 'locked'}">
                 ${isUnlocked ? '<i class="fas fa-check-circle"></i> Открыта' : '<i class="fas fa-lock"></i> Не открыта'}
             </div>
         `;
+        
+        // Добавляем иконку замка поверх заблокированной картинки
+        if (!isUnlocked) {
+            const lockDiv = document.createElement('div');
+            lockDiv.style.cssText = 'position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.6); border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; z-index: 10;';
+            lockDiv.innerHTML = '<i class="fas fa-lock" style="color: white; font-size: 14px;"></i>';
+            card.style.position = 'relative';
+            card.appendChild(lockDiv);
+        }
         
         container.appendChild(card);
     });
