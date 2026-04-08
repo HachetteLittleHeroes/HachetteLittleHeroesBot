@@ -8175,6 +8175,7 @@ updateUI();
             await loadUserAchievements();
             await checkBalanceStatus();
             await checkAndUnlockStatuses();
+            await loadFriendProgressFromServer();
             if (user.status && !user.unlockedStatuses.includes(user.status)) user.status = 'Без статуса';
             loadTimeTasksStatus();
             loadFriendTasksStatus();
@@ -8273,6 +8274,25 @@ function closeTaskUploadModal() {
         modal.style.display = 'none';
     }
     tempPhotos = [];
+}
+async function loadFriendProgressFromServer() {
+    try {
+        const response = await fetch(`${SERVER_URL}/api/stats?user_id=${userId}`);
+        const stats = await response.json();
+        
+        if (stats && typeof stats === 'object') {
+            // Обновляем локальный прогресс из данных сервера
+            for (const [key, value] of Object.entries(stats)) {
+                if (key.startsWith('friend_subtask_')) {
+                    friendTasksProgress[key.replace('friend_subtask_', '')] = value;
+                }
+            }
+            saveFriendTasksProgress();
+            renderFriendTasks();
+        }
+    } catch (error) {
+        console.error('Ошибка загрузки прогресса:', error);
+    }
 }
     </script>
     <!-- Модалка фигурки коллекции -->
