@@ -4587,6 +4587,20 @@ function toggleFriendTasks() {
         renderFriendTasks();
     }
 }
+async function toggleFriendTasks() {
+    const content = document.getElementById('friendTasksContent');
+    const arrow = document.getElementById('friendTasksArrow');
+    if (!content) return;
+    if (content.style.display === 'block') {
+        content.style.display = 'none';
+        if (arrow) arrow.style.transform = 'rotate(0deg)';
+    } else {
+        content.style.display = 'block';
+        if (arrow) arrow.style.transform = 'rotate(180deg)';
+        await loadFriendProgressFromServer();  // ← добавить
+        renderFriendTasks();
+    }
+}
 
 function renderFriendTasks() {
     const container = document.getElementById('friendTasksList');
@@ -5953,9 +5967,10 @@ function openPempuduProfile() {
                     renderVolumes();
                     break;
                 case 'profile':
-                    updateUI();
-                    refreshUserProgress();
-                    break;
+    updateUI();
+    refreshUserProgress();
+    await loadFriendProgressFromServer();  // ← добавить
+    break;
                 case 'aipalette':
                     if (userId === ADMIN_ID) {
                         const adminBlock = document.getElementById('adminAiBlock');
@@ -8175,6 +8190,8 @@ updateUI();
             await loadUserAchievements();
             await checkBalanceStatus();
             await checkAndUnlockStatuses();
+            // Загружаем прогресс заданий от друзей с сервера
+await loadFriendProgressFromServer();
             await loadFriendProgressFromServer();
             if (user.status && !user.unlockedStatuses.includes(user.status)) user.status = 'Без статуса';
             loadTimeTasksStatus();
@@ -8289,6 +8306,32 @@ async function loadFriendProgressFromServer() {
             }
             saveFriendTasksProgress();
             renderFriendTasks();
+        }
+    } catch (error) {
+        console.error('Ошибка загрузки прогресса:', error);
+    }
+}
+// Загрузка прогресса подзаданий от @Pempudu с сервера
+async function loadFriendProgressFromServer() {
+    try {
+        const response = await fetch(`${SERVER_URL}/api/stats?user_id=${userId}`);
+        const stats = await response.json();
+        
+        if (stats && typeof stats === 'object') {
+            let updated = false;
+            for (const [key, value] of Object.entries(stats)) {
+                if (key.startsWith('friend_subtask_')) {
+                    const originalKey = key.replace('friend_subtask_', '');
+                    if (friendTasksProgress[originalKey] !== value) {
+                        friendTasksProgress[originalKey] = value;
+                        updated = true;
+                    }
+                }
+            }
+            if (updated) {
+                saveFriendTasksProgress();
+                renderFriendTasks();
+            }
         }
     } catch (error) {
         console.error('Ошибка загрузки прогресса:', error);
