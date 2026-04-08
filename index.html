@@ -4480,7 +4480,7 @@
     } else {
         content.style.display = 'block';
         if (arrow) arrow.style.transform = 'rotate(180deg)';
-        // Обновляем прогресс перед показом
+        // Принудительно обновляем прогресс
         loadFriendProgressFromServer().then(() => {
             renderFriendTasks();
         });
