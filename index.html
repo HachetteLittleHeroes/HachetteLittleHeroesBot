@@ -7315,28 +7315,48 @@
         
         function renderCollection() {
     const container = document.getElementById('collectionGrid');
-    if (!container) {
-        console.error('collectionGrid not found');
-        return;
-    }
+    if (!container) return;
     
     container.innerHTML = '';
     let unlockedCount = 0;
     
-    // Простой тест: создаём 3 карточки для проверки
-    for (let i = 1; i <= 3; i++) {
-        const card = document.createElement('div');
-        card.className = 'collection-card';
-        card.style.cssText = 'background: var(--accent); padding: 20px; margin: 5px; text-align: center; border-radius: 12px;';
-        card.innerHTML = `<div style="color: white;">Тестовая карточка ${i}</div>`;
-        container.appendChild(card);
-        unlockedCount++;
+    // Проверяем, что COLLECTION_FIGURES существует
+    if (!COLLECTION_FIGURES || COLLECTION_FIGURES.length === 0) {
+        console.error('COLLECTION_FIGURES not defined or empty');
+        container.innerHTML = '<div class="no-results">Ошибка загрузки коллекции</div>';
+        return;
     }
     
-    const countSpan = document.getElementById('collectionCount');
-    if (countSpan) countSpan.innerText = `3/50`;
+    const sortedFigures = [...COLLECTION_FIGURES].sort((a, b) => a.id - b.id);
     
-    console.log('✅ renderCollection test completed');
+    sortedFigures.forEach(figure => {
+        const figureData = userCollection.find(f => f.id === figure.id);
+        const isUnlocked = figureData ? figureData.unlocked : false;
+        if (isUnlocked) unlockedCount++;
+        
+        const card = document.createElement('div');
+        card.className = 'collection-card';
+        card.setAttribute('data-id', figure.id);
+        card.onclick = () => openFigureModal(figure.id, isUnlocked);
+        
+        // Упрощённое изображение для теста
+        card.innerHTML = `
+            <div class="collection-card-image">
+                <div style="width: 70%; height: 70%; margin: 0 auto; background: ${isUnlocked ? 'var(--status-green)' : '#666'}; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-gem" style="font-size: 30px; color: white;"></i>
+                </div>
+            </div>
+            <div class="collection-card-name">${figure.name}</div>
+            <div class="collection-card-status ${isUnlocked ? 'unlocked' : 'locked'}">
+                ${isUnlocked ? '<i class="fas fa-check-circle"></i> Открыта' : '<i class="fas fa-lock"></i> Не открыта'}
+            </div>
+        `;
+        
+        container.appendChild(card);
+    });
+    
+    const countSpan = document.getElementById('collectionCount');
+    if (countSpan) countSpan.innerText = `${unlockedCount}/${COLLECTION_FIGURES.length}`;
 }
         
         function escapeHtml(text) {
