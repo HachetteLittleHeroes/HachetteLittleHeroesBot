@@ -5969,7 +5969,7 @@ function openPempuduProfile() {
                 case 'profile':
     updateUI();
     refreshUserProgress();
-    await loadFriendProgressFromServer();  // ← добавить
+    loadFriendProgressFromServer();  // ← добавить
     break;
                 case 'aipalette':
                     if (userId === ADMIN_ID) {
@@ -8190,8 +8190,6 @@ updateUI();
             await loadUserAchievements();
             await checkBalanceStatus();
             await checkAndUnlockStatuses();
-            // Загружаем прогресс заданий от друзей с сервера
-await loadFriendProgressFromServer();
             await loadFriendProgressFromServer();
             if (user.status && !user.unlockedStatuses.includes(user.status)) user.status = 'Без статуса';
             loadTimeTasksStatus();
@@ -8291,25 +8289,6 @@ function closeTaskUploadModal() {
         modal.style.display = 'none';
     }
     tempPhotos = [];
-}
-async function loadFriendProgressFromServer() {
-    try {
-        const response = await fetch(`${SERVER_URL}/api/stats?user_id=${userId}`);
-        const stats = await response.json();
-        
-        if (stats && typeof stats === 'object') {
-            // Обновляем локальный прогресс из данных сервера
-            for (const [key, value] of Object.entries(stats)) {
-                if (key.startsWith('friend_subtask_')) {
-                    friendTasksProgress[key.replace('friend_subtask_', '')] = value;
-                }
-            }
-            saveFriendTasksProgress();
-            renderFriendTasks();
-        }
-    } catch (error) {
-        console.error('Ошибка загрузки прогресса:', error);
-    }
 }
 // Загрузка прогресса подзаданий от @Pempudu с сервера
 async function loadFriendProgressFromServer() {
