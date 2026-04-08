@@ -4579,21 +4579,29 @@ async function loadFriendProgressFromServer() {
         const response = await fetch(`${SERVER_URL}/api/stats?user_id=${userId}`);
         const stats = await response.json();
         
+        console.log('📊 Stats from server:', stats);
+        
         if (stats && typeof stats === 'object') {
             let updated = false;
             for (const [key, value] of Object.entries(stats)) {
                 if (key.startsWith('friend_subtask_')) {
+                    // Убираем префикс "friend_subtask_"
                     const originalKey = key.replace('friend_subtask_', '');
+                    console.log(`Server key: ${key} -> Original key: ${originalKey} = ${value}`);
+                    console.log(`Current progress: ${friendTasksProgress[originalKey]}`);
                     if (friendTasksProgress[originalKey] !== value) {
                         friendTasksProgress[originalKey] = value;
                         updated = true;
+                        console.log(`✅ Updated: ${originalKey} = ${value}`);
                     }
                 }
             }
             if (updated) {
                 saveFriendTasksProgress();
                 renderFriendTasks();
-                console.log('✅ Прогресс обновлен с сервера');
+                if (tg) tg.showAlert('✅ Прогресс обновлен!');
+            } else {
+                console.log('No updates needed');
             }
         }
     } catch (error) {
