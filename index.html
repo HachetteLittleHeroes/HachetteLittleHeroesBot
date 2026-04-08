@@ -7990,8 +7990,12 @@ function saveCollection() {
 }
 
 function renderCollection() {
+    alert('renderCollection called, figures: ' + COLLECTION_FIGURES.length);
     const container = document.getElementById('collectionGrid');
-    if (!container) return;
+    if (!container) {
+        alert('collectionGrid not found!');
+        return;
+    }
     
     container.innerHTML = '';
     let unlockedCount = 0;
