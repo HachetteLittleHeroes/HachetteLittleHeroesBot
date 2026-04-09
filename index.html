@@ -8175,23 +8175,38 @@ function openFigureModal(figureId, isUnlocked) {
 
 window.onload = async () => {
     console.log('🚀 APP STARTING...');
-    const savedUser = localStorage.getItem('coloring_user');
-    if (savedUser) Object.assign(user, JSON.parse(savedUser));
-    const savedCart = localStorage.getItem('coloring_cart');
-    if (savedCart) cart = JSON.parse(savedCart);
     
-    await loadUserBalance();
-    updateUI();
-    await loadUserProgress();
-    await loadUnlockedStatuses();
-    await loadUserAchievements();
-    await checkBalanceStatus();
-    await checkAndUnlockStatuses();
+    // ТЕСТ: проверяем, что элементы существуют
+    const collectionGrid = document.getElementById('collectionGrid');
+    console.log('collectionGrid element:', collectionGrid);
     
-    if (user.status && !user.unlockedStatuses.includes(user.status)) user.status = 'Без статуса';
-    loadTimeTasksStatus();
-    loadFriendTasksStatus();
-    loadFriendProgressFromServer();
+    if (collectionGrid) {
+        collectionGrid.innerHTML = '<div style="background: green; padding: 20px; color: white; text-align: center;">✅ ТЕСТ: Коллекция работает!</div>';
+    }
+    
+    // ТЕСТ: проверяем тему
+    const savedTheme = localStorage.getItem('app_theme');
+    console.log('Saved theme:', savedTheme);
+    
+    if (savedTheme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        console.log('Applied dark theme');
+    } else {
+        document.documentElement.removeAttribute('data-theme');
+        console.log('Applied light theme');
+    }
+    
+    // Кнопка для теста сохранения темы
+    const testBtn = document.createElement('button');
+    testBtn.innerText = 'ТЕСТ: Сохранить тёмную тему';
+    testBtn.style.cssText = 'position: fixed; bottom: 100px; right: 10px; z-index: 9999; background: black; color: white; padding: 10px; border-radius: 10px;';
+    testBtn.onclick = () => {
+        localStorage.setItem('app_theme', 'dark');
+        document.documentElement.setAttribute('data-theme', 'dark');
+        alert('Тёмная тема сохранена! Обновите страницу.');
+    };
+    document.body.appendChild(testBtn);
+};
     
     // ==========================================
     // ЗАГРУЗКА ТЕМЫ
