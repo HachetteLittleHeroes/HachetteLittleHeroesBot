@@ -8279,30 +8279,24 @@ async function loadFriendProgressFromServer() {
         const response = await fetch(`${SERVER_URL}/api/stats?user_id=${userId}`);
         const stats = await response.json();
         
-        if (stats && stats.friend_tasks) {
-            const serverTasks = stats.friend_tasks;
-            FRIEND_TASKS.forEach((task, taskIdx) => {
-                if (serverTasks[taskIdx]) {
-                    task.completed = serverTasks[taskIdx].completed || false;
-                    if (serverTasks[taskIdx].levels) {
-                        task.levels.forEach((level, lvlIdx) => {
-                            if (serverTasks[taskIdx].levels[lvlIdx]) {
-                                level.subtasks.forEach((sub, subIdx) => {
-                                    const serverProgress = serverTasks[taskIdx].levels[lvlIdx].subtasks[subIdx];
-                                    if (serverProgress !== undefined) {
-                                        sub.progress = serverProgress;
-                                    }
-                                });
-                            }
-                        });
-                    }
+        if (stats && stats.friend_progress) {
+            for (const [key, value] of Object.entries(stats.friend_progress)) {
+                friendProgress[key] = value;
+            }
+            // Также проверяем ключи напрямую
+            for (const [key, value] of Object.entries(stats)) {
+                if (key.startsWith('friend_') && typeof value === 'number') {
+                    friendProgress[key] = value;
                 }
-            });
-            saveFriendTasksStatus();
+            }
+            saveFriendProgress();
+            
+            // ✅ ВОТ ЭТО ВАЖНО — принудительно перерисовать
             renderFriendTasks();
+            console.log('✅ Friend tasks rendered');
         }
     } catch (error) {
-        console.error('Error loading friend progress from server:', error);
+        console.error('Error:', error);
     }
 }
        // ==========================================
