@@ -6003,54 +6003,58 @@ function openPempuduProfile() {
         // ТЕМЫ
         // ==========================================
         
-        function setTheme(themeName) {
-            const oldStyle = document.getElementById('custom-theme-style');
-            if (oldStyle) oldStyle.remove();
-            if (themeName === 'custom') {
-                applyCustomTheme(true);
-            } else {
-                document.documentElement.setAttribute('data-theme', themeName);
-                user.theme = themeName;
-                localStorage.setItem('app_theme', themeName);
-            }
-            document.querySelectorAll('.theme-option').forEach(el => {
-                el.classList.remove('active');
-                if (el.dataset.theme === themeName) el.classList.add('active');
-            });
-        }
+     function setTheme(themeName) {
+    console.log('🎨 setTheme called:', themeName);
+    const oldStyle = document.getElementById('custom-theme-style');
+    if (oldStyle) oldStyle.remove();
+    if (themeName === 'custom') {
+        applyCustomTheme(true);
+    } else {
+        document.documentElement.setAttribute('data-theme', themeName);
+        user.theme = themeName;
+        localStorage.setItem('app_theme', themeName);
+    }
+    document.querySelectorAll('.theme-option').forEach(el => {
+        el.classList.remove('active');
+        if (el.dataset.theme === themeName) el.classList.add('active');
+    });
+    saveUserData();  // ← ДОБАВИТЬ ЭТУ СТРОКУ
+    console.log('Theme saved:', localStorage.getItem('app_theme'));
+}
         
         function applyCustomTheme(loadFromCache = false) {
-            let bgMode, accentColor;
-            if (loadFromCache) {
-                bgMode = localStorage.getItem('custom_theme_bg') || 'light';
-                accentColor = localStorage.getItem('custom_theme_accent') || '#ff9500';
-                const bgEl = document.getElementById('themeBgMode');
-                const accEl = document.getElementById('themeAccentColor');
-                if (bgEl) bgEl.value = bgMode;
-                if (accEl) accEl.value = accentColor;
-            } else {
-                const bgEl = document.getElementById('themeBgMode');
-                const accEl = document.getElementById('themeAccentColor');
-                bgMode = bgEl ? bgEl.value : 'light';
-                accentColor = accEl ? accEl.value : '#ff9500';
-                localStorage.setItem('custom_theme_bg', bgMode);
-                localStorage.setItem('custom_theme_accent', accentColor);
-            }
-            const oldStyle = document.getElementById('custom-theme-style');
-            if (oldStyle) oldStyle.remove();
-            const style = document.createElement('style');
-            style.id = 'custom-theme-style';
-            const commonStyles = `button, .nav-btn, .task-submit-btn { pointer-events: auto !important; cursor: pointer !important; } .modal-overlay { z-index: 10000 !important; }`;
-            if (bgMode === 'light') {
-                style.textContent = `:root { --bg: #f5f5f7; --bg-secondary: #ffffff; --bg-header: #ffffff; --text: #1c1c1e; --text-gray: #8e8e93; --accent: ${accentColor}; --accent-gradient: linear-gradient(135deg, ${accentColor} 0%, ${accentColor}cc 100%); --border-color: rgba(0,0,0,0.1); --card-bg: #ffffff; --input-bg: #ffffff; } ${commonStyles}`;
-            } else {
-                style.textContent = `:root { --bg: #121212; --bg-secondary: #1e1e1e; --bg-header: #1c1c1e; --text: #ffffff; --text-gray: #8e8e93; --accent: ${accentColor}; --accent-gradient: linear-gradient(135deg, ${accentColor} 0%, ${accentColor}cc 100%); --border-color: rgba(255,255,255,0.1); --card-bg: #1c1c1e; --input-bg: #2c2c2e; } ${commonStyles}`;
-            }
-            document.head.appendChild(style);
-            document.documentElement.removeAttribute('data-theme');
-            user.theme = 'custom';
-            localStorage.setItem('app_theme', 'custom');
-        }
+    let bgMode, accentColor;
+    if (loadFromCache) {
+        bgMode = localStorage.getItem('custom_theme_bg') || 'light';
+        accentColor = localStorage.getItem('custom_theme_accent') || '#ff9500';
+        const bgEl = document.getElementById('themeBgMode');
+        const accEl = document.getElementById('themeAccentColor');
+        if (bgEl) bgEl.value = bgMode;
+        if (accEl) accEl.value = accentColor;
+    } else {
+        const bgEl = document.getElementById('themeBgMode');
+        const accEl = document.getElementById('themeAccentColor');
+        bgMode = bgEl ? bgEl.value : 'light';
+        accentColor = accEl ? accEl.value : '#ff9500';
+        localStorage.setItem('custom_theme_bg', bgMode);
+        localStorage.setItem('custom_theme_accent', accentColor);
+    }
+    const oldStyle = document.getElementById('custom-theme-style');
+    if (oldStyle) oldStyle.remove();
+    const style = document.createElement('style');
+    style.id = 'custom-theme-style';
+    const commonStyles = `button, .nav-btn, .task-submit-btn { pointer-events: auto !important; cursor: pointer !important; } .modal-overlay { z-index: 10000 !important; }`;
+    if (bgMode === 'light') {
+        style.textContent = `:root { --bg: #f5f5f7; --bg-secondary: #ffffff; --bg-header: #ffffff; --text: #1c1c1e; --text-gray: #8e8e93; --accent: ${accentColor}; --accent-gradient: linear-gradient(135deg, ${accentColor} 0%, ${accentColor}cc 100%); --border-color: rgba(0,0,0,0.1); --card-bg: #ffffff; --input-bg: #ffffff; } ${commonStyles}`;
+    } else {
+        style.textContent = `:root { --bg: #121212; --bg-secondary: #1e1e1e; --bg-header: #1c1c1e; --text: #ffffff; --text-gray: #8e8e93; --accent: ${accentColor}; --accent-gradient: linear-gradient(135deg, ${accentColor} 0%, ${accentColor}cc 100%); --border-color: rgba(255,255,255,0.1); --card-bg: #1c1c1e; --input-bg: #2c2c2e; } ${commonStyles}`;
+    }
+    document.head.appendChild(style);
+    document.documentElement.removeAttribute('data-theme');
+    user.theme = 'custom';
+    localStorage.setItem('app_theme', 'custom');
+    saveUserData();  // ← ДОБАВИТЬ ЭТУ СТРОКУ
+}
         // ==========================================
         // ПОИСК МАРКЕРОВ В ОРГАНАЙЗЕРАХ
         // ==========================================
@@ -8121,66 +8125,86 @@ function openFigureModal(figureId, isUnlocked) {
         };
     }
 }
-        // ==========================================
-        // ИНИЦИАЛИЗАЦИЯ
-        // ==========================================
-        
-        window.onload = async () => {
-            console.log('🚀 APP STARTING...');
-            const savedUser = localStorage.getItem('coloring_user');
-            if (savedUser) Object.assign(user, JSON.parse(savedUser));
-            const savedCart = localStorage.getItem('coloring_cart');
-            if (savedCart) cart = JSON.parse(savedCart);
-            // После загрузки всех данных, дополнительно загружаем баланс с сервера
-await loadUserBalance();
-updateUI();
-            await loadUserProgress();
-            await loadUnlockedStatuses();
-            await loadUserAchievements();
-            await checkBalanceStatus();
-            await checkAndUnlockStatuses();
-            if (user.status && !user.unlockedStatuses.includes(user.status)) user.status = 'Без статуса';
-            loadTimeTasksStatus();
-            loadFriendTasksStatus();
-            loadFriendProgressFromServer();
-            const savedTheme = localStorage.getItem('app_theme');
-            if (savedTheme === 'custom') applyCustomTheme(true);
-            else if (savedTheme && savedTheme !== 'light') setTheme(savedTheme);
-            else setTheme(user.theme || 'light');
-            renderBranchTasks();
-            renderTimeTasks();
-            renderFriendTasks();
-            renderSeasonPassTasks();
-            loadMarkers();
-            renderCart();
-            renderVolumes();
-            loadInventory();
-            loadSeasonPremiumStatus();
-            loadClaimedRewards();
-            loadCollection();
-            updateUI();
-            startProgressRefresh();
-            initSwipeListeners();
-            window.onclick = function(event) {
-                document.querySelectorAll('.modal-overlay').forEach(modal => {
-                    if (event.target === modal) {
-                        modal.style.display = "none";
-                        if (modal.id === 'answersViewerModal') document.body.style.overflow = '';
-                    }
-                });
-            };
-            console.log('✅ APP READY');
-            console.log('User ID:', userId);
-            console.log('User status:', user.status);
-            console.log('Unlocked statuses:', user.unlockedStatuses);
-            console.log('Balance:', user.balance);
-            // Автообновление прогресса каждые 30 секунд
-setInterval(() => {
-    if (document.querySelector('#profile.active') || document.querySelector('#friendTasksContent.active')) {
-        loadFriendProgressFromServer();
+       // ==========================================
+// ИНИЦИАЛИЗАЦИЯ
+// ==========================================
+
+window.onload = async () => {
+    console.log('🚀 APP STARTING...');
+    const savedUser = localStorage.getItem('coloring_user');
+    if (savedUser) Object.assign(user, JSON.parse(savedUser));
+    const savedCart = localStorage.getItem('coloring_cart');
+    if (savedCart) cart = JSON.parse(savedCart);
+    
+    await loadUserBalance();
+    updateUI();
+    await loadUserProgress();
+    await loadUnlockedStatuses();
+    await loadUserAchievements();
+    await checkBalanceStatus();
+    await checkAndUnlockStatuses();
+    
+    if (user.status && !user.unlockedStatuses.includes(user.status)) user.status = 'Без статуса';
+    loadTimeTasksStatus();
+    loadFriendTasksStatus();
+    loadFriendProgressFromServer();
+    
+    // ==========================================
+    // ЗАГРУЗКА ТЕМЫ
+    // ==========================================
+    const savedTheme = localStorage.getItem('app_theme');
+    console.log('📀 Saved theme from localStorage:', savedTheme);
+    console.log('📀 User theme:', user.theme);
+    
+    if (savedTheme === 'custom') {
+        console.log('🎨 Applying custom theme from cache');
+        applyCustomTheme(true);
+    } else if (savedTheme && savedTheme !== 'light') {
+        console.log('🎨 Setting theme:', savedTheme);
+        setTheme(savedTheme);
+    } else {
+        console.log('🎨 Setting default theme:', user.theme || 'light');
+        setTheme(user.theme || 'light');
     }
-}, 30000);
-        };
+    
+    renderBranchTasks();
+    renderTimeTasks();
+    renderFriendTasks();
+    renderSeasonPassTasks();
+    loadMarkers();
+    renderCart();
+    renderVolumes();
+    loadInventory();
+    loadSeasonPremiumStatus();
+    loadClaimedRewards();
+    loadCollection();
+    updateUI();
+    startProgressRefresh();
+    initSwipeListeners();
+    
+    window.onclick = function(event) {
+        document.querySelectorAll('.modal-overlay').forEach(modal => {
+            if (event.target === modal) {
+                modal.style.display = "none";
+                if (modal.id === 'answersViewerModal') document.body.style.overflow = '';
+            }
+        });
+    };
+    
+    console.log('✅ APP READY');
+    console.log('User ID:', userId);
+    console.log('User status:', user.status);
+    console.log('Unlocked statuses:', user.unlockedStatuses);
+    console.log('Balance:', user.balance);
+    console.log('Current theme:', localStorage.getItem('app_theme'));
+    
+    // Автообновление прогресса каждые 30 секунд
+    setInterval(() => {
+        if (document.querySelector('#profile.active') || document.querySelector('#friendTasksContent.active')) {
+            loadFriendProgressFromServer();
+        }
+    }, 30000);
+};
         
 function closeTaskUploadModal() {
     const modal = document.getElementById('taskUploadModal');
