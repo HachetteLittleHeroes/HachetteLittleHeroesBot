@@ -4812,17 +4812,13 @@ let currentFriendLevelIndex = null;
 let currentFriendSubtaskIndex = null;
 let currentFriendSubtaskName = null;
 
-function openFriendSubtaskUpload(taskId, levelIndex, subtaskIndex, subtaskName) {
-    const task = FRIEND_TASKS[0];
-    if (!task) return;
-    
-    const currentLevel = getCurrentFriendLevelIndex(taskId);
+function openFriendSubtaskUpload(levelIndex, subtaskIndex, subtaskName) {
+    const currentLevel = getCurrentFriendLevelIndex();
     if (currentLevel !== levelIndex) {
         if (tg) tg.showAlert('Этот уровень ещё не доступен! Выполните предыдущий уровень.');
         return;
     }
     
-    currentFriendTaskId = taskId;
     currentFriendLevelIndex = levelIndex;
     currentFriendSubtaskIndex = subtaskIndex;
     currentFriendSubtaskName = subtaskName;
