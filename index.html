@@ -6004,26 +6004,37 @@ function openPempuduProfile() {
         // ==========================================
         
      function setTheme(themeName) {
-    console.log('🎨 setTheme called:', themeName);
+    console.log('🎨 setTheme called with:', themeName);
+    
     const oldStyle = document.getElementById('custom-theme-style');
     if (oldStyle) oldStyle.remove();
+    
     if (themeName === 'custom') {
         applyCustomTheme(true);
     } else {
-        document.documentElement.setAttribute('data-theme', themeName);
+        if (themeName === 'light') {
+            document.documentElement.removeAttribute('data-theme');
+        } else {
+            document.documentElement.setAttribute('data-theme', themeName);
+        }
         user.theme = themeName;
         localStorage.setItem('app_theme', themeName);
     }
+    
     document.querySelectorAll('.theme-option').forEach(el => {
         el.classList.remove('active');
         if (el.dataset.theme === themeName) el.classList.add('active');
     });
-    saveUserData();  // ← ДОБАВИТЬ ЭТУ СТРОКУ
-    console.log('Theme saved:', localStorage.getItem('app_theme'));
+    
+    saveUserData();
+    console.log('✅ Theme saved to localStorage:', localStorage.getItem('app_theme'));
 }
         
         function applyCustomTheme(loadFromCache = false) {
+    console.log('🎨 applyCustomTheme called, loadFromCache:', loadFromCache);
+    
     let bgMode, accentColor;
+    
     if (loadFromCache) {
         bgMode = localStorage.getItem('custom_theme_bg') || 'light';
         accentColor = localStorage.getItem('custom_theme_accent') || '#ff9500';
@@ -6039,21 +6050,27 @@ function openPempuduProfile() {
         localStorage.setItem('custom_theme_bg', bgMode);
         localStorage.setItem('custom_theme_accent', accentColor);
     }
+    
     const oldStyle = document.getElementById('custom-theme-style');
     if (oldStyle) oldStyle.remove();
+    
     const style = document.createElement('style');
     style.id = 'custom-theme-style';
+    
     const commonStyles = `button, .nav-btn, .task-submit-btn { pointer-events: auto !important; cursor: pointer !important; } .modal-overlay { z-index: 10000 !important; }`;
+    
     if (bgMode === 'light') {
         style.textContent = `:root { --bg: #f5f5f7; --bg-secondary: #ffffff; --bg-header: #ffffff; --text: #1c1c1e; --text-gray: #8e8e93; --accent: ${accentColor}; --accent-gradient: linear-gradient(135deg, ${accentColor} 0%, ${accentColor}cc 100%); --border-color: rgba(0,0,0,0.1); --card-bg: #ffffff; --input-bg: #ffffff; } ${commonStyles}`;
     } else {
         style.textContent = `:root { --bg: #121212; --bg-secondary: #1e1e1e; --bg-header: #1c1c1e; --text: #ffffff; --text-gray: #8e8e93; --accent: ${accentColor}; --accent-gradient: linear-gradient(135deg, ${accentColor} 0%, ${accentColor}cc 100%); --border-color: rgba(255,255,255,0.1); --card-bg: #1c1c1e; --input-bg: #2c2c2e; } ${commonStyles}`;
     }
+    
     document.head.appendChild(style);
     document.documentElement.removeAttribute('data-theme');
     user.theme = 'custom';
     localStorage.setItem('app_theme', 'custom');
-    saveUserData();  // ← ДОБАВИТЬ ЭТУ СТРОКУ
+    saveUserData();
+    console.log('✅ Custom theme saved');
 }
         // ==========================================
         // ПОИСК МАРКЕРОВ В ОРГАНАЙЗЕРАХ
@@ -7934,10 +7951,11 @@ const COLLECTION_FIGURES = [
 let userCollection = [];
 
 async function loadCollection() {
+    console.log('🔄 loadCollection started');
     try {
-        // Загружаем с сервера
         const response = await fetch(`${SERVER_URL}/api/get_collection?user_id=${userId}`);
         const serverCollection = await response.json();
+        console.log('Server collection response:', serverCollection);
         
         if (serverCollection && Array.isArray(serverCollection)) {
             userCollection = COLLECTION_FIGURES.map(f => ({ 
@@ -7945,7 +7963,6 @@ async function loadCollection() {
                 unlocked: serverCollection.includes(f.id.toString()) 
             }));
         } else {
-            // Fallback на localStorage
             const saved = localStorage.getItem(`collection_${userId}`);
             if (saved) {
                 userCollection = JSON.parse(saved);
@@ -7956,7 +7973,6 @@ async function loadCollection() {
         renderCollection();
     } catch (error) {
         console.error('Ошибка загрузки коллекции:', error);
-        // Fallback на localStorage
         const saved = localStorage.getItem(`collection_${userId}`);
         if (saved) {
             userCollection = JSON.parse(saved);
@@ -7974,27 +7990,55 @@ function saveCollection() {
 function renderCollection() {
     const container = document.getElementById('collectionGrid');
     if (!container) {
-        alert('Ошибка: элемент collectionGrid не найден!');
+        console.error('collectionGrid not found');
         return;
     }
     
-    // Очищаем контейнер
     container.innerHTML = '';
+    let unlockedCount = 0;
     
-    // Создаём 10 тестовых карточек
-    for (let i = 1; i <= 10; i++) {
-        const card = document.createElement('div');
-        card.style.cssText = 'background: var(--accent); border-radius: 16px; padding: 20px; margin: 10px; text-align: center; color: white;';
-        card.innerText = `Тестовая карточка ${i}`;
-        container.appendChild(card);
+    if (!COLLECTION_FIGURES || COLLECTION_FIGURES.length === 0) {
+        container.innerHTML = '<div class="no-results">Ошибка загрузки коллекции</div>';
+        return;
     }
     
-    // Обновляем счётчик
-    const countSpan = document.getElementById('collectionCount');
-    if (countSpan) countSpan.innerText = `10/50`;
+    const sortedFigures = [...COLLECTION_FIGURES].sort((a, b) => a.id - b.id);
     
-    alert('renderCollection выполнилась!');
+    sortedFigures.forEach(figure => {
+        const figureData = userCollection.find(f => f.id === figure.id);
+        const isUnlocked = figureData ? figureData.unlocked : false;
+        if (isUnlocked) unlockedCount++;
+        
+        const card = document.createElement('div');
+        card.className = 'collection-card';
+        card.setAttribute('data-id', figure.id);
+        card.style.position = 'relative';
+        card.onclick = () => openFigureModal(figure.id, isUnlocked);
+        
+        card.innerHTML = `
+            <div class="collection-card-image">
+                <img src="${figure.img}" style="width: 70%; height: 70%; object-fit: contain; border-radius: 12px; ${!isUnlocked ? 'filter: blur(6px);' : ''}" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%25%22 height=%22100%25%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%23ff9500%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2440%22%3E🎁%3C/text%3E%3C/svg%3E'">
+            </div>
+            <div class="collection-card-name">${escapeHtml(figure.name)}</div>
+            <div class="collection-card-status ${isUnlocked ? 'unlocked' : 'locked'}">
+                ${isUnlocked ? '<i class="fas fa-check-circle"></i> Открыта' : '<i class="fas fa-lock"></i> Не открыта'}
+            </div>
+        `;
+        
+        if (!isUnlocked) {
+            const lockDiv = document.createElement('div');
+            lockDiv.style.cssText = 'position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.6); border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; z-index: 10;';
+            lockDiv.innerHTML = '<i class="fas fa-lock" style="color: white; font-size: 14px;"></i>';
+            card.appendChild(lockDiv);
+        }
+        
+        container.appendChild(card);
+    });
+    
+    const countSpan = document.getElementById('collectionCount');
+    if (countSpan) countSpan.innerText = `${unlockedCount}/${COLLECTION_FIGURES.length}`;
 }
+
 // Вспомогательная функция для безопасности
 function escapeHtml(text) {
     const div = document.createElement('div');
@@ -8152,20 +8196,16 @@ window.onload = async () => {
     // ==========================================
     // ЗАГРУЗКА ТЕМЫ
     // ==========================================
-    const savedTheme = localStorage.getItem('app_theme');
-    console.log('📀 Saved theme from localStorage:', savedTheme);
-    console.log('📀 User theme:', user.theme);
-    
-    if (savedTheme === 'custom') {
-        console.log('🎨 Applying custom theme from cache');
-        applyCustomTheme(true);
-    } else if (savedTheme && savedTheme !== 'light') {
-        console.log('🎨 Setting theme:', savedTheme);
-        setTheme(savedTheme);
-    } else {
-        console.log('🎨 Setting default theme:', user.theme || 'light');
-        setTheme(user.theme || 'light');
-    }
+const savedTheme = localStorage.getItem('app_theme');
+console.log('📀 Saved theme from localStorage:', savedTheme);
+
+if (savedTheme === 'custom') {
+    applyCustomTheme(true);
+} else if (savedTheme && savedTheme !== 'light') {
+    setTheme(savedTheme);
+} else {
+    setTheme(user.theme || 'light');
+}
     
     renderBranchTasks();
     renderTimeTasks();
