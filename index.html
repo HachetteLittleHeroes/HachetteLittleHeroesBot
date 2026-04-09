@@ -4589,22 +4589,75 @@ function handleFriendSubtaskFilesSelected(event) {
     }
 }
 
+
 async function submitFriendSubtaskPhoto() {
     if (!tempPhotos || tempPhotos.length === 0) {
         if (tg) tg.showAlert('❌ Выберите хотя бы одно фото');
         return;
     }
     
+    if (isUploading) return;
+    isUploading = true;
+    
     const task = FRIEND_TASKS[currentFriendTaskIdx];
     const level = task.levels[currentFriendLevelIdx];
     const subtask = level.subtasks[currentFriendSubtaskIdx];
     
-    subtask.progress = Math.min(subtask.progress + 1, subtask.required);
+    try {
+        const formData = new FormData();
+        formData.append('user', userId.toString());
+        formData.append('taskIdx', currentFriendTaskIdx.toString());
+        formData.append('levelIdx', currentFriendLevelIdx.toString());
+        formData.append('subtaskIdx', currentFriendSubtaskIdx.toString());
+        formData.append('subtaskName', subtask.name);
+        formData.append('taskTitle', task.title);
+        formData.append('type', 'friend_subtask');
+        
+        for (let i = 0; i < tempPhotos.length; i++) {
+            formData.append('photos', tempPhotos[i]);
+        }
+        
+        const response = await fetch(`${SERVER_URL}/api/check_friend_subtask`, {
+            method: 'POST',
+            body: formData
+        });
+        
+        if (!response.ok) {
+            throw new Error(`Ошибка сервера: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        
+        if (result && result.status === 'ok') {
+            if (tg) {
+                tg.showAlert('✅ Фото отправлено на проверку! Ожидайте подтверждения.');
+                if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+            }
+            closeTaskUploadModal();
+        } else {
+            throw new Error(result?.message || 'Ошибка отправки');
+        }
+    } catch (error) {
+        console.error('❌ Ошибка:', error);
+        if (tg) tg.showAlert(`❌ Ошибка: ${error.message}`);
+    } finally {
+        isUploading = false;
+        tempPhotos = [];
+    }
+}
+function updateFriendSubtaskProgress(taskIdx, levelIdx, subtaskIdx, newProgress) {
+    const task = FRIEND_TASKS[taskIdx];
+    if (!task) return;
     
-    const levelCompleted = level.subtasks.every(s => s.progress >= s.required);
+    const subtask = task.levels[levelIdx].subtasks[subtaskIdx];
+    if (!subtask) return;
+    
+    subtask.progress = Math.min(newProgress, subtask.required);
+    
+    const levelCompleted = task.levels[levelIdx].subtasks.every(s => s.progress >= s.required);
     const allLevelsCompleted = task.levels.every(l => l.subtasks.every(s => s.progress >= s.required));
     
-    if (allLevelsCompleted) {
+    if (allLevelsCompleted && !task.completed) {
         task.completed = true;
         if (!user.unlockedStatuses.includes(task.rewardStatus)) {
             user.unlockedStatuses.push(task.rewardStatus);
@@ -4615,42 +4668,20 @@ async function submitFriendSubtaskPhoto() {
         saveUserData();
         updateUI();
         
-        fetch(`${SERVER_URL}/api/sync_status`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ user_id: userId, status: task.rewardStatus, action: 'unlock' })
-        }).catch(e => console.error('Sync error:', e));
-        
         if (tg) {
-            tg.showAlert(`🎉 Поздравляем! Вы выполнили все уровни и получили статус «${task.rewardStatus}»!`);
+            tg.showAlert(`🎉 Админ подтвердил! Вы получили статус «${task.rewardStatus}»!`);
             if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
         }
     } else if (levelCompleted) {
         if (tg) {
-            tg.showAlert(`✅ Уровень ${currentFriendLevelIdx + 1} пройден! Открыт следующий уровень!`);
-            if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+            tg.showAlert(`✅ Админ подтвердил! Уровень ${levelIdx + 1} пройден!`);
         }
     } else {
-        if (tg) tg.showAlert(`✅ Прогресс сохранён! ${subtask.progress}/${subtask.required}`);
-    }
-    
-    try {
-        const formData = new FormData();
-        formData.append('user', userId.toString());
-        formData.append('title', `Pempudu: ${subtask.name}`);
-        formData.append('type', 'friend_subtask');
-        for (let i = 0; i < tempPhotos.length; i++) {
-            formData.append('photos', tempPhotos[i]);
-        }
-        await fetch(`${SERVER_URL}/api/check_friend_subtask`, { method: 'POST', body: formData });
-    } catch (error) {
-        console.error('Error sending to server:', error);
+        if (tg) tg.showAlert(`✅ Админ подтвердил! Прогресс обновлён.`);
     }
     
     saveFriendTasksStatus();
     renderFriendTasks();
-    closeTaskUploadModal();
-    tempPhotos = [];
 }
 
 function openPempuduProfile() {
@@ -7992,6 +8023,37 @@ function unlockNextLevel(currentLevel) {
         }
     }
 }
+async function loadFriendProgressFromServer() {
+    try {
+        const response = await fetch(`${SERVER_URL}/api/stats?user_id=${userId}`);
+        const stats = await response.json();
+        
+        if (stats && stats.friend_tasks) {
+            const serverTasks = stats.friend_tasks;
+            FRIEND_TASKS.forEach((task, taskIdx) => {
+                if (serverTasks[taskIdx]) {
+                    task.completed = serverTasks[taskIdx].completed || false;
+                    if (serverTasks[taskIdx].levels) {
+                        task.levels.forEach((level, lvlIdx) => {
+                            if (serverTasks[taskIdx].levels[lvlIdx]) {
+                                level.subtasks.forEach((sub, subIdx) => {
+                                    const serverProgress = serverTasks[taskIdx].levels[lvlIdx].subtasks[subIdx];
+                                    if (serverProgress !== undefined) {
+                                        sub.progress = serverProgress;
+                                    }
+                                });
+                            }
+                        });
+                    }
+                }
+            });
+            saveFriendTasksStatus();
+            renderFriendTasks();
+        }
+    } catch (error) {
+        console.error('Error loading friend progress from server:', error);
+    }
+}
         // ==========================================
         // ИНИЦИАЛИЗАЦИЯ
         // ==========================================
@@ -8019,7 +8081,8 @@ updateUI();
             else setTheme(user.theme || 'light');
             renderBranchTasks();
             renderTimeTasks();
-            renderFriendTasks();
+            loadFriendTasksStatus();
+await loadFriendProgressFromServer();
             renderSeasonPassTasks();
             loadMarkers();
             renderCart();
