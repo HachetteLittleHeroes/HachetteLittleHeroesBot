@@ -4611,16 +4611,27 @@ async function loadFriendProgressFromServer() {
         const response = await fetch(`${SERVER_URL}/api/stats?user_id=${userId}`);
         const stats = await response.json();
         
-        if (stats && typeof stats === 'object') {
+        if (stats) {
             let updated = false;
-            for (const [key, value] of Object.entries(stats)) {
-                if (key.startsWith('friend_')) {
+            
+            // Проверяем friend_progress
+            if (stats.friend_progress) {
+                for (const [key, value] of Object.entries(stats.friend_progress)) {
                     if (friendProgress[key] !== value) {
                         friendProgress[key] = value;
                         updated = true;
                     }
                 }
             }
+            
+            // Также проверяем ключи напрямую (friend_level_X_subtask_Y)
+            for (const [key, value] of Object.entries(stats)) {
+                if (key.startsWith('friend_level_') && friendProgress[key] !== value) {
+                    friendProgress[key] = value;
+                    updated = true;
+                }
+            }
+            
             if (updated) {
                 saveFriendProgress();
                 renderFriendTasks();
