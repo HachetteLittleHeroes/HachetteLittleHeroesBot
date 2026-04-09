@@ -4564,8 +4564,8 @@ function saveFriendProgress() {
 }
 
 function getFriendSubtaskProgress(taskIdx, levelIdx, subtaskIdx) {
-    const task = FRIEND_TASKS[taskIdx];
-    const key = `friend_${task.id}_level_${levelIdx}_subtask_${subtaskIdx}`;
+    // Используем короткий ключ, который реально приходит с сервера
+    const key = `friend_level_${levelIdx}_subtask_${subtaskIdx}`;
     const value = friendProgress[key] || 0;
     console.log(`getFriendSubtaskProgress: ${key} = ${value}`);
     return value;
