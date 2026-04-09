@@ -4422,12 +4422,26 @@ function saveFriendTasksStatus() {
     FRIEND_TASKS.forEach((task, taskIdx) => {
         const isCompleted = task.completed;
         
+        // Определяем текущий уровень (первый незавершённый)
+        let currentLevelIndex = 0;
+        if (!isCompleted) {
+            for (let i = 0; i < task.levels.length; i++) {
+                const level = task.levels[i];
+                const levelCompleted = level.subtasks.every(s => s.progress >= s.required);
+                if (!levelCompleted) {
+                    currentLevelIndex = i;
+                    break;
+                }
+                currentLevelIndex = i + 1;
+            }
+        }
+        
         // Считаем общий прогресс
         let totalProgress = 0;
         let totalRequired = 0;
         task.levels.forEach(level => {
             level.subtasks.forEach(sub => {
-                totalProgress += sub.progress;
+                totalProgress += Math.min(sub.progress, sub.required);
                 totalRequired += sub.required;
             });
         });
@@ -4452,18 +4466,19 @@ function saveFriendTasksStatus() {
         `;
         
         if (!isCompleted) {
-            task.levels.forEach((level, levelIdx) => {
+            // Показываем только текущий уровень
+            if (currentLevelIndex < task.levels.length) {
+                const level = task.levels[currentLevelIndex];
                 let levelProgress = 0;
                 let levelRequired = 0;
                 level.subtasks.forEach(sub => {
-                    levelProgress += sub.progress;
+                    levelProgress += Math.min(sub.progress, sub.required);
                     levelRequired += sub.required;
                 });
                 const levelPercent = levelRequired > 0 ? (levelProgress / levelRequired) * 100 : 0;
-                const levelCompleted = levelProgress >= levelRequired;
                 
                 html += `
-                    <div style="margin-bottom: 20px; padding: 12px; background: var(--bg); border-radius: 12px;">
+                    <div style="margin-bottom: 15px; padding: 12px; background: var(--bg); border-radius: 12px;">
                         <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
                             <strong>${level.title}</strong>
                             <span style="color: var(--accent);">${levelProgress}/${levelRequired}</span>
@@ -4474,8 +4489,8 @@ function saveFriendTasksStatus() {
                 `;
                 
                 level.subtasks.forEach((sub, subIdx) => {
+                    const isSubCompleted = sub.progress >= sub.required;
                     const subPercent = (sub.progress / sub.required) * 100;
-                    const subCompleted = sub.progress >= sub.required;
                     
                     html += `
                         <div style="margin-bottom: 12px; padding: 8px; background: var(--card-bg); border-radius: 8px;">
@@ -4486,8 +4501,8 @@ function saveFriendTasksStatus() {
                             <div class="progress-bar-container" style="height: 4px; margin-bottom: 8px;">
                                 <div class="progress-bar-fill" style="width: ${subPercent}%;"></div>
                             </div>
-                            ${!subCompleted ? `
-                                <button class="friend-task-btn" style="padding: 6px; font-size: 12px;" onclick="openFriendSubtaskUpload(${taskIdx}, ${levelIdx}, ${subIdx})">
+                            ${!isSubCompleted ? `
+                                <button class="friend-task-btn" style="padding: 6px; font-size: 12px;" onclick="openFriendSubtaskUpload(${taskIdx}, ${currentLevelIndex}, ${subIdx})">
                                     <i class="fas fa-camera"></i> Отправить фото
                                 </button>
                             ` : `
@@ -4500,7 +4515,19 @@ function saveFriendTasksStatus() {
                 });
                 
                 html += `</div>`;
-            });
+            }
+            
+            // Показываем заблокированные уровни
+            for (let i = currentLevelIndex + 1; i < task.levels.length; i++) {
+                html += `
+                    <div style="margin-bottom: 10px; padding: 12px; background: var(--bg); border-radius: 12px; opacity: 0.5; filter: blur(2px); pointer-events: none;">
+                        <div style="display: flex; justify-content: space-between;">
+                            <strong>${task.levels[i].title}</strong>
+                            <span style="color: var(--text-gray);">🔒 Заблокирован</span>
+                        </div>
+                    </div>
+                `;
+            }
             
             html += `
                 <button class="friend-channel-btn" onclick="openPempuduProfile()">
@@ -4510,7 +4537,7 @@ function saveFriendTasksStatus() {
         } else {
             html += `
                 <div style="text-align: center; padding: 20px;">
-                    <div class="completed-badge" style="display: inline-block; margin-bottom: 10px;">✅ Задание выполнено!</div>
+                    <div class="completed-badge" style="display: inline-block; margin-bottom: 10px;">✅ Все уровни пройдены!</div>
                     <div style="color: var(--status-green);">
                         <i class="fas fa-trophy"></i> Получен статус «${task.rewardStatus}»!
                     </div>
@@ -4599,53 +4626,91 @@ async function submitFriendSubtaskPhoto() {
     }
     
     const task = FRIEND_TASKS[currentFriendTaskIdx];
-    const subtask = task.levels[currentFriendLevelIdx].subtasks[currentFriendSubtaskIdx];
+    const level = task.levels[currentFriendLevelIdx];
+    const subtask = level.subtasks[currentFriendSubtaskIdx];
     
     // Увеличиваем прогресс локально
     subtask.progress = Math.min(subtask.progress + 1, subtask.required);
     
     // Проверяем, выполнено ли подзадание полностью
     if (subtask.progress >= subtask.required) {
-        // Проверяем, выполнены ли все подзадания уровня
-        const level = task.levels[currentFriendLevelIdx];
+        // Проверяем, выполнены ли все подзадания текущего уровня
         const levelCompleted = level.subtasks.every(s => s.progress >= s.required);
         
-        // Проверяем, выполнены ли все уровни
-        const allLevelsCompleted = task.levels.every(l => 
-            l.subtasks.every(s => s.progress >= s.required)
-        );
-        
-        if (allLevelsCompleted) {
-            task.completed = true;
+        if (levelCompleted) {
+            // Проверяем, выполнены ли ВСЕ уровни
+            const allLevelsCompleted = task.levels.every(l => 
+                l.subtasks.every(s => s.progress >= s.required)
+            );
             
-            // Выдаём статус
-            if (!user.unlockedStatuses.includes(task.rewardStatus)) {
-                user.unlockedStatuses.push(task.rewardStatus);
+            if (allLevelsCompleted) {
+                task.completed = true;
+                
+                // Выдаём статус и достижение
+                if (!user.unlockedStatuses.includes(task.rewardStatus)) {
+                    user.unlockedStatuses.push(task.rewardStatus);
+                }
+                if (!user.achievements.includes('pempudu')) {
+                    user.achievements.push('pempudu');
+                }
                 saveUserData();
+                
+                // Отправляем на сервер
                 fetch(`${SERVER_URL}/api/sync_status`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ user_id: userId, status: task.rewardStatus, action: 'unlock' })
-                });
+                }).catch(e => console.error('Sync error:', e));
+                
+                if (tg) {
+                    tg.showAlert(`🎉 Поздравляем! Вы выполнили ВСЕ уровни и получили статус «${task.rewardStatus}»!`);
+                    if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+                }
+            } else {
+                // Уровень пройден, но не все
+                if (tg) {
+                    tg.showAlert(`✅ Уровень ${currentFriendLevelIdx + 1} пройден! Открыт следующий уровень!`);
+                    if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+                }
             }
-            
-            if (tg) {
-                tg.showAlert(`🎉 Поздравляем! Вы выполнили задание «${task.title}» и получили статус «${task.rewardStatus}»!`);
-                if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-            }
-        } else if (levelCompleted) {
-            if (tg) tg.showAlert(`✅ Уровень ${currentFriendLevelIdx + 1} пройден!`);
         } else {
+            // Подзадание выполнено, но уровень ещё нет
             if (tg) tg.showAlert(`✅ Прогресс сохранён! ${subtask.progress}/${subtask.required}`);
         }
     } else {
+        // Просто увеличили прогресс
         if (tg) tg.showAlert(`✅ Прогресс сохранён! ${subtask.progress}/${subtask.required}`);
+    }
+    
+    // Отправляем фото на сервер (для проверки админом)
+    try {
+        const formData = new FormData();
+        formData.append('user', userId.toString());
+        formData.append('taskIdx', currentFriendTaskIdx);
+        formData.append('levelIdx', currentFriendLevelIdx);
+        formData.append('subtaskIdx', currentFriendSubtaskIdx);
+        formData.append('subtaskName', subtask.name);
+        formData.append('type', 'friend_subtask');
+        
+        for (let i = 0; i < tempPhotos.length; i++) {
+            formData.append('photos', tempPhotos[i]);
+        }
+        
+        await fetch(`${SERVER_URL}/api/check_friend_subtask`, {
+            method: 'POST',
+            body: formData
+        });
+    } catch (error) {
+        console.error('Error sending to server:', error);
     }
     
     saveFriendTasksStatus();
     renderFriendTasks();
     closeTaskUploadModal();
     tempPhotos = [];
+    
+    // Обновляем UI профиля
+    updateUI();
 }
 
 function openPempuduProfile() {
