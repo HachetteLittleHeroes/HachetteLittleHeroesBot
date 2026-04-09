@@ -3743,19 +3743,22 @@
         }
         
         function closeTaskUploadModal() {
-            console.log('🔒 Закрытие модального окна');
-            const modal = document.getElementById('taskUploadModal');
-            const previewContainer = document.getElementById('taskPhotoPreviewContainer');
-            
-            if (modal) modal.style.display = 'none';
-            if (previewContainer) previewContainer.innerHTML = '';
-            
-            currentUploadBranch = null;
-            currentUploadLevel = null;
-            currentSubtaskData = null;
-            tempPhotos = [];
-            isUploading = false;
-        }
+    console.log('🔒 Закрытие модального окна');
+    const modal = document.getElementById('taskUploadModal');
+    const previewContainer = document.getElementById('taskPhotoPreviewContainer');
+    
+    if (modal) modal.style.display = 'none';
+    if (previewContainer) previewContainer.innerHTML = '';
+    
+    currentUploadBranch = null;
+    currentUploadLevel = null;
+    currentSubtaskData = null;
+    currentFriendTaskIdx = null;
+    currentFriendLevelIdx = null;
+    currentFriendSubtaskIdx = null;
+    tempPhotos = [];
+    isUploading = false;
+}
         
         // ==========================================
         // ОТКРЫТИЕ ОТПРАВКИ ДЛЯ ПОДПУНКТА
@@ -4580,17 +4583,22 @@ function handleFriendSubtaskFilesSelected(event) {
         const subtask = task.levels[currentFriendLevelIdx].subtasks[currentFriendSubtaskIdx];
         if (titleEl) titleEl.innerText = `Отправка: ${subtask.name}`;
         
+        // ВАЖНО: убираем старый обработчик и ставим новый
         const submitBtn = modal.querySelector('.modal-action-btn');
         if (submitBtn) {
             const newBtn = submitBtn.cloneNode(true);
             submitBtn.parentNode.replaceChild(newBtn, submitBtn);
-            newBtn.onclick = () => submitFriendSubtaskPhoto();
+            newBtn.onclick = (e) => {
+                e.preventDefault();
+                submitFriendSubtaskPhoto();
+            };
         }
     }
 }
 
-
 async function submitFriendSubtaskPhoto() {
+    console.log('=== SUBMIT FRIEND SUBTASK PHOTO ===');
+    
     if (!tempPhotos || tempPhotos.length === 0) {
         if (tg) tg.showAlert('❌ Выберите хотя бы одно фото');
         return;
@@ -4598,6 +4606,12 @@ async function submitFriendSubtaskPhoto() {
     
     if (isUploading) return;
     isUploading = true;
+    
+    // ПОКАЗЫВАЕМ ЧТО ОТПРАВЛЯЕМ
+    if (tg && tg.MainButton) {
+        tg.MainButton.setText("⏳ ОТПРАВКА...").show();
+        tg.MainButton.showProgress();
+    }
     
     const task = FRIEND_TASKS[currentFriendTaskIdx];
     const level = task.levels[currentFriendLevelIdx];
@@ -4617,20 +4631,29 @@ async function submitFriendSubtaskPhoto() {
             formData.append('photos', tempPhotos[i]);
         }
         
+        console.log('📤 Sending to server:', `${SERVER_URL}/api/check_friend_subtask`);
+        
         const response = await fetch(`${SERVER_URL}/api/check_friend_subtask`, {
             method: 'POST',
             body: formData
         });
         
+        console.log('📥 Server response status:', response.status);
+        
         if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Server error:', errorText);
             throw new Error(`Ошибка сервера: ${response.status}`);
         }
         
         const result = await response.json();
+        console.log('📥 Server response:', result);
         
         if (result && result.status === 'ok') {
+            // НЕ УВЕЛИЧИВАЕМ ПРОГРЕСС ЛОКАЛЬНО!
+            // Только сообщаем что отправлено
             if (tg) {
-                tg.showAlert('✅ Фото отправлено на проверку! Ожидайте подтверждения.');
+                tg.showAlert('✅ Фото отправлено на проверку! Ожидайте подтверждения администратора.');
                 if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
             }
             closeTaskUploadModal();
@@ -4643,6 +4666,10 @@ async function submitFriendSubtaskPhoto() {
     } finally {
         isUploading = false;
         tempPhotos = [];
+        if (tg && tg.MainButton) {
+            tg.MainButton.hideProgress();
+            tg.MainButton.hide();
+        }
     }
 }
 function updateFriendSubtaskProgress(taskIdx, levelIdx, subtaskIdx, newProgress) {
