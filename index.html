@@ -2968,7 +2968,16 @@
             <div id="aiResult" class="ai-result"></div>
         </div>
     </div>
-
+<!-- ========== КОЛЛЕКЦИЯ ========== -->
+<div id="collection" class="page">
+    <div class="header">
+        Коллекция фигурок
+        <span style="font-size: 12px; background: var(--accent); padding: 4px 12px; border-radius: 20px; margin-left: 10px;" id="collectionCount">0/50</span>
+    </div>
+    <div style="padding: 0 15px;">
+        <div id="collectionGrid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;"></div>
+    </div>
+</div>
     <!-- ========== КОРЗИНА ========== -->
     <div id="cart" class="page">
         <div class="header">Корзина</div>
@@ -2983,8 +2992,9 @@
 
     <!-- ========== НАВИГАЦИЯ ========== -->
     <nav class="nav">
-        <button id="btn-profile" class="nav-btn active" onclick="tab('profile')"><i class="fas fa-user"></i><span>Профиль</span></button>
-        <button id="btn-markers" class="nav-btn" onclick="tab('markers')"><i class="fas fa-pen"></i><span>Маркеры</span></button>
+       <button id="btn-profile" class="nav-btn active" onclick="tab('profile')"><i class="fas fa-user"></i><span>Профиль</span></button>
+<button id="btn-collection" class="nav-btn" onclick="tab('collection')"><i class="fas fa-gem"></i><span>Коллекция</span></button>
+<button id="btn-markers" class="nav-btn" onclick="tab('markers')"><i class="fas fa-pen"></i><span>Маркеры</span></button>
         <button id="btn-answers" class="nav-btn" onclick="tab('answers')"><i class="fas fa-book"></i><span>Ответы</span></button>
         <button id="btn-aipalette" class="nav-btn" onclick="tab('aipalette')"><i class="fas fa-magic"></i><span>ИИ Палитра</span></button>
         <button id="btn-cart" class="nav-btn" onclick="tab('cart')"><i class="fas fa-shopping-cart"></i><span>Корзина</span><span id="cartBadge" class="badge" style="display:none;">0</span></button>
@@ -5667,6 +5677,9 @@ async function submitTimeTaskPhoto() {
                     updateUI();
                     refreshUserProgress();
                     break;
+                    case 'collection':
+    renderCollection();
+    break;
                 case 'aipalette':
                     if (userId === ADMIN_ID) {
                         const adminBlock = document.getElementById('adminAiBlock');
@@ -5769,6 +5782,85 @@ async function submitTimeTaskPhoto() {
             user.theme = 'custom';
             localStorage.setItem('app_theme', 'custom');
         }
+        // ==========================================
+// КОЛЛЕКЦИЯ ФИГУРОК
+// ==========================================
+
+const COLLECTION_FIGURES = [
+    { id: 1, name: "Микки Маус", desc: "Легендарный мышонок", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/IMG_7022.png" },
+    { id: 2, name: "Минни Маус", desc: "Подружка Микки", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/minnie.png" },
+    { id: 3, name: "Дональд Дак", desc: "Знаменитая утка", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/donald.png" },
+    { id: 4, name: "Дейзи Дак", desc: "Подружка Дональда", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/daisy.png" },
+    { id: 5, name: "Гуфи", desc: "Верный друг Микки", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/goofy.png" },
+    { id: 6, name: "Плуто", desc: "Пёс Микки", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/pluto.png" },
+    { id: 7, name: "Скрудж Макдак", desc: "Богатый селезень", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/scrooge.png" },
+    { id: 8, name: "Винни-Пух", desc: "Медвежонок", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/winnie.png" },
+    { id: 9, name: "Пятачок", desc: "Поросёнок", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/piglet.png" },
+    { id: 10, name: "Тигра", desc: "Тигр", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/tigger.png" },
+    { id: 11, name: "Белоснежка", desc: "Принцесса", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/snowwhite.png" },
+    { id: 12, name: "Золушка", desc: "Принцесса", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/cinderella.png" },
+    { id: 13, name: "Аврора", desc: "Спящая красавица", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/aurora.png" },
+    { id: 14, name: "Ариэль", desc: "Русалочка", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/ariel.png" },
+    { id: 15, name: "Белль", desc: "Красавица", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/belle.png" },
+    { id: 16, name: "Жасмин", desc: "Принцесса Аграбы", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/jasmine.png" },
+    { id: 17, name: "Покахонтас", desc: "Дочь вождя", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/pocahontas.png" },
+    { id: 18, name: "Мулан", desc: "Воительница", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/mulan.png" },
+    { id: 19, name: "Тиана", desc: "Принцесса", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/tiana.png" },
+    { id: 20, name: "Рапунцель", desc: "Длинные волосы", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/rapunzel.png" }
+];
+
+let userCollection = [];
+
+function loadCollection() {
+    const saved = localStorage.getItem(`collection_${userId}`);
+    if (saved) {
+        try { userCollection = JSON.parse(saved); }
+        catch(e) { userCollection = COLLECTION_FIGURES.map(f => ({ id: f.id, unlocked: false })); }
+    } else {
+        userCollection = COLLECTION_FIGURES.map(f => ({ id: f.id, unlocked: false }));
+    }
+    localStorage.setItem(`collection_${userId}`, JSON.stringify(userCollection));
+}
+
+function renderCollection() {
+    const container = document.getElementById('collectionGrid');
+    if (!container) return;
+    if (!userCollection.length) loadCollection();
+    
+    container.innerHTML = '';
+    let unlockedCount = 0;
+    
+    COLLECTION_FIGURES.forEach(f => {
+        const fig = userCollection.find(c => c.id === f.id);
+        const isUnlocked = fig ? fig.unlocked : false;
+        if (isUnlocked) unlockedCount++;
+        
+        const card = document.createElement('div');
+        card.style.cssText = 'background:var(--bg-header);border-radius:16px;padding:12px 8px;text-align:center;border:1px solid var(--border-color);cursor:pointer;position:relative;';
+        card.onclick = () => alert(`${f.name}\n${isUnlocked ? '✅ Открыта' : '🔒 Закрыта'}`);
+        
+        card.innerHTML = `
+            <div style="width:100%;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;margin-bottom:8px;">
+                <img src="${f.img}" style="width:70%;height:70%;object-fit:contain;border-radius:12px;${!isUnlocked ? 'filter:blur(8px);' : ''}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23ff9500%22 rx=%2212%22/%3E%3Ctext x=%2250%22 y=%2250%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2240%22%3E🎁%3C/text%3E%3C/svg%3E'">
+            </div>
+            <div style="font-size:11px;font-weight:600;color:var(--text);">${f.name}</div>
+            <div style="font-size:10px;margin-top:4px;color:${isUnlocked ? 'var(--status-green)' : 'var(--text-gray)'};">${isUnlocked ? '✅ Открыта' : '🔒 Закрыта'}</div>
+        `;
+        
+        if (!isUnlocked) {
+            const lock = document.createElement('div');
+            lock.style.cssText = 'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.7);border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;z-index:10;pointer-events:none;';
+            lock.innerHTML = '<i class="fas fa-lock" style="color:white;font-size:16px;"></i>';
+            card.appendChild(lock);
+        }
+        container.appendChild(card);
+    });
+    
+    const countSpan = document.getElementById('collectionCount');
+    if (countSpan) countSpan.innerText = `${unlockedCount}/${COLLECTION_FIGURES.length}`;
+}
+
+function startProgressRefresh() { setInterval(() => {}, 30000); }
         // ==========================================
         // ПОИСК МАРКЕРОВ В ОРГАНАЙЗЕРАХ
         // ==========================================
@@ -7623,6 +7715,7 @@ updateUI();
             loadInventory();
             loadSeasonPremiumStatus();
             loadClaimedRewards();
+            loadCollection();
             updateUI();
             startProgressRefresh();
             initSwipeListeners();
