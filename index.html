@@ -7968,6 +7968,8 @@ async function loadCollection() {
                 userCollection = COLLECTION_FIGURES.map(f => ({ id: f.id, unlocked: false }));
             }
         }
+        // ✅ ВАЖНО: сохраняем в localStorage
+        localStorage.setItem(`collection_${userId}`, JSON.stringify(userCollection));
         renderCollection();
     } catch (error) {
         console.error('Ошибка загрузки коллекции:', error);
@@ -8184,13 +8186,15 @@ window.onload = async () => {
     
     // Загрузка темы
     const savedTheme = localStorage.getItem('app_theme');
+if (savedTheme) {
     if (savedTheme === 'custom') {
         applyCustomTheme(true);
-    } else if (savedTheme && savedTheme !== 'light') {
-        setTheme(savedTheme);
     } else {
-        setTheme(user.theme || 'light');
+        setTheme(savedTheme);
     }
+} else {
+    setTheme('light');
+}
     
     renderBranchTasks();
     renderTimeTasks();
