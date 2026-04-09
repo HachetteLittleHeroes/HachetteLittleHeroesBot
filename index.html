@@ -4565,9 +4565,10 @@ function saveFriendProgress() {
 
 function getFriendSubtaskProgress(taskIdx, levelIdx, subtaskIdx) {
     const task = FRIEND_TASKS[taskIdx];
-    const subtask = task.levels[levelIdx].subtasks[subtaskIdx];
     const key = `friend_${task.id}_level_${levelIdx}_subtask_${subtaskIdx}`;
-    return friendProgress[key] || 0;
+    const value = friendProgress[key] || 0;
+    console.log(`getFriendSubtaskProgress: ${key} = ${value}`);
+    return value;
 }
 
 function isFriendLevelCompleted(taskIdx, levelIdx) {
@@ -4608,38 +4609,45 @@ function getCurrentFriendLevelIndex(taskIdx) {
 
 async function loadFriendProgressFromServer() {
     try {
+        console.log('📡 Loading friend progress from server...');
         const response = await fetch(`${SERVER_URL}/api/stats?user_id=${userId}`);
         const stats = await response.json();
         
-        if (stats) {
+        console.log('📡 Server friend_progress:', stats.friend_progress);
+        
+        if (stats && stats.friend_progress) {
             let updated = false;
             
-            // Проверяем friend_progress
-            if (stats.friend_progress) {
-                for (const [key, value] of Object.entries(stats.friend_progress)) {
-                    if (friendProgress[key] !== value) {
-                        friendProgress[key] = value;
-                        updated = true;
-                    }
+            // Копируем все friend_ ключи
+            for (const [key, value] of Object.entries(stats.friend_progress)) {
+                if (friendProgress[key] !== value) {
+                    friendProgress[key] = value;
+                    updated = true;
+                    console.log(`✅ Updated ${key} = ${value}`);
                 }
             }
             
-            // Также проверяем ключи напрямую (friend_level_X_subtask_Y)
+            // Также проверяем ключи напрямую из stats
             for (const [key, value] of Object.entries(stats)) {
-                if (key.startsWith('friend_level_') && friendProgress[key] !== value) {
-                    friendProgress[key] = value;
-                    updated = true;
+                if (key.startsWith('friend_') && typeof value === 'number') {
+                    if (friendProgress[key] !== value) {
+                        friendProgress[key] = value;
+                        updated = true;
+                        console.log(`✅ Updated from stats: ${key} = ${value}`);
+                    }
                 }
             }
             
             if (updated) {
                 saveFriendProgress();
                 renderFriendTasks();
-                console.log('✅ Friend progress updated from server');
+                console.log('✅ Friend progress updated and rendered');
+            } else {
+                console.log('⚠️ No changes in friend progress');
             }
         }
     } catch (error) {
-        console.error('Error loading friend progress:', error);
+        console.error('❌ Error loading friend progress:', error);
     }
 }
 
@@ -4653,8 +4661,7 @@ function toggleFriendTasks() {
     } else {
         content.style.display = 'block';
         if (arrow) arrow.style.transform = 'rotate(180deg)';
-        loadFriendProgressFromServer();
-        renderFriendTasks();
+        loadFriendProgressFromServer().then(() => renderFriendTasks());
     }
 }
 
