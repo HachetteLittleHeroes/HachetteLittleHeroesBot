@@ -6005,6 +6005,7 @@ function openPempuduProfile() {
         
      function setTheme(themeName) {
     console.log('🎨 setTheme called with:', themeName);
+    console.log('ДО: localStorage theme =', localStorage.getItem('app_theme'));
     
     const oldStyle = document.getElementById('custom-theme-style');
     if (oldStyle) oldStyle.remove();
@@ -6027,7 +6028,8 @@ function openPempuduProfile() {
     });
     
     saveUserData();
-    console.log('✅ Theme saved to localStorage:', localStorage.getItem('app_theme'));
+    console.log('ПОСЛЕ: localStorage theme =', localStorage.getItem('app_theme'));
+    console.log('ПОСЛЕ: data-theme =', document.documentElement.getAttribute('data-theme'));
 }
         
         function applyCustomTheme(loadFromCache = false) {
@@ -7951,35 +7953,113 @@ const COLLECTION_FIGURES = [
 let userCollection = [];
 
 async function loadCollection() {
+    console.log('=== LOAD COLLECTION ===');
+    console.log('User ID:', userId);
+    console.log('SERVER_URL:', SERVER_URL);
+    
+    // Функция для создания пустой коллекции
+    const createEmptyCollection = () => {
+        return COLLECTION_FIGURES.map(f => ({ 
+            id: f.id, 
+            unlocked: false 
+        }));
+    };
+    
+    // Функция для сохранения и рендеринга
+    const saveAndRender = (collection) => {
+        userCollection = collection;
+        try {
+            localStorage.setItem(`collection_${userId}`, JSON.stringify(userCollection));
+            console.log('✅ Collection saved to localStorage');
+        } catch (storageError) {
+            console.error('❌ Failed to save to localStorage:', storageError);
+        }
+        renderCollection();
+    };
+    
     try {
+        console.log('🌐 Fetching collection from server...');
         const response = await fetch(`${SERVER_URL}/api/get_collection?user_id=${userId}`);
+        
+        console.log('Server response status:', response.status);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const serverCollection = await response.json();
+        console.log('📡 Server collection data:', serverCollection);
         
         if (serverCollection && Array.isArray(serverCollection)) {
-            userCollection = COLLECTION_FIGURES.map(f => ({ 
+            // Сервер вернул массив ID открытых фигурок
+            const newCollection = COLLECTION_FIGURES.map(f => ({ 
                 id: f.id, 
-                unlocked: serverCollection.includes(f.id.toString()) 
+                unlocked: serverCollection.includes(f.id.toString()) || 
+                          serverCollection.includes(f.id) ||
+                          serverCollection.includes(String(f.id))
             }));
-        } else {
-            const saved = localStorage.getItem(`collection_${userId}`);
-            if (saved) {
-                userCollection = JSON.parse(saved);
+            
+            console.log('✅ Loaded from server:', newCollection.filter(f => f.unlocked).length, 'unlocked figures');
+            saveAndRender(newCollection);
+            
+        } else if (serverCollection && typeof serverCollection === 'object') {
+            // Возможно сервер вернул объект с полем collection
+            const collectionData = serverCollection.collection || serverCollection.data || serverCollection.figures;
+            
+            if (collectionData && Array.isArray(collectionData)) {
+                const newCollection = COLLECTION_FIGURES.map(f => ({ 
+                    id: f.id, 
+                    unlocked: collectionData.includes(f.id.toString()) || 
+                              collectionData.includes(f.id) ||
+                              collectionData.includes(String(f.id))
+                }));
+                
+                console.log('✅ Loaded from server (nested):', newCollection.filter(f => f.unlocked).length, 'unlocked figures');
+                saveAndRender(newCollection);
             } else {
-                userCollection = COLLECTION_FIGURES.map(f => ({ id: f.id, unlocked: false }));
+                throw new Error('Invalid server response format');
             }
-        }
-        // ✅ ВАЖНО: сохраняем в localStorage
-        localStorage.setItem(`collection_${userId}`, JSON.stringify(userCollection));
-        renderCollection();
-    } catch (error) {
-        console.error('Ошибка загрузки коллекции:', error);
-        const saved = localStorage.getItem(`collection_${userId}`);
-        if (saved) {
-            userCollection = JSON.parse(saved);
         } else {
-            userCollection = COLLECTION_FIGURES.map(f => ({ id: f.id, unlocked: false }));
+            throw new Error('Server returned empty or invalid data');
         }
-        renderCollection();
+        
+    } catch (error) {
+        console.error('❌ Error loading collection from server:', error.message);
+        console.log('📦 Falling back to localStorage...');
+        
+        // Пробуем загрузить из localStorage
+        const saved = localStorage.getItem(`collection_${userId}`);
+        
+        if (saved) {
+            try {
+                const parsedCollection = JSON.parse(saved);
+                
+                // Проверяем, что все фигурки есть в коллекции (могли добавиться новые)
+                const updatedCollection = COLLECTION_FIGURES.map(f => {
+                    const existing = parsedCollection.find(item => item.id === f.id);
+                    return existing || { id: f.id, unlocked: false };
+                });
+                
+                console.log('✅ Loaded from localStorage:', updatedCollection.filter(f => f.unlocked).length, 'unlocked figures');
+                userCollection = updatedCollection;
+                renderCollection();
+                
+            } catch (parseError) {
+                console.error('❌ Failed to parse localStorage collection:', parseError);
+                const emptyCollection = createEmptyCollection();
+                console.log('📦 Created new empty collection');
+                saveAndRender(emptyCollection);
+            }
+        } else {
+            console.log('📦 No localStorage collection found, creating empty');
+            const emptyCollection = createEmptyCollection();
+            saveAndRender(emptyCollection);
+        }
+        
+        // Показываем сообщение пользователю только если это не штатная ситуация
+        if (error.message !== 'Failed to fetch') {
+            console.warn('⚠️ Using local collection due to server error');
+        }
     }
 }
 
@@ -7988,11 +8068,23 @@ function saveCollection() {
 }
 
 function renderCollection() {
+    console.log('=== RENDER COLLECTION ===');
+    console.log('COLLECTION_FIGURES length:', COLLECTION_FIGURES.length);
+    console.log('userCollection length:', userCollection.length);
+    
     const container = document.getElementById('collectionGrid');
+    console.log('container found:', !!container);
+    
     if (!container) return;
     
     container.innerHTML = '';
     let unlockedCount = 0;
+    
+    // Проверяем, есть ли фигурки
+    if (!COLLECTION_FIGURES || COLLECTION_FIGURES.length === 0) {
+        container.innerHTML = '<div class="no-results" style="grid-column: 1/-1; padding: 40px; text-align: center;">🎁 Коллекция пока пуста</div>';
+        return;
+    }
     
     const sortedFigures = [...COLLECTION_FIGURES].sort((a, b) => a.id - b.id);
     
@@ -8007,9 +8099,30 @@ function renderCollection() {
         card.style.position = 'relative';
         card.onclick = () => openFigureModal(figure.id, isUnlocked);
         
+        // Формируем правильный путь к изображению
+        let imageUrl = figure.img;
+        
+        // Если путь относительный и начинается с assets/, преобразуем в полный GitHub URL
+        if (imageUrl && imageUrl.startsWith('assets/')) {
+            imageUrl = `https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/${imageUrl}`;
+        }
+        
+        // Плейсхолдер на случай ошибки загрузки
+        const placeholderSvg = encodeURIComponent(`
+            <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100">
+                <rect width="100" height="100" fill="#ff9500" rx="12"/>
+                <text x="50" y="50" text-anchor="middle" dy=".3em" fill="white" font-size="40" font-family="Arial">🎁</text>
+                <text x="50" y="75" text-anchor="middle" fill="white" font-size="10" font-family="Arial">#${figure.id}</text>
+            </svg>
+        `);
+        
         card.innerHTML = `
             <div class="collection-card-image">
-                <img src="${figure.img}" style="width: 70%; height: 70%; object-fit: contain; border-radius: 12px; ${!isUnlocked ? 'filter: blur(6px);' : ''}" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%25%22 height=%22100%25%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%23ff9500%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2440%22%3E🎁%3C/text%3E%3C/svg%3E'">
+                <img src="${imageUrl}" 
+                     style="width: 70%; height: 70%; object-fit: contain; border-radius: 12px; ${!isUnlocked ? 'filter: blur(8px);' : ''}" 
+                     loading="lazy" 
+                     alt="${escapeHtml(figure.name)}"
+                     onerror="this.onerror=null; this.src='data:image/svg+xml,${placeholderSvg}'; console.log('Failed to load image for figure ${figure.id}');">
             </div>
             <div class="collection-card-name">${escapeHtml(figure.name)}</div>
             <div class="collection-card-status ${isUnlocked ? 'unlocked' : 'locked'}">
@@ -8019,16 +8132,21 @@ function renderCollection() {
         
         if (!isUnlocked) {
             const lockDiv = document.createElement('div');
-            lockDiv.style.cssText = 'position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.6); border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; z-index: 10;';
-            lockDiv.innerHTML = '<i class="fas fa-lock" style="color: white; font-size: 14px;"></i>';
+            lockDiv.style.cssText = 'position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.7); border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; z-index: 10; pointer-events: none;';
+            lockDiv.innerHTML = '<i class="fas fa-lock" style="color: white; font-size: 16px;"></i>';
             card.appendChild(lockDiv);
         }
         
         container.appendChild(card);
     });
     
+    console.log('rendered cards:', container.children.length);
+    console.log('unlocked count:', unlockedCount);
+    
     const countSpan = document.getElementById('collectionCount');
-    if (countSpan) countSpan.innerText = `${unlockedCount}/${COLLECTION_FIGURES.length}`;
+    if (countSpan) {
+        countSpan.innerText = `${unlockedCount}/${COLLECTION_FIGURES.length}`;
+    }
 }
 
 function escapeHtml(text) {
@@ -8154,7 +8272,26 @@ function openFigureModal(figureId, isUnlocked) {
         };
     }
 }
-
+async function checkServerConnection() {
+    try {
+        console.log('🔍 Checking server connection...');
+        const response = await fetch(`${SERVER_URL}/api/health`, { 
+            method: 'GET',
+            timeout: 5000 
+        }).catch(() => fetch(`${SERVER_URL}/api/stats?user_id=${userId}`));
+        
+        if (response && response.ok) {
+            console.log('✅ Server is reachable');
+            return true;
+        } else {
+            console.warn('⚠️ Server returned error:', response?.status);
+            return false;
+        }
+    } catch (error) {
+        console.error('❌ Server unreachable:', error.message);
+        return false;
+    }
+}
 // ==========================================
 // ИНИЦИАЛИЗАЦИЯ
 // ==========================================
@@ -8221,7 +8358,11 @@ if (savedTheme) {
             }
         });
     };
-    
+    // ДИАГНОСТИКА ТЕМЫ
+console.log('=== ТЕКУЩАЯ ТЕМА ===');
+console.log('localStorage app_theme:', localStorage.getItem('app_theme'));
+console.log('user.theme:', user.theme);
+console.log('data-theme атрибут:', document.documentElement.getAttribute('data-theme'));
     console.log('✅ APP READY');
     console.log('User ID:', userId);
     console.log('User status:', user.status);
