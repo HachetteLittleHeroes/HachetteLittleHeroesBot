@@ -4623,15 +4623,9 @@ async function loadFriendProgressFromServer() {
                 }
             }
             saveFriendProgress();
-            
-            // ✅ ВОТ ЭТО ВАЖНО — принудительно перерисовать
             renderFriendTasks();
             console.log('✅ Friend tasks rendered');
         }
-    } catch (error) {
-        console.error('Error:', error);
-    }
-}
     } catch (error) {
         console.error('❌ Error loading friend progress:', error);
     }
