@@ -7951,11 +7951,9 @@ const COLLECTION_FIGURES = [
 let userCollection = [];
 
 async function loadCollection() {
-    console.log('🔄 loadCollection started');
     try {
         const response = await fetch(`${SERVER_URL}/api/get_collection?user_id=${userId}`);
         const serverCollection = await response.json();
-        console.log('Server collection response:', serverCollection);
         
         if (serverCollection && Array.isArray(serverCollection)) {
             userCollection = COLLECTION_FIGURES.map(f => ({ 
@@ -7989,18 +7987,10 @@ function saveCollection() {
 
 function renderCollection() {
     const container = document.getElementById('collectionGrid');
-    if (!container) {
-        console.error('collectionGrid not found');
-        return;
-    }
+    if (!container) return;
     
     container.innerHTML = '';
     let unlockedCount = 0;
-    
-    if (!COLLECTION_FIGURES || COLLECTION_FIGURES.length === 0) {
-        container.innerHTML = '<div class="no-results">Ошибка загрузки коллекции</div>';
-        return;
-    }
     
     const sortedFigures = [...COLLECTION_FIGURES].sort((a, b) => a.id - b.id);
     
@@ -8039,15 +8029,11 @@ function renderCollection() {
     if (countSpan) countSpan.innerText = `${unlockedCount}/${COLLECTION_FIGURES.length}`;
 }
 
-// Вспомогательная функция для безопасности
 function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
 }
-// ==========================================
-// КОЛЛЕКЦИЯ - ЧИСТОВАЯ ВЕРСИЯ
-// ==========================================
 
 let currentCollectionFigureId = null;
 let currentCollectionFigureName = null;
@@ -8059,11 +8045,9 @@ function openFigureModal(figureId, isUnlocked) {
     currentCollectionFigureId = figure.id;
     currentCollectionFigureName = figure.name;
     
-    // Удаляем старую модалку, если есть
     const oldModal = document.getElementById('figureDetailModal');
     if (oldModal) oldModal.remove();
     
-    // Создаём новую модалку
     const modalHtml = `
         <div id="figureDetailModal" class="modal-overlay" style="display: flex; z-index: 10000;">
             <div class="modal-content" style="max-width: 350px; text-align: center;">
@@ -8097,7 +8081,6 @@ function openFigureModal(figureId, isUnlocked) {
     
     document.body.insertAdjacentHTML('beforeend', modalHtml);
     
-    // Если фигурка не открыта, настраиваем обработчики
     if (!isUnlocked) {
         const fileInput = document.getElementById('collectionFileInput');
         const uploadBtn = document.getElementById('collectionUploadBtn');
@@ -8169,58 +8152,45 @@ function openFigureModal(figureId, isUnlocked) {
         };
     }
 }
-       // ==========================================
+
+// ==========================================
 // ИНИЦИАЛИЗАЦИЯ
 // ==========================================
 
 window.onload = async () => {
     console.log('🚀 APP STARTING...');
     
-    // ТЕСТ: проверяем, что элементы существуют
-    const collectionGrid = document.getElementById('collectionGrid');
-    console.log('collectionGrid element:', collectionGrid);
+    const savedUser = localStorage.getItem('coloring_user');
+    if (savedUser) Object.assign(user, JSON.parse(savedUser));
     
-    if (collectionGrid) {
-        collectionGrid.innerHTML = '<div style="background: green; padding: 20px; color: white; text-align: center;">✅ ТЕСТ: Коллекция работает!</div>';
+    const savedCart = localStorage.getItem('coloring_cart');
+    if (savedCart) cart = JSON.parse(savedCart);
+    
+    await loadUserBalance();
+    updateUI();
+    await loadUserProgress();
+    await loadUnlockedStatuses();
+    await loadUserAchievements();
+    await checkBalanceStatus();
+    await checkAndUnlockStatuses();
+    
+    if (user.status && !user.unlockedStatuses.includes(user.status)) {
+        user.status = 'Без статуса';
     }
     
-    // ТЕСТ: проверяем тему
+    loadTimeTasksStatus();
+    loadFriendTasksStatus();
+    loadFriendProgressFromServer();
+    
+    // Загрузка темы
     const savedTheme = localStorage.getItem('app_theme');
-    console.log('Saved theme:', savedTheme);
-    
-    if (savedTheme === 'dark') {
-        document.documentElement.setAttribute('data-theme', 'dark');
-        console.log('Applied dark theme');
+    if (savedTheme === 'custom') {
+        applyCustomTheme(true);
+    } else if (savedTheme && savedTheme !== 'light') {
+        setTheme(savedTheme);
     } else {
-        document.documentElement.removeAttribute('data-theme');
-        console.log('Applied light theme');
+        setTheme(user.theme || 'light');
     }
-    
-    // Кнопка для теста сохранения темы
-    const testBtn = document.createElement('button');
-    testBtn.innerText = 'ТЕСТ: Сохранить тёмную тему';
-    testBtn.style.cssText = 'position: fixed; bottom: 100px; right: 10px; z-index: 9999; background: black; color: white; padding: 10px; border-radius: 10px;';
-    testBtn.onclick = () => {
-        localStorage.setItem('app_theme', 'dark');
-        document.documentElement.setAttribute('data-theme', 'dark');
-        alert('Тёмная тема сохранена! Обновите страницу.');
-    };
-    document.body.appendChild(testBtn);
-};
-    
-    // ==========================================
-    // ЗАГРУЗКА ТЕМЫ
-    // ==========================================
-const savedTheme = localStorage.getItem('app_theme');
-console.log('📀 Saved theme from localStorage:', savedTheme);
-
-if (savedTheme === 'custom') {
-    applyCustomTheme(true);
-} else if (savedTheme && savedTheme !== 'light') {
-    setTheme(savedTheme);
-} else {
-    setTheme(user.theme || 'light');
-}
     
     renderBranchTasks();
     renderTimeTasks();
@@ -8241,7 +8211,9 @@ if (savedTheme === 'custom') {
         document.querySelectorAll('.modal-overlay').forEach(modal => {
             if (event.target === modal) {
                 modal.style.display = "none";
-                if (modal.id === 'answersViewerModal') document.body.style.overflow = '';
+                if (modal.id === 'answersViewerModal') {
+                    document.body.style.overflow = '';
+                }
             }
         });
     };
@@ -8249,18 +8221,16 @@ if (savedTheme === 'custom') {
     console.log('✅ APP READY');
     console.log('User ID:', userId);
     console.log('User status:', user.status);
-    console.log('Unlocked statuses:', user.unlockedStatuses);
     console.log('Balance:', user.balance);
-    console.log('Current theme:', localStorage.getItem('app_theme'));
     
-    // Автообновление прогресса каждые 30 секунд
+    // Автообновление прогресса
     setInterval(() => {
         if (document.querySelector('#profile.active') || document.querySelector('#friendTasksContent.active')) {
             loadFriendProgressFromServer();
         }
     }, 30000);
 };
-        
+
 function closeTaskUploadModal() {
     const modal = document.getElementById('taskUploadModal');
     if (modal) {
