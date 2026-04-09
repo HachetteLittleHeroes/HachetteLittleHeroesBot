@@ -6008,44 +6008,45 @@ function openPempuduProfile() {
         // ==========================================
         
         function tab(pageId) {
-            const targetPage = document.getElementById(pageId);
-            if (!targetPage) return;
-            
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            targetPage.classList.add('active');
-            
-            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-            const activeBtn = document.getElementById('btn-' + pageId);
-            if (activeBtn) activeBtn.classList.add('active');
-            
-            window.scrollTo(0, 0);
-            
-            switch(pageId) {
-                case 'markers':
-                    if (!markersDB || markersDB.length === 0) loadMarkers();
-                    else renderMarkers();
-                    break;
-                case 'cart':
-                    renderCart();
-                    break;
-                case 'answers':
-                    renderVolumes();
-                    break;
-                case 'profile':
-                    updateUI();
-                    refreshUserProgress();
-                    break;
-                    case 'collection':
-    renderCollection();
-    break;
-                case 'aipalette':
-                    if (userId === ADMIN_ID) {
-                        const adminBlock = document.getElementById('adminAiBlock');
-                        if (adminBlock) adminBlock.style.display = 'block';
-                    }
-                    break;
+    const targetPage = document.getElementById(pageId);
+    if (!targetPage) return;
+    
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    targetPage.classList.add('active');
+    
+    document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+    const activeBtn = document.getElementById('btn-' + pageId);
+    if (activeBtn) activeBtn.classList.add('active');
+    
+    window.scrollTo(0, 0);
+    
+    switch(pageId) {
+        case 'collection':
+            // При переходе на вкладку — синхронизируем с сервером
+            loadCollection().then(() => renderCollection());
+            break;
+        case 'markers':
+            if (!markersDB || markersDB.length === 0) loadMarkers();
+            else renderMarkers();
+            break;
+        case 'cart':
+            renderCart();
+            break;
+        case 'answers':
+            renderVolumes();
+            break;
+        case 'profile':
+            updateUI();
+            refreshUserProgress();
+            break;
+        case 'aipalette':
+            if (userId === ADMIN_ID) {
+                const adminBlock = document.getElementById('adminAiBlock');
+                if (adminBlock) adminBlock.style.display = 'block';
             }
-        }
+            break;
+    }
+}
         
         function toggleSection(sectionId) {
             const section = document.getElementById(sectionId);
@@ -6171,11 +6172,45 @@ let userCollection = [];
 let currentCollectionFigure = null;
 let collectionPhotos = [];
 
-function loadCollection() {
+async function loadCollection() {
+    console.log('📦 Loading collection...');
+    
+    // Сначала пробуем загрузить с сервера
+    try {
+        const response = await fetch(`${SERVER_URL}/api/get_collection?user_id=${userId}`);
+        
+        if (response.ok) {
+            const serverCollection = await response.json();
+            console.log('📡 Server collection:', serverCollection);
+            
+            if (serverCollection && Array.isArray(serverCollection)) {
+                userCollection = COLLECTION_FIGURES.map(f => ({ 
+                    id: f.id, 
+                    unlocked: serverCollection.includes(f.id.toString()) || 
+                              serverCollection.includes(f.id)
+                }));
+                localStorage.setItem(`collection_${userId}`, JSON.stringify(userCollection));
+                console.log('✅ Loaded from server');
+            } else {
+                loadCollectionFromLocal();
+            }
+        } else {
+            loadCollectionFromLocal();
+        }
+    } catch (error) {
+        console.error('❌ Error loading from server:', error);
+        loadCollectionFromLocal();
+    }
+    
+    renderCollection();
+}
+
+function loadCollectionFromLocal() {
     const saved = localStorage.getItem(`collection_${userId}`);
     if (saved) {
         try {
             userCollection = JSON.parse(saved);
+            console.log('✅ Loaded from localStorage');
         } catch(e) {
             userCollection = COLLECTION_FIGURES.map(f => ({ id: f.id, unlocked: false }));
         }
@@ -6183,6 +6218,62 @@ function loadCollection() {
         userCollection = COLLECTION_FIGURES.map(f => ({ id: f.id, unlocked: false }));
     }
     localStorage.setItem(`collection_${userId}`, JSON.stringify(userCollection));
+}
+async function checkCollectionUpdates() {
+    try {
+        const response = await fetch(`${SERVER_URL}/api/get_collection?user_id=${userId}`);
+        
+        if (!response.ok) return;
+        
+        const serverCollection = await response.json();
+        
+        if (serverCollection && Array.isArray(serverCollection)) {
+            let hasChanges = false;
+            
+            // Проверяем каждую фигурку
+            COLLECTION_FIGURES.forEach(figure => {
+                const localFigure = userCollection.find(f => f.id === figure.id);
+                const isUnlockedOnServer = serverCollection.includes(figure.id.toString()) || 
+                                           serverCollection.includes(figure.id);
+                
+                // Если на сервере открыта, а локально нет — обновляем
+                if (isUnlockedOnServer && localFigure && !localFigure.unlocked) {
+                    localFigure.unlocked = true;
+                    hasChanges = true;
+                    console.log(`🎉 Figure ${figure.id} (${figure.name}) unlocked by admin!`);
+                    
+                    // Показываем уведомление
+                    if (tg) {
+                        tg.showAlert(`🎉 Фигурка "${figure.name}" открыта!`);
+                    }
+                }
+            });
+            
+            if (hasChanges) {
+                // Сохраняем обновлённую коллекцию
+                localStorage.setItem(`collection_${userId}`, JSON.stringify(userCollection));
+                
+                // Перерисовываем если вкладка коллекции активна
+                const activePage = document.querySelector('.page.active');
+                if (activePage && activePage.id === 'collection') {
+                    renderCollection();
+                }
+                
+                // Обновляем счётчик в навигации если нужно
+                updateCollectionBadge();
+            }
+        }
+    } catch (error) {
+        console.error('Error checking collection updates:', error);
+    }
+}
+
+function updateCollectionBadge() {
+    const unlockedCount = userCollection.filter(f => f.unlocked).length;
+    const countSpan = document.getElementById('collectionCount');
+    if (countSpan) {
+        countSpan.innerText = `${unlockedCount}/${COLLECTION_FIGURES.length}`;
+    }
 }
 
 function renderCollection() {
@@ -6333,8 +6424,18 @@ function openFigureModal(figure, isUnlocked) {
                 const result = await response.json();
                 
                 if (result && result.status === 'ok') {
-                    if (tg) tg.showAlert('✅ Фото отправлено на проверку!');
+                    if (tg) {
+                        tg.showAlert('✅ Фото отправлено на проверку! Ожидайте подтверждения.');
+                        if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+                    }
                     document.getElementById('figureDetailModal').remove();
+                    
+                    // Запускаем проверку обновлений через 3 секунды
+                    setTimeout(() => {
+                        if (typeof checkCollectionUpdates === 'function') {
+                            checkCollectionUpdates();
+                        }
+                    }, 3000);
                 } else {
                     throw new Error(result?.message || 'Ошибка отправки');
                 }
@@ -8198,60 +8299,98 @@ async function loadFriendProgressFromServer() {
         console.error('Error loading friend progress from server:', error);
     }
 }
-        // ==========================================
-        // ИНИЦИАЛИЗАЦИЯ
-        // ==========================================
-        
-        window.onload = async () => {
-            console.log('🚀 APP STARTING...');
-            const savedUser = localStorage.getItem('coloring_user');
-            if (savedUser) Object.assign(user, JSON.parse(savedUser));
-            const savedCart = localStorage.getItem('coloring_cart');
-            if (savedCart) cart = JSON.parse(savedCart);
-            // После загрузки всех данных, дополнительно загружаем баланс с сервера
-await loadUserBalance();
-updateUI();
-            await loadUserProgress();
-            await loadUnlockedStatuses();
-            await loadUserAchievements();
-            await checkBalanceStatus();
-            await checkAndUnlockStatuses();
-            if (user.status && !user.unlockedStatuses.includes(user.status)) user.status = 'Без статуса';
-            loadTimeTasksStatus();
-            loadFriendTasksStatus();
-            const savedTheme = localStorage.getItem('app_theme');
-            if (savedTheme === 'custom') applyCustomTheme(true);
-            else if (savedTheme && savedTheme !== 'light') setTheme(savedTheme);
-            else setTheme(user.theme || 'light');
-            renderBranchTasks();
-            renderTimeTasks();
-            loadFriendTasksStatus();
-await loadFriendProgressFromServer();
-            renderSeasonPassTasks();
-            loadMarkers();
-            renderCart();
-            renderVolumes();
-            loadInventory();
-            loadSeasonPremiumStatus();
-            loadClaimedRewards();
-            loadCollection();
-            updateUI();
-            startProgressRefresh();
-            initSwipeListeners();
-            window.onclick = function(event) {
-                document.querySelectorAll('.modal-overlay').forEach(modal => {
-                    if (event.target === modal) {
-                        modal.style.display = "none";
-                        if (modal.id === 'answersViewerModal') document.body.style.overflow = '';
-                    }
-                });
-            };
-            console.log('✅ APP READY');
-            console.log('User ID:', userId);
-            console.log('User status:', user.status);
-            console.log('Unlocked statuses:', user.unlockedStatuses);
-            console.log('Balance:', user.balance);
-        };
+       // ==========================================
+// ИНИЦИАЛИЗАЦИЯ
+// ==========================================
+
+window.onload = async () => {
+    console.log('🚀 APP STARTING...');
+    
+    const savedUser = localStorage.getItem('coloring_user');
+    if (savedUser) Object.assign(user, JSON.parse(savedUser));
+    
+    const savedCart = localStorage.getItem('coloring_cart');
+    if (savedCart) cart = JSON.parse(savedCart);
+    
+    // Загружаем баланс с сервера
+    await loadUserBalance();
+    updateUI();
+    
+    await loadUserProgress();
+    await loadUnlockedStatuses();
+    await loadUserAchievements();
+    await checkBalanceStatus();
+    await checkAndUnlockStatuses();
+    
+    if (user.status && !user.unlockedStatuses.includes(user.status)) {
+        user.status = 'Без статуса';
+    }
+    
+    loadTimeTasksStatus();
+    loadFriendTasksStatus();
+    await loadFriendProgressFromServer();
+    
+    // Загрузка темы
+    const savedTheme = localStorage.getItem('app_theme');
+    if (savedTheme === 'custom') {
+        applyCustomTheme(true);
+    } else if (savedTheme && savedTheme !== 'light') {
+        setTheme(savedTheme);
+    } else {
+        setTheme(user.theme || 'light');
+    }
+    
+    // Рендерим задания
+    renderBranchTasks();
+    renderTimeTasks();
+    renderFriendTasks();
+    renderSeasonPassTasks();
+    
+    // Загружаем маркеры, корзину, тома, инвентарь
+    loadMarkers();
+    renderCart();
+    renderVolumes();
+    loadInventory();
+    
+    // Season Pass
+    loadSeasonPremiumStatus();
+    loadClaimedRewards();
+    
+    // ========== КОЛЛЕКЦИЯ ==========
+    await loadCollection();
+    
+    // Периодическая проверка обновлений коллекции (каждые 15 секунд)
+    setInterval(async () => {
+        await checkCollectionUpdates();
+    }, 15000);
+    
+    // Периодическая проверка прогресса заданий от друзей (каждые 30 секунд)
+    setInterval(async () => {
+        await loadFriendProgressFromServer();
+    }, 30000);
+    
+    updateUI();
+    startProgressRefresh();
+    initSwipeListeners();
+    
+    window.onclick = function(event) {
+        document.querySelectorAll('.modal-overlay').forEach(modal => {
+            if (event.target === modal) {
+                modal.style.display = "none";
+                if (modal.id === 'answersViewerModal') {
+                    document.body.style.overflow = '';
+                }
+            }
+        });
+    };
+    
+    console.log('✅ APP READY');
+    console.log('User ID:', userId);
+    console.log('User status:', user.status);
+    console.log('Unlocked statuses:', user.unlockedStatuses);
+    console.log('Balance:', user.balance);
+    console.log('Collection loaded:', userCollection.length, 'figures');
+};
     </script>
 </body>
 </html>
