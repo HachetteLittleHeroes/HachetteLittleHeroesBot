@@ -4666,6 +4666,8 @@ function toggleFriendTasks() {
 }
 
 function renderFriendTasks() {
+    console.log('=== RENDER FRIEND TASKS ===');
+    console.log('friendProgress:', friendProgress);
     const container = document.getElementById('friendTasksList');
     if (!container) return;
     container.innerHTML = '';
