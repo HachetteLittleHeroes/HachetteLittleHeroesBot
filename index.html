@@ -6997,10 +6997,13 @@ function updateColoringBooksStats() {
 function toggleColoringBooksBlock() {
     const content = document.getElementById('coloringBooksContent');
     const arrow = document.getElementById('coloringBooksArrow');
-    if (content.style.display === 'none') {
+    
+    if (!content || !arrow) return;
+    
+    if (content.style.display === 'none' || content.style.display === '') {
         content.style.display = 'block';
         arrow.style.transform = 'rotate(180deg)';
-        renderColoringBooks();
+        renderColoringBooksSimple(); // Рендерим при открытии
     } else {
         content.style.display = 'none';
         arrow.style.transform = 'rotate(0deg)';
@@ -9389,6 +9392,55 @@ function toggleColoringBooksBlock() {
         arrow.style.transform = 'rotate(0deg)';
     }
 }
+function renderCollection() {
+    const container = document.getElementById('collectionGrid');
+    if (!container) return;
+    
+    // Если коллекция пустая — загружаем
+    if (!userCollection || userCollection.length === 0) {
+        loadCollection();
+        return;
+    }
+    
+    container.innerHTML = '';
+    let unlockedCount = 0;
+    
+    COLLECTION_FIGURES.forEach(figure => {
+        const figureData = userCollection.find(c => c.id === figure.id);
+        const isUnlocked = figureData ? figureData.unlocked : false;
+        if (isUnlocked) unlockedCount++;
+        
+        const card = document.createElement('div');
+        card.className = 'collection-card';
+        card.onclick = () => openFigureModal(figure, isUnlocked);
+        
+        card.innerHTML = `
+            <div class="collection-card-image">
+                <img src="${figure.img}" 
+                     class="${!isUnlocked ? 'locked' : ''}" 
+                     alt="${figure.name}"
+                     onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23ff9500%22 rx=%2212%22/%3E%3Ctext x=%2250%22 y=%2250%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2240%22%3E🎁%3C/text%3E%3C/svg%3E'">
+                ${!isUnlocked ? `
+                    <div class="lock-overlay">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                ` : ''}
+            </div>
+            <div class="collection-card-name">${figure.name}</div>
+            <div class="collection-card-status ${isUnlocked ? 'unlocked' : 'locked'}">
+                ${isUnlocked ? '✅ Открыта' : '🔒 Не открыта'}
+            </div>
+        `;
+        
+        container.appendChild(card);
+    });
+    
+    // Обновляем счётчик
+    const statsEl = document.getElementById('collectionStats');
+    if (statsEl) {
+        statsEl.innerText = `${unlockedCount}/${COLLECTION_FIGURES.length}`;
+    }
+}
        // ==========================================
 // ИНИЦИАЛИЗАЦИЯ
 // ==========================================
@@ -9665,7 +9717,9 @@ function toggleFiguresCollectionBlock() {
     const content = document.getElementById('figuresCollectionContent');
     const arrow = document.getElementById('figuresCollectionArrow');
     
-    if (content.style.display === 'none') {
+    if (!content || !arrow) return;
+    
+    if (content.style.display === 'none' || content.style.display === '') {
         content.style.display = 'block';
         arrow.style.transform = 'rotate(180deg)';
         renderCollection();
