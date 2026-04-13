@@ -3651,73 +3651,75 @@
             <div id="markersCollectionList"></div>
         </div>
     </div>
+    
+    <!-- ========== КОЛЛЕКЦИЯ РАСКРАСОК ========== -->
+    <div class="inventory-main-block" style="margin-top: 15px;">
+        <div class="inventory-header" onclick="toggleColoringBooksBlock()">
+            <div class="inventory-header-left">
+                <i class="fas fa-book"></i>
+                <span>Моя коллекция раскрасок</span>
+            </div>
+            <div class="inventory-header-right">
+                <span id="coloringBooksStats" style="font-size: 12px; margin-right: 10px;">0 раскрасок</span>
+                <i class="fas fa-chevron-down" id="coloringBooksArrow"></i>
+            </div>
+        </div>
+        <div id="coloringBooksContent" class="inventory-content" style="display: none;">
+            <!-- Категория: Раскраски по номерам -->
+            <div class="coloring-category">
+                <div class="category-header">
+                    <i class="fas fa-border-all"></i>
+                    <span>🎨 Раскраски по номерам</span>
+                    <button class="add-custom-btn" onclick="showAddCustomBook('paint_by_number')">+ Добавить</button>
+                </div>
+                <div id="category-paint_by_number" class="category-items"></div>
+            </div>
+            
+            <!-- Категория: Спиртовые раскраски -->
+            <div class="coloring-category">
+                <div class="category-header">
+                    <i class="fas fa-wine-bottle"></i>
+                    <span>🍷 Спиртовые раскраски</span>
+                    <button class="add-custom-btn" onclick="showAddCustomBook('alcohol')">+ Добавить</button>
+                </div>
+                <div id="category-alcohol" class="category-items"></div>
+            </div>
+            
+            <!-- Категория: Раскраски для карандашей -->
+            <div class="coloring-category">
+                <div class="category-header">
+                    <i class="fas fa-pencil-alt"></i>
+                    <span>✏️ Раскраски для карандашей</span>
+                    <button class="add-custom-btn" onclick="showAddCustomBook('pencil')">+ Добавить</button>
+                </div>
+                <div id="category-pencil" class="category-items"></div>
+            </div>
+            
+            <!-- Категория: Другие -->
+            <div class="coloring-category">
+                <div class="category-header">
+                    <i class="fas fa-star"></i>
+                    <span>✨ Другие</span>
+                    <button class="add-custom-btn" onclick="showAddCustomBook('custom')">+ Добавить</button>
+                </div>
+                <div id="category-custom" class="category-items"></div>
+            </div>
+        </div>
+    </div>
+    
 </div>
-<!-- ========== КОЛЛЕКЦИЯ РАСКРАСОК ========== -->
-<div class="inventory-main-block" style="margin-top: 15px;">
-    <div class="inventory-header" onclick="toggleColoringBooksBlock()">
-        <div class="inventory-header-left">
-            <i class="fas fa-book"></i>
-            <span>Моя коллекция раскрасок</span>
-        </div>
-        <div class="inventory-header-right">
-            <span id="coloringBooksStats" style="font-size: 12px; margin-right: 10px;">0 раскрасок</span>
-            <i class="fas fa-chevron-down" id="coloringBooksArrow"></i>
-        </div>
-    </div>
-    <div id="coloringBooksContent" class="inventory-content" style="display: none;">
-        <!-- Категория: Раскраски по номерам -->
-        <div class="coloring-category">
-            <div class="category-header">
-                <i class="fas fa-border-all"></i>
-                <span>🎨 Раскраски по номерам</span>
-                <button class="add-custom-btn" onclick="showAddCustomBook('paint_by_number')">+ Добавить</button>
-            </div>
-            <div id="category-paint_by_number" class="category-items"></div>
-        </div>
-        
-        <!-- Категория: Спиртовые раскраски -->
-        <div class="coloring-category">
-            <div class="category-header">
-                <i class="fas fa-wine-bottle"></i>
-                <span>🍷 Спиртовые раскраски</span>
-                <button class="add-custom-btn" onclick="showAddCustomBook('alcohol')">+ Добавить</button>
-            </div>
-            <div id="category-alcohol" class="category-items"></div>
-        </div>
-        
-        <!-- Категория: Раскраски для карандашей -->
-        <div class="coloring-category">
-            <div class="category-header">
-                <i class="fas fa-pencil-alt"></i>
-                <span>✏️ Раскраски для карандашей</span>
-                <button class="add-custom-btn" onclick="showAddCustomBook('pencil')">+ Добавить</button>
-            </div>
-            <div id="category-pencil" class="category-items"></div>
-        </div>
-        
-        <!-- Категория: Другие -->
-        <div class="coloring-category">
-            <div class="category-header">
-                <i class="fas fa-star"></i>
-                <span>✨ Другие</span>
-                <button class="add-custom-btn" onclick="showAddCustomBook('custom')">+ Добавить</button>
-            </div>
-            <div id="category-custom" class="category-items"></div>
-        </div>
-    </div>
-</div>
-    <!-- ========== КОРЗИНА ========== -->
-    <div id="cart" class="page">
-        <div class="header">Корзина</div>
-        <div class="cart-wrapper">
-            <div id="cartItemsList" class="cart-items"></div>
-            <div class="cart-footer">
-                <div class="cart-total">Итого: <span id="cartTotalSum">0</span> ₽</div>
-                <button class="checkout-btn" onclick="checkout()">Оформить заказ</button>
-            </div>
-        </div>
-    </div>
 
+<!-- ========== КОРЗИНА ========== -->
+<div id="cart" class="page">
+    <div class="header">Корзина</div>
+    <div class="cart-wrapper">
+        <div id="cartItemsList" class="cart-items"></div>
+        <div class="cart-footer">
+            <div class="cart-total">Итого: <span id="cartTotalSum">0</span> ₽</div>
+            <button class="checkout-btn" onclick="checkout()">Оформить заказ</button>
+        </div>
+    </div>
+</div>
     <!-- ========== НАВИГАЦИЯ ========== -->
     <nav class="nav">
        <button id="btn-profile" class="nav-btn active" onclick="tab('profile')"><i class="fas fa-user"></i><span>Профиль</span></button>
@@ -9159,10 +9161,11 @@ async function updateColoringBook(category, bookName, action) {
                 if (!userColoringBooks[category].includes(bookName)) {
                     userColoringBooks[category].push(bookName);
                 }
-            } else if (action === 'remove') {
-                if (userColoringBooks[category]) {
-                    userColoringBooks[category] = userColoringBooks[category].filter(b => b !== bookName);
-                }
+            } else {
+                userColoringBooks[category] = userColoringBooks[category].filter(b => {
+                    if (typeof b === 'string') return b !== bookName;
+                    return b.name !== bookName;
+                });
             }
             updateColoringBooksStats();
             renderColoringBooks();
@@ -9307,8 +9310,62 @@ function renderColoringBooks() {
 
 function toggleColoringBook(category, bookName) {
     const userBooks = userColoringBooks[category] || [];
-    const collected = userBooks.some(b => (typeof b === 'string' ? b : b.name) === bookName);
-    updateColoringBook(category, bookName, collected ? 'remove' : 'add');
+    
+    // Проверяем, есть ли уже такая раскраска (учитываем и строки, и объекты)
+    const collected = userBooks.some(b => {
+        if (typeof b === 'string') return b === bookName;
+        return b.name === bookName;
+    });
+    
+    // Если это готовая раскраска (не кастомная) — отправляем как строку
+    const isDefault = DEFAULT_COLORING_BOOKS[category]?.includes(bookName);
+    
+    if (isDefault) {
+        // Готовая раскраска — отправляем просто название
+        updateColoringBook(category, bookName, collected ? 'remove' : 'add');
+    } else {
+        // Кастомная — отправляем как объект
+        updateCustomBook(category, bookName, collected ? 'remove' : 'add');
+    }
+}
+
+// Новая функция для кастомных раскрасок
+async function updateCustomBook(category, bookName, action) {
+    try {
+        const response = await fetch(`${SERVER_URL}/api/coloring_books`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                user_id: userId,
+                category: category,
+                book_name: bookName,
+                action: action
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.status === 'ok') {
+            if (action === 'add') {
+                if (!userColoringBooks[category]) userColoringBooks[category] = [];
+                // Ищем, есть ли уже объект с таким именем
+                const existing = userColoringBooks[category].find(b => 
+                    typeof b === 'object' && b.name === bookName
+                );
+                if (!existing) {
+                    userColoringBooks[category].push({ name: bookName, custom: true });
+                }
+            } else {
+                userColoringBooks[category] = userColoringBooks[category].filter(b => 
+                    (typeof b === 'string' ? b : b.name) !== bookName
+                );
+            }
+            updateColoringBooksStats();
+            renderColoringBooks();
+        }
+    } catch (error) {
+        console.error('Error updating custom book:', error);
+    }
 }
 
 function showAddCustomBook(category) {
