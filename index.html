@@ -3317,6 +3317,32 @@
     cursor: pointer;
     margin-left: 10px;
 }
+/* Исправление кликабельности для коллекции раскрасок */
+.coloring-book-item,
+.coloring-book-item *,
+.add-custom-btn,
+.custom-cover-label,
+.category-items,
+.coloring-category {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+}
+
+.coloring-book-item:active,
+.add-custom-btn:active {
+    transform: scale(0.97);
+    opacity: 0.8;
+}
+
+/* Убираем возможные перекрытия */
+.inventory-content {
+    overflow: visible !important;
+}
+
+.coloring-category {
+    position: relative;
+    z-index: 1;
+}
     </style>
 </head>
 <body>
