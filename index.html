@@ -6953,45 +6953,14 @@ let userCollection = [];
 let currentCollectionFigure = null;
 let collectionPhotos = [];
 // ==========================================
-// КОЛЛЕКЦИЯ РАСКРАСОК
+// КОЛЛЕКЦИЯ РАСКРАСОК (ПРОСТАЯ ВЕРСИЯ)
 // ==========================================
 
 const DEFAULT_COLORING_BOOKS = {
-    paint_by_number: [
-        "Цветы (Hachette)",
-        "Животные (Hachette)",
-        "Пейзажи (Hachette)",
-        "Города (Hachette)",
-        "Мандалы (Hachette)"
-    ],
-    alcohol: [
-        "Портреты",
-        "Аниме",
-        "Фэнтези",
-        "Абстракция"
-    ],
-    pencil: [
-        "Природа",
-        "Животные",
-        "Люди",
-        "Архитектура"
-    ],
+    paint_by_number: ["Цветы", "Животные", "Пейзажи", "Города", "Мандалы"],
+    alcohol: ["Портреты", "Аниме", "Фэнтези", "Абстракция"],
+    pencil: ["Природа", "Животные", "Люди", "Архитектура"],
     custom: []
-};
-
-const DEFAULT_COVERS = {
-    "Цветы (Hachette)": "assets/coloriages/flowers.jpg",
-    "Животные (Hachette)": "assets/coloriages/animals.jpg",
-    "Пейзажи (Hachette)": "assets/coloriages/landscapes.jpg",
-    "Города (Hachette)": "assets/coloriages/cities.jpg",
-    "Мандалы (Hachette)": "assets/coloriages/mandalas.jpg",
-    "Портреты": "assets/coloriages/portraits.jpg",
-    "Аниме": "assets/coloriages/anime.jpg",
-    "Фэнтези": "assets/coloriages/fantasy.jpg",
-    "Абстракция": "assets/coloriages/abstract.jpg",
-    "Природа": "assets/coloriages/nature.jpg",
-    "Люди": "assets/coloriages/people.jpg",
-    "Архитектура": "assets/coloriages/architecture.jpg"
 };
 
 let userColoringBooks = {
@@ -7002,160 +6971,153 @@ let userColoringBooks = {
 };
 
 let selectedCoverFile = null;
-async function loadCollection() {
-    console.log('📦 Loading collection...');
-    
-    // Сначала пробуем загрузить с сервера
+
+async function loadColoringBooks() {
     try {
-        const response = await fetch(`${SERVER_URL}/api/get_collection?user_id=${userId}`);
-        
-        if (response.ok) {
-            const serverCollection = await response.json();
-            console.log('📡 Server collection:', serverCollection);
-            
-            if (serverCollection && Array.isArray(serverCollection)) {
-                userCollection = COLLECTION_FIGURES.map(f => ({ 
-                    id: f.id, 
-                    unlocked: serverCollection.includes(f.id.toString()) || 
-                              serverCollection.includes(f.id)
-                }));
-                localStorage.setItem(`collection_${userId}`, JSON.stringify(userCollection));
-                console.log('✅ Loaded from server');
-            } else {
-                loadCollectionFromLocal();
-            }
-        } else {
-            loadCollectionFromLocal();
+        const response = await fetch(`${SERVER_URL}/api/coloring_books?user_id=${userId}`);
+        const data = await response.json();
+        if (data && typeof data === 'object') {
+            userColoringBooks = data;
         }
+        updateColoringBooksStats();
     } catch (error) {
-        console.error('❌ Error loading from server:', error);
-        loadCollectionFromLocal();
+        console.error('Error loading coloring books:', error);
     }
-    
-    renderCollection();
 }
 
-function loadCollectionFromLocal() {
-    const saved = localStorage.getItem(`collection_${userId}`);
-    if (saved) {
-        try {
-            userCollection = JSON.parse(saved);
-            console.log('✅ Loaded from localStorage');
-        } catch(e) {
-            userCollection = COLLECTION_FIGURES.map(f => ({ id: f.id, unlocked: false }));
-        }
+function updateColoringBooksStats() {
+    let total = 0;
+    for (const cat in userColoringBooks) {
+        total += userColoringBooks[cat]?.length || 0;
+    }
+    const statsEl = document.getElementById('coloringBooksStats');
+    if (statsEl) statsEl.innerText = `${total} раскрасок`;
+}
+
+function toggleColoringBooksBlock() {
+    const content = document.getElementById('coloringBooksContent');
+    const arrow = document.getElementById('coloringBooksArrow');
+    if (content.style.display === 'none') {
+        content.style.display = 'block';
+        arrow.style.transform = 'rotate(180deg)';
+        renderColoringBooks();
     } else {
-        userCollection = COLLECTION_FIGURES.map(f => ({ id: f.id, unlocked: false }));
+        content.style.display = 'none';
+        arrow.style.transform = 'rotate(0deg)';
     }
-    localStorage.setItem(`collection_${userId}`, JSON.stringify(userCollection));
 }
-async function checkCollectionUpdates() {
+
+function toggleColoringBook(category, bookName) {
+    if (!userColoringBooks[category]) userColoringBooks[category] = [];
+    
+    const index = userColoringBooks[category].indexOf(bookName);
+    
+    if (index === -1) {
+        userColoringBooks[category].push(bookName);
+        if (tg) tg.showAlert(`✅ "${bookName}" добавлена!`);
+    } else {
+        userColoringBooks[category].splice(index, 1);
+        if (tg) tg.showAlert(`❌ "${bookName}" убрана`);
+    }
+    
+    saveColoringBooksToServer();
+    updateColoringBooksStats();
+    renderColoringBooks();
+}
+
+async function saveColoringBooksToServer() {
     try {
-        const response = await fetch(`${SERVER_URL}/api/get_collection?user_id=${userId}`);
-        
-        if (!response.ok) return;
-        
-        const serverCollection = await response.json();
-        
-        if (serverCollection && Array.isArray(serverCollection)) {
-            let hasChanges = false;
-            
-            // Проверяем каждую фигурку
-            COLLECTION_FIGURES.forEach(figure => {
-                const localFigure = userCollection.find(f => f.id === figure.id);
-                const isUnlockedOnServer = serverCollection.includes(figure.id.toString()) || 
-                                           serverCollection.includes(figure.id);
-                
-                // Если на сервере открыта, а локально нет — обновляем
-                if (isUnlockedOnServer && localFigure && !localFigure.unlocked) {
-                    localFigure.unlocked = true;
-                    hasChanges = true;
-                    console.log(`🎉 Figure ${figure.id} (${figure.name}) unlocked by admin!`);
-                    
-                    // Показываем уведомление
-                    if (tg) {
-                        tg.showAlert(`🎉 Фигурка "${figure.name}" открыта!`);
-                    }
-                }
-            });
-            
-            if (hasChanges) {
-                // Сохраняем обновлённую коллекцию
-                localStorage.setItem(`collection_${userId}`, JSON.stringify(userCollection));
-                
-                // Перерисовываем если вкладка коллекции активна
-                const activePage = document.querySelector('.page.active');
-                if (activePage && activePage.id === 'collection') {
-                    renderCollection();
-                }
-                
-                // Обновляем счётчик в навигации если нужно
-                updateCollectionBadge();
-            }
-        }
+        await fetch(`${SERVER_URL}/api/coloring_books`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                user_id: userId,
+                data: userColoringBooks
+            })
+        });
     } catch (error) {
-        console.error('Error checking collection updates:', error);
+        console.error('Error saving:', error);
     }
 }
 
-function updateCollectionBadge() {
-    const unlockedCount = userCollection.filter(f => f.unlocked).length;
-    const totalCount = COLLECTION_FIGURES.length;
-    
-    // Обновляем в заголовке блока
-    const statsEl = document.getElementById('collectionStats');
-    if (statsEl) {
-        statsEl.innerText = `${unlockedCount}/${totalCount}`;
-    }
-    
-    // Обновляем в старом месте (если осталось)
-    const countSpan = document.getElementById('collectionCount');
-    if (countSpan) {
-        countSpan.innerText = `${unlockedCount}/${totalCount}`;
+function showAddCustomBook(category) {
+    const input = document.getElementById(`custom-book-${category}`);
+    if (input) {
+        input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setTimeout(() => input.focus(), 300);
     }
 }
 
-function renderCollection() {
-    const container = document.getElementById('collectionGrid');
-    if (!container) return;
-    if (!userCollection.length) loadCollection();
+async function addCustomBook(category) {
+    const input = document.getElementById(`custom-book-${category}`);
+    const bookName = input?.value.trim();
     
-    container.innerHTML = '';
-    let unlockedCount = 0;
+    if (!bookName) {
+        if (tg) tg.showAlert('❌ Введите название');
+        return;
+    }
     
-    COLLECTION_FIGURES.forEach(figure => {
-        const figureData = userCollection.find(c => c.id === figure.id);
-        const isUnlocked = figureData ? figureData.unlocked : false;
-        if (isUnlocked) unlockedCount++;
+    if (!userColoringBooks[category]) userColoringBooks[category] = [];
+    
+    if (!userColoringBooks[category].includes(bookName)) {
+        userColoringBooks[category].push(bookName);
+        saveColoringBooksToServer();
+        updateColoringBooksStats();
+        renderColoringBooks();
+        input.value = '';
+        if (tg) tg.showAlert(`✅ "${bookName}" добавлена!`);
+    } else {
+        if (tg) tg.showAlert('⚠️ Такая раскраска уже есть');
+    }
+}
+
+function renderColoringBooks() {
+    const categories = ['paint_by_number', 'alcohol', 'pencil', 'custom'];
+    const categoryNames = {
+        paint_by_number: '🎨 Раскраски по номерам',
+        alcohol: '🍷 Спиртовые раскраски',
+        pencil: '✏️ Раскраски для карандашей',
+        custom: '✨ Другие'
+    };
+    
+    categories.forEach(category => {
+        const container = document.getElementById(`category-${category}`);
+        if (!container) return;
         
-        const card = document.createElement('div');
-        card.className = 'collection-card';
-        card.onclick = () => openFigureModal(figure, isUnlocked);
+        const userBooks = userColoringBooks[category] || [];
+        const defaultBooks = DEFAULT_COLORING_BOOKS[category] || [];
         
-        card.innerHTML = `
-            <div class="collection-card-image">
-                <img src="${figure.img}" 
-                     class="${!isUnlocked ? 'locked' : ''}" 
-                     alt="${figure.name}"
-                     onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23ff9500%22 rx=%2212%22/%3E%3Ctext x=%2250%22 y=%2250%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2240%22%3E🎁%3C/text%3E%3C/svg%3E'">
-                ${!isUnlocked ? `
-                    <div class="lock-overlay">
-                        <i class="fas fa-lock"></i>
+        // Объединяем без дубликатов
+        const allBooks = [...new Set([...defaultBooks, ...userBooks])];
+        
+        let html = '';
+        
+        allBooks.forEach(bookName => {
+            const collected = userBooks.includes(bookName);
+            
+            html += `
+                <div class="coloring-book-item ${collected ? 'collected' : ''}" onclick="toggleColoringBook('${category}', '${bookName.replace(/'/g, "\\'")}')">
+                    <div class="book-cover" style="background: var(--accent); display: flex; align-items: center; justify-content: center; color: white; font-size: 24px;">📚</div>
+                    <div class="book-info">
+                        <div class="book-name">${bookName}</div>
                     </div>
-                ` : ''}
-            </div>
-            <div class="collection-card-name">${figure.name}</div>
-            <div class="collection-card-status ${isUnlocked ? 'unlocked' : 'locked'}">
-                ${isUnlocked ? '✅ Открыта' : '🔒 Не открыта'}
+                    <div class="remove-btn">${collected ? '✓' : '+'}</div>
+                </div>
+            `;
+        });
+        
+        // Форма добавления
+        html += `
+            <div style="grid-column: span 2; margin-top: 10px;">
+                <div style="display: flex; gap: 8px; padding: 10px; background: var(--card-bg); border-radius: 12px;">
+                    <input type="text" id="custom-book-${category}" placeholder="Название..." style="flex: 1; padding: 10px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text);">
+                    <button class="add-custom-btn" onclick="addCustomBook('${category}')" style="padding: 10px 16px;">Добавить</button>
+                </div>
             </div>
         `;
         
-        container.appendChild(card);
+        container.innerHTML = html;
     });
-    
-    const countSpan = document.getElementById('collectionCount');
-    if (countSpan) countSpan.innerText = `${unlockedCount}/${COLLECTION_FIGURES.length}`;
-    updateCollectionBadge();
 }
 
 function openFigureModal(figure, isUnlocked) {
