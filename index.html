@@ -7073,16 +7073,13 @@ async function addCustomBook(category) {
 
 function renderColoringBooks() {
     const categories = ['paint_by_number', 'alcohol', 'pencil', 'custom'];
-    const categoryNames = {
-        paint_by_number: '🎨 Раскраски по номерам',
-        alcohol: '🍷 Спиртовые раскраски',
-        pencil: '✏️ Раскраски для карандашей',
-        custom: '✨ Другие'
-    };
     
     categories.forEach(category => {
         const container = document.getElementById(`category-${category}`);
-        if (!container) return;
+        if (!container) {
+            console.error(`Container category-${category} not found`);
+            return;
+        }
         
         const userBooks = userColoringBooks[category] || [];
         const defaultBooks = DEFAULT_COLORING_BOOKS[category] || [];
@@ -7092,23 +7089,27 @@ function renderColoringBooks() {
         
         let html = '';
         
-        allBooks.forEach(bookName => {
-            const collected = userBooks.includes(bookName);
-            
-            html += `
-                <div class="coloring-book-item ${collected ? 'collected' : ''}" onclick="toggleColoringBook('${category}', '${bookName.replace(/'/g, "\\'")}')">
-                    <div class="book-cover" style="background: var(--accent); display: flex; align-items: center; justify-content: center; color: white; font-size: 24px;">📚</div>
-                    <div class="book-info">
-                        <div class="book-name">${bookName}</div>
+        if (allBooks.length === 0) {
+            html = '<div style="grid-column: span 2; text-align: center; color: var(--text-gray); padding: 15px;">Нет раскрасок</div>';
+        } else {
+            allBooks.forEach(bookName => {
+                const collected = userBooks.includes(bookName);
+                
+                html += `
+                    <div class="coloring-book-item ${collected ? 'collected' : ''}" onclick="toggleColoringBook('${category}', '${bookName.replace(/'/g, "\\'")}')">
+                        <div class="book-cover" style="background: var(--accent); display: flex; align-items: center; justify-content: center; color: white; font-size: 24px;">📚</div>
+                        <div class="book-info">
+                            <div class="book-name">${bookName}</div>
+                        </div>
+                        <div class="remove-btn">${collected ? '✓' : '+'}</div>
                     </div>
-                    <div class="remove-btn">${collected ? '✓' : '+'}</div>
-                </div>
-            `;
-        });
+                `;
+            });
+        }
         
         // Форма добавления
         html += `
-            <div style="grid-column: span 2; margin-top: 10px;">
+            <div style="grid-column: span 2; margin-top: 15px;">
                 <div style="display: flex; gap: 8px; padding: 10px; background: var(--card-bg); border-radius: 12px;">
                     <input type="text" id="custom-book-${category}" placeholder="Название..." style="flex: 1; padding: 10px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text);">
                     <button class="add-custom-btn" onclick="addCustomBook('${category}')" style="padding: 10px 16px;">Добавить</button>
@@ -9379,10 +9380,10 @@ function toggleColoringBooksBlock() {
     const content = document.getElementById('coloringBooksContent');
     const arrow = document.getElementById('coloringBooksArrow');
     
-    if (content.style.display === 'none') {
+    if (content.style.display === 'none' || content.style.display === '') {
         content.style.display = 'block';
         arrow.style.transform = 'rotate(180deg)';
-        renderColoringBooks();
+        setTimeout(() => renderColoringBooks(), 50); // Небольшая задержка
     } else {
         content.style.display = 'none';
         arrow.style.transform = 'rotate(0deg)';
