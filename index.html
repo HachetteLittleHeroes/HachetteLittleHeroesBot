@@ -3065,11 +3065,14 @@
             </div>
         </div>
 
-        <div class="support-section" onclick="openSupport()">
-            <h3>Поддержать нас</h3>
-            <p>Помогите проекту развиваться</p>
-            <div class="support-button"><i class="fas fa-heart"></i><span>Boosty</span></div>
-        </div>
+       <div class="support-section" onclick="openSupportDialog()">
+    <h3>Поддержать нас</h3>
+    <p>Помогите проекту развиваться</p>
+    <div class="support-button"><i class="fas fa-heart"></i><span>Поддержать</span></div>
+    <p style="font-size: 12px; color: var(--text-gray); margin-top: 10px;">
+        💬 Откроется диалог, чтобы узнать как поддержать проект
+    </p>
+</div>
 
         <div class="themes-section">
             <h3>Темы оформления</h3>
@@ -3318,7 +3321,7 @@
         // КОНФИГУРАЦИЯ И ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ
         // ==========================================
         
-        const SERVER_URL = 'https://bot-hachettelittleheroes.amvera.io';
+        const SERVER_URL = 'https://hlhbot-hachettelittleheroes.amvera.io';
         const MARKER_PRICE = 75;
         
         // Telegram WebApp
@@ -4227,12 +4230,12 @@
 
 const TIME_TASKS = [
     {
-        id: 'time_task_1',
-        title: 'Маленький мышонок',
-        description: 'Раскрась любую картинку с Микки Маусом, где он изображен один',
+        id: 'time_task_2',
+        title: 'Пасхальный кролик',
+        description: 'Раскрась любую картинку, где изображен только кролик',
         reward: 5,
-        deadline: '2026-04-12',
-        deadlineText: 'ДО 12.04.2026',
+        deadline: '2026-04-19',
+        deadlineText: 'ДО 19.04.2026',
         completed: false
     }
 ];
@@ -4503,7 +4506,7 @@ const FRIEND_TASKS = [
     {
         id: 'pempudu_task_1',
         title: 'Абрикосик',
-        description: 'Первым выполни все уровни и получи набор маркеров GuangNa 366!',
+        description: 'Первым выполни все уровни и получи набор маркеров GuangNa 366! При отправке фото на проверку прикрепи фото ДО/ПОСЛЕ',
         rewardStatus: 'Абрикосик',
         rewardTom: 'Набор маркеров GuangNa 366',
         completed: false,
@@ -4519,11 +4522,11 @@ const FRIEND_TASKS = [
             {
                 title: 'Уровень 2 - Базовый минимум',
                 subtasks: [
-                    { id: 'abr2_1', name: 'Раскрась 2 картинки, где персонажи танцуют', required: 2 },
+                    { id: 'abr2_1', name: 'Раскрась 1 разворот, где персонажи танцуют', required: 1 },
                     { id: 'abr2_2', name: 'Раскрась 2 картинки, где изображена корона', required: 2 },
                     { id: 'abr2_3', name: 'Раскрась 2 картинки со свадьбой', required: 2 },
-                    { id: 'abr2_4', name: 'Раскрась 1 картинку с застольем', required: 1 },
-                    { id: 'abr2_5', name: 'Раскрась 2 картинки с горами', required: 2 }
+                    { id: 'abr2_4', name: 'Раскрась 2 разворота с застольем', required: 2 },
+                    { id: 'abr2_5', name: 'Раскрась 3 картинки с козлами', required: 3 }
                 ]
             },
             {
@@ -5249,27 +5252,52 @@ function openPempuduProfile() {
         }
         
         function openSupport() {
-            window.open('https://boosty.to/hachettelittleheroes/donate', '_blank');
+    // Оставляем для обратной совместимости
+    openSupportDialog();
+}
+
+function openSupportDialog() {
+    const username = 'SPB_Zakharin_Sergey';
+    const message = encodeURIComponent('Здравствуйте! Хочу поддержать развитие приложения. Расскажите, как это сделать?');
+    
+    // Пробуем открыть через Telegram WebApp
+    if (window.Telegram && window.Telegram.WebApp) {
+        try {
+            window.Telegram.WebApp.openTelegramLink(`https://t.me/${username}?text=${message}`);
+        } catch(e) {
+            window.open(`https://t.me/${username}?text=${message}`, '_blank');
         }
+    } else if (tg && tg.openTelegramLink) {
+        tg.openTelegramLink(`https://t.me/${username}?text=${message}`);
+    } else {
+        window.open(`https://t.me/${username}?text=${message}`, '_blank');
+    }
+}
         
         function openSupportForStatus() {
-            const supportUrl = 'https://boosty.to/hachettelittleheroes/donate';
-            if (tg) {
-                tg.showConfirm(
-                    'Вы будете перенаправлены на страницу поддержки.\n\nПосле пожертвования, напишите администратору для получения статуса "Благодетель".',
-                    (confirm) => {
-                        if (confirm) {
-                            window.open(supportUrl, '_blank');
-                            if (tg) tg.showAlert('Спасибо за поддержку! После пожертвования напишите @admin для получения статуса.');
-                        }
+    const username = 'SPB_Zakharin_Sergey';
+    const message = encodeURIComponent('Здравствуйте! Хочу поддержать проект для получения статуса "Благодетель".');
+    
+    if (tg) {
+        tg.showConfirm(
+            'Вы будете перенаправлены в диалог с администратором.\n\nПосле поддержки вы получите статус "Благодетель".',
+            (confirm) => {
+                if (confirm) {
+                    if (window.Telegram && window.Telegram.WebApp) {
+                        window.Telegram.WebApp.openTelegramLink(`https://t.me/${username}?text=${message}`);
+                    } else {
+                        window.open(`https://t.me/${username}?text=${message}`, '_blank');
                     }
-                );
-            } else {
-                if (confirm('Перейти на страницу поддержки?\n\nПосле пожертвования от 2000 рублей вы получите статус "Благодетель".')) {
-                    window.open(supportUrl, '_blank');
+                    if (tg) tg.showAlert('Спасибо за поддержку! Напишите администратору для получения статуса.');
                 }
             }
+        );
+    } else {
+        if (confirm('Перейти в диалог с администратором?\n\nПосле поддержки вы получите статус "Благодетель".')) {
+            window.open(`https://t.me/${username}?text=${message}`, '_blank');
         }
+    }
+}
         
         
         function saveUserData() {
@@ -5632,11 +5660,13 @@ function openPempuduProfile() {
             "Grands Classiques Grand Bloc", "Les Grands Classiques Coliector", "Girl Power",
             "Fees, Sorciers Et Magiciens", "Famille", "Escapades Merveilleuses Douce France",
             "Chiots&Chiens", "Chevaux", "Bisounours tome 1", "Best Of Pixar",
-            "Best Of Les Grands Classiques", "La Belle Et La Bete", "Bestiaire", "Best Of Heroines", "Les Grands Classiques tome 13", "Grand carre Mandalas", "Grand carre Portraits"
+            "Best Of Les Grands Classiques", "La Belle Et La Bete", "Bestiaire", "Best Of Heroines", "Les Grands Classiques tome 13", "Grand carre Mandalas", "Grand carre Portraits",
+            "Les Grands Classiques tome 4", "Portraits", "Arbres du monde", "Les Grands Classiques tome 7",
+            "Creatures Fantastiques", "Nature"
         ];
         
         const VOLUMES_DATA = [];
-        for (let i = 0; i < 50; i++) {
+        for (let i = 0; i < 56; i++) {
             let price = 2890;
             if (i === 34) {
                 price = 3800;
@@ -6166,7 +6196,7 @@ const COLLECTION_FIGURES = [
     { id: 18, name: "Булзай", desc: "Очаровательный конь", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/bulzai.png" },
     { id: 19, name: "Фея крестная", desc: "Превратит твою тыкву в карету", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/feya.png" },
     { id: 20, name: "Жасмин", desc: "Принцесса Аграбы", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/jasmin.png" },
-    { id: 21, name: "Валентино", desc: "Спутник Аши", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/valentino.png" },
+    { id: 21, name: "Принц Навин", desc: "Принц, любитель джаза", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/navin.png" },
     { id: 22, name: "Плуто", desc: "Друг Микки", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/pluto.png" },
     { id: 23, name: "Гастон", desc: "Надменный охотник", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/gaston.png" },
     { id: 24, name: "Паскаль", desc: "Зеленый друг Рапунцель", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/pascal.png" },
@@ -7114,7 +7144,9 @@ function openFigureModal(figure, isUnlocked) {
     mystery: "Загадка",
     anaconda: "Анаконда",
     molniya: "Молния",
-    nezhnost: "Нежность"
+    nezhnost: "Нежность",
+    pempudu: "Абрикосик",
+    collection_master: "Хранитель"
 };
         
         const TASK_BRANCHES = {
@@ -7397,16 +7429,34 @@ function openFigureModal(figure, isUnlocked) {
         ]
     },
     sea: {
-        name: "Царица морей",
-        desc: "Раскрасить картинки с морскими обитателями (фото ДО/ПОСЛЕ)",
-        levels: [
-            { title: "Знакомство с морем", maxProgress: 1, desc: "Раскрась 1 картинку с Дори" },
-            { title: "Юнга", maxProgress: 3, desc: "Раскрась 3 картинки с морскими млекопитающими" },
-            { title: "Боцман", maxProgress: 3, desc: "Раскрась 3 картинки с Муренами" },
-            { title: "Морской волк", maxProgress: 5, desc: "Раскрась 5 картинок с осьминогами" },
-            { title: "Царица морей", maxProgress: 8, desc: "Раскрась 8 картинок с акулами" }
-        ]
-    },
+    name: "Царица морей",
+    desc: "Раскрасить картинки с морскими обитателями (фото ДО/ПОСЛЕ)",
+    levels: [
+        { title: "Знакомство с морем", maxProgress: 1, desc: "Раскрась 1 картинку с Дори" },
+        { title: "Юнга", maxProgress: 3, desc: "Раскрась 3 картинки с морскими млекопитающими" },
+        { title: "Боцман", maxProgress: 3, desc: "Раскрась 3 картинки с муренами" },
+        { 
+            title: "Морской волк", 
+            maxProgress: 5, 
+            desc: "Раскрась 2 картинки с дельфинами, 2 картинки с крабом, 1 картинку с полосатой рыбой", 
+            subtasks: [
+                { id: 'dolphin', name: 'Дельфин', required: 2 },
+                { id: 'crab', name: 'Краб', required: 2 },
+                { id: 'fishstrip', name: 'Рыба с полосками', required: 1 }
+            ]
+        },
+        { 
+            title: "Царица морей", 
+            maxProgress: 8, 
+            desc: "Раскрась 3 картинки с крокодилами, 1 картинку с осьминогом, 4 картинки с акулой",  // ← ВОТ ЗДЕСЬ НЕ БЫЛО ЗАПЯТОЙ!
+            subtasks: [
+                { id: 'croc', name: 'Крокодил', required: 3 },
+                { id: 'octopus', name: 'Осьминог', required: 1 },
+                { id: 'shark', name: 'Акула', required: 4 }
+            ]
+        }
+    ]
+},
     queen: {
         name: "Злая королева",
         desc: "Пройди все уровни и узнай, что нужно, чтобы стать злой королевой (фото ДО/ПОСЛЕ)",
@@ -7480,7 +7530,7 @@ function openFigureModal(figure, isUnlocked) {
     },
     mystery: {
         name: "Загадка",
-        desc: "Раскрасить картинки из м/ф Скуби-Ду",
+        desc: "Раскрасить картинки из м/ф Скуби-Ду (фото ДО/ПОСЛЕ)",
         levels: [
             { title: "Начинающий детектив", maxProgress: 1, desc: "Раскрась 1 картинку с персонажами из Скуби-Ду" },
             { title: "Подсадная утка", maxProgress: 3, desc: "Раскрась 3 картинки с персонажами Скуби-Ду без самого Скуби-Ду" },
@@ -7491,7 +7541,7 @@ function openFigureModal(figure, isUnlocked) {
     },
     anaconda: {
         name: "Анаконда",
-        desc: "Раскрасить картинки со змеей",
+        desc: "Раскрасить картинки со змеей (фото ДО/ПОСЛЕ)",
         levels: [
             { title: "Исследователь змей", maxProgress: 1, desc: "Раскрась 1 картинку со змеей" },
             { title: "Добытчик яда", maxProgress: 3, desc: "Раскрась 3 картинки со змеей" },
