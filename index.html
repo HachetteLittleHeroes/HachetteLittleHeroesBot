@@ -1628,6 +1628,223 @@
                 transform: rotate(360deg);
             }
         }
+        /* ИИ Палитра — фильтры */
+        .ai-filter-container {
+            margin: 15px;
+        }
+
+        .ai-filter-container label {
+            color: var(--text);
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .ai-filter-container select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 12px;
+            background: var(--bg-header);
+            color: var(--text);
+            border: 1px solid var(--border-color);
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        /* ИИ Палитра — результаты */
+        .ai-results-container {
+            margin: 15px;
+        }
+
+        .ai-result-card {
+            background: var(--bg-header);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border-color);
+        }
+
+        .ai-result-filename {
+            font-size: 14px;
+            color: var(--text-gray);
+            margin-bottom: 10px;
+            word-break: break-word;
+        }
+
+        .ai-color-preview {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 16px;
+        }
+
+        .ai-color-circle {
+            width: 70px;
+            height: 70px;
+            border-radius: 16px;
+            border: 2px solid var(--border-color);
+            flex-shrink: 0;
+        }
+
+        .ai-color-info {
+            flex: 1;
+        }
+
+        .ai-color-hex {
+            font-weight: 800;
+            font-size: 22px;
+            color: var(--text);
+        }
+
+        .ai-color-rgb {
+            font-size: 13px;
+            color: var(--text-gray);
+            margin-top: 4px;
+        }
+
+        .ai-marker-title {
+            margin: 15px 0 10px;
+            color: var(--text);
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .ai-marker-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            margin-bottom: 8px;
+            background: var(--bg);
+            border-radius: 12px;
+        }
+
+        .ai-marker-brand {
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .ai-marker-number {
+            font-size: 16px;
+            margin-left: 5px;
+        }
+
+        .ai-marker-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .ai-marker-accuracy {
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 13px;
+        }
+
+        .ai-marker-accuracy.high {
+            background: var(--status-green);
+            color: white;
+        }
+
+        .ai-marker-accuracy.medium {
+            background: var(--status-orange);
+            color: white;
+        }
+
+        .ai-marker-accuracy.low {
+            background: var(--text-gray);
+            color: white;
+        }
+
+        .ai-wrong-btn {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-gray);
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-top: 10px;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.2s;
+        }
+
+        .ai-wrong-btn:hover {
+            background: rgba(255, 59, 48, 0.1);
+            border-color: var(--status-red);
+            color: var(--status-red);
+        }
+
+        .ai-correct-select {
+            display: none;
+            margin-top: 10px;
+            padding: 12px;
+            background: var(--bg);
+            border-radius: 12px;
+        }
+
+        .ai-correct-select input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--input-bg);
+            color: var(--text);
+            font-size: 14px;
+        }
+
+        .ai-correct-select button {
+            width: 100%;
+            margin-top: 8px;
+        }
+
+        .ai-cart-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .ai-cart-btn:active {
+            transform: scale(0.95);
+        }
+
+        .ai-no-marker {
+            padding: 15px;
+            text-align: center;
+            color: var(--text-gray);
+            background: var(--bg);
+            border-radius: 12px;
+        }
+
+        .upload-area small {
+            display: block;
+            margin-top: 8px;
+            color: var(--text-gray);
+            font-size: 12px;
+            font-weight: normal;
+        }
+
+        .ai-alpha-badge {
+            display: inline-block;
+            background: rgba(255, 149, 0, 0.2);
+            color: var(--accent);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
 
         /* ==========================================
            17. НАВИГАЦИЯ
@@ -3127,29 +3344,57 @@
         </div>
     </div>
 
-    <!-- ========== ИИ ПАЛИТРА ========== -->
-    <div id="aipalette" class="page">
-        <div class="header">
-            ИИ Палитра ✨
-            <span class="ai-alpha-badge">Альфа-тест</span>
+    <!-- ========== ИИ ПАЛИТРА (НОВАЯ ВЕРСИЯ) ========== -->
+<div id="aipalette" class="page">
+    <div class="header">
+        ИИ Палитра ✨
+        <span class="ai-alpha-badge">Подбор маркера</span>
+    </div>
+    <div class="ai-section">
+        <!-- Выбор источника маркеров -->
+        <div style="margin: 15px;">
+            <label style="color: var(--text); font-weight: 600; margin-bottom: 8px; display: block;">🔍 Искать среди:</label>
+            <select id="aiFilterType" style="width: 100%; padding: 12px; border-radius: 12px; background: var(--bg-header); color: var(--text); border: 1px solid var(--border-color); font-size: 14px;">
+                <option value="all">🌟 Все бренды</option>
+                <option value="inventory">📦 Мой инвентарь</option>
+                <option value="brand">🏷️ Выбрать бренд...</option>
+            </select>
+            <select id="aiFilterBrand" style="display: none; width: 100%; margin-top: 10px; padding: 12px; border-radius: 12px; background: var(--bg-header); color: var(--text); border: 1px solid var(--border-color); font-size: 14px;">
+                <option value="">Загрузка брендов...</option>
+            </select>
         </div>
-        <div class="ai-section">
-            <div class="upload-area" onclick="document.getElementById('aiInput').click()">
-                <i class="fas fa-camera"></i>
-                <p>Загрузить фото для определения цвета</p>
+        
+        <!-- Загрузка фото (можно несколько) -->
+        <div class="upload-area" onclick="document.getElementById('aiInput').click()" style="margin: 15px;">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <p>Нажмите, чтобы выбрать фото (можно несколько)</p>
+            <small style="color: var(--text-gray);">1 фото = 1 цвет</small>
+        </div>
+        <input type="file" id="aiInput" accept="image/*" multiple style="display: none;">
+        
+        <!-- Результаты -->
+        <div id="aiResults" style="margin: 15px;"></div>
+        
+        <!-- Админ-панель (скрыта для обычных пользователей) -->
+        <div id="adminAiBlock" class="admin-panel" style="display: none;">
+            <h4><i class="fas fa-robot"></i> Обучение ИИ (Админ)</h4>
+            <div class="form-group">
+                <label>Фото маркера</label>
+                <input type="file" id="aiTrainFile" accept="image/*">
             </div>
-            <input type="file" id="aiInput" accept="image/*" style="display:none;" onchange="processAI(event)">
-            <div id="adminAiBlock" class="admin-panel">
-                <h4><i class="fas fa-robot"></i> Обучение ИИ (Админ)</h4>
-                <div class="form-group"><label>Изображение маркера</label><input type="file" id="aiTrainFile" accept="image/*"></div>
-                <div class="form-group"><label>Бренд</label><input type="text" id="aiTrainBrand" placeholder="Guangna"></div>
-                <div class="form-group"><label>Номер маркера</label><input type="text" id="aiTrainNumber" placeholder="101"></div>
-                <button onclick="trainAI()"><i class="fas fa-brain"></i> Обучить ИИ</button>
-                <div id="aiTrainStatus" class="info-text"></div>
+            <div class="form-group">
+                <label>Бренд</label>
+                <input type="text" id="aiTrainBrand" placeholder="Например: GuangNa">
             </div>
-            <div id="aiResult" class="ai-result"></div>
+            <div class="form-group">
+                <label>Номер маркера</label>
+                <input type="text" id="aiTrainNumber" placeholder="Например: 101">
+            </div>
+            <button onclick="trainAIMarker()"><i class="fas fa-brain"></i> Обучить ИИ</button>
+            <div id="aiTrainStatus" class="info-text"></div>
         </div>
     </div>
+</div>
 <!-- ========== КОЛЛЕКЦИЯ ========== -->
 <div id="collection" class="page">
     <div class="header">
@@ -5884,120 +6129,265 @@ function openSupportDialog() {
             });
         }
         // ==========================================
-        // ИИ ПАЛИТРА
-        // ==========================================
+// ИИ ПАЛИТРА (НОВАЯ ВЕРСИЯ)
+// ==========================================
+
+let aiSelectedFiles = [];
+let aiCurrentResults = [];
+let aiBrands = [];
+
+// Загрузка брендов при старте
+async function loadAIBrands() {
+    try {
+        const response = await fetch(`${SERVER_URL}/api/ai/brands`);
+        const data = await response.json();
+        if (data.brands) {
+            aiBrands = data.brands;
+            const select = document.getElementById('aiFilterBrand');
+            select.innerHTML = '<option value="">Выберите бренд</option>';
+            aiBrands.forEach(brand => {
+                select.innerHTML += `<option value="${brand}">${brand}</option>`;
+            });
+        }
+    } catch (e) {
+        console.error('Error loading brands:', e);
+    }
+}
+
+// Переключение фильтра
+document.addEventListener('DOMContentLoaded', function() {
+    const filterType = document.getElementById('aiFilterType');
+    const filterBrand = document.getElementById('aiFilterBrand');
+    
+    if (filterType) {
+        filterType.addEventListener('change', function() {
+            filterBrand.style.display = this.value === 'brand' ? 'block' : 'none';
+        });
+    }
+    
+    // Загрузка брендов
+    loadAIBrands();
+    
+    // Обработчик выбора файлов
+    const aiInput = document.getElementById('aiInput');
+    if (aiInput) {
+        aiInput.addEventListener('change', handleAIFilesSelected);
+    }
+});
+
+function handleAIFilesSelected(event) {
+    aiSelectedFiles = Array.from(event.target.files);
+    if (aiSelectedFiles.length > 0) {
+        processAIFiles();
+    }
+}
+
+async function processAIFiles() {
+    const resultsDiv = document.getElementById('aiResults');
+    resultsDiv.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Анализ фото...</div>';
+    
+    aiCurrentResults = [];
+    
+    const filterType = document.getElementById('aiFilterType').value;
+    const filterBrand = document.getElementById('aiFilterBrand').value;
+    
+    for (let i = 0; i < aiSelectedFiles.length; i++) {
+        const file = aiSelectedFiles[i];
         
-        async function processAI(event) {
-            const file = event.target.files[0];
-            if (!file) return;
+        try {
+            const formData = new FormData();
+            formData.append('photo', file);
+            formData.append('filter_type', filterType);
+            if (filterType === 'brand' && filterBrand) {
+                formData.append('filter_value', filterBrand);
+            }
+            formData.append('user_id', userId.toString());
             
-            const resultDiv = document.getElementById('aiResult');
-            if (!resultDiv) return;
+            const response = await fetch(`${SERVER_URL}/api/ai/analyze`, {
+                method: 'POST',
+                body: formData
+            });
             
-            resultDiv.style.display = 'block';
-            resultDiv.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Анализ изображения...</div>';
+            const result = await response.json();
             
-            try {
-                const formData = new FormData();
-                formData.append('photo', file);
-                const response = await fetch(`${SERVER_URL}/api/ai_analyze`, {
-                    method: 'POST',
-                    body: formData
+            if (result.status === 'ok') {
+                aiCurrentResults.push({
+                    fileName: file.name,
+                    detectedColor: result.detected_color,
+                    marker: result.marker
                 });
-                const result = await response.json();
-                console.log('AI analyze result:', result);
+            }
+        } catch (error) {
+            console.error('Error analyzing:', error);
+        }
+    }
+    
+    renderAIResults();
+}
+
+function renderAIResults() {
+    const resultsDiv = document.getElementById('aiResults');
+    
+    if (aiCurrentResults.length === 0) {
+        resultsDiv.innerHTML = '<div class="no-results">❌ Не удалось проанализировать фото</div>';
+        return;
+    }
+    
+    let html = '';
+    
+    aiCurrentResults.forEach((result, index) => {
+        const color = result.detectedColor;
+        const marker = result.marker;
+        
+        html += `
+            <div class="ai-result-card">
+                <div style="font-size: 14px; color: var(--text-gray); margin-bottom: 10px;">
+                    📸 ${result.fileName}
+                </div>
+                <div class="ai-color-preview">
+                    <div class="ai-color-circle" style="background: ${color.hex};"></div>
+                    <div class="ai-color-info">
+                        <div class="ai-color-hex">${color.hex}</div>
+                        <div class="ai-color-rgb">RGB: ${color.rgb.join(', ')}</div>
+                    </div>
+                </div>
+        `;
+        
+        if (marker) {
+            const accuracyClass = marker.accuracy >= 80 ? 'high' : (marker.accuracy >= 60 ? 'medium' : 'low');
+            
+            html += `
+                <h4 style="margin: 15px 0 10px; color: var(--text);">🎯 Подходящий маркер</h4>
+                <div class="ai-marker-item">
+                    <div>
+                        <span class="ai-marker-brand">${marker.brand}</span>
+                        <span class="ai-marker-number">№${marker.number}</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span class="ai-marker-accuracy ${accuracyClass}">${marker.accuracy}%</span>
+                        <button class="photo-upload-btn" style="padding: 6px 12px;" onclick="addToCartFromAI('${marker.number}')">
+                            <i class="fas fa-cart-plus"></i>
+                        </button>
+                    </div>
+                </div>
                 
-                if (result && result.status === 'ok') {
-                    let html = '<h4 style="margin-bottom:15px;">🎨 Распознанные цвета:</h4>';
-                    if (result.colors && result.colors.length > 0) {
-                        result.colors.forEach(color => {
-                            html += `
-                                <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px; background:var(--card-bg); padding:10px; border-radius:8px;">
-                                    <div style="width:40px; height:40px; border-radius:8px; background:${color.hex}; border:1px solid var(--border-color);"></div>
-                                    <div style="flex:1;">
-                                        <div style="font-weight:bold;">${color.name}</div>
-                                        <div style="font-size:12px; color:var(--text-gray);">Код: ${color.hex}</div>
-                                        <div style="font-size:11px; color:var(--accent);">Точность: ${Math.round(color.confidence * 100)}%</div>
-                                    </div>
-                                </div>
-                            `;
-                        });
-                    } else {
-                        html += '<div class="no-results">Цвета не распознаны</div>';
-                    }
-                    if (result.markers && result.markers.length > 0) {
-                        html += '<h4 style="margin-top:15px;">🖍️ Похожие маркеры:</h4>';
-                        result.markers.forEach(marker => {
-                            html += `
-                                <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px; background:var(--card-bg); padding:10px; border-radius:8px;">
-                                    <div style="width:40px; height:40px; border-radius:8px; background:${marker.color}; border:1px solid var(--border-color);"></div>
-                                    <div style="flex:1;">
-                                        <div style="font-weight:bold;">${marker.brand} №${marker.number}</div>
-                                        <button class="photo-upload-btn" style="padding:5px 10px; font-size:11px; margin-top:5px;" onclick="addToCartFromAI('${marker.number}')">
-                                            <i class="fas fa-cart-plus"></i> Добавить в корзину
-                                        </button>
-                                    </div>
-                                </div>
-                            `;
-                        });
-                    }
-                    resultDiv.innerHTML = html;
-                } else {
-                    resultDiv.innerHTML = '<div class="no-results">⚠️ Не удалось распознать цвета. Попробуйте другое фото с лучшим освещением.</div>';
-                }
-            } catch (error) {
-                console.error('AI analyze error:', error);
-                resultDiv.innerHTML = '<div class="no-results">❌ Ошибка соединения с сервером. Попробуйте позже.</div>';
-            }
+                <button class="ai-wrong-btn" onclick="showCorrectMarkerForm(${index})">
+                    <i class="fas fa-times-circle"></i> Не подходит? Укажите правильный
+                </button>
+                
+                <div id="correctForm-${index}" class="ai-correct-select">
+                    <input type="text" id="correctBrand-${index}" placeholder="Бренд (например, GuangNa)">
+                    <input type="text" id="correctNumber-${index}" placeholder="Номер (например, 101)">
+                    <button class="photo-upload-btn" style="width: 100%; margin-top: 8px;" onclick="submitCorrectMarker(${index})">
+                        Отправить на проверку
+                    </button>
+                </div>
+            `;
+        } else {
+            html += `
+                <div class="no-results" style="padding: 15px;">
+                    🔍 Маркер не найден. Попробуйте другой фильтр.
+                </div>
+            `;
         }
         
-        async function trainAI() {
-            const fileInput = document.getElementById('aiTrainFile');
-            const brandInput = document.getElementById('aiTrainBrand');
-            const numberInput = document.getElementById('aiTrainNumber');
-            
-            if (!fileInput || !fileInput.files[0]) {
-                if (tg) tg.showAlert('Выберите изображение маркера');
-                return;
-            }
-            if (!brandInput || !brandInput.value.trim()) {
-                if (tg) tg.showAlert('Введите бренд маркера');
-                return;
-            }
-            if (!numberInput || !numberInput.value.trim()) {
-                if (tg) tg.showAlert('Введите номер маркера');
-                return;
-            }
-            if (tg) tg.showAlert('📤 Отправка данных для обучения...');
-            
-            try {
-                const formData = new FormData();
-                formData.append('photo', fileInput.files[0]);
-                formData.append('brand', brandInput.value.trim());
-                formData.append('number', numberInput.value.trim());
-                const response = await fetch(`${SERVER_URL}/api/train_ai`, {
-                    method: 'POST',
-                    body: formData
-                });
-                const result = await response.json();
-                if (result && result.status === 'ok') {
-                    if (tg) tg.showAlert('✅ Маркер добавлен в базу обучения!');
-                    fileInput.value = '';
-                    brandInput.value = '';
-                    numberInput.value = '';
-                } else {
-                    throw new Error(result?.message || 'Ошибка обучения');
-                }
-            } catch (error) {
-                console.error('Train AI error:', error);
-                if (tg) tg.showAlert('❌ Ошибка: ' + (error.message || 'Попробуйте позже'));
-            }
-        }
+        html += `</div>`;
+    });
+    
+    resultsDiv.innerHTML = html;
+}
+
+function showCorrectMarkerForm(index) {
+    const form = document.getElementById(`correctForm-${index}`);
+    form.style.display = form.style.display === 'block' ? 'none' : 'block';
+}
+
+async function submitCorrectMarker(index) {
+    const brand = document.getElementById(`correctBrand-${index}`).value.trim();
+    const number = document.getElementById(`correctNumber-${index}`).value.trim();
+    
+    if (!brand || !number) {
+        if (tg) tg.showAlert('❌ Введите бренд и номер');
+        return;
+    }
+    
+    const result = aiCurrentResults[index];
+    
+    try {
+        const response = await fetch(`${SERVER_URL}/api/ai/report`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                detected_rgb: result.detectedColor.rgb,
+                suggested_marker: result.marker,
+                correct_brand: brand,
+                correct_number: number,
+                user_id: userId.toString()
+            })
+        });
         
-        function addToCartFromAI(num) {
-            updateMarkerCart(num, 1);
-            if (tg) tg.showAlert(`Маркер №${num} добавлен в корзину`);
+        const data = await response.json();
+        
+        if (data.status === 'ok') {
+            if (tg) tg.showAlert('✅ Отправлено на проверку администратору!');
+            document.getElementById(`correctForm-${index}`).style.display = 'none';
         }
+    } catch (error) {
+        console.error('Error:', error);
+        if (tg) tg.showAlert('❌ Ошибка отправки');
+    }
+}
+
+async function trainAIMarker() {
+    const fileInput = document.getElementById('aiTrainFile');
+    const brand = document.getElementById('aiTrainBrand').value.trim();
+    const number = document.getElementById('aiTrainNumber').value.trim();
+    const status = document.getElementById('aiTrainStatus');
+    
+    if (!fileInput.files[0] || !brand || !number) {
+        status.innerHTML = '❌ Заполните все поля';
+        return;
+    }
+    
+    status.innerHTML = '⏳ Обучение...';
+    
+    try {
+        const formData = new FormData();
+        formData.append('photo', fileInput.files[0]);
+        formData.append('brand', brand);
+        formData.append('number', number);
+        
+        const response = await fetch(`${SERVER_URL}/api/ai/train`, {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+        
+        if (result.status === 'ok') {
+            status.innerHTML = `✅ ${result.message}`;
+            fileInput.value = '';
+            document.getElementById('aiTrainBrand').value = '';
+            document.getElementById('aiTrainNumber').value = '';
+            loadAIBrands(); // Обновляем список брендов
+        } else {
+            status.innerHTML = `❌ ${result.message}`;
+        }
+    } catch (error) {
+        status.innerHTML = '❌ Ошибка соединения';
+    }
+}
+
+function addToCartFromAI(number) {
+    updateMarkerCart(number, 1);
+    if (tg) tg.showAlert(`Маркер №${number} добавлен в корзину`);
+}
+
+// Показать админ-панель если пользователь — админ
+if (userId === 496779756 || userId === 1413249095) {
+    document.getElementById('adminAiBlock').style.display = 'block';
+}
+        
         
         function buyItem(itemId) {
             const prices = { bookmark: 750, petites: 950, tracker: 950, alcohol: 1250, coloriages: 1500 };
