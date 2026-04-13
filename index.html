@@ -3102,6 +3102,52 @@
     border-radius: 8px;
     border: 2px solid var(--accent);
 }
+.marker-set-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    cursor: pointer;
+}
+
+.marker-set-content {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 6px;
+    padding: 10px 0;
+}
+
+.marker-number-btn {
+    aspect-ratio: 1;
+    background: var(--bg);
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.marker-number-btn.collected {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+}
+
+.add-all-brand-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    cursor: pointer;
+    margin-left: 10px;
+}
     </style>
 </head>
 <body>
@@ -3403,6 +3449,28 @@
     </div>
     <div style="padding: 0 15px;">
         <div id="collectionGrid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;"></div>
+    </div>
+</div>
+<!-- ========== КОЛЛЕКЦИЯ МАРКЕРОВ ========== -->
+<div style="margin-top: 20px;">
+    <div class="inventory-main-block">
+        <div class="inventory-header" onclick="toggleMarkersCollectionBlock()">
+            <div class="inventory-header-left">
+                <i class="fas fa-paint-brush"></i>
+                <span>Моя коллекция маркеров</span>
+            </div>
+            <div class="inventory-header-right">
+                <span id="markersCollectionStats" style="font-size: 12px; margin-right: 10px;">0 маркеров</span>
+                <i class="fas fa-chevron-down" id="markersCollectionArrow"></i>
+            </div>
+        </div>
+        <div id="markersCollectionContent" class="inventory-content" style="display: none;">
+            <div class="search-box" style="margin-bottom: 15px;">
+                <i class="fas fa-search"></i>
+                <input type="text" id="markersCollectionSearch" placeholder="Поиск по бренду или номеру..." oninput="filterMarkersCollection()">
+            </div>
+            <div id="markersCollectionList"></div>
+        </div>
     </div>
 </div>
     <!-- ========== КОРЗИНА ========== -->
@@ -8785,6 +8853,7 @@ window.onload = async () => {
     await loadUserAchievements();
     await checkBalanceStatus();
     await checkAndUnlockStatuses();
+    await loadMarkersCollection();
     
     if (user.status && !user.unlockedStatuses.includes(user.status)) {
         user.status = 'Без статуса';
@@ -8855,6 +8924,184 @@ window.onload = async () => {
     console.log('Balance:', user.balance);
     console.log('Collection loaded:', userCollection.length, 'figures');
 };
+// ==========================================
+// КОЛЛЕКЦИЯ МАРКЕРОВ (НА СЕРВЕРЕ)
+// ==========================================
+
+const MARKER_SETS = [
+    { id: 'guangna', name: 'GuangNa', brand: 'GuangNa', maxNumber: 168 },
+    { id: 'touch', name: 'Touch', brand: 'Touch', maxNumber: 168 },
+    { id: 'languo', name: 'Languo', brand: 'Languo', maxNumber: 288 },
+    { id: 'zibeef', name: 'Zibeef', brand: 'Zibeef', maxNumber: 240 },
+    { id: 'grasp', name: 'Grasp', brand: 'Grasp', maxNumber: 168 },
+    { id: 'infiart', name: 'InfiArt', brand: 'InfiArt', maxNumber: 288 },
+    { id: 'tooliart', name: 'Tooli-Art', brand: 'Tooli-Art', maxNumber: 508 }
+];
+
+let userMarkersCollection = {};
+
+async function loadMarkersCollection() {
+    try {
+        const response = await fetch(`${SERVER_URL}/api/markers_collection?user_id=${userId}`);
+        userMarkersCollection = await response.json();
+        updateMarkersCollectionStats();
+    } catch (error) {
+        console.error('Error loading markers collection:', error);
+        userMarkersCollection = {};
+    }
+}
+
+async function updateMarkerInCollection(brand, number, action) {
+    const key = `${brand}_${number}`;
+    
+    if (action === 'toggle') {
+        action = userMarkersCollection[key] ? 'remove' : 'add';
+    }
+    
+    try {
+        const response = await fetch(`${SERVER_URL}/api/markers_collection`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                user_id: userId,
+                brand: brand,
+                number: number,
+                action: action
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.status === 'ok') {
+            if (action === 'add') {
+                userMarkersCollection[key] = true;
+            } else if (action === 'remove') {
+                delete userMarkersCollection[key];
+            }
+            updateMarkersCollectionStats();
+            renderMarkersCollection();
+        }
+    } catch (error) {
+        console.error('Error updating marker:', error);
+    }
+}
+
+async function addAllBrand(brand) {
+    try {
+        const response = await fetch(`${SERVER_URL}/api/markers_collection`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                user_id: userId,
+                brand: brand,
+                action: 'add_all_brand'
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.status === 'ok') {
+            // Обновляем локально
+            const set = MARKER_SETS.find(s => s.brand === brand);
+            if (set) {
+                for (let i = 1; i <= set.maxNumber; i++) {
+                    userMarkersCollection[`${brand}_${i}`] = true;
+                }
+            }
+            updateMarkersCollectionStats();
+            renderMarkersCollection();
+            
+            if (tg) tg.showAlert(`✅ Все маркеры ${brand} добавлены!`);
+        }
+    } catch (error) {
+        console.error('Error adding all brand:', error);
+        if (tg) tg.showAlert('❌ Ошибка добавления');
+    }
+}
+
+function renderMarkersCollection() {
+    const container = document.getElementById('markersCollectionList');
+    if (!container) return;
+    
+    let html = '';
+    
+    MARKER_SETS.forEach(set => {
+        const collectedCount = Object.keys(userMarkersCollection).filter(k => k.startsWith(set.brand + '_')).length;
+        const percent = Math.round((collectedCount / set.maxNumber) * 100);
+        
+        html += `
+            <div class="marker-set-card" style="margin-bottom: 15px; border-bottom: 1px solid var(--border-color);">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <div>
+                        <strong style="font-size: 16px;">${set.name}</strong>
+                        <span style="margin-left: 10px; font-size: 13px; color: var(--text-gray);">${collectedCount}/${set.maxNumber}</span>
+                    </div>
+                    <button class="add-all-brand-btn" onclick="addAllBrand('${set.brand}')">
+                        <i class="fas fa-plus"></i> Добавить всё
+                    </button>
+                </div>
+                <div class="progress-bar-container" style="margin: 8px 0;">
+                    <div class="progress-bar-fill" style="width: ${percent}%;"></div>
+                </div>
+                <div class="marker-set-content" id="set-${set.id}">
+        `;
+        
+        // Показываем только первые 40 номеров для компактности
+        for (let i = 1; i <= Math.min(40, set.maxNumber); i++) {
+            const key = `${set.brand}_${i}`;
+            const collected = userMarkersCollection[key] || false;
+            html += `<div class="marker-number-btn ${collected ? 'collected' : ''}" onclick="updateMarkerInCollection('${set.brand}', ${i}, 'toggle')">${i}</div>`;
+        }
+        
+        if (set.maxNumber > 40) {
+            html += `<div style="grid-column: span 4; text-align: center; color: var(--text-gray); font-size: 12px; padding: 5px;">... и ещё ${set.maxNumber - 40} номеров (используйте поиск)</div>`;
+        }
+        
+        html += `</div></div>`;
+    });
+    
+    container.innerHTML = html;
+}
+
+function updateMarkersCollectionStats() {
+    const count = Object.keys(userMarkersCollection).length;
+    const statsEl = document.getElementById('markersCollectionStats');
+    if (statsEl) {
+        statsEl.innerText = `${count} маркеров`;
+    }
+}
+
+function toggleMarkersCollectionBlock() {
+    const content = document.getElementById('markersCollectionContent');
+    const arrow = document.getElementById('markersCollectionArrow');
+    
+    if (content.style.display === 'none') {
+        content.style.display = 'block';
+        arrow.style.transform = 'rotate(180deg)';
+        renderMarkersCollection();
+    } else {
+        content.style.display = 'none';
+        arrow.style.transform = 'rotate(0deg)';
+    }
+}
+
+function filterMarkersCollection() {
+    const query = document.getElementById('markersCollectionSearch').value.toLowerCase();
+    // Простая фильтрация — можно доработать
+    renderMarkersCollection();
+}
+
+// Функция для получения списка маркеров пользователя (для ИИ палитры)
+function getUserMarkersList() {
+    const markers = [];
+    for (const key in userMarkersCollection) {
+        if (userMarkersCollection[key]) {
+            const [brand, number] = key.split('_');
+            markers.push({ brand, number });
+        }
+    }
+    return markers;
+}
     </script>
 </body>
 </html>
