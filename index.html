@@ -2143,6 +2143,144 @@
         #selectedOrganizerGrid>div {
             overflow-x: auto;
         }
+        /* ==========================================
+   КОЛЛЕКЦИЯ РАСКРАСОК
+   ========================================== */
+.coloring-category {
+    margin-bottom: 20px;
+    background: var(--bg);
+    border-radius: 16px;
+    padding: 15px;
+}
+
+.category-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.category-header i {
+    color: var(--accent);
+    font-size: 18px;
+}
+
+.add-custom-btn {
+    margin-left: auto;
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.category-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.coloring-book-item {
+    background: var(--card-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 20px;
+    padding: 8px 12px;
+    font-size: 13px;
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 150px;
+    flex: 1 0 auto;
+    max-width: calc(50% - 4px);
+}
+
+.coloring-book-item.collected {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+}
+
+.book-cover {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    object-fit: cover;
+    background: var(--bg);
+    border: 1px solid var(--border-color);
+    flex-shrink: 0;
+}
+
+.book-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.book-name {
+    font-weight: 600;
+    font-size: 13px;
+}
+
+.book-category {
+    font-size: 10px;
+    opacity: 0.8;
+}
+
+.remove-btn {
+    opacity: 0.7;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.add-book-form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 10px;
+    padding: 10px;
+    background: var(--card-bg);
+    border-radius: 12px;
+}
+
+.add-book-form input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    background: var(--input-bg);
+    color: var(--text);
+    font-size: 14px;
+}
+
+.custom-cover-label {
+    background: var(--bg);
+    border: 1px dashed var(--accent);
+    color: var(--accent);
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    flex: 1;
+}
+
+.cover-preview {
+    width: 60px;
+    height: 60px;
+    border-radius: 10px;
+    object-fit: cover;
+    border: 2px solid var(--accent);
+}
 
         /* ==========================================
            20. БРЕНДЫ
@@ -3478,6 +3616,60 @@
                 <input type="text" id="markersCollectionSearch" placeholder="Поиск по бренду или номеру..." oninput="filterMarkersCollection()">
             </div>
             <div id="markersCollectionList"></div>
+        </div>
+    </div>
+</div>
+<!-- ========== КОЛЛЕКЦИЯ РАСКРАСОК ========== -->
+<div class="inventory-main-block" style="margin-top: 15px;">
+    <div class="inventory-header" onclick="toggleColoringBooksBlock()">
+        <div class="inventory-header-left">
+            <i class="fas fa-book"></i>
+            <span>Моя коллекция раскрасок</span>
+        </div>
+        <div class="inventory-header-right">
+            <span id="coloringBooksStats" style="font-size: 12px; margin-right: 10px;">0 раскрасок</span>
+            <i class="fas fa-chevron-down" id="coloringBooksArrow"></i>
+        </div>
+    </div>
+    <div id="coloringBooksContent" class="inventory-content" style="display: none;">
+        <!-- Категория: Раскраски по номерам -->
+        <div class="coloring-category">
+            <div class="category-header">
+                <i class="fas fa-border-all"></i>
+                <span>🎨 Раскраски по номерам</span>
+                <button class="add-custom-btn" onclick="showAddCustomBook('paint_by_number')">+ Добавить</button>
+            </div>
+            <div id="category-paint_by_number" class="category-items"></div>
+        </div>
+        
+        <!-- Категория: Спиртовые раскраски -->
+        <div class="coloring-category">
+            <div class="category-header">
+                <i class="fas fa-wine-bottle"></i>
+                <span>🍷 Спиртовые раскраски</span>
+                <button class="add-custom-btn" onclick="showAddCustomBook('alcohol')">+ Добавить</button>
+            </div>
+            <div id="category-alcohol" class="category-items"></div>
+        </div>
+        
+        <!-- Категория: Раскраски для карандашей -->
+        <div class="coloring-category">
+            <div class="category-header">
+                <i class="fas fa-pencil-alt"></i>
+                <span>✏️ Раскраски для карандашей</span>
+                <button class="add-custom-btn" onclick="showAddCustomBook('pencil')">+ Добавить</button>
+            </div>
+            <div id="category-pencil" class="category-items"></div>
+        </div>
+        
+        <!-- Категория: Другие -->
+        <div class="coloring-category">
+            <div class="category-header">
+                <i class="fas fa-star"></i>
+                <span>✨ Другие</span>
+                <button class="add-custom-btn" onclick="showAddCustomBook('custom')">+ Добавить</button>
+            </div>
+            <div id="category-custom" class="category-items"></div>
         </div>
     </div>
 </div>
@@ -6518,10 +6710,10 @@ if (userId === 496779756 || userId === 1413249095) {
     
     switch(pageId) {
         case 'collection':
-    // Только загружаем данные с сервера, рендерить будем при разворачивании блока
     loadCollection();
-    // Также загружаем коллекцию маркеров
     loadMarkersCollection();
+    loadColoringBooks();
+    break;
     break;
         case 'markers':
             if (!markersDB || markersDB.length === 0) loadMarkers();
@@ -6699,7 +6891,56 @@ const COLLECTION_FIGURES = [
 let userCollection = [];
 let currentCollectionFigure = null;
 let collectionPhotos = [];
+// ==========================================
+// КОЛЛЕКЦИЯ РАСКРАСОК
+// ==========================================
 
+const DEFAULT_COLORING_BOOKS = {
+    paint_by_number: [
+        "Цветы (Hachette)",
+        "Животные (Hachette)",
+        "Пейзажи (Hachette)",
+        "Города (Hachette)",
+        "Мандалы (Hachette)"
+    ],
+    alcohol: [
+        "Портреты",
+        "Аниме",
+        "Фэнтези",
+        "Абстракция"
+    ],
+    pencil: [
+        "Природа",
+        "Животные",
+        "Люди",
+        "Архитектура"
+    ],
+    custom: []
+};
+
+const DEFAULT_COVERS = {
+    "Цветы (Hachette)": "assets/coloriages/flowers.jpg",
+    "Животные (Hachette)": "assets/coloriages/animals.jpg",
+    "Пейзажи (Hachette)": "assets/coloriages/landscapes.jpg",
+    "Города (Hachette)": "assets/coloriages/cities.jpg",
+    "Мандалы (Hachette)": "assets/coloriages/mandalas.jpg",
+    "Портреты": "assets/coloriages/portraits.jpg",
+    "Аниме": "assets/coloriages/anime.jpg",
+    "Фэнтези": "assets/coloriages/fantasy.jpg",
+    "Абстракция": "assets/coloriages/abstract.jpg",
+    "Природа": "assets/coloriages/nature.jpg",
+    "Люди": "assets/coloriages/people.jpg",
+    "Архитектура": "assets/coloriages/architecture.jpg"
+};
+
+let userColoringBooks = {
+    paint_by_number: [],
+    alcohol: [],
+    pencil: [],
+    custom: []
+};
+
+let selectedCoverFile = null;
 async function loadCollection() {
     console.log('📦 Loading collection...');
     
@@ -8851,6 +9092,222 @@ async function loadFriendProgressFromServer() {
         console.error('Error:', error);
     }
 }
+async function loadColoringBooks() {
+    try {
+        const response = await fetch(`${SERVER_URL}/api/coloring_books?user_id=${userId}`);
+        const data = await response.json();
+        if (data && typeof data === 'object') {
+            userColoringBooks = data;
+        }
+        updateColoringBooksStats();
+    } catch (error) {
+        console.error('Error loading coloring books:', error);
+    }
+}
+
+async function updateColoringBook(category, bookName, action) {
+    try {
+        const response = await fetch(`${SERVER_URL}/api/coloring_books`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                user_id: userId,
+                category: category,
+                book_name: bookName,
+                action: action
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.status === 'ok') {
+            if (action === 'add') {
+                if (!userColoringBooks[category]) userColoringBooks[category] = [];
+                if (!userColoringBooks[category].includes(bookName)) {
+                    userColoringBooks[category].push(bookName);
+                }
+            } else if (action === 'remove') {
+                if (userColoringBooks[category]) {
+                    userColoringBooks[category] = userColoringBooks[category].filter(b => b !== bookName);
+                }
+            }
+            updateColoringBooksStats();
+            renderColoringBooks();
+        }
+    } catch (error) {
+        console.error('Error updating coloring book:', error);
+    }
+}
+
+function handleCoverSelect(category) {
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/*';
+    fileInput.onchange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            selectedCoverFile = file;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const preview = document.getElementById(`cover-preview-${category}`);
+                if (preview) {
+                    preview.innerHTML = `<img src="${ev.target.result}" class="cover-preview">`;
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+    fileInput.click();
+}
+
+async function addCustomBook(category) {
+    const input = document.getElementById(`custom-book-${category}`);
+    const bookName = input?.value.trim();
+    
+    if (!bookName) {
+        if (tg) tg.showAlert('❌ Введите название раскраски');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('user_id', userId.toString());
+    formData.append('category', category);
+    formData.append('book_name', bookName);
+    
+    if (selectedCoverFile) {
+        formData.append('cover', selectedCoverFile);
+    }
+    
+    try {
+        const response = await fetch(`${SERVER_URL}/api/coloring_books/custom`, {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+        
+        if (result.status === 'ok') {
+            if (!userColoringBooks[category]) userColoringBooks[category] = [];
+            userColoringBooks[category].push({
+                name: bookName,
+                custom: true,
+                cover: result.cover
+            });
+            
+            updateColoringBooksStats();
+            renderColoringBooks();
+            
+            input.value = '';
+            selectedCoverFile = null;
+            const preview = document.getElementById(`cover-preview-${category}`);
+            if (preview) preview.innerHTML = '';
+            
+            if (tg) tg.showAlert(`✅ Раскраска "${bookName}" добавлена!`);
+        }
+    } catch (error) {
+        console.error('Error adding custom book:', error);
+        if (tg) tg.showAlert('❌ Ошибка добавления');
+    }
+}
+
+function renderColoringBooks() {
+    const categories = ['paint_by_number', 'alcohol', 'pencil', 'custom'];
+    
+    categories.forEach(category => {
+        const container = document.getElementById(`category-${category}`);
+        if (!container) return;
+        
+        const userBooks = userColoringBooks[category] || [];
+        
+        let defaultBooks = (DEFAULT_COLORING_BOOKS[category] || []).map(name => ({
+            name: name,
+            custom: false,
+            cover: DEFAULT_COVERS[name] || 'assets/coloriages/default.jpg'
+        }));
+        
+        let allBooks = [...defaultBooks];
+        userBooks.forEach(book => {
+            const bookName = typeof book === 'string' ? book : book.name;
+            if (!allBooks.find(b => b.name === bookName)) {
+                allBooks.push(typeof book === 'string' ? { name: book, custom: true, cover: null } : book);
+            }
+        });
+        
+        let html = '';
+        allBooks.forEach(book => {
+            const bookName = book.name;
+            const collected = userBooks.some(b => (typeof b === 'string' ? b : b.name) === bookName);
+            const coverUrl = book.cover || 'assets/coloriages/default.jpg';
+            
+            html += `
+                <div class="coloring-book-item ${collected ? 'collected' : ''}" onclick="toggleColoringBook('${category}', '${bookName.replace(/'/g, "\\'")}')">
+                    <img src="${coverUrl}" class="book-cover" onerror="this.src='assets/coloriages/default.jpg'">
+                    <div class="book-info">
+                        <span class="book-name">${bookName}</span>
+                        ${book.custom ? '<span class="book-category">Моя раскраска</span>' : ''}
+                    </div>
+                    ${collected ? '<span class="remove-btn">✓</span>' : '<span class="remove-btn">+</span>'}
+                </div>
+            `;
+        });
+        
+        html += `
+            <div style="width: 100%; margin-top: 15px;">
+                <div class="add-book-form">
+                    <input type="text" id="custom-book-${category}" placeholder="Название раскраски...">
+                    <div style="display: flex; gap: 8px;">
+                        <label class="custom-cover-label" onclick="handleCoverSelect('${category}')">
+                            <i class="fas fa-camera"></i> Обложка
+                        </label>
+                        <button class="add-custom-btn" onclick="addCustomBook('${category}')">Добавить</button>
+                    </div>
+                    <div id="cover-preview-${category}" style="margin-top: 8px;"></div>
+                </div>
+            </div>
+        `;
+        
+        container.innerHTML = html;
+    });
+}
+
+function toggleColoringBook(category, bookName) {
+    const userBooks = userColoringBooks[category] || [];
+    const collected = userBooks.some(b => (typeof b === 'string' ? b : b.name) === bookName);
+    updateColoringBook(category, bookName, collected ? 'remove' : 'add');
+}
+
+function showAddCustomBook(category) {
+    const input = document.getElementById(`custom-book-${category}`);
+    if (input) {
+        input.focus();
+        input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+}
+
+function updateColoringBooksStats() {
+    let total = 0;
+    for (const cat in userColoringBooks) {
+        total += userColoringBooks[cat]?.length || 0;
+    }
+    const statsEl = document.getElementById('coloringBooksStats');
+    if (statsEl) {
+        statsEl.innerText = `${total} раскрасок`;
+    }
+}
+
+function toggleColoringBooksBlock() {
+    const content = document.getElementById('coloringBooksContent');
+    const arrow = document.getElementById('coloringBooksArrow');
+    
+    if (content.style.display === 'none') {
+        content.style.display = 'block';
+        arrow.style.transform = 'rotate(180deg)';
+        renderColoringBooks();
+    } else {
+        content.style.display = 'none';
+        arrow.style.transform = 'rotate(0deg)';
+    }
+}
        // ==========================================
 // ИНИЦИАЛИЗАЦИЯ
 // ==========================================
@@ -8874,6 +9331,7 @@ window.onload = async () => {
     await checkBalanceStatus();
     await checkAndUnlockStatuses();
     await loadMarkersCollection();
+    await loadColoringBooks();
     
     if (user.status && !user.unlockedStatuses.includes(user.status)) {
         user.status = 'Без статуса';
