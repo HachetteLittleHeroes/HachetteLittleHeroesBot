@@ -9223,70 +9223,31 @@ function handleCoverSelect(category) {
     fileInput.click();
 }
 
-async function addCustomBook(category) {
+function addCustomBook(category) {
     const input = document.getElementById(`custom-book-${category}`);
     const bookName = input?.value.trim();
     
     if (!bookName) {
-        if (tg) tg.showAlert('❌ Введите название раскраски');
+        alert('Введите название раскраски');
         return;
     }
     
     if (!userColoringBooks[category]) userColoringBooks[category] = [];
     
-    // Функция для добавления раскраски
-    const addBook = (coverUrl = null) => {
-        userColoringBooks[category].push({
-            name: bookName,
-            custom: true,
-            cover: coverUrl
-        });
-        
-        localStorage.setItem(`coloring_books_${userId}`, JSON.stringify(userColoringBooks));
-        updateColoringBooksStats();
-        renderColoringBooks();
-        
-        input.value = '';
-        selectedCoverFile = null;
-        const preview = document.getElementById(`cover-preview-${category}`);
-        if (preview) preview.innerHTML = '';
-        
-        if (tg) tg.showAlert(`✅ Раскраска "${bookName}" добавлена!`);
-    };
+    // Добавляем
+    userColoringBooks[category].push(bookName);
     
-    // Отправка на сервер в фоне
-    const sendToServer = async (coverFile) => {
-        try {
-            const formData = new FormData();
-            formData.append('user_id', userId.toString());
-            formData.append('category', category);
-            formData.append('book_name', bookName);
-            
-            if (coverFile) {
-                formData.append('cover', coverFile);
-            }
-            
-            await fetch(`${SERVER_URL}/api/coloring_books/custom`, {
-                method: 'POST',
-                body: formData
-            });
-        } catch (error) {
-            console.log('Сервер недоступен, сохранили локально');
-        }
-    };
+    // Сохраняем
+    localStorage.setItem(`coloring_books_${userId}`, JSON.stringify(userColoringBooks));
     
-    // Если есть обложка — читаем и добавляем
-    if (selectedCoverFile) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            addBook(e.target.result);
-            sendToServer(selectedCoverFile);
-        };
-        reader.readAsDataURL(selectedCoverFile);
-    } else {
-        addBook(null);
-        sendToServer(null);
-    }
+    // Обновляем
+    updateColoringBooksStats();
+    renderColoringBooks();
+    
+    // Очищаем
+    input.value = '';
+    
+    alert('✅ Раскраска "' + bookName + '" добавлена!');
 }
 
 function renderColoringBooks() {
