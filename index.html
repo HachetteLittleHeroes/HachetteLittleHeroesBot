@@ -9724,7 +9724,7 @@ function uploadArtwork(bookKey, page) {
 
 // Сжатие изображения
 function compressImage(file, maxWidth = 800, quality = 0.7) {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = (e) => {
             const img = new Image();
@@ -9735,18 +9735,28 @@ function compressImage(file, maxWidth = 800, quality = 0.7) {
                 canvas.height = img.height * scale;
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                canvas.toBlob(resolve, 'image/jpeg', quality);
+                canvas.toBlob((blob) => {
+                    if (blob) {
+                        resolve(blob);
+                    } else {
+                        reject(new Error('Не удалось сжать фото'));
+                    }
+                }, 'image/jpeg', quality);
             };
+            img.onerror = reject;
             img.src = e.target.result;
         };
+        reader.onerror = reject;
         reader.readAsDataURL(file);
     });
 }
-
 // Обработка выбора фото
 async function handleArtworkSelected(event) {
     const file = event.target.files[0];
     if (!file) return;
+    
+    // Показываем, что начали обработку
+    if (tg) tg.showAlert('⏳ Обработка фото...');
     
     // Сжатие фото
     const compressed = await compressImage(file, 800, 0.7);
@@ -9754,15 +9764,22 @@ async function handleArtworkSelected(event) {
     // Сохраняем как data URL
     const reader = new FileReader();
     reader.onload = (e) => {
+        const photoData = e.target.result;
         const bookKey = `${currentCategory}_${currentBook}`;
         
-        if (!userArtworks[bookKey]) userArtworks[bookKey] = [];
-        
-        if (!userArtworks[bookKey].includes(currentPage)) {
-            userArtworks[bookKey].push(currentPage);
+        // ✅ СОЗДАЁМ ОБЪЕКТ, ЕСЛИ ЕГО НЕТ
+        if (!userArtworks[bookKey]) {
+            userArtworks[bookKey] = {};
         }
         
-        saveUserArtworks();
+        // ✅ СОХРАНЯЕМ ФОТО
+        userArtworks[bookKey][String(currentPage)] = photoData;
+        
+        // ✅ СОХРАНЯЕМ В LOCALSTORAGE
+        localStorage.setItem(`artworks_${userId}`, JSON.stringify(userArtworks));
+        
+        // ✅ ПРОВЕРЯЕМ, ЧТО СОХРАНИЛОСЬ
+        console.log('Saved artwork:', bookKey, currentPage, photoData.substring(0, 50) + '...');
         
         // Обновляем модалку
         const config = BOOK_PAGES_CONFIG[currentBook] || DEFAULT_PAGES_CONFIG;
@@ -9770,8 +9787,6 @@ async function handleArtworkSelected(event) {
         
         if (tg) tg.showAlert(`✅ Работа загружена на стр. ${currentPage}!`);
         else alert(`✅ Работа загружена на стр. ${currentPage}!`);
-        
-        // TODO: отправить на сервер
     };
     reader.readAsDataURL(compressed);
 }
