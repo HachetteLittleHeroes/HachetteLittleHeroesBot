@@ -3323,6 +3323,17 @@
     cursor: pointer;
     margin-left: 10px;
 }
+.add-cover-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 4px 10px;
+    border-radius: 15px;
+    font-size: 11px;
+    cursor: pointer;
+    margin-top: 5px;
+    width: 100%;
+}
     </style>
 </head>
 <body>
@@ -9247,7 +9258,48 @@ function addCustomBook(category) {
     if (tg) tg.showAlert(`✅ Раскраска "${bookName}" добавлена!`);
     else alert(`✅ Раскраска "${bookName}" добавлена!`);
 }
-
+function addCoverToBook(category, bookName) {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            // Находим раскраску в коллекции
+            const books = userColoringBooks[category];
+            if (!books) return;
+            
+            // Ищем по имени (поддерживаем и строки, и объекты)
+            for (let i = 0; i < books.length; i++) {
+                const b = books[i];
+                const name = typeof b === 'string' ? b : b.name;
+                
+                if (name === bookName) {
+                    // Если это строка — преобразуем в объект
+                    if (typeof b === 'string') {
+                        books[i] = { name: b, custom: true, cover: ev.target.result };
+                    } else {
+                        // Если уже объект — обновляем обложку
+                        b.cover = ev.target.result;
+                    }
+                    break;
+                }
+            }
+            
+            // Сохраняем и перерисовываем
+            localStorage.setItem(`coloring_books_${userId}`, JSON.stringify(userColoringBooks));
+            renderColoringBooks();
+            
+            if (tg) tg.showAlert(`✅ Обложка для "${bookName}" обновлена!`);
+            else alert(`✅ Обложка обновлена!`);
+        };
+        reader.readAsDataURL(file);
+    };
+    input.click();
+}
 function renderColoringBooks() {
     const categories = ['paint_by_number', 'alcohol', 'pencil', 'custom'];
     
@@ -9285,6 +9337,11 @@ function renderColoringBooks() {
             <div class="book-name">${bookName}</div>
             ${book.custom ? '<div class="book-category">Моя раскраска</div>' : ''}
         </div>
+        ${book.custom ? `
+            <button class="add-cover-btn" onclick="event.stopPropagation(); addCoverToBook('${category}', '${bookName.replace(/'/g, "\\'")}')">
+                <i class="fas fa-camera"></i> Обложка
+            </button>
+        ` : ''}
         <div class="remove-btn">${collected ? '✓' : '+'}</div>
     </div>
 `;
@@ -9295,13 +9352,7 @@ function renderColoringBooks() {
             <div style="grid-column: span 2; margin-top: 10px;">
                 <div class="add-book-form">
                     <input type="text" id="custom-book-${category}" placeholder="Название новой раскраски...">
-                    <div style="display: flex; gap: 8px;">
-                        <label class="custom-cover-label" onclick="handleCoverSelect('${category}')">
-                            <i class="fas fa-camera"></i> Обложка
-                        </label>
-                        <button class="add-custom-btn" onclick="addCustomBook('${category}')" style="flex: 1;">Добавить</button>
-                    </div>
-                    <div id="cover-preview-${category}" style="margin-top: 8px;"></div>
+                    <button class="add-custom-btn" onclick="addCustomBook('${category}')" style="flex: 1;">Добавить</button>
                 </div>
             </div>
         `;
