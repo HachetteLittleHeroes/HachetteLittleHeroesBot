@@ -9232,45 +9232,51 @@ async function addCustomBook(category) {
         return;
     }
     
-    const formData = new FormData();
-    formData.append('user_id', userId.toString());
-    formData.append('category', category);
-    formData.append('book_name', bookName);
+    if (!userColoringBooks[category]) userColoringBooks[category] = [];
     
-    if (selectedCoverFile) {
-        formData.append('cover', selectedCoverFile);
+    if (userColoringBooks[category].some(b => (typeof b === 'string' ? b : b.name) === bookName)) {
+        if (tg) tg.showAlert('⚠️ Такая раскраска уже есть');
+        return;
     }
     
+    // Добавляем локально
+    userColoringBooks[category].push({
+        name: bookName,
+        custom: true,
+        cover: null
+    });
+    
+    // Сохраняем в localStorage
+    localStorage.setItem(`coloring_books_${userId}`, JSON.stringify(userColoringBooks));
+    
+    // Пробуем отправить на сервер (если не работает — не страшно)
     try {
-        const response = await fetch(`${SERVER_URL}/api/coloring_books/custom`, {
+        const formData = new FormData();
+        formData.append('user_id', userId.toString());
+        formData.append('category', category);
+        formData.append('book_name', bookName);
+        
+        if (selectedCoverFile) {
+            formData.append('cover', selectedCoverFile);
+        }
+        
+        await fetch(`${SERVER_URL}/api/coloring_books/custom`, {
             method: 'POST',
             body: formData
         });
-        
-        const result = await response.json();
-        
-        if (result.status === 'ok') {
-            if (!userColoringBooks[category]) userColoringBooks[category] = [];
-            userColoringBooks[category].push({
-                name: bookName,
-                custom: true,
-                cover: result.cover
-            });
-            
-            updateColoringBooksStats();
-            renderColoringBooks();
-            
-            input.value = '';
-            selectedCoverFile = null;
-            const preview = document.getElementById(`cover-preview-${category}`);
-            if (preview) preview.innerHTML = '';
-            
-            if (tg) tg.showAlert(`✅ Раскраска "${bookName}" добавлена!`);
-        }
     } catch (error) {
-        console.error('Error adding custom book:', error);
-        if (tg) tg.showAlert('❌ Ошибка добавления');
+        console.log('Сервер недоступен, сохранили локально');
     }
+    
+    updateColoringBooksStats();
+    renderColoringBooks();
+    
+    input.value = '';
+    selectedCoverFile = null;
+    const preview = document.getElementById(`cover-preview-${category}`);
+    if (preview) preview.innerHTML = '';
+    
+    if (tg) tg.showAlert(`✅ Раскраска "${bookName}" добавлена!`);
 }
 
 function renderColoringBooks() {
@@ -9336,24 +9342,30 @@ function renderColoringBooks() {
 }
 
 function toggleColoringBook(category, bookName) {
-    const userBooks = userColoringBooks[category] || [];
+    if (!userColoringBooks[category]) userColoringBooks[category] = [];
     
-    // Проверяем, есть ли уже такая раскраска (учитываем и строки, и объекты)
-    const collected = userBooks.some(b => {
-        if (typeof b === 'string') return b === bookName;
-        return b.name === bookName;
-    });
+    // Проверяем, есть ли уже
+    const collected = userColoringBooks[category].some(b => 
+        (typeof b === 'string' ? b : b.name) === bookName
+    );
     
-    // Если это готовая раскраска (не кастомная) — отправляем как строку
-    const isDefault = DEFAULT_COLORING_BOOKS[category]?.includes(bookName);
-    
-    if (isDefault) {
-        // Готовая раскраска — отправляем просто название
-        updateColoringBook(category, bookName, collected ? 'remove' : 'add');
+    if (collected) {
+        // Удаляем
+        userColoringBooks[category] = userColoringBooks[category].filter(b => 
+            (typeof b === 'string' ? b : b.name) !== bookName
+        );
+        if (tg) tg.showAlert(`❌ "${bookName}" убрана`);
     } else {
-        // Кастомная — отправляем как объект
-        updateCustomBook(category, bookName, collected ? 'remove' : 'add');
+        // Добавляем
+        userColoringBooks[category].push(bookName);
+        if (tg) tg.showAlert(`✅ "${bookName}" добавлена!`);
     }
+    
+    // Сохраняем в localStorage
+    localStorage.setItem(`coloring_books_${userId}`, JSON.stringify(userColoringBooks));
+    
+    updateColoringBooksStats();
+    renderColoringBooks();
 }
 
 // Новая функция для кастомных раскрасок
