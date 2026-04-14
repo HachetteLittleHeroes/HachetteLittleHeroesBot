@@ -9203,13 +9203,13 @@ async function updateColoringBook(category, bookName, action) {
 }
 
 function handleCoverSelect(category) {
-    const fileInput = document.createElement('input');
-    fileInput.type = 'file';
-    fileInput.accept = 'image/*';
-    fileInput.onchange = (e) => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            selectedCoverFile = file;  // ✅ Глобальная переменная
+            selectedCoverFile = file;
             
             // Показываем превью
             const reader = new FileReader();
@@ -9220,11 +9220,9 @@ function handleCoverSelect(category) {
                 }
             };
             reader.readAsDataURL(file);
-            
-            alert('✅ Обложка выбрана: ' + file.name);
         }
     };
-    fileInput.click();
+    input.click();
 }
 
 function addCustomBook(category) {
@@ -9239,50 +9237,34 @@ function addCustomBook(category) {
     
     if (!userColoringBooks[category]) userColoringBooks[category] = [];
     
-    // Если есть обложка — читаем и добавляем
-    if (selectedCoverFile) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            // Добавляем с обложкой
-            userColoringBooks[category].push({
-                name: bookName,
-                custom: true,
-                cover: e.target.result
-            });
-            
-            // Сохраняем
-            localStorage.setItem(`coloring_books_${userId}`, JSON.stringify(userColoringBooks));
-            updateColoringBooksStats();
-            renderColoringBooks();
-            
-            // Очищаем
-            input.value = '';
-            selectedCoverFile = null;
-            const preview = document.getElementById(`cover-preview-${category}`);
-            if (preview) preview.innerHTML = '';
-            
-            if (tg) tg.showAlert(`✅ Раскраска "${bookName}" добавлена с обложкой!`);
-            else alert(`✅ Раскраска "${bookName}" добавлена с обложкой!`);
-        };
-        reader.readAsDataURL(selectedCoverFile);
-    } else {
-        // Добавляем без обложки
+    // Функция, которая реально добавляет
+    const doAdd = (coverUrl) => {
         userColoringBooks[category].push({
             name: bookName,
             custom: true,
-            cover: null
+            cover: coverUrl
         });
         
-        // Сохраняем
         localStorage.setItem(`coloring_books_${userId}`, JSON.stringify(userColoringBooks));
         updateColoringBooksStats();
         renderColoringBooks();
         
-        // Очищаем
         input.value = '';
+        selectedCoverFile = null;
+        const preview = document.getElementById(`cover-preview-${category}`);
+        if (preview) preview.innerHTML = '';
         
         if (tg) tg.showAlert(`✅ Раскраска "${bookName}" добавлена!`);
         else alert(`✅ Раскраска "${bookName}" добавлена!`);
+    };
+    
+    // Если есть обложка — читаем
+    if (selectedCoverFile) {
+        const reader = new FileReader();
+        reader.onload = (e) => doAdd(e.target.result);
+        reader.readAsDataURL(selectedCoverFile);
+    } else {
+        doAdd(null);
     }
 }
 
