@@ -9235,51 +9235,21 @@ function addCustomBook(category) {
     
     if (!userColoringBooks[category]) userColoringBooks[category] = [];
     
-    // Функция добавления
-    const addBook = (coverUrl) => {
-        userColoringBooks[category].push({
-            name: bookName,
-            custom: true,
-            cover: coverUrl
-        });
-        
-        localStorage.setItem(`coloring_books_${userId}`, JSON.stringify(userColoringBooks));
-        updateColoringBooksStats();
-        renderColoringBooks();
-        
-        input.value = '';
-        selectedCoverFile = null;
-        const preview = document.getElementById(`cover-preview-${category}`);
-        if (preview) preview.innerHTML = '';
-        
-        if (tg) tg.showAlert(`✅ Раскраска "${bookName}" добавлена!`);
-        else alert(`✅ Раскраска "${bookName}" добавлена!`);
-        
-        // Отправляем на сервер в фоне (не ждём ответа)
-        try {
-            const formData = new FormData();
-            formData.append('user_id', userId.toString());
-            formData.append('category', category);
-            formData.append('book_name', bookName);
-            if (selectedCoverFile) formData.append('cover', selectedCoverFile);
-            
-            fetch(`${SERVER_URL}/api/coloring_books/custom`, {
-                method: 'POST',
-                body: formData
-            });
-        } catch (e) {
-            console.log('Сервер недоступен');
-        }
-    };
+    // Добавляем как СТРОКУ (не объект)
+    userColoringBooks[category].push(bookName);
     
-    // Если есть обложка — читаем
-    if (selectedCoverFile) {
-        const reader = new FileReader();
-        reader.onload = (e) => addBook(e.target.result);
-        reader.readAsDataURL(selectedCoverFile);
-    } else {
-        addBook(null);
-    }
+    // Сохраняем
+    localStorage.setItem(`coloring_books_${userId}`, JSON.stringify(userColoringBooks));
+    
+    // Обновляем
+    updateColoringBooksStats();
+    renderColoringBooks();
+    
+    // Очищаем
+    input.value = '';
+    
+    if (tg) tg.showAlert(`✅ Раскраска "${bookName}" добавлена!`);
+    else alert(`✅ Раскраска "${bookName}" добавлена!`);
 }
 
 function renderColoringBooks() {
