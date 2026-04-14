@@ -9224,47 +9224,30 @@ function handleCoverSelect(category) {
 }
 
 function addCustomBook(category) {
+    alert('Функция addCustomBook вызвана! Категория: ' + category);
+    
     const input = document.getElementById(`custom-book-${category}`);
     const bookName = input?.value.trim();
     
     if (!bookName) {
-        if (tg) tg.showAlert('❌ Введите название раскраски');
-        else alert('Введите название раскраски');
+        alert('Введите название');
         return;
     }
     
+    alert('Добавляем: ' + bookName);
+    
     if (!userColoringBooks[category]) userColoringBooks[category] = [];
     
-    // Функция добавления
-    const addBook = (coverUrl) => {
-        // Добавляем как ОБЪЕКТ с обложкой
-        userColoringBooks[category].push({
-            name: bookName,
-            custom: true,
-            cover: coverUrl
-        });
-        
-        localStorage.setItem(`coloring_books_${userId}`, JSON.stringify(userColoringBooks));
-        updateColoringBooksStats();
-        renderColoringBooks();
-        
-        input.value = '';
-        selectedCoverFile = null;
-        const preview = document.getElementById(`cover-preview-${category}`);
-        if (preview) preview.innerHTML = '';
-        
-        if (tg) tg.showAlert(`✅ Раскраска "${bookName}" добавлена!`);
-        else alert(`✅ Раскраска "${bookName}" добавлена!`);
-    };
+    userColoringBooks[category].push(bookName);
+    localStorage.setItem(`coloring_books_${userId}`, JSON.stringify(userColoringBooks));
     
-    // Если есть обложка — читаем
-    if (selectedCoverFile) {
-        const reader = new FileReader();
-        reader.onload = (e) => addBook(e.target.result);
-        reader.readAsDataURL(selectedCoverFile);
-    } else {
-        addBook(null);
-    }
+    alert('Сохранено!');
+    
+    updateColoringBooksStats();
+    renderColoringBooks();
+    
+    input.value = '';
+    alert('Готово!');
 }
 
 function renderColoringBooks() {
