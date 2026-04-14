@@ -9350,22 +9350,49 @@ function toggleColoringBook(category, bookName) {
     );
     
     if (collected) {
-        // Удаляем
-        userColoringBooks[category] = userColoringBooks[category].filter(b => 
-            (typeof b === 'string' ? b : b.name) !== bookName
-        );
-        if (tg) tg.showAlert(`❌ "${bookName}" убрана`);
+        // ✅ ЗАПРАШИВАЕМ ПОДТВЕРЖДЕНИЕ ПЕРЕД УДАЛЕНИЕМ
+        if (tg) {
+            tg.showConfirm(`Удалить раскраску "${bookName}" из коллекции?`, (confirm) => {
+                if (confirm) {
+                    // Удаляем
+                    userColoringBooks[category] = userColoringBooks[category].filter(b => 
+                        (typeof b === 'string' ? b : b.name) !== bookName
+                    );
+                    
+                    // Сохраняем в localStorage
+                    localStorage.setItem(`coloring_books_${userId}`, JSON.stringify(userColoringBooks));
+                    
+                    updateColoringBooksStats();
+                    renderColoringBooks();
+                    
+                    if (tg) tg.showAlert(`❌ "${bookName}" удалена`);
+                }
+            });
+        } else {
+            // Для браузера без Telegram
+            if (confirm(`Удалить раскраску "${bookName}" из коллекции?`)) {
+                userColoringBooks[category] = userColoringBooks[category].filter(b => 
+                    (typeof b === 'string' ? b : b.name) !== bookName
+                );
+                
+                localStorage.setItem(`coloring_books_${userId}`, JSON.stringify(userColoringBooks));
+                
+                updateColoringBooksStats();
+                renderColoringBooks();
+                
+                alert(`❌ "${bookName}" удалена`);
+            }
+        }
     } else {
-        // Добавляем
+        // Добавляем без подтверждения
         userColoringBooks[category].push(bookName);
+        localStorage.setItem(`coloring_books_${userId}`, JSON.stringify(userColoringBooks));
+        
+        updateColoringBooksStats();
+        renderColoringBooks();
+        
         if (tg) tg.showAlert(`✅ "${bookName}" добавлена!`);
     }
-    
-    // Сохраняем в localStorage
-    localStorage.setItem(`coloring_books_${userId}`, JSON.stringify(userColoringBooks));
-    
-    updateColoringBooksStats();
-    renderColoringBooks();
 }
 
 // Новая функция для кастомных раскрасок
