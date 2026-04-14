@@ -9128,16 +9128,37 @@ async function loadFriendProgressFromServer() {
     }
 }
 async function loadColoringBooks() {
+    // Сначала пробуем загрузить из localStorage
+    const saved = localStorage.getItem(`coloring_books_${userId}`);
+    if (saved) {
+        try {
+            userColoringBooks = JSON.parse(saved);
+        } catch(e) {
+            userColoringBooks = { paint_by_number: [], alcohol: [], pencil: [], custom: [] };
+        }
+    } else {
+        // Тестовые данные
+        userColoringBooks = {
+            paint_by_number: ["Цветы (Hachette)", "Животные (Hachette)"],
+            alcohol: ["Портреты", "Аниме"],
+            pencil: ["Природа", "Люди"],
+            custom: []
+        };
+    }
+    
+    // Потом пробуем с сервера (если не работает — не страшно)
     try {
         const response = await fetch(`${SERVER_URL}/api/coloring_books?user_id=${userId}`);
         const data = await response.json();
         if (data && typeof data === 'object') {
             userColoringBooks = data;
+            localStorage.setItem(`coloring_books_${userId}`, JSON.stringify(userColoringBooks));
         }
-        updateColoringBooksStats();
     } catch (error) {
-        console.error('Error loading coloring books:', error);
+        console.log('Сервер недоступен, используем локальные данные');
     }
+    
+    updateColoringBooksStats();
 }
 
 async function updateColoringBook(category, bookName, action) {
@@ -9391,9 +9412,20 @@ function toggleColoringBooksBlock() {
     const content = document.getElementById('coloringBooksContent');
     const arrow = document.getElementById('coloringBooksArrow');
     
-    if (content.style.display === 'none') {
+    if (content.style.display === 'none' || content.style.display === '') {
         content.style.display = 'block';
         arrow.style.transform = 'rotate(180deg)';
+        
+        // Принудительно проверяем данные
+        if (!userColoringBooks || Object.keys(userColoringBooks).length === 0) {
+            userColoringBooks = {
+                paint_by_number: ["Цветы (Hachette)", "Животные (Hachette)"],
+                alcohol: ["Портреты", "Аниме"],
+                pencil: ["Природа", "Люди"],
+                custom: []
+            };
+        }
+        
         renderColoringBooks();
     } else {
         content.style.display = 'none';
