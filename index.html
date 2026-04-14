@@ -9755,8 +9755,10 @@ async function handleArtworkSelected(event) {
     const file = event.target.files[0];
     if (!file) return;
     
-    // Показываем, что начали обработку
-    if (tg) tg.showAlert('⏳ Обработка фото...');
+    // Показываем индикатор загрузки
+    if (tg && tg.MainButton) {
+        tg.MainButton.setText('⏳ Загрузка фото...').show();
+    }
     
     // Сжатие фото
     const compressed = await compressImage(file, 800, 0.7);
@@ -9767,25 +9769,24 @@ async function handleArtworkSelected(event) {
         const photoData = e.target.result;
         const bookKey = `${currentCategory}_${currentBook}`;
         
-        // ✅ СОЗДАЁМ ОБЪЕКТ, ЕСЛИ ЕГО НЕТ
         if (!userArtworks[bookKey]) {
             userArtworks[bookKey] = {};
         }
         
-        // ✅ СОХРАНЯЕМ ФОТО
         userArtworks[bookKey][String(currentPage)] = photoData;
-        
-        // ✅ СОХРАНЯЕМ В LOCALSTORAGE
         localStorage.setItem(`artworks_${userId}`, JSON.stringify(userArtworks));
-        
-        // ✅ ПРОВЕРЯЕМ, ЧТО СОХРАНИЛОСЬ
-        console.log('Saved artwork:', bookKey, currentPage, photoData.substring(0, 50) + '...');
         
         // Обновляем модалку
         const config = BOOK_PAGES_CONFIG[currentBook] || DEFAULT_PAGES_CONFIG;
         renderBookPagesGrid(bookKey, config);
         
-        if (tg) tg.showAlert(`✅ Работа загружена на стр. ${currentPage}!`);
+        // Скрываем индикатор
+        if (tg && tg.MainButton) {
+            tg.MainButton.hide();
+        }
+        
+        // Короткое уведомление (не блокирует)
+        if (tg) tg.showPopup({ message: `✅ Загружено на стр. ${currentPage}!` });
         else alert(`✅ Работа загружена на стр. ${currentPage}!`);
     };
     reader.readAsDataURL(compressed);
