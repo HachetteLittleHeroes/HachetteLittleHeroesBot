@@ -3335,6 +3335,7 @@
     width: 100%;
 }
 /* Страницы в модалке раскраски */
+/* Страницы в модалке раскраски */
 .book-page-btn {
     aspect-ratio: 1 / 1;
     background: var(--bg);
@@ -3349,13 +3350,20 @@
     color: var(--text);
     cursor: pointer;
     transition: all 0.15s;
-    padding: 5px;
+    padding: 0;
+    overflow: hidden;
+    position: relative;
 }
 
 .book-page-btn.uploaded {
-    background: var(--status-green);
     border-color: var(--status-green);
-    color: white;
+    padding: 0;
+}
+
+.book-page-btn img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .book-page-btn.spread {
@@ -3367,10 +3375,14 @@
 }
 
 .book-page-btn small {
-    font-size: 10px;
-    font-weight: normal;
-    opacity: 0.8;
-    margin-top: 3px;
+    position: absolute;
+    bottom: 3px;
+    right: 5px;
+    font-size: 12px;
+    background: rgba(0,0,0,0.5);
+    color: white;
+    padding: 2px 5px;
+    border-radius: 10px;
 }
     </style>
 </head>
@@ -9564,7 +9576,7 @@ function toggleColoringBooksBlock() {
     }
 }
 // ==========================================
-// МОДАЛКА СТРАНИЦ РАСКРАСКИ
+// МОДАЛКА СТРАНИЦ РАСКРАСКИ (С ЗАГРУЗКОЙ НА СЕРВЕР)
 // ==========================================
 
 // Конфигурация страниц для раскрасок
@@ -9598,31 +9610,33 @@ let currentBook = null;
 let currentCategory = null;
 let currentPage = null;
 
-// Загрузка работ пользователя
-function loadUserArtworks() {
-    const saved = localStorage.getItem(`artworks_${userId}`);
-    if (saved) {
-        try {
-            const data = JSON.parse(saved);
-            
-            // Проверяем старый формат (массив) и преобразуем в новый (объект)
-            if (Array.isArray(data)) {
-                // Старый формат — создаём пустой объект
-                userArtworks = {};
-            } else {
-                // Уже новый формат
-                userArtworks = data;
-            }
-        } catch(e) {
-            userArtworks = {};
+// Загрузка работ с сервера
+async function loadUserArtworksFromServer() {
+    try {
+        const response = await fetch(`${SERVER_URL}/api/artworks?user_id=${userId}`);
+        const data = await response.json();
+        if (data && typeof data === 'object') {
+            userArtworks = data;
+            localStorage.setItem(`artworks_${userId}`, JSON.stringify(userArtworks));
         }
-    } else {
-        userArtworks = {};
+    } catch (error) {
+        console.error('Ошибка загрузки работ с сервера:', error);
+        const saved = localStorage.getItem(`artworks_${userId}`);
+        if (saved) {
+            try {
+                userArtworks = JSON.parse(saved);
+            } catch(e) {
+                userArtworks = {};
+            }
+        }
     }
 }
-// Сохранение работ
-function saveUserArtworks() {
-    localStorage.setItem(`artworks_${userId}`, JSON.stringify(userArtworks));
+
+// Получить фото для страницы
+function getPageArtwork(bookKey, page) {
+    const url = userArtworks[bookKey]?.[String(page)];
+    if (!url) return null;
+    return url.startsWith('/artworks') ? SERVER_URL + url : url;
 }
 
 // Проверка, загружена ли страница
@@ -9649,7 +9663,6 @@ function openBookPagesModal(category, bookName) {
     document.getElementById('bookPagesCategory').innerText = categoryNames[category] || '';
     
     renderBookPagesGrid(bookKey, config);
-    
     document.getElementById('bookPagesModal').style.display = 'flex';
 }
 
@@ -9670,14 +9683,12 @@ function renderBookPagesGrid(bookKey, config) {
             const artwork = getPageArtwork(bookKey, pageLabel);
             
             if (uploaded && artwork) {
-                // ✅ ЕСТЬ ФОТО — показываем его
                 html += `
                     <div class="book-page-btn spread uploaded" onclick="viewArtwork('${bookKey}', '${pageLabel}')">
                         <img src="${artwork}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">
                     </div>
                 `;
             } else {
-                // ❌ НЕТ ФОТО — кнопка загрузки
                 html += `
                     <div class="book-page-btn spread" onclick="uploadArtwork('${bookKey}', '${pageLabel}')">
                         ${pageLabel}
@@ -9691,14 +9702,12 @@ function renderBookPagesGrid(bookKey, config) {
             const artwork = getPageArtwork(bookKey, page);
             
             if (uploaded && artwork) {
-                // ✅ ЕСТЬ ФОТО — показываем его
                 html += `
                     <div class="book-page-btn uploaded" onclick="viewArtwork('${bookKey}', '${page}')">
                         <img src="${artwork}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">
                     </div>
                 `;
             } else {
-                // ❌ НЕТ ФОТО — кнопка загрузки
                 html += `
                     <div class="book-page-btn" onclick="uploadArtwork('${bookKey}', '${page}')">
                         ${page}
@@ -9713,10 +9722,27 @@ function renderBookPagesGrid(bookKey, config) {
     grid.innerHTML = html;
 }
 
+// Просмотр загруженного фото
+function viewArtwork(bookKey, page) {
+    const artwork = getPageArtwork(bookKey, page);
+    if (!artwork) return;
+    
+    const modal = document.createElement('div');
+    modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.9);z-index:100001;display:flex;align-items:center;justify-content:center;padding:20px;';
+    modal.innerHTML = `
+        <div style="max-width:90%;max-height:90%;position:relative;">
+            <img src="${artwork}" style="max-width:100%;max-height:80vh;object-fit:contain;border-radius:16px;">
+            <p style="color:white;text-align:center;margin-top:15px;">Страница ${page}</p>
+            <button onclick="this.closest('div').parentElement.remove()" style="position:absolute;top:-40px;right:0;background:none;border:none;color:white;font-size:30px;cursor:pointer;">&times;</button>
+        </div>
+    `;
+    modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+    document.body.appendChild(modal);
+}
+
 // Загрузка фото для страницы
 function uploadArtwork(bookKey, page) {
     currentPage = page;
-    
     const input = document.getElementById('bookPageUploadInput');
     input.onchange = handleArtworkSelected;
     input.click();
@@ -9736,11 +9762,8 @@ function compressImage(file, maxWidth = 800, quality = 0.7) {
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                 canvas.toBlob((blob) => {
-                    if (blob) {
-                        resolve(blob);
-                    } else {
-                        reject(new Error('Не удалось сжать фото'));
-                    }
+                    if (blob) resolve(blob);
+                    else reject(new Error('Не удалось сжать фото'));
                 }, 'image/jpeg', quality);
             };
             img.onerror = reject;
@@ -9750,45 +9773,49 @@ function compressImage(file, maxWidth = 800, quality = 0.7) {
         reader.readAsDataURL(file);
     });
 }
-// Обработка выбора фото
+
+// Обработка выбора фото (отправка на сервер)
 async function handleArtworkSelected(event) {
     const file = event.target.files[0];
     if (!file) return;
     
-    // Показываем, что начали обработку
     if (tg) tg.showAlert('⏳ Обработка фото...');
     
-    // Сжатие фото
-    const compressed = await compressImage(file, 800, 0.7);
-    
-    // Сохраняем как data URL
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        const photoData = e.target.result;
-        const bookKey = `${currentCategory}_${currentBook}`;
+    try {
+        const compressed = await compressImage(file, 800, 0.7);
         
-        // ✅ СОЗДАЁМ ОБЪЕКТ, ЕСЛИ ЕГО НЕТ
-        if (!userArtworks[bookKey]) {
-            userArtworks[bookKey] = {};
+        const formData = new FormData();
+        formData.append('user_id', userId.toString());
+        formData.append('book_key', `${currentCategory}_${currentBook}`);
+        formData.append('page', String(currentPage));
+        formData.append('photo', compressed, 'artwork.jpg');
+        
+        const response = await fetch(`${SERVER_URL}/api/artworks/upload`, {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+        
+        if (result.status === 'ok') {
+            const bookKey = `${currentCategory}_${currentBook}`;
+            if (!userArtworks[bookKey]) userArtworks[bookKey] = {};
+            userArtworks[bookKey][String(currentPage)] = result.url;
+            localStorage.setItem(`artworks_${userId}`, JSON.stringify(userArtworks));
+            
+            const config = BOOK_PAGES_CONFIG[currentBook] || DEFAULT_PAGES_CONFIG;
+            renderBookPagesGrid(bookKey, config);
+            
+            if (tg) tg.showAlert(`✅ Работа загружена на стр. ${currentPage}!`);
+            else alert(`✅ Работа загружена!`);
+        } else {
+            throw new Error(result.message || 'Ошибка сервера');
         }
-        
-        // ✅ СОХРАНЯЕМ ФОТО
-        userArtworks[bookKey][String(currentPage)] = photoData;
-        
-        // ✅ СОХРАНЯЕМ В LOCALSTORAGE
-        localStorage.setItem(`artworks_${userId}`, JSON.stringify(userArtworks));
-        
-        // ✅ ПРОВЕРЯЕМ, ЧТО СОХРАНИЛОСЬ
-        console.log('Saved artwork:', bookKey, currentPage, photoData.substring(0, 50) + '...');
-        
-        // Обновляем модалку
-        const config = BOOK_PAGES_CONFIG[currentBook] || DEFAULT_PAGES_CONFIG;
-        renderBookPagesGrid(bookKey, config);
-        
-        if (tg) tg.showAlert(`✅ Работа загружена на стр. ${currentPage}!`);
-        else alert(`✅ Работа загружена на стр. ${currentPage}!`);
-    };
-    reader.readAsDataURL(compressed);
+    } catch (error) {
+        console.error('Ошибка загрузки:', error);
+        if (tg) tg.showAlert('❌ Ошибка загрузки на сервер');
+        else alert('❌ Ошибка загрузки');
+    }
 }
 
 // Закрыть модалку
@@ -9822,6 +9849,7 @@ window.onload = async () => {
     await checkAndUnlockStatuses();
     await loadMarkersCollection();
     await loadColoringBooks();
+    await loadUserArtworksFromServer();
     
     if (user.status && !user.unlockedStatuses.includes(user.status)) {
         user.status = 'Без статуса';
@@ -9852,7 +9880,7 @@ window.onload = async () => {
     renderCart();
     renderVolumes();
     loadInventory();
-    loadUserArtworks();
+    
     
     // Season Pass
     loadSeasonPremiumStatus();
