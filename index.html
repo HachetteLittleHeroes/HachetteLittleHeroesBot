@@ -7131,9 +7131,11 @@ function renderColoringBooks() {
     
     categories.forEach(category => {
         const container = document.getElementById(`category-${category}`);
-        if (!container) {
-            console.error(`Container category-${category} not found`);
-            return;
+        if (!container) return;
+        
+        // Проверяем, что userColoringBooks существует
+        if (!userColoringBooks) {
+            userColoringBooks = { paint_by_number: [], alcohol: [], pencil: [], custom: [] };
         }
         
         const userBooks = userColoringBooks[category] || [];
@@ -7145,14 +7147,14 @@ function renderColoringBooks() {
         let html = '';
         
         if (allBooks.length === 0) {
-            html = '<div style="grid-column: span 2; text-align: center; color: var(--text-gray); padding: 15px;">Нет раскрасок</div>';
+            html = '<div class="no-results" style="grid-column: span 2;">Нет раскрасок</div>';
         } else {
             allBooks.forEach(bookName => {
                 const collected = userBooks.includes(bookName);
                 
                 html += `
                     <div class="coloring-book-item ${collected ? 'collected' : ''}" onclick="toggleColoringBook('${category}', '${bookName.replace(/'/g, "\\'")}')">
-                        <div class="book-cover" style="background: var(--accent); display: flex; align-items: center; justify-content: center; color: white; font-size: 24px;">📚</div>
+                        <div class="book-cover" style="background: var(--accent-gradient); display: flex; align-items: center; justify-content: center; color: white; font-size: 28px;">📚</div>
                         <div class="book-info">
                             <div class="book-name">${bookName}</div>
                         </div>
@@ -7164,11 +7166,9 @@ function renderColoringBooks() {
         
         // Форма добавления
         html += `
-            <div style="grid-column: span 2; margin-top: 15px;">
-                <div style="display: flex; gap: 8px; padding: 10px; background: var(--card-bg); border-radius: 12px;">
-                    <input type="text" id="custom-book-${category}" placeholder="Название..." style="flex: 1; padding: 10px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text);">
-                    <button class="add-custom-btn" onclick="addCustomBook('${category}')" style="padding: 10px 16px;">Добавить</button>
-                </div>
+            <div class="add-book-form">
+                <input type="text" id="custom-book-${category}" placeholder="Название...">
+                <button class="add-custom-btn" onclick="addCustomBook('${category}')">Добавить</button>
             </div>
         `;
         
@@ -9316,9 +9316,11 @@ function renderCollection() {
     const container = document.getElementById('collectionGrid');
     if (!container) return;
     
-    // Если коллекция пустая — загружаем
+    // Если коллекция пустая — пробуем загрузить
     if (!userCollection || userCollection.length === 0) {
-        loadCollection();
+        if (typeof loadCollection === 'function') {
+            loadCollection();
+        }
         return;
     }
     
@@ -9332,7 +9334,11 @@ function renderCollection() {
         
         const card = document.createElement('div');
         card.className = 'collection-card';
-        card.onclick = () => openFigureModal(figure, isUnlocked);
+        card.onclick = () => {
+            if (typeof openFigureModal === 'function') {
+                openFigureModal(figure, isUnlocked);
+            }
+        };
         
         card.innerHTML = `
             <div class="collection-card-image">
