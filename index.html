@@ -9259,42 +9259,60 @@ function addCustomBook(category) {
     else alert(`✅ Раскраска "${bookName}" добавлена!`);
 }
 function addCoverToBook(category, bookName) {
+    alert('Открываем выбор обложки для: ' + bookName);
+    
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
     input.onchange = (e) => {
         const file = e.target.files[0];
-        if (!file) return;
+        if (!file) {
+            alert('Файл не выбран');
+            return;
+        }
+        
+        alert('Файл выбран: ' + file.name);
         
         const reader = new FileReader();
         reader.onload = (ev) => {
-            // Находим раскраску в коллекции
-            const books = userColoringBooks[category];
-            if (!books) return;
+            alert('Файл прочитан, ищем раскраску...');
             
-            // Ищем по имени (поддерживаем и строки, и объекты)
+            const books = userColoringBooks[category];
+            if (!books) {
+                alert('Категория не найдена: ' + category);
+                return;
+            }
+            
+            alert('Всего книг в категории: ' + books.length);
+            
+            let found = false;
             for (let i = 0; i < books.length; i++) {
                 const b = books[i];
                 const name = typeof b === 'string' ? b : b.name;
                 
+                alert('Проверяем: ' + name + ' === ' + bookName + ' ? ' + (name === bookName));
+                
                 if (name === bookName) {
-                    // Если это строка — преобразуем в объект
                     if (typeof b === 'string') {
                         books[i] = { name: b, custom: true, cover: ev.target.result };
                     } else {
-                        // Если уже объект — обновляем обложку
                         b.cover = ev.target.result;
                     }
+                    found = true;
+                    alert('✅ Найдено и обновлено!');
                     break;
                 }
             }
             
-            // Сохраняем и перерисовываем
+            if (!found) {
+                alert('❌ Раскраска не найдена в коллекции!');
+                return;
+            }
+            
             localStorage.setItem(`coloring_books_${userId}`, JSON.stringify(userColoringBooks));
             renderColoringBooks();
             
-            if (tg) tg.showAlert(`✅ Обложка для "${bookName}" обновлена!`);
-            else alert(`✅ Обложка обновлена!`);
+            alert('✅ Обложка обновлена!');
         };
         reader.readAsDataURL(file);
     };
