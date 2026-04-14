@@ -9237,35 +9237,15 @@ function addCustomBook(category) {
     
     if (!userColoringBooks[category]) userColoringBooks[category] = [];
     
-    // Функция, которая реально добавляет
-    const doAdd = (coverUrl) => {
-        userColoringBooks[category].push({
-            name: bookName,
-            custom: true,
-            cover: coverUrl
-        });
-        
-        localStorage.setItem(`coloring_books_${userId}`, JSON.stringify(userColoringBooks));
-        updateColoringBooksStats();
-        renderColoringBooks();
-        
-        input.value = '';
-        selectedCoverFile = null;
-        const preview = document.getElementById(`cover-preview-${category}`);
-        if (preview) preview.innerHTML = '';
-        
-        if (tg) tg.showAlert(`✅ Раскраска "${bookName}" добавлена!`);
-        else alert(`✅ Раскраска "${bookName}" добавлена!`);
-    };
+    userColoringBooks[category].push(bookName);
+    localStorage.setItem(`coloring_books_${userId}`, JSON.stringify(userColoringBooks));
+    updateColoringBooksStats();
+    renderColoringBooks();
     
-    // Если есть обложка — читаем
-    if (selectedCoverFile) {
-        const reader = new FileReader();
-        reader.onload = (e) => doAdd(e.target.result);
-        reader.readAsDataURL(selectedCoverFile);
-    } else {
-        doAdd(null);
-    }
+    input.value = '';
+    
+    if (tg) tg.showAlert(`✅ Раскраска "${bookName}" добавлена!`);
+    else alert(`✅ Раскраска "${bookName}" добавлена!`);
 }
 
 function renderColoringBooks() {
