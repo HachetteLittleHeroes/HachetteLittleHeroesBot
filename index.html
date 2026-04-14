@@ -9325,7 +9325,15 @@ function renderColoringBooks() {
         const container = document.getElementById(`category-${category}`);
         if (!container) return;
         
-        const userBooks = userColoringBooks[category] || [];
+        const userBooksRaw = userColoringBooks[category] || [];
+        
+        // Приводим все пользовательские книги к объектам
+        const userBooks = userBooksRaw.map(b => {
+            if (typeof b === 'string') {
+                return { name: b, custom: true, cover: null };
+            }
+            return b;
+        });
         
         let defaultBooks = (DEFAULT_COLORING_BOOKS[category] || []).map(name => ({
             name: name,
@@ -9333,11 +9341,18 @@ function renderColoringBooks() {
             cover: DEFAULT_COVERS[name] || 'assets/coloriages/default.jpg'
         }));
         
+        // Объединяем, приоритет у пользовательских (если есть обложка — она перезапишет)
         let allBooks = [...defaultBooks];
-        userBooks.forEach(book => {
-            const bookName = typeof book === 'string' ? book : book.name;
-            if (!allBooks.find(b => b.name === bookName)) {
-                allBooks.push(typeof book === 'string' ? { name: book, custom: true, cover: null } : book);
+        userBooks.forEach(userBook => {
+            const existingIndex = allBooks.findIndex(b => b.name === userBook.name);
+            if (existingIndex === -1) {
+                allBooks.push(userBook);
+            } else {
+                // Если у пользовательской книги есть обложка — обновляем
+                if (userBook.cover) {
+                    allBooks[existingIndex].cover = userBook.cover;
+                }
+                allBooks[existingIndex].custom = userBook.custom;
             }
         });
         
@@ -9345,7 +9360,7 @@ function renderColoringBooks() {
         
         allBooks.forEach(book => {
             const bookName = book.name;
-            const collected = userBooks.some(b => (typeof b === 'string' ? b : b.name) === bookName);
+            const collected = userBooks.some(b => b.name === bookName);
             const coverUrl = book.cover || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23ff9500' rx='12'/%3E%3Ctext x='50' y='50' text-anchor='middle' dy='.3em' fill='white' font-size='40' font-family='Arial'%3E📚%3C/text%3E%3C/svg%3E";
             
             html += `
