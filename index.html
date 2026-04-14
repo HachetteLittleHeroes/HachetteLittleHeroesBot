@@ -2203,9 +2203,15 @@
 }
 
 .coloring-book-item.collected {
-    background: var(--accent);
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
     border-color: var(--accent);
-    color: white;
+    color: var(--text);
+}
+
+[data-theme="dark"] .coloring-book-item.collected {
+    background: color-mix(in srgb, var(--accent) 18%, transparent);
+    border-color: var(--accent);
+    color: var(--text);
 }
 
 /* Обложка — квадратная, по центру */
