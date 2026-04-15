@@ -3335,6 +3335,7 @@
     width: 100%;
 }
 /* Страницы в модалке раскраски */
+/* Страницы в модалке раскраски */
 .book-page-btn {
     aspect-ratio: 1 / 1;
     background: var(--bg);
@@ -3349,17 +3350,30 @@
     color: var(--text);
     cursor: pointer;
     transition: all 0.15s;
-    padding: 5px;
+    padding: 0;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: 100%;
 }
 
+/* Убираем рамку и фон для загруженных страниц */
 .book-page-btn.uploaded {
-    background: var(--status-green);
-    border-color: var(--status-green);
-    color: white;
+    border: none;
+    background: transparent;
+    padding: 0;
 }
 
+.book-page-btn img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+/* Развороты — такой же размер, как обычные */
 .book-page-btn.spread {
-    grid-column: span 2;
+    grid-column: span 1;  /* ← НЕ растягиваем на 2 колонки */
 }
 
 .book-page-btn:active {
@@ -3367,10 +3381,22 @@
 }
 
 .book-page-btn small {
-    font-size: 10px;
-    font-weight: normal;
-    opacity: 0.8;
-    margin-top: 3px;
+    position: absolute;
+    bottom: 3px;
+    right: 5px;
+    font-size: 12px;
+    background: rgba(0,0,0,0.5);
+    color: white;
+    padding: 2px 5px;
+    border-radius: 10px;
+}
+
+/* Сетка страниц — по 3 в ряд */
+#bookPagesGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin: 15px 0;
 }
     </style>
 </head>
@@ -9588,7 +9614,7 @@ const BOOK_PAGES_CONFIG = {
 };
 
 // По умолчанию для новых/кастомных раскрасок
-const DEFAULT_PAGES_CONFIG = { totalPages: 20, spreads: [] };
+const DEFAULT_PAGES_CONFIG = { totalPages: 100, spreads: [] };
 
 // Загруженные работы пользователя
 let userArtworks = {};
@@ -9670,16 +9696,14 @@ function renderBookPagesGrid(bookKey, config) {
             const artwork = getPageArtwork(bookKey, pageLabel);
             
             if (uploaded && artwork) {
-                // ✅ ЕСТЬ ФОТО — показываем его
                 html += `
-                    <div class="book-page-btn spread uploaded" onclick="viewArtwork('${bookKey}', '${pageLabel}')">
-                        <img src="${artwork}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">
+                    <div class="book-page-btn uploaded" onclick="viewArtwork('${bookKey}', '${pageLabel}')">
+                        <img src="${artwork}">
                     </div>
                 `;
             } else {
-                // ❌ НЕТ ФОТО — кнопка загрузки
                 html += `
-                    <div class="book-page-btn spread" onclick="uploadArtwork('${bookKey}', '${pageLabel}')">
+                    <div class="book-page-btn" onclick="uploadArtwork('${bookKey}', '${pageLabel}')">
                         ${pageLabel}
                         <small>📸</small>
                     </div>
@@ -9691,14 +9715,12 @@ function renderBookPagesGrid(bookKey, config) {
             const artwork = getPageArtwork(bookKey, page);
             
             if (uploaded && artwork) {
-                // ✅ ЕСТЬ ФОТО — показываем его
                 html += `
                     <div class="book-page-btn uploaded" onclick="viewArtwork('${bookKey}', '${page}')">
-                        <img src="${artwork}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">
+                        <img src="${artwork}">
                     </div>
                 `;
             } else {
-                // ❌ НЕТ ФОТО — кнопка загрузки
                 html += `
                     <div class="book-page-btn" onclick="uploadArtwork('${bookKey}', '${page}')">
                         ${page}
@@ -10093,28 +10115,21 @@ function viewArtwork(bookKey, page) {
     if (!artwork) return;
     
     const modal = document.createElement('div');
-    modal.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0,0,0,0.9);
-        z-index: 100001;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
-    `;
+    modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.9);z-index:100001;display:flex;align-items:center;justify-content:center;padding:20px;';
     
     modal.innerHTML = `
-        <div style="max-width: 90%; max-height: 90%; position: relative;">
-            <img src="${artwork}" style="max-width: 100%; max-height: 80vh; object-fit: contain; border-radius: 16px;">
-            <p style="color: white; text-align: center; margin-top: 15px;">Страница ${page}</p>
-            <button onclick="this.closest('div').remove()" style="position: absolute; top: -40px; right: 0; background: none; border: none; color: white; font-size: 30px; cursor: pointer;">&times;</button>
+        <div style="max-width:90%;max-height:90%;position:relative;">
+            <img src="${artwork}" style="max-width:100%;max-height:80vh;object-fit:contain;border-radius:16px;">
+            <p style="color:white;text-align:center;margin-top:15px;">Страница ${page}</p>
+            <button id="closeArtworkBtn" style="position:absolute;top:-40px;right:0;background:none;border:none;color:white;font-size:30px;cursor:pointer;">&times;</button>
         </div>
     `;
     
+    // Закрытие по крестику
+    const closeBtn = modal.querySelector('#closeArtworkBtn');
+    closeBtn.onclick = () => modal.remove();
+    
+    // Закрытие по клику на фон
     modal.onclick = (e) => {
         if (e.target === modal) modal.remove();
     };
