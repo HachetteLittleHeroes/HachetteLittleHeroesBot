@@ -9240,37 +9240,45 @@ async function loadFriendProgressFromServer() {
     }
 }
 async function loadColoringBooks() {
-    // Сначала пробуем загрузить из localStorage
-    const saved = localStorage.getItem(`coloring_books_${userId}`);
-    if (saved) {
-        try {
-            userColoringBooks = JSON.parse(saved);
-        } catch(e) {
-            userColoringBooks = { paint_by_number: [], alcohol: [], pencil: [], custom: [] };
-        }
-    } else {
-        // Тестовые данные
-        userColoringBooks = {
-            paint_by_number: ["Цветы (Hachette)", "Животные (Hachette)"],
-            alcohol: ["Портреты", "Аниме"],
-            pencil: ["Природа", "Люди"],
-            custom: []
-        };
-    }
-    
-    // Потом пробуем с сервера (если не работает — не страшно)
     try {
         const response = await fetch(`${SERVER_URL}/api/coloring_books?user_id=${userId}`);
         const data = await response.json();
+        
         if (data && typeof data === 'object') {
+            // ✅ Сервер возвращает объекты с обложками — используем как есть
             userColoringBooks = data;
-            localStorage.setItem(`coloring_books_${userId}`, JSON.stringify(userColoringBooks));
+        } else {
+            // Если сервер вернул пустоту — грузим из localStorage
+            const saved = localStorage.getItem(`coloring_books_${userId}`);
+            if (saved) {
+                try {
+                    userColoringBooks = JSON.parse(saved);
+                } catch(e) {
+                    userColoringBooks = { paint_by_number: [], alcohol: [], pencil: [], custom: [] };
+                }
+            } else {
+                userColoringBooks = { paint_by_number: [], alcohol: [], pencil: [], custom: [] };
+            }
         }
+        
+        // Сохраняем в localStorage как кеш
+        localStorage.setItem(`coloring_books_${userId}`, JSON.stringify(userColoringBooks));
+        
+        updateColoringBooksStats();
     } catch (error) {
-        console.log('Сервер недоступен, используем локальные данные');
+        console.error('Ошибка загрузки коллекции раскрасок:', error);
+        
+        // Грузим из localStorage
+        const saved = localStorage.getItem(`coloring_books_${userId}`);
+        if (saved) {
+            try {
+                userColoringBooks = JSON.parse(saved);
+            } catch(e) {
+                userColoringBooks = { paint_by_number: [], alcohol: [], pencil: [], custom: [] };
+            }
+        }
+        updateColoringBooksStats();
     }
-    
-    updateColoringBooksStats();
 }
 
 async function updateColoringBook(category, bookName, action) {
