@@ -9245,17 +9245,13 @@ async function loadColoringBooks() {
         const data = await response.json();
         
         if (data && typeof data === 'object') {
-            // ✅ Сервер возвращает объекты с обложками — используем как есть
+            // ✅ Сервер возвращает правильную структуру с обложками
             userColoringBooks = data;
         } else {
-            // Если сервер вернул пустоту — грузим из localStorage
+            // Грузим из localStorage как запасной вариант
             const saved = localStorage.getItem(`coloring_books_${userId}`);
             if (saved) {
-                try {
-                    userColoringBooks = JSON.parse(saved);
-                } catch(e) {
-                    userColoringBooks = { paint_by_number: [], alcohol: [], pencil: [], custom: [] };
-                }
+                userColoringBooks = JSON.parse(saved);
             } else {
                 userColoringBooks = { paint_by_number: [], alcohol: [], pencil: [], custom: [] };
             }
@@ -9263,20 +9259,12 @@ async function loadColoringBooks() {
         
         // Сохраняем в localStorage как кеш
         localStorage.setItem(`coloring_books_${userId}`, JSON.stringify(userColoringBooks));
-        
         updateColoringBooksStats();
     } catch (error) {
-        console.error('Ошибка загрузки коллекции раскрасок:', error);
-        
+        console.error('Ошибка загрузки:', error);
         // Грузим из localStorage
         const saved = localStorage.getItem(`coloring_books_${userId}`);
-        if (saved) {
-            try {
-                userColoringBooks = JSON.parse(saved);
-            } catch(e) {
-                userColoringBooks = { paint_by_number: [], alcohol: [], pencil: [], custom: [] };
-            }
-        }
+        if (saved) userColoringBooks = JSON.parse(saved);
         updateColoringBooksStats();
     }
 }
@@ -9915,7 +9903,7 @@ function uploadCustomCover(category, bookName) {
         }
         
         try {
-            const compressed = await compressImage(file, 400, 0.7); // обложки меньше
+            const compressed = await compressImage(file, 400, 0.7);
             
             const formData = new FormData();
             formData.append('user_id', userId.toString());
@@ -9931,7 +9919,7 @@ function uploadCustomCover(category, bookName) {
             const result = await response.json();
             
             if (result.status === 'ok') {
-                // Обновляем обложку в локальной коллекции
+                // ✅ ОБНОВЛЯЕМ существующую раскраску, а не добавляем новую
                 const books = userColoringBooks[category];
                 for (let i = 0; i < books.length; i++) {
                     const b = books[i];
@@ -9946,7 +9934,19 @@ function uploadCustomCover(category, bookName) {
                     }
                 }
                 
+                // ✅ Сохраняем в localStorage
                 localStorage.setItem(`coloring_books_${userId}`, JSON.stringify(userColoringBooks));
+                
+                // ✅ ОТПРАВЛЯЕМ ОБНОВЛЕНИЕ НА СЕРВЕР (синхронизируем всю коллекцию)
+                await fetch(`${SERVER_URL}/api/coloring_books`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        user_id: userId,
+                        data: userColoringBooks
+                    })
+                });
+                
                 renderColoringBooks();
                 
                 if (tg) {
@@ -9955,7 +9955,7 @@ function uploadCustomCover(category, bookName) {
                 }
             }
         } catch (error) {
-            console.error('Ошибка загрузки обложки:', error);
+            console.error('Ошибка:', error);
             if (tg) {
                 tg.MainButton.hide();
                 tg.showAlert('❌ Ошибка загрузки');
