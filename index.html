@@ -10110,7 +10110,14 @@ function toggleFiguresCollectionBlock() {
     }
 }
 function getPageArtwork(bookKey, page) {
-    return userArtworks[bookKey]?.[String(page)] || null;
+    const url = userArtworks[bookKey]?.[String(page)];
+    if (!url) return null;
+    
+    // Если URL начинается с /artworks — добавляем SERVER_URL
+    if (url.startsWith('/artworks')) {
+        return SERVER_URL + url;
+    }
+    return url;
 }
 function viewArtwork(bookKey, page) {
     const artwork = getPageArtwork(bookKey, page);
