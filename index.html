@@ -9315,27 +9315,45 @@ function handleCoverSelect(category) {
     input.click();
 }
 
-function addCustomBook(category) {
+async function addCustomBook(category) {
     const input = document.getElementById(`custom-book-${category}`);
     const bookName = input?.value.trim();
     
     if (!bookName) {
         if (tg) tg.showAlert('❌ Введите название раскраски');
-        else alert('Введите название раскраски');
         return;
     }
     
-    if (!userColoringBooks[category]) userColoringBooks[category] = [];
-    
-    userColoringBooks[category].push(bookName);
-    localStorage.setItem(`coloring_books_${userId}`, JSON.stringify(userColoringBooks));
-    updateColoringBooksStats();
-    renderColoringBooks();
-    
-    input.value = '';
-    
-    if (tg) tg.showAlert(`✅ Раскраска "${bookName}" добавлена!`);
-    else alert(`✅ Раскраска "${bookName}" добавлена!`);
+    // ✅ ОТПРАВЛЯЕМ НА СЕРВЕР
+    try {
+        const response = await fetch(`${SERVER_URL}/api/coloring_books`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                user_id: userId,
+                category: category,
+                book_name: bookName,
+                action: 'add'
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.status === 'ok') {
+            if (!userColoringBooks[category]) userColoringBooks[category] = [];
+            userColoringBooks[category].push(bookName);
+            
+            localStorage.setItem(`coloring_books_${userId}`, JSON.stringify(userColoringBooks));
+            updateColoringBooksStats();
+            renderColoringBooks();
+            
+            input.value = '';
+            if (tg) tg.showAlert(`✅ "${bookName}" добавлена!`);
+        }
+    } catch (error) {
+        console.error('Ошибка:', error);
+        if (tg) tg.showAlert('❌ Ошибка соединения');
+    }
 }
 function addCoverToBook(category, bookName) {
     alert('Открываем выбор обложки для: ' + bookName);
@@ -9455,7 +9473,7 @@ function renderColoringBooks() {
     });
 }
 
-function toggleColoringBook(category, bookName) {
+async function toggleColoringBook(category, bookName) {
     if (!userColoringBooks[category]) userColoringBooks[category] = [];
     
     // Проверяем, есть ли уже
@@ -9465,47 +9483,73 @@ function toggleColoringBook(category, bookName) {
     
     if (collected) {
         // ✅ ЗАПРАШИВАЕМ ПОДТВЕРЖДЕНИЕ ПЕРЕД УДАЛЕНИЕМ
+        const doDelete = async () => {
+            // Удаляем локально
+            userColoringBooks[category] = userColoringBooks[category].filter(b => 
+                (typeof b === 'string' ? b : b.name) !== bookName
+            );
+            
+            // Сохраняем в localStorage (кеш)
+            localStorage.setItem(`coloring_books_${userId}`, JSON.stringify(userColoringBooks));
+            
+            // ✅ ОТПРАВЛЯЕМ НА СЕРВЕР
+            try {
+                await fetch(`${SERVER_URL}/api/coloring_books`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        user_id: userId,
+                        category: category,
+                        book_name: bookName,
+                        action: 'remove'
+                    })
+                });
+            } catch (error) {
+                console.error('Ошибка сервера:', error);
+            }
+            
+            updateColoringBooksStats();
+            renderColoringBooks();
+            
+            if (tg) tg.showAlert(`❌ "${bookName}" удалена`);
+            else alert(`❌ "${bookName}" удалена`);
+        };
+        
         if (tg) {
             tg.showConfirm(`Удалить раскраску "${bookName}" из коллекции?`, (confirm) => {
-                if (confirm) {
-                    // Удаляем
-                    userColoringBooks[category] = userColoringBooks[category].filter(b => 
-                        (typeof b === 'string' ? b : b.name) !== bookName
-                    );
-                    
-                    // Сохраняем в localStorage
-                    localStorage.setItem(`coloring_books_${userId}`, JSON.stringify(userColoringBooks));
-                    
-                    updateColoringBooksStats();
-                    renderColoringBooks();
-                    
-                    if (tg) tg.showAlert(`❌ "${bookName}" удалена`);
-                }
+                if (confirm) doDelete();
             });
         } else {
-            // Для браузера без Telegram
             if (confirm(`Удалить раскраску "${bookName}" из коллекции?`)) {
-                userColoringBooks[category] = userColoringBooks[category].filter(b => 
-                    (typeof b === 'string' ? b : b.name) !== bookName
-                );
-                
-                localStorage.setItem(`coloring_books_${userId}`, JSON.stringify(userColoringBooks));
-                
-                updateColoringBooksStats();
-                renderColoringBooks();
-                
-                alert(`❌ "${bookName}" удалена`);
+                doDelete();
             }
         }
     } else {
-        // Добавляем без подтверждения
+        // Добавляем локально
         userColoringBooks[category].push(bookName);
         localStorage.setItem(`coloring_books_${userId}`, JSON.stringify(userColoringBooks));
+        
+        // ✅ ОТПРАВЛЯЕМ НА СЕРВЕР
+        try {
+            await fetch(`${SERVER_URL}/api/coloring_books`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    user_id: userId,
+                    category: category,
+                    book_name: bookName,
+                    action: 'add'
+                })
+            });
+        } catch (error) {
+            console.error('Ошибка сервера:', error);
+        }
         
         updateColoringBooksStats();
         renderColoringBooks();
         
         if (tg) tg.showAlert(`✅ "${bookName}" добавлена!`);
+        else alert(`✅ "${bookName}" добавлена!`);
     }
 }
 
