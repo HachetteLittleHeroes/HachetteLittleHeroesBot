@@ -3414,6 +3414,17 @@
 .add-cover-btn:active {
     transform: scale(0.95);
 }
+/* Счётчики в коллекции (единый стиль) */
+.collection-badge {
+    background: var(--accent);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-left: 10px;
+    white-space: nowrap;
+}
     </style>
 </head>
 <body>
@@ -3736,7 +3747,7 @@
                 <span>Моя коллекция маркеров</span>
             </div>
             <div class="inventory-header-right">
-                <span id="markersCollectionStats" style="font-size: 12px; margin-right: 10px;">0 маркеров</span>
+               <span id="markersCollectionStats" class="collection-badge">0</span>
                 <i class="fas fa-chevron-down" id="markersCollectionArrow"></i>
             </div>
         </div>
@@ -3757,7 +3768,7 @@
                 <span>Моя коллекция раскрасок</span>
             </div>
             <div class="inventory-header-right">
-                <span id="coloringBooksStats" style="font-size: 12px; margin-right: 10px;">0 раскрасок</span>
+              <span id="coloringBooksStats" class="collection-badge">0</span>
                 <i class="fas fa-chevron-down" id="coloringBooksArrow"></i>
             </div>
         </div>
@@ -7187,18 +7198,8 @@ async function checkCollectionUpdates() {
 function updateCollectionBadge() {
     const unlockedCount = userCollection.filter(f => f.unlocked).length;
     const totalCount = COLLECTION_FIGURES.length;
-    
-    // Обновляем в заголовке блока
     const statsEl = document.getElementById('collectionStats');
-    if (statsEl) {
-        statsEl.innerText = `${unlockedCount}/${totalCount}`;
-    }
-    
-    // Обновляем в старом месте (если осталось)
-    const countSpan = document.getElementById('collectionCount');
-    if (countSpan) {
-        countSpan.innerText = `${unlockedCount}/${totalCount}`;
-    }
+    if (statsEl) statsEl.innerText = `${unlockedCount}/${totalCount}`;
 }
 
 function renderCollection() {
@@ -9628,9 +9629,7 @@ function updateColoringBooksStats() {
         total += userColoringBooks[cat]?.length || 0;
     }
     const statsEl = document.getElementById('coloringBooksStats');
-    if (statsEl) {
-        statsEl.innerText = `${total} раскрасок`;
-    }
+    if (statsEl) statsEl.innerText = total;  // ← только число
 }
 
 function toggleColoringBooksBlock() {
@@ -10202,9 +10201,7 @@ function renderMarkersCollection() {
 function updateMarkersCollectionStats() {
     const count = Object.keys(userMarkersCollection).length;
     const statsEl = document.getElementById('markersCollectionStats');
-    if (statsEl) {
-        statsEl.innerText = `${count} маркеров`;
-    }
+    if (statsEl) statsEl.innerText = count;  // ← только число, без "/"
 }
 
 function toggleMarkersCollectionBlock() {
