@@ -9627,30 +9627,19 @@ let currentCategory = null;
 let currentPage = null;
 
 // Загрузка работ пользователя
-function loadUserArtworks() {
-    const saved = localStorage.getItem(`artworks_${userId}`);
-    if (saved) {
-        try {
-            const data = JSON.parse(saved);
-            
-            // Проверяем старый формат (массив) и преобразуем в новый (объект)
-            if (Array.isArray(data)) {
-                // Старый формат — создаём пустой объект
-                userArtworks = {};
-            } else {
-                // Уже новый формат
-                userArtworks = data;
-            }
-        } catch(e) {
+async function loadUserArtworks() {
+    try {
+        const response = await fetch(`${SERVER_URL}/api/artworks?user_id=${userId}`);
+        const data = await response.json();
+        if (data && typeof data === 'object') {
+            userArtworks = data;
+        } else {
             userArtworks = {};
         }
-    } else {
+    } catch (error) {
+        console.error('Ошибка загрузки работ с сервера:', error);
         userArtworks = {};
     }
-}
-// Сохранение работ
-function saveUserArtworks() {
-    localStorage.setItem(`artworks_${userId}`, JSON.stringify(userArtworks));
 }
 
 // Проверка, загружена ли страница
@@ -9779,39 +9768,52 @@ async function handleArtworkSelected(event) {
     
     // Показываем индикатор загрузки
     if (tg && tg.MainButton) {
-        tg.MainButton.setText('⏳ Загрузка фото...').show();
+        tg.MainButton.setText('⏳ Загрузка на сервер...').show();
     }
     
-    // Сжатие фото
-    const compressed = await compressImage(file, 800, 0.7);
-    
-    // Сохраняем как data URL
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        const photoData = e.target.result;
-        const bookKey = `${currentCategory}_${currentBook}`;
+    try {
+        const compressed = await compressImage(file, 800, 0.7);
         
-        if (!userArtworks[bookKey]) {
-            userArtworks[bookKey] = {};
+        const formData = new FormData();
+        formData.append('user_id', userId.toString());
+        formData.append('book_key', `${currentCategory}_${currentBook}`);
+        formData.append('page', String(currentPage));
+        formData.append('photo', compressed, 'artwork.jpg');
+        
+        const response = await fetch(`${SERVER_URL}/api/artworks/upload`, {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+        
+        if (result.status === 'ok') {
+            const bookKey = `${currentCategory}_${currentBook}`;
+            
+            // ✅ Сохраняем ТОЛЬКО в оперативную память (не в localStorage)
+            if (!userArtworks[bookKey]) userArtworks[bookKey] = {};
+            userArtworks[bookKey][String(currentPage)] = result.url;
+            
+            // Обновляем модалку
+            const config = BOOK_PAGES_CONFIG[currentBook] || DEFAULT_PAGES_CONFIG;
+            renderBookPagesGrid(bookKey, config);
+            
+            // Скрываем индикатор
+            if (tg && tg.MainButton) {
+                tg.MainButton.hide();
+            }
+            
+            if (tg) tg.showPopup({ message: `✅ Загружено на сервер!` });
+            else alert('✅ Загружено на сервер!');
+        } else {
+            throw new Error(result.message || 'Ошибка сервера');
         }
-        
-        userArtworks[bookKey][String(currentPage)] = photoData;
-        localStorage.setItem(`artworks_${userId}`, JSON.stringify(userArtworks));
-        
-        // Обновляем модалку
-        const config = BOOK_PAGES_CONFIG[currentBook] || DEFAULT_PAGES_CONFIG;
-        renderBookPagesGrid(bookKey, config);
-        
-        // Скрываем индикатор
-        if (tg && tg.MainButton) {
-            tg.MainButton.hide();
-        }
-        
-        // Короткое уведомление (не блокирует)
-        if (tg) tg.showPopup({ message: `✅ Загружено на стр. ${currentPage}!` });
-        else alert(`✅ Работа загружена на стр. ${currentPage}!`);
-    };
-    reader.readAsDataURL(compressed);
+    } catch (error) {
+        console.error('Ошибка загрузки:', error);
+        if (tg && tg.MainButton) tg.MainButton.hide();
+        if (tg) tg.showAlert('❌ Ошибка загрузки на сервер');
+        else alert('❌ Ошибка загрузки');
+    }
 }
 
 // Закрыть модалку
