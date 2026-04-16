@@ -3789,7 +3789,7 @@
             </div>
         </div>
     </div>
-   <!-- ========== ОРГАНАЙЗЕРЫ ========== -->
+<!-- ========== ОРГАНАЙЗЕРЫ ========== -->
 <div class="inventory-main-block" style="margin-top: 15px;">
     <div class="inventory-header" onclick="toggleInventoryBlock()">
         <div class="inventory-header-left">
@@ -3801,21 +3801,15 @@
         </div>
     </div>
     <div id="inventoryContent" class="inventory-content">
-        
-        <!-- ✅ ПОИСК МАРКЕРОВ -->
         <div class="search-box" style="margin: 15px 0;">
             <i class="fas fa-search"></i>
             <input type="text" id="markerSearchInOrganizers" placeholder="Поиск маркера по номеру или бренду..." oninput="searchMarkerInOrganizers()">
         </div>
         <div id="markerSearchResults" style="display: none; margin-bottom: 15px; padding: 10px; background: var(--bg); border-radius: 12px;"></div>
-        
-        <!-- Создать органайзер -->
         <button class="create-organizer-btn" onclick="openOrganizerCreator()">
             <i class="fas fa-plus"></i> Создать органайзер
         </button>
-        
         <div id="organizersList"></div>
-        
         <div id="selectedOrganizerView" style="display: none; margin-top: 15px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                 <h4 id="selectedOrganizerName" style="margin:0; font-size: 16px;"></h4>
