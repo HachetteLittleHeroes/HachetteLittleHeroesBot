@@ -10582,6 +10582,9 @@ function renderMarkersCollection() {
     const container = document.getElementById('markersCollectionList');
     if (!container) return;
     
+    // ✅ Сохраняем текущую позицию скролла
+    const scrollTop = container.scrollTop;
+    
     let html = '';
     
     MARKER_SETS.forEach(set => {
@@ -10614,20 +10617,12 @@ function renderMarkersCollection() {
                 <div class="progress-bar-container" style="margin: 8px 0;">
                     <div class="progress-bar-fill" style="width: ${percent}%;"></div>
                 </div>
-             <div class="marker-set-content ${set.brand === 'Grasp' ? 'grasp-grid' : ''} ${set.brand === 'InfiArt' ? 'infiart-grid' : ''} ${set.brand === 'Languo' ? 'languo-grid' : ''}" id="set-${set.id}">
+                <div class="marker-set-content ${set.brand === 'Grasp' ? 'grasp-grid' : ''} ${set.brand === 'InfiArt' ? 'infiart-grid' : ''} ${set.brand === 'Languo' ? 'languo-grid' : ''}" id="set-${set.id}">
         `;
         
-        // ✅ ПРАВИЛЬНАЯ СОРТИРОВКА (числа + буквенные номера)
         const sortedNumbers = [...numbers].sort((a, b) => {
-            // Если оба числа — сортируем как числа
-            if (typeof a === 'number' && typeof b === 'number') {
-                return a - b;
-            }
-            // Если оба строки — сортируем по алфавиту
-            if (typeof a === 'string' && typeof b === 'string') {
-                return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
-            }
-            // Числа идут перед строками
+            if (typeof a === 'number' && typeof b === 'number') return a - b;
+            if (typeof a === 'string' && typeof b === 'string') return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
             if (typeof a === 'number') return -1;
             return 1;
         });
@@ -10647,6 +10642,9 @@ function renderMarkersCollection() {
     });
     
     container.innerHTML = html;
+    
+    // ✅ Восстанавливаем позицию скролла
+    container.scrollTop = scrollTop;
 }
 function updateMarkersCollectionStats() {
     const count = Object.keys(userMarkersCollection).length;
