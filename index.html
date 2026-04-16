@@ -3327,6 +3327,9 @@
     background: var(--accent);
     border-color: var(--accent);
     color: white;
+.marker-number-btn[style*="display: none"] {
+    display: none !important;
+}
 }
 .marker-number-btn:active {
     transform: scale(0.92);
@@ -10363,9 +10366,36 @@ function toggleMarkersCollectionBlock() {
 }
 
 function filterMarkersCollection() {
-    const query = document.getElementById('markersCollectionSearch').value.toLowerCase();
-    // Простая фильтрация — можно доработать
-    renderMarkersCollection();
+    const query = document.getElementById('markersCollectionSearch')?.value.toLowerCase() || '';
+    
+    const cards = document.querySelectorAll('.marker-set-card');
+    
+    cards.forEach(card => {
+        const brandEl = card.querySelector('strong');
+        const brand = brandEl ? brandEl.innerText.toLowerCase() : '';
+        
+        // Ищем все кнопки с номерами внутри этой карточки
+        const numberBtns = card.querySelectorAll('.marker-number-btn');
+        let hasVisibleNumber = false;
+        
+        numberBtns.forEach(btn => {
+            const number = btn.innerText.trim();
+            
+            if (query === '' || brand.includes(query) || number.includes(query)) {
+                btn.style.display = 'flex';
+                hasVisibleNumber = true;
+            } else {
+                btn.style.display = 'none';
+            }
+        });
+        
+        // Показываем или скрываем всю карточку бренда
+        if (query === '' || brand.includes(query) || hasVisibleNumber) {
+            card.style.display = 'block';
+        } else {
+            card.style.display = 'none';
+        }
+    });
 }
 
 // Функция для получения списка маркеров пользователя (для ИИ палитры)
