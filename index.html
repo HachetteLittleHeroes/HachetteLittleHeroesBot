@@ -2671,7 +2671,7 @@
         /* ==========================================
            23. ОРГАНАЙЗЕРЫ
            ========================================== */
-       organizer-grid {
+   .organizer-grid {
     display: grid;
     gap: 6px;
     margin: 0 auto;
@@ -7587,10 +7587,12 @@ function openFigureModal(figure, isUnlocked) {
     const container = document.getElementById('selectedOrganizerGrid');
     if (!container) return;
     
+    const gridWrapper = document.createElement('div');
+    gridWrapper.style.cssText = 'overflow-x: auto; width: 100%; -webkit-overflow-scrolling: touch;';
+    
     const gridContainer = document.createElement('div');
     gridContainer.className = 'organizer-grid';
-    // Устанавливаем количество колонок = количеству столбцов в органайзере
-    gridContainer.style.gridTemplateColumns = `repeat(${org.cols}, 1fr)`;
+    gridContainer.style.cssText = `display: grid; grid-template-columns: repeat(${org.cols}, 1fr); gap: 6px; width: 100%;`;
     
     for (let row = 0; row < org.rows; row++) {
         for (let col = 0; col < org.cols; col++) {
@@ -7616,8 +7618,9 @@ function openFigureModal(figure, isUnlocked) {
         }
     }
     
+    gridWrapper.appendChild(gridContainer);
     container.innerHTML = '';
-    container.appendChild(gridContainer);
+    container.appendChild(gridWrapper);
 }
         
         function closeOrganizerView() {
