@@ -3456,31 +3456,86 @@
     margin-left: 10px;
     white-space: nowrap;
 }
+/* Карточки поиска */
+.user-search-card {
+    background: var(--bg-header);
+    border-radius: 16px;
+    padding: 15px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    cursor: pointer;
+    border: 1px solid var(--border-color);
+    transition: all 0.15s;
+}
+
+.user-search-card:active {
+    transform: scale(0.98);
+    background: var(--bg);
+}
+
+.user-search-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--accent);
+}
+
+.user-search-info {
+    flex: 1;
+}
+
+.user-search-name {
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--text);
+}
+
+.user-search-username {
+    font-size: 13px;
+    color: var(--text-gray);
+}
+
+.user-search-status {
+    font-size: 12px;
+    color: var(--accent);
+    margin-top: 4px;
+}
     </style>
 </head>
 <body>
     <!-- ========== ПРОФИЛЬ ========== -->
-    <div id="profile" class="page active">
-        <div class="profile-header-block">
-            <div class="avatar-wrapper" onclick="toggleAvatarEditor()">
-                <img id="user-avatar" src="https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av2.png">
-                <div class="avatar-edit-icon"><i class="fas fa-pencil-alt"></i></div>
-            </div>
-            <div class="profile-info">
-                <div class="name-row" onclick="changeNickname()">
-                    <h2 id="displayUsername">Без имени</h2>
-                    <i class="fas fa-pencil-alt" style="color: var(--text-gray); font-size: 14px;"></i>
-                </div>
-                <button id="currentStatus" class="status-badge" onclick="openStatusInfo()">Без статуса</button>
-            </div>
+<div id="profile" class="page active">
+    <!-- Заголовок с кнопкой поиска -->
+    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 15px 0;">
+        <div class="header" style="padding: 0;">Профиль</div>
+        <button onclick="openUserSearch()" style="background: var(--accent); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <i class="fas fa-search"></i>
+        </button>
+    </div>
+    
+    <div class="profile-header-block">
+        <div class="avatar-wrapper" onclick="toggleAvatarEditor()">
+            <img id="user-avatar" src="https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av2.png">
+            <div class="avatar-edit-icon"><i class="fas fa-pencil-alt"></i></div>
         </div>
+        <div class="profile-info">
+            <div class="name-row" onclick="changeNickname()">
+                <h2 id="displayUsername">Без имени</h2>
+                <i class="fas fa-pencil-alt" style="color: var(--text-gray); font-size: 14px;"></i>
+            </div>
+            <button id="currentStatus" class="status-badge" onclick="openStatusInfo()">Без статуса</button>
+        </div>
+    </div>
 
-        <div id="avatarEditor" class="avatar-editor">
-            <p>Выберите аватарку:</p>
-            <div id="avatarPresets" class="preset-avatars-grid"></div>
-            <input type="file" id="customAvatarInput" accept="image/*" style="display:none;" onchange="handleCustomAvatar(event)">
-            <button class="upload-photo-btn" onclick="document.getElementById('customAvatarInput').click()"><i class="fas fa-camera"></i> Загрузить фото</button>
-        </div>
+    <div id="avatarEditor" class="avatar-editor">
+        <p>Выберите аватарку:</p>
+        <div id="avatarPresets" class="preset-avatars-grid"></div>
+        <input type="file" id="customAvatarInput" accept="image/*" style="display:none;" onchange="handleCustomAvatar(event)">
+        <button class="upload-photo-btn" onclick="document.getElementById('customAvatarInput').click()"><i class="fas fa-camera"></i> Загрузить фото</button>
+    </div>
 
         <div class="balance-card">
             <p class="balance-label">ВАШ БАЛАНС</p>
@@ -10908,6 +10963,380 @@ function toggleSubcategorySelect() {
         subcategoryGroup.style.display = 'none';
     }
 }
+// Поиск пользователей
+let searchTimeout = null;
+let currentPublicUserId = null;
+
+function openUserSearch() {
+    document.getElementById('userSearchModal').style.display = 'flex';
+    document.getElementById('userSearchInput').value = '';
+    document.getElementById('userSearchResults').innerHTML = '<div class="no-results" style="padding: 20px;">🔍 Введите username или никнейм</div>';
+}
+
+function closeUserSearch() {
+    document.getElementById('userSearchModal').style.display = 'none';
+}
+
+function searchUsers() {
+    const input = document.getElementById('userSearchInput');
+    const query = input.value.trim();
+    const resultsDiv = document.getElementById('userSearchResults');
+    
+    if (searchTimeout) clearTimeout(searchTimeout);
+    
+    if (query.length < 2) {
+        resultsDiv.innerHTML = '<div class="no-results" style="padding: 20px;">🔍 Введите хотя бы 2 символа</div>';
+        return;
+    }
+    
+    resultsDiv.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Поиск...</div>';
+    
+    searchTimeout = setTimeout(async () => {
+        try {
+            const response = await fetch(`${SERVER_URL}/api/search_users?query=${encodeURIComponent(query)}`);
+            const users = await response.json();
+            
+            if (users.length === 0) {
+                resultsDiv.innerHTML = '<div class="no-results" style="padding: 20px;">😕 Ничего не найдено</div>';
+                return;
+            }
+            
+            let html = '';
+            users.forEach(user => {
+                const avatarUrl = user.avatar || 'https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png';
+                
+                html += `
+                    <div class="user-search-card" onclick="openPublicProfile('${user.user_id}')">
+                        <img src="${avatarUrl}" class="user-search-avatar" onerror="this.src='https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png'">
+                        <div class="user-search-info">
+                            <div class="user-search-name">${user.name}</div>
+                            <div class="user-search-username">${user.username}</div>
+                            <div class="user-search-status">${user.status || 'Без статуса'}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            resultsDiv.innerHTML = html;
+        } catch (error) {
+            resultsDiv.innerHTML = '<div class="no-results">❌ Ошибка поиска</div>';
+        }
+    }, 500);
+}
+
+// Публичный профиль
+async function openPublicProfile(userId) {
+    currentPublicUserId = userId;
+    
+    // Закрываем модалку поиска
+    closeUserSearch();
+    
+    // Показываем модалку профиля
+    const modal = document.getElementById('publicProfileModal');
+    modal.style.display = 'flex';
+    
+    const container = document.getElementById('publicProfileContent');
+    container.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Загрузка...</div>';
+    
+    try {
+        const response = await fetch(`${SERVER_URL}/api/public_profile?user_id=${userId}`);
+        const profile = await response.json();
+        renderPublicProfile(profile);
+    } catch (error) {
+        container.innerHTML = '<div class="no-results">❌ Ошибка загрузки</div>';
+    }
+}
+
+function closePublicProfile() {
+    document.getElementById('publicProfileModal').style.display = 'none';
+    currentPublicUserId = null;
+}
+
+function renderPublicProfile(profile) {
+    const container = document.getElementById('publicProfileContent');
+    
+    // Витрина
+    let showcaseHtml = '';
+    const achievements = Object.values(ACHIEVEMENTS_DB);
+    const showcase = profile.showcase || [null, null, null];
+    
+    for (let i = 0; i < 3; i++) {
+        const achId = showcase[i];
+        const ach = achievements.find(a => a.id === achId);
+        
+        if (ach) {
+            showcaseHtml += `
+                <div class="showcase-slot filled">
+                    <img src="${ach.img}" alt="${ach.name}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23ff9500%22/%3E%3Ctext x=%2250%22 y=%2250%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2240%22%3E🏆%3C/text%3E%3C/svg%3E'">
+                </div>
+            `;
+        } else {
+            showcaseHtml += `
+                <div class="showcase-slot">
+                    <i class="fas fa-plus"></i>
+                </div>
+            `;
+        }
+    }
+    
+    const avatarUrl = profile.avatar || 'https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png';
+    const figuresCount = profile.figures?.length || 0;
+    const markersCount = Object.keys(profile.markers || {}).length;
+    const booksCount = countColoringBooks(profile.coloring_books);
+    
+    let html = `
+        <div class="profile-header-block" style="margin: 0; padding: 15px;">
+            <div class="avatar-wrapper">
+                <img src="${avatarUrl}" onerror="this.src='https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png'">
+            </div>
+            <div class="profile-info">
+                <div class="name-row">
+                    <h2>${profile.name || 'Пользователь'}</h2>
+                </div>
+                <div class="status-badge">${profile.status || 'Без статуса'}</div>
+            </div>
+        </div>
+        
+        <div class="showcase-container" style="margin: 15px 0;">
+            <h3>Витрина достижений</h3>
+            <div class="showcase-grid">
+                ${showcaseHtml}
+            </div>
+        </div>
+        
+        <div class="inventory-main-block" style="margin: 0;">
+            <div class="inventory-header" onclick="toggleBlock('modalFiguresContent', 'modalFiguresArrow')">
+                <div class="inventory-header-left">
+                    <i class="fas fa-users"></i>
+                    <span>Коллекция персонажей</span>
+                </div>
+                <div class="inventory-header-right">
+                    <span class="collection-badge">${figuresCount}/50</span>
+                    <i class="fas fa-chevron-down" id="modalFiguresArrow"></i>
+                </div>
+            </div>
+            <div id="modalFiguresContent" class="inventory-content" style="display: none;">
+                <div id="modalFiguresGrid" class="collection-grid"></div>
+            </div>
+        </div>
+        
+        <div class="inventory-main-block" style="margin-top: 10px;">
+            <div class="inventory-header" onclick="toggleBlock('modalMarkersContent', 'modalMarkersArrow')">
+                <div class="inventory-header-left">
+                    <i class="fas fa-paint-brush"></i>
+                    <span>Коллекция маркеров</span>
+                </div>
+                <div class="inventory-header-right">
+                    <span class="collection-badge">${markersCount}</span>
+                    <i class="fas fa-chevron-down" id="modalMarkersArrow"></i>
+                </div>
+            </div>
+            <div id="modalMarkersContent" class="inventory-content" style="display: none;">
+                <div id="modalMarkersList"></div>
+            </div>
+        </div>
+        
+        <div class="inventory-main-block" style="margin-top: 10px;">
+            <div class="inventory-header" onclick="toggleBlock('modalBooksContent', 'modalBooksArrow')">
+                <div class="inventory-header-left">
+                    <i class="fas fa-book"></i>
+                    <span>Коллекция раскрасок</span>
+                </div>
+                <div class="inventory-header-right">
+                    <span class="collection-badge">${booksCount}</span>
+                    <i class="fas fa-chevron-down" id="modalBooksArrow"></i>
+                </div>
+            </div>
+            <div id="modalBooksContent" class="inventory-content" style="display: none;">
+                <div id="modalBooksList"></div>
+            </div>
+        </div>
+    `;
+    
+    container.innerHTML = html;
+    container.dataset.profile = JSON.stringify(profile);
+}
+
+function countColoringBooks(books) {
+    if (!books) return 0;
+    let total = 0;
+    for (const cat in books) {
+        total += books[cat]?.length || 0;
+    }
+    return total;
+}
+
+// Универсальное переключение блоков в модалке
+function toggleBlock(contentId, arrowId) {
+    const content = document.getElementById(contentId);
+    const arrow = document.getElementById(arrowId);
+    
+    if (!content || !arrow) return;
+    
+    if (content.style.display === 'none' || content.style.display === '') {
+        content.style.display = 'block';
+        arrow.style.transform = 'rotate(180deg)';
+        
+        const container = document.getElementById('publicProfileContent');
+        const profile = JSON.parse(container.dataset.profile || '{}');
+        
+        if (contentId === 'modalFiguresContent') {
+            renderPublicFigures(profile.figures || []);
+        } else if (contentId === 'modalMarkersContent') {
+            renderPublicMarkers(profile.markers || {});
+        } else if (contentId === 'modalBooksContent') {
+            renderPublicBooks(profile.coloring_books || {}, profile.artworks || {}, profile.user_id);
+        }
+    } else {
+        content.style.display = 'none';
+        arrow.style.transform = 'rotate(0deg)';
+    }
+}
+
+// Рендеринг публичных фигурок
+function renderPublicFigures(figures) {
+    const container = document.getElementById('modalFiguresGrid');
+    if (!container) return;
+    
+    let html = '';
+    COLLECTION_FIGURES.forEach(figure => {
+        const isUnlocked = figures.includes(figure.id) || figures.includes(String(figure.id));
+        
+        html += `
+            <div class="collection-card">
+                <div class="collection-card-image">
+                    <img src="${figure.img}" class="${!isUnlocked ? 'locked' : ''}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23ff9500%22 rx=%2212%22/%3E%3Ctext x=%2250%22 y=%2250%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2240%22%3E🎁%3C/text%3E%3C/svg%3E'">
+                    ${!isUnlocked ? '<div class="lock-overlay"><i class="fas fa-lock"></i></div>' : ''}
+                </div>
+                <div class="collection-card-name">${figure.name}</div>
+            </div>
+        `;
+    });
+    
+    container.innerHTML = html;
+}
+
+// Рендеринг публичных маркеров (упрощённо)
+function renderPublicMarkers(markers) {
+    const container = document.getElementById('modalMarkersList');
+    if (!container) return;
+    
+    const count = Object.keys(markers).length;
+    container.innerHTML = `<div style="padding: 15px; text-align: center; color: var(--text);">📊 Всего маркеров: ${count}</div>`;
+}
+
+// Рендеринг публичных раскрасок
+function renderPublicBooks(books, artworks, userId) {
+    const container = document.getElementById('modalBooksList');
+    if (!container) return;
+    
+    const categories = ['paint_by_number', 'alcohol', 'pencil', 'custom'];
+    const categoryNames = {
+        paint_by_number: '🎨 По номерам',
+        alcohol: '🍷 Спиртовые',
+        pencil: '✏️ Карандаши',
+        custom: '✨ Другие'
+    };
+    
+    let html = '';
+    
+    categories.forEach(category => {
+        const userBooks = books[category] || [];
+        const defaultBooks = DEFAULT_COLORING_BOOKS[category] || [];
+        const allBooks = [...new Set([...defaultBooks, ...userBooks.map(b => typeof b === 'string' ? b : b.name)])];
+        
+        if (allBooks.length === 0) return;
+        
+        html += `<h4 style="margin: 15px 0 10px;">${categoryNames[category]}</h4>`;
+        html += `<div class="category-items" style="grid-template-columns: repeat(2, 1fr);">`;
+        
+        allBooks.forEach(bookName => {
+            const collected = userBooks.some(b => (typeof b === 'string' ? b : b.name) === bookName);
+            const bookKey = `${category}_${bookName}`;
+            const hasArtworks = artworks[bookKey] ? Object.keys(artworks[bookKey]).length : 0;
+            
+            let coverUrl = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23ff9500' rx='12'/%3E%3Ctext x='50' y='50' text-anchor='middle' dy='.3em' fill='white' font-size='40' font-family='Arial'%3E📚%3C/text%3E%3C/svg%3E";
+            
+            const bookObj = userBooks.find(b => (typeof b === 'string' ? b : b.name) === bookName);
+            if (bookObj && typeof bookObj === 'object' && bookObj.cover) {
+                coverUrl = bookObj.cover;
+                if (coverUrl.startsWith('/')) coverUrl = SERVER_URL + coverUrl;
+            } else if (DEFAULT_COVERS[bookName]) {
+                coverUrl = DEFAULT_COVERS[bookName];
+            }
+            
+            html += `
+                <div class="coloring-book-item ${collected ? 'collected' : ''}" onclick="viewPublicBook('${userId}', '${category}', '${bookName.replace(/'/g, "\\'")}', ${hasArtworks})">
+                    <img src="${coverUrl}" class="book-cover" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23ff9500%22 rx=%2212%22/%3E%3Ctext x=%2250%22 y=%2250%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2240%22 font-family=%22Arial%22%3E📚%3C/text%3E%3C/svg%3E'">
+                    <div class="book-info">
+                        <div class="book-name">${bookName}</div>
+                        ${hasArtworks > 0 ? `<div class="book-category">📸 ${hasArtworks} работ</div>` : ''}
+                    </div>
+                </div>
+            `;
+        });
+        
+        html += `</div>`;
+    });
+    
+    container.innerHTML = html || '<div class="no-results">Нет раскрасок</div>';
+}
+
+// Просмотр публичной раскраски (страницы)
+function viewPublicBook(userId, category, bookName, hasArtworks) {
+    if (hasArtworks === 0) {
+        if (tg) tg.showAlert('У пользователя нет работ в этой раскраске');
+        else alert('Нет работ');
+        return;
+    }
+    
+    // Открываем модалку со страницами (аналогично своей, но только просмотр)
+    currentBook = bookName;
+    currentCategory = category;
+    
+    const bookKey = `${category}_${bookName}`;
+    const config = BOOK_PAGES_CONFIG[bookName] || DEFAULT_PAGES_CONFIG;
+    
+    // Загружаем работы пользователя
+    fetch(`${SERVER_URL}/api/artworks?user_id=${userId}`)
+        .then(r => r.json())
+        .then(artworks => {
+            userArtworks = artworks; // Временно подменяем для просмотра
+            
+            document.getElementById('bookPagesTitle').innerText = bookName;
+            document.getElementById('bookPagesCategory').innerText = `Работы пользователя`;
+            
+            renderBookPagesGrid(bookKey, config);
+            document.getElementById('bookPagesModal').style.display = 'flex';
+            
+            // Блокируем загрузку (только просмотр)
+            const uploadInput = document.getElementById('bookPageUploadInput');
+            if (uploadInput) uploadInput.style.display = 'none';
+        });
+}
     </script>
+    <!-- Модалка поиска пользователей -->
+<div id="userSearchModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 400px;">
+        <h3>🔍 Поиск пользователей</h3>
+        <div class="search-box" style="margin: 15px 0;">
+            <i class="fas fa-search"></i>
+            <input type="text" id="userSearchInput" placeholder="Username или никнейм..." oninput="searchUsers()">
+        </div>
+        <div id="userSearchResults" style="max-height: 400px; overflow-y: auto;"></div>
+        <button class="modal-close-btn" onclick="closeUserSearch()">Закрыть</button>
+    </div>
+</div>
+
+<!-- Модалка публичного профиля -->
+<div id="publicProfileModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 450px; max-height: 80vh; overflow-y: auto;">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+            <button onclick="closePublicProfile()" style="background: none; border: none; color: var(--accent); font-size: 20px; cursor: pointer;">←</button>
+            <h3 style="margin: 0;">Профиль</h3>
+        </div>
+        <div id="publicProfileContent"></div>
+    </div>
+</div>
 </body>
 </html>
