@@ -3788,7 +3788,6 @@
             <span>Органайзеры</span>
         </div>
         <div class="inventory-header-right">
-            <span class="beta-badge">Бета-Тест</span>
             <i class="fas fa-chevron-down" id="inventoryArrow"></i>
         </div>
     </div>
@@ -7494,12 +7493,18 @@ function openFigureModal(figure, isUnlocked) {
         // ИНВЕНТАРЬ И ОРГАНАЙЗЕРЫ
         // ==========================================
         
-        function loadInventory() {
+        async function loadInventory() {
+    try {
+        const response = await fetch(`${SERVER_URL}/api/organizers?user_id=${userId}`);
+        const data = await response.json();
+        
+        if (data && Array.isArray(data) && data.length > 0) {
+            inventory.organizers = data;
+        } else {
+            // Грузим из localStorage или создаём дефолтный
             const saved = localStorage.getItem('coloring_inventory');
             if (saved) {
                 inventory = JSON.parse(saved);
-                if (!inventory.organizers) inventory.organizers = [];
-                if (!inventory.userMarkers) inventory.userMarkers = {};
             } else {
                 const defaultCells = Array(5).fill().map(() => Array(5).fill().map(() => []));
                 inventory = {
@@ -7513,13 +7518,39 @@ function openFigureModal(figure, isUnlocked) {
                     userMarkers: {}
                 };
             }
-            renderOrganizers();
-            renderBrands();
         }
         
-        function saveInventory() {
-            localStorage.setItem('coloring_inventory', JSON.stringify(inventory));
-        }
+        if (!inventory.userMarkers) inventory.userMarkers = {};
+        
+        renderOrganizers();
+        renderBrands();
+    } catch (error) {
+        console.error('Ошибка загрузки органайзеров:', error);
+        // Fallback to localStorage
+        const saved = localStorage.getItem('coloring_inventory');
+        if (saved) inventory = JSON.parse(saved);
+        renderOrganizers();
+        renderBrands();
+    }
+}
+        async function saveInventory() {
+    // Сохраняем в localStorage как кеш
+    localStorage.setItem('coloring_inventory', JSON.stringify(inventory));
+    
+    // Отправляем на сервер
+    try {
+        await fetch(`${SERVER_URL}/api/organizers`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                user_id: userId,
+                organizers: inventory.organizers
+            })
+        });
+    } catch (error) {
+        console.error('Ошибка сохранения на сервер:', error);
+    }
+}
         
         let currentOrganizerId = null;
         let currentCellRow = null;
