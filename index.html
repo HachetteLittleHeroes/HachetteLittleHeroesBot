@@ -10643,8 +10643,13 @@ function renderMarkersCollection() {
     const container = document.getElementById('markersCollectionList');
     if (!container) return;
     
-    // ✅ Сохраняем текущую позицию скролла
-    const scrollTop = container.scrollTop;
+    // ✅ Сохраняем скролл для каждого открытого сета
+    const scrollPositions = {};
+    document.querySelectorAll('.marker-set-content').forEach(el => {
+        if (el.id) {
+            scrollPositions[el.id] = el.scrollTop;
+        }
+    });
     
     let html = '';
     
@@ -10704,8 +10709,13 @@ function renderMarkersCollection() {
     
     container.innerHTML = html;
     
-    // ✅ Восстанавливаем позицию скролла
-    container.scrollTop = scrollTop;
+    // ✅ Восстанавливаем скролл для каждого сета
+    setTimeout(() => {
+        for (const [id, scrollTop] of Object.entries(scrollPositions)) {
+            const el = document.getElementById(id);
+            if (el) el.scrollTop = scrollTop;
+        }
+    }, 10);
 }
 function updateMarkersCollectionStats() {
     const count = Object.keys(userMarkersCollection).length;
