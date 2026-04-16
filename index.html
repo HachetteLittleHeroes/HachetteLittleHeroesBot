@@ -3313,6 +3313,9 @@
 .marker-set-content.infiart-grid {
     grid-template-columns: repeat(5, 1fr) !important;
 }
+.marker-set-content.languo-grid {
+    grid-template-columns: repeat(5, 1fr) !important;
+}
 
 .marker-number-btn {
     aspect-ratio: 1;
@@ -10233,7 +10236,48 @@ const MARKER_SETS = [
         950, 951, 952, 953, 954, 955, 956, 957, 958, 959
     ]
 },
-    { id: 'languo', name: 'Languo', brand: 'Languo', maxNumber: 288 },
+    { 
+    id: 'languo', 
+    name: 'Languo', 
+    brand: 'Languo', 
+    numbers: [
+        'AG171', 'AG172', 'AG173', 'AG174', 'AG175', 'AG176', 'AG177', 'AG178', 'AG179',
+        'AG245', 'AG246', 'AG247', 'AG248', 'AG249', 'AG250', 'AG251', 'AG252', 'AG253', 'AG254', 'AG255', 'AG256',
+        'BL201', 'BL202', 'BL203', 'BL204', 'BL205', 'BL206', 'BL207', 'BL208', 'BL209', 'BL210',
+        'BL211', 'BL212', 'BL213', 'BL214', 'BL215', 'BL257', 'BL258', 'BL259', 'BL260', 'BL261',
+        'BL262', 'BL263', 'BL264', 'BL265', 'BL266', 'BL267', 'BL268',
+        'BR701', 'BR702', 'BR703', 'BR704', 'BR705', 'BR706', 'BR707', 'BR708', 'BR709', 'BR710',
+        'BR711', 'BR712', 'BR713', 'BR714', 'BR715',
+        'CB901', 'CB902', 'CB903', 'CB904', 'CB905', 'CB906', 'CB907', 'CB908', 'CB909', 'CB910',
+        'CS141', 'CS142', 'CS143', 'CS144', 'CS145', 'CS146', 'CS147', 'CS148', 'CS149',
+        'CS501', 'CS502', 'CS503', 'CS504', 'CS505', 'CS506', 'CS507', 'CS508', 'CS509', 'CS510', 'CS511',
+        'DB161', 'DB162', 'DB163', 'DB164', 'DB165', 'DB166', 'DB167', 'DB168', 'DB169',
+        'DB1610', 'DB1611', 'DB1612',
+        'DS181', 'DS182', 'DS183', 'DS184', 'DS185', 'DS186', 'DS187', 'DS188', 'DS189',
+        'GB401', 'GB402', 'GB403', 'GB404', 'GB405', 'GB406', 'GB407', 'GB408', 'GB409', 'GB410',
+        'GB411', 'GB412',
+        'GR101', 'GR102', 'GR103', 'GR104', 'GR105', 'GR106', 'GR107', 'GR108', 'GR109', 'GR110',
+        'GR111', 'GR112', 'GR113', 'GR114', 'GR115', 'GR1010', 'GR1011', 'GR1012', 'GR1013',
+        'HC131', 'HC132', 'HC133', 'HC134', 'HC135', 'HC136', 'HC137', 'HC138', 'HC139',
+        'HC601', 'HC602', 'HC603', 'HC604', 'HC605', 'HC606', 'HC607', 'HC608', 'HC609',
+        'LC111', 'LC112', 'LC113', 'LC114', 'LC115', 'LC116', 'LC117', 'LC118', 'LC119',
+        'LC191', 'LC192', 'LC193', 'LC194', 'LC195', 'LC196', 'LC197', 'LC198', 'LC199', 'LC1110',
+        'PC233', 'PC234', 'PC235', 'PC236', 'PC237', 'PC238', 'PC239', 'PC240', 'PC241', 'PC242',
+        'PC243', 'PC244',
+        'PC801', 'PC802', 'PC803', 'PC804', 'PC805', 'PC806', 'PC807', 'PC808', 'PC809', 'PC810',
+        'PC811', 'PC812', 'PC813', 'PC814', 'PC815', 'PC816', 'PC817', 'PC818',
+        'PU301', 'PU302', 'PU303', 'PU304', 'PU305', 'PU306', 'PU307', 'PU308', 'PU309', 'PU310',
+        'PU311', 'PU312', 'PU313', 'PU314', 'PU315', 'PU316', 'PU317', 'PU318', 'PU319', 'PU320', 'PU321',
+        'RY01', 'RY02', 'RY03', 'RY04', 'RY05', 'RY06', 'RY07', 'RY08', 'RY09', 'RY10',
+        'RY11', 'RY12', 'RY13', 'RY14', 'RY15',
+        'SG151', 'SG152', 'SG153', 'SG154', 'SG155', 'SG156', 'SG157', 'SG158', 'SG159',
+        'SG221', 'SG222', 'SG223', 'SG224', 'SG225', 'SG226', 'SG227', 'SG228', 'SG229', 'SG230',
+        'SG231', 'SG232',
+        'YE121', 'YE122', 'YE123', 'YE124', 'YE125', 'YE126', 'YE127', 'YE128', 'YE129', 'YE130',
+        'YE131', 'YE132', 'YE133', 'YE134', 'YE135', 'YE136',
+        'YE1210', 'YE1211', 'YE1212'
+    ]
+},
     { 
     id: 'zibeef', 
     name: 'Zibeef', 
@@ -10570,7 +10614,7 @@ function renderMarkersCollection() {
                 <div class="progress-bar-container" style="margin: 8px 0;">
                     <div class="progress-bar-fill" style="width: ${percent}%;"></div>
                 </div>
-              <div class="marker-set-content ${set.brand === 'Grasp' ? 'grasp-grid' : ''} ${set.brand === 'InfiArt' ? 'infiart-grid' : ''}" id="set-${set.id}">
+             <div class="marker-set-content ${set.brand === 'Grasp' ? 'grasp-grid' : ''} ${set.brand === 'InfiArt' ? 'infiart-grid' : ''} ${set.brand === 'Languo' ? 'languo-grid' : ''}" id="set-${set.id}">
         `;
         
         // ✅ ПРАВИЛЬНАЯ СОРТИРОВКА (числа + буквенные номера)
