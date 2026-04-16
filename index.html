@@ -3739,6 +3739,10 @@
             </div>
         </div>
         <div id="coloringBooksContent" class="inventory-content" style="display: none;">
+            <div class="search-box" style="margin-bottom: 15px;">
+    <i class="fas fa-search"></i>
+    <input type="text" id="markerSearchInOrganizers" placeholder="Поиск маркера по номеру..." oninput="searchMarkerInOrganizers()">
+</div>
             <!-- Категория: Раскраски по номерам -->
             <div class="coloring-category">
                 <div class="category-header">
@@ -7373,122 +7377,137 @@ function openFigureModal(figure, isUnlocked) {
         // ==========================================
         
         function searchMarkerInOrganizers() {
-            const searchInput = document.getElementById('markerSearchInOrganizers');
-            const resultsDiv = document.getElementById('markerSearchResults');
-            
-            if (!searchInput || !resultsDiv) return;
-            
-            const searchQuery = searchInput.value.trim().toLowerCase();
-            
-            if (searchQuery.length === 0) {
-                resultsDiv.style.display = 'none';
-                return;
-            }
-            
-            const results = [];
-            
-            if (inventory.organizers) {
-                inventory.organizers.forEach(org => {
-                    if (org.cells) {
-                        for (let row = 0; row < org.rows; row++) {
-                            for (let col = 0; col < org.cols; col++) {
-                                const cell = org.cells[row]?.[col];
-                                if (cell && cell.length > 0) {
-                                    cell.forEach(marker => {
-                                        const markerNumber = marker.number.toString().toLowerCase();
-                                        if (markerNumber.includes(searchQuery)) {
-                                            results.push({
-                                                orgId: org.id,
-                                                orgName: org.name,
-                                                brand: marker.brand,
-                                                number: marker.number,
-                                                count: marker.count,
-                                                row: row,
-                                                col: col,
-                                                cellLabel: String.fromCharCode(65 + row) + (col + 1)
-                                            });
-                                        }
+    const searchInput = document.getElementById('markerSearchInOrganizers');
+    const resultsDiv = document.getElementById('markerSearchResults');
+    
+    if (!searchInput || !resultsDiv) return;
+    
+    const query = searchInput.value.trim().toLowerCase();
+    
+    if (query.length === 0) {
+        resultsDiv.style.display = 'none';
+        return;
+    }
+    
+    const results = [];
+    
+    if (inventory.organizers) {
+        inventory.organizers.forEach(org => {
+            if (org.cells) {
+                for (let row = 0; row < org.rows; row++) {
+                    for (let col = 0; col < org.cols; col++) {
+                        const cell = org.cells[row]?.[col];
+                        if (cell && cell.length > 0) {
+                            cell.forEach(marker => {
+                                const markerNumber = String(marker.number).toLowerCase();
+                                const markerBrand = String(marker.brand).toLowerCase();
+                                
+                                if (markerNumber.includes(query) || markerBrand.includes(query)) {
+                                    results.push({
+                                        orgId: org.id,
+                                        orgName: org.name,
+                                        brand: marker.brand,
+                                        number: marker.number,
+                                        count: marker.count,
+                                        row: row,
+                                        col: col,
+                                        cellLabel: String.fromCharCode(65 + row) + (col + 1)
                                     });
                                 }
-                            }
+                            });
                         }
                     }
-                });
-            }
-            
-            if (results.length === 0) {
-                resultsDiv.innerHTML = '<div class="no-results-found">🔍 Маркер не найден</div>';
-                resultsDiv.style.display = 'block';
-                return;
-            }
-            
-            const groupedResults = {};
-            results.forEach(res => {
-                const key = `${res.brand}_${res.number}`;
-                if (!groupedResults[key]) {
-                    groupedResults[key] = {
-                        brand: res.brand,
-                        number: res.number,
-                        locations: []
-                    };
                 }
-                groupedResults[key].locations.push({
-                    orgName: res.orgName,
-                    cellLabel: res.cellLabel,
-                    count: res.count,
-                    orgId: res.orgId,
-                    row: res.row,
-                    col: res.col
-                });
-            });
-            
-            let html = '<div style="margin-bottom: 10px;"><strong>🔍 Найдено маркеров:</strong> ' + results.length + '</div>';
-            
-            for (const [key, marker] of Object.entries(groupedResults)) {
-                html += `
-                    <div class="marker-search-result" onclick="openOrganizerWithMarker('${marker.locations[0].orgId}', ${marker.locations[0].row}, ${marker.locations[0].col})">
-                        <div class="marker-search-result-header">
-                            <span class="marker-search-result-brand">${marker.brand}</span>
-                            <span class="marker-search-result-number">№${marker.number}</span>
-                            <span class="marker-search-result-count">${results.filter(r => r.brand === marker.brand && r.number === marker.number).reduce((sum, r) => sum + r.count, 0)} шт</span>
-                        </div>
-                `;
-                marker.locations.forEach(loc => {
-                    html += `<div class="marker-search-result-location">📦 ${loc.orgName} → ячейка ${loc.cellLabel} (${loc.count} шт)</div>`;
-                });
-                html += `</div>`;
             }
-            
-            resultsDiv.innerHTML = html;
-            resultsDiv.style.display = 'block';
+        });
+    }
+    
+    if (results.length === 0) {
+        resultsDiv.innerHTML = '<div class="no-results-found">🔍 Маркер не найден</div>';
+        resultsDiv.style.display = 'block';
+        return;
+    }
+    
+    // Группируем по бренду и номеру
+    const groupedResults = {};
+    results.forEach(res => {
+        const key = `${res.brand}_${res.number}`;
+        if (!groupedResults[key]) {
+            groupedResults[key] = {
+                brand: res.brand,
+                number: res.number,
+                totalCount: 0,
+                locations: []
+            };
         }
+        groupedResults[key].totalCount += res.count;
+        groupedResults[key].locations.push({
+            orgName: res.orgName,
+            cellLabel: res.cellLabel,
+            count: res.count,
+            orgId: res.orgId,
+            row: res.row,
+            col: res.col
+        });
+    });
+    
+    let html = `<div style="margin-bottom: 10px;"><strong>🔍 Найдено маркеров: ${results.length}</strong></div>`;
+    
+    for (const [key, marker] of Object.entries(groupedResults)) {
+        html += `
+            <div class="marker-search-result">
+                <div class="marker-search-result-header">
+                    <span class="marker-search-result-brand">${marker.brand}</span>
+                    <span class="marker-search-result-number">№${marker.number}</span>
+                    <span class="marker-search-result-count">${marker.totalCount} шт</span>
+                </div>
+                <div style="margin-top: 8px;">
+        `;
+        
+        marker.locations.forEach(loc => {
+            html += `
+                <div class="marker-search-result-location" onclick="openOrganizerWithMarker('${loc.orgId}', ${loc.row}, ${loc.col})" style="cursor: pointer; padding: 5px; margin: 3px 0; background: var(--bg); border-radius: 8px;">
+                    📦 ${loc.orgName} → ячейка ${loc.cellLabel} (${loc.count} шт)
+                </div>
+            `;
+        });
+        
+        html += `</div></div>`;
+    }
+    
+    resultsDiv.innerHTML = html;
+    resultsDiv.style.display = 'block';
+}
         
         function openOrganizerWithMarker(orgId, row, col) {
-            const org = inventory.organizers.find(o => o.id === orgId);
-            if (!org) return;
-            
-            const nameEl = document.getElementById('selectedOrganizerName');
-            const viewEl = document.getElementById('selectedOrganizerView');
-            const listEl = document.getElementById('organizersList');
-            const resultsDiv = document.getElementById('markerSearchResults');
-            
-            if (nameEl) nameEl.innerHTML = `📦 ${org.name} (${org.rows}×${org.cols})`;
-            if (viewEl) viewEl.style.display = 'block';
-            if (listEl) listEl.style.display = 'none';
-            if (resultsDiv) resultsDiv.style.display = 'none';
-            
-            renderOrganizerGrid(org);
-            
-            setTimeout(() => {
-                const cells = document.querySelectorAll('.organizer-cell');
-                const targetIndex = row * org.cols + col;
-                if (cells[targetIndex]) {
-                    cells[targetIndex].style.animation = 'highlight 1s ease-in-out 3';
-                    cells[targetIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-            }, 100);
+    const org = inventory.organizers.find(o => o.id === orgId);
+    if (!org) return;
+    
+    // Закрываем поиск
+    const resultsDiv = document.getElementById('markerSearchResults');
+    if (resultsDiv) resultsDiv.style.display = 'none';
+    
+    // Открываем органайзер
+    const nameEl = document.getElementById('selectedOrganizerName');
+    const viewEl = document.getElementById('selectedOrganizerView');
+    const listEl = document.getElementById('organizersList');
+    
+    if (nameEl) nameEl.innerHTML = `📦 ${org.name} (${org.rows}×${org.cols})`;
+    if (viewEl) viewEl.style.display = 'block';
+    if (listEl) listEl.style.display = 'none';
+    
+    renderOrganizerGrid(org);
+    
+    // Подсвечиваем нужную ячейку
+    setTimeout(() => {
+        const cells = document.querySelectorAll('.organizer-cell');
+        const targetIndex = row * org.cols + col;
+        if (cells[targetIndex]) {
+            cells[targetIndex].style.animation = 'highlight 1s ease-in-out 3';
+            cells[targetIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
-        
+    }, 100);
+}
         // ==========================================
         // ИНВЕНТАРЬ И ОРГАНАЙЗЕРЫ
         // ==========================================
