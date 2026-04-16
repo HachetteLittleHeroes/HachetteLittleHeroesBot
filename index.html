@@ -2671,42 +2671,46 @@
         /* ==========================================
            23. ОРГАНАЙЗЕРЫ
            ========================================== */
-        .organizer-grid {
-            display: grid;
-            gap: 8px;
-            justify-content: start;
-            margin: 0 auto;
-            padding: 5px;
-            overflow-x: auto;
-        }
-        
-        .organizer-cell {
-            background: var(--bg);
-            border: 2px solid var(--border-color);
-            border-radius: 12px;
-            padding: 10px 4px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            min-width: 60px;
-        }
+       organizer-grid {
+    display: grid;
+    gap: 6px;
+    margin: 0 auto;
+    padding: 5px;
+    width: 100%;
+}
+
+.organizer-cell {
+    background: var(--bg);
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    aspect-ratio: 1 / 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 2px;
+    min-width: 0; /* Чтобы сжимались */
+}
         
         .organizer-cell.filled {
             border-color: var(--accent);
             background: radial-gradient(circle, rgba(255,149,0,0.08) 0%, transparent 80%);
         }
         
-        .organizer-cell-label {
-            font-size: 11px;
-            color: var(--text-gray);
-            margin-bottom: 4px;
-        }
-        
-        .organizer-cell-count {
-            font-size: 16px;
-            font-weight: bold;
-            color: var(--accent);
-        }
+      .organizer-cell-label {
+    font-size: 11px;
+    color: var(--text-gray);
+    margin-bottom: 2px;
+}
+
+.organizer-cell-count {
+    font-size: 16px;
+    font-weight: bold;
+    color: var(--accent);
+}
         
         @media (max-width: 480px) {
             .organizer-cell {
@@ -7580,32 +7584,41 @@ function openFigureModal(figure, isUnlocked) {
         }
         
         function renderOrganizerGrid(org) {
-            const container = document.getElementById('selectedOrganizerGrid');
-            if (!container) return;
-            const gridWrapper = document.createElement('div');
-            gridWrapper.style.cssText = 'overflow-x: auto; width: 100%; -webkit-overflow-scrolling: touch;';
-            const gridContainer = document.createElement('div');
-            gridContainer.className = 'organizer-grid';
-            const cellWidth = Math.min(70, Math.floor((window.innerWidth - 40) / org.cols));
-            gridContainer.style.cssText = `display: grid; grid-template-columns: repeat(${org.cols}, minmax(${cellWidth}px, 70px)); gap: 6px; justify-content: start;`;
-            for (let row = 0; row < org.rows; row++) {
-                for (let col = 0; col < org.cols; col++) {
-                    if (!org.cells[row]) org.cells[row] = [];
-                    if (!org.cells[row][col]) org.cells[row][col] = [];
-                    const cellMarkers = org.cells[row][col];
-                    const markerCount = cellMarkers.length;
-                    const cellLabel = String.fromCharCode(65 + row) + (col + 1);
-                    const cellDiv = document.createElement('div');
-                    cellDiv.className = `organizer-cell ${markerCount > 0 ? 'filled' : ''}`;
-                    cellDiv.onclick = (function(r, c) { return function() { openCellModal(org.id, r, c); }; })(row, col);
-                    cellDiv.innerHTML = `<div class="organizer-cell-label">${cellLabel}</div><div class="organizer-cell-count">${markerCount}</div>`;
-                    gridContainer.appendChild(cellDiv);
-                }
-            }
-            gridWrapper.appendChild(gridContainer);
-            container.innerHTML = '';
-            container.appendChild(gridWrapper);
+    const container = document.getElementById('selectedOrganizerGrid');
+    if (!container) return;
+    
+    const gridContainer = document.createElement('div');
+    gridContainer.className = 'organizer-grid';
+    // Устанавливаем количество колонок = количеству столбцов в органайзере
+    gridContainer.style.gridTemplateColumns = `repeat(${org.cols}, 1fr)`;
+    
+    for (let row = 0; row < org.rows; row++) {
+        for (let col = 0; col < org.cols; col++) {
+            if (!org.cells[row]) org.cells[row] = [];
+            if (!org.cells[row][col]) org.cells[row][col] = [];
+            
+            const cellMarkers = org.cells[row][col];
+            const markerCount = cellMarkers.length;
+            const cellLabel = String.fromCharCode(65 + row) + (col + 1);
+            
+            const cellDiv = document.createElement('div');
+            cellDiv.className = `organizer-cell ${markerCount > 0 ? 'filled' : ''}`;
+            cellDiv.onclick = (function(r, c) { 
+                return function() { openCellModal(org.id, r, c); }; 
+            })(row, col);
+            
+            cellDiv.innerHTML = `
+                <div class="organizer-cell-label">${cellLabel}</div>
+                <div class="organizer-cell-count">${markerCount}</div>
+            `;
+            
+            gridContainer.appendChild(cellDiv);
         }
+    }
+    
+    container.innerHTML = '';
+    container.appendChild(gridContainer);
+}
         
         function closeOrganizerView() {
             const viewEl = document.getElementById('selectedOrganizerView');
