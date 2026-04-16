@@ -10179,12 +10179,32 @@ window.onload = async () => {
 
 const MARKER_SETS = [
     { id: 'guangna', name: 'GuangNa', brand: 'GuangNa', maxNumber: 168 },
-    { id: 'touch', name: 'Touch', brand: 'Touch', maxNumber: 168 },
     { id: 'languo', name: 'Languo', brand: 'Languo', maxNumber: 288 },
     { id: 'zibeef', name: 'Zibeef', brand: 'Zibeef', maxNumber: 240 },
     { id: 'grasp', name: 'Grasp', brand: 'Grasp', maxNumber: 168 },
     { id: 'infiart', name: 'InfiArt', brand: 'InfiArt', maxNumber: 288 },
-    { id: 'tooliart', name: 'Tooli-Art', brand: 'Tooli-Art', maxNumber: 508 }
+    
+    // Tooli-Art подкатегории
+    { id: 'tooliart_pastel', name: 'Tooli-Art Pastel', brand: 'Tooli-Art', subcategory: 'pastel', numbers: Array.from({length: 24}, (_, i) => i + 1) },
+    { id: 'tooliart_jewel', name: 'Tooli-Art Jewel', brand: 'Tooli-Art', subcategory: 'jewel', numbers: Array.from({length: 24}, (_, i) => i + 1) },
+    { id: 'tooliart_confetti', name: 'Tooli-Art Confetti', brand: 'Tooli-Art', subcategory: 'confetti', numbers: Array.from({length: 24}, (_, i) => i + 1) },
+    { id: 'tooliart_metallic', name: 'Tooli-Art Metallic', brand: 'Tooli-Art', subcategory: 'metallic', numbers: Array.from({length: 24}, (_, i) => i + 1) },
+    { id: 'tooliart_neon', name: 'Tooli-Art Neon', brand: 'Tooli-Art', subcategory: 'neon', numbers: Array.from({length: 24}, (_, i) => i + 1) },
+    { id: 'tooliart_glitter', name: 'Tooli-Art Glitter', brand: 'Tooli-Art', subcategory: 'glitter', numbers: Array.from({length: 24}, (_, i) => i + 1) },
+    { id: 'tooliart_brown', name: 'Tooli-Art Brown', brand: 'Tooli-Art', subcategory: 'brown', numbers: Array.from({length: 22}, (_, i) => i + 1) },
+    { id: 'tooliart_purple', name: 'Tooli-Art Purple', brand: 'Tooli-Art', subcategory: 'purple', numbers: Array.from({length: 22}, (_, i) => i + 1) },
+    { id: 'tooliart_pink', name: 'Tooli-Art Pink', brand: 'Tooli-Art', subcategory: 'pink', numbers: Array.from({length: 22}, (_, i) => i + 1) },
+    { id: 'tooliart_skin', name: 'Tooli-Art Skin', brand: 'Tooli-Art', subcategory: 'skin', numbers: Array.from({length: 22}, (_, i) => i + 1) },
+    { id: 'tooliart_green', name: 'Tooli-Art Green', brand: 'Tooli-Art', subcategory: 'green', numbers: Array.from({length: 22}, (_, i) => i + 1) },
+    { id: 'tooliart_gray', name: 'Tooli-Art Gray', brand: 'Tooli-Art', subcategory: 'gray', numbers: Array.from({length: 22}, (_, i) => i + 1) },
+    { id: 'tooliart_orange', name: 'Tooli-Art Orange', brand: 'Tooli-Art', subcategory: 'orange', numbers: Array.from({length: 22}, (_, i) => i + 1) },
+    { id: 'tooliart_redpink', name: 'Tooli-Art Red&Pink', brand: 'Tooli-Art', subcategory: 'redpink', numbers: Array.from({length: 22}, (_, i) => i + 1) },
+    { id: 'tooliart_bluepurple', name: 'Tooli-Art Blue&Purple', brand: 'Tooli-Art', subcategory: 'bluepurple', numbers: Array.from({length: 22}, (_, i) => i + 1) },
+    { id: 'tooliart_southwest', name: 'Tooli-Art Southwest', brand: 'Tooli-Art', subcategory: 'southwest', numbers: Array.from({length: 28}, (_, i) => i + 1) },
+    { id: 'tooliart_wildflower', name: 'Tooli-Art Wildflower', brand: 'Tooli-Art', subcategory: 'wildflower', numbers: Array.from({length: 24}, (_, i) => i + 1) },
+    { id: 'tooliart_nocturnal', name: 'Tooli-Art Nocturnal', brand: 'Tooli-Art', subcategory: 'nocturnal', numbers: Array.from({length: 28}, (_, i) => i + 1) },
+    { id: 'tooliart_essential', name: 'Tooli-Art Essential', brand: 'Tooli-Art', subcategory: 'essential', numbers: [0, 99, ...Array.from({length: 26}, (_, i) => i + 1)] },
+    { id: 'tooliart_earth', name: 'Tooli-Art Earth', brand: 'Tooli-Art', subcategory: 'earth', numbers: Array.from({length: 36}, (_, i) => i + 1) }
 ];
 
 let userMarkersCollection = {};
@@ -10252,57 +10272,17 @@ async function updateMarkerInCollection(brand, number, action) {
         console.error('Error syncing to server:', error);
     }
 }
-async function addAllBrand(brand) {
-    try {
-        const response = await fetch(`${SERVER_URL}/api/markers_collection`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                user_id: userId,
-                brand: brand,
-                action: 'add_all_brand'
-            })
-        });
-        
-        const result = await response.json();
-        
-        if (result.status === 'ok') {
-            // Обновляем локально
-            const set = MARKER_SETS.find(s => s.brand === brand);
-            if (set) {
-                for (let i = 1; i <= set.maxNumber; i++) {
-                    userMarkersCollection[`${brand}_${i}`] = true;
-                }
-            }
-            updateMarkersCollectionStats();
-            renderMarkersCollection();
-            
-            if (tg) tg.showAlert(`✅ Все маркеры ${brand} добавлены!`);
-        } else {
-            // Даже если сервер вернул ошибку — обновляем локально
-            const set = MARKER_SETS.find(s => s.brand === brand);
-            if (set) {
-                for (let i = 1; i <= set.maxNumber; i++) {
-                    userMarkersCollection[`${brand}_${i}`] = true;
-                }
-            }
-            updateMarkersCollectionStats();
-            renderMarkersCollection();
-            if (tg) tg.showAlert(`⚠️ Добавлено локально (сервер недоступен)`);
-        }
-    } catch (error) {
-        console.error('Error adding all brand:', error);
-        // Обновляем локально
-        const set = MARKER_SETS.find(s => s.brand === brand);
-        if (set) {
-            for (let i = 1; i <= set.maxNumber; i++) {
-                userMarkersCollection[`${brand}_${i}`] = true;
-            }
-        }
-        updateMarkersCollectionStats();
-        renderMarkersCollection();
-        if (tg) tg.showAlert(`⚠️ Добавлено локально`);
-    }
+async function addAllBrand(brand, subcategory, numbers) {
+    // Обновляем локально
+    numbers.forEach(num => {
+        userMarkersCollection[`${brand}_${num}`] = true;
+    });
+    
+    localStorage.setItem(`markers_${userId}`, JSON.stringify(userMarkersCollection));
+    updateMarkersCollectionStats();
+    renderMarkersCollection();
+    
+    if (tg) tg.showAlert(`✅ Все маркеры добавлены (локально)`);
 }
 
 function renderMarkersCollection() {
@@ -10312,17 +10292,24 @@ function renderMarkersCollection() {
     let html = '';
     
     MARKER_SETS.forEach(set => {
-        const collectedCount = Object.keys(userMarkersCollection).filter(k => k.startsWith(set.brand + '_')).length;
-        const percent = Math.round((collectedCount / set.maxNumber) * 100);
+        const numbers = set.numbers || Array.from({length: set.maxNumber}, (_, i) => i + 1);
+        const totalCount = numbers.length;
+        
+        const collectedCount = numbers.filter(num => {
+            const key = `${set.brand}_${num}`;
+            return userMarkersCollection[key] || false;
+        }).length;
+        
+        const percent = Math.round((collectedCount / totalCount) * 100);
         
         html += `
             <div class="marker-set-card" style="margin-bottom: 15px; border-bottom: 1px solid var(--border-color);">
                 <div style="display: flex; align-items: center; justify-content: space-between;">
                     <div>
                         <strong style="font-size: 16px;">${set.name}</strong>
-                        <span style="margin-left: 10px; font-size: 13px; color: var(--text-gray);">${collectedCount}/${set.maxNumber}</span>
+                        <span style="margin-left: 10px; font-size: 13px; color: var(--text-gray);">${collectedCount}/${totalCount}</span>
                     </div>
-                    <button class="add-all-brand-btn" onclick="addAllBrand('${set.brand}')">
+                    <button class="add-all-brand-btn" onclick="addAllBrand('${set.brand}', '${set.subcategory || ''}', ${JSON.stringify(numbers)})">
                         <i class="fas fa-plus"></i> Добавить всё
                     </button>
                 </div>
@@ -10332,12 +10319,11 @@ function renderMarkersCollection() {
                 <div class="marker-set-content" id="set-${set.id}">
         `;
         
-        // Показываем ВСЕ номера
-        for (let i = 1; i <= set.maxNumber; i++) {
-            const key = `${set.brand}_${i}`;
+        numbers.sort((a, b) => a - b).forEach(num => {
+            const key = `${set.brand}_${num}`;
             const collected = userMarkersCollection[key] || false;
-            html += `<div class="marker-number-btn ${collected ? 'collected' : ''}" onclick="updateMarkerInCollection('${set.brand}', ${i}, 'toggle')">${i}</div>`;
-        }
+            html += `<div class="marker-number-btn ${collected ? 'collected' : ''}" onclick="updateMarkerInCollection('${set.brand}', ${num}, 'toggle')">${num}</div>`;
+        });
         
         html += `</div></div>`;
     });
