@@ -10236,46 +10236,37 @@ async function loadMarkersCollection() {
     updateMarkersCollectionStats();
 }
 
-async function updateMarkerInCollection(brand, number, action) {
-    const key = `${brand}_${number}`;
+async function updateMarkerInCollection(brand, number, action, subcategory = '') {
+    let key;
+    if (brand === 'Tooli-Art' && subcategory) {
+        key = `${brand}_${subcategory}_${number}`;
+    } else {
+        key = `${brand}_${number}`;
+    }
     
     if (action === 'toggle') {
         action = userMarkersCollection[key] ? 'remove' : 'add';
     }
     
-    // Обновляем локально СРАЗУ
     if (action === 'add') {
         userMarkersCollection[key] = true;
     } else {
         delete userMarkersCollection[key];
     }
     
-    // Сохраняем в localStorage как резерв
     localStorage.setItem(`markers_${userId}`, JSON.stringify(userMarkersCollection));
-    
     updateMarkersCollectionStats();
     renderMarkersCollection();
-    
-    // Отправляем на сервер в фоне
-    try {
-        await fetch(`${SERVER_URL}/api/markers_collection`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                user_id: userId,
-                brand: brand,
-                number: number,
-                action: action
-            })
-        });
-    } catch (error) {
-        console.error('Error syncing to server:', error);
-    }
 }
 async function addAllBrand(brand, subcategory, numbers) {
-    // Обновляем локально
     numbers.forEach(num => {
-        userMarkersCollection[`${brand}_${num}`] = true;
+        let key;
+        if (brand === 'Tooli-Art' && subcategory) {
+            key = `${brand}_${subcategory}_${num}`;
+        } else {
+            key = `${brand}_${num}`;
+        }
+        userMarkersCollection[key] = true;
     });
     
     localStorage.setItem(`markers_${userId}`, JSON.stringify(userMarkersCollection));
@@ -10284,7 +10275,6 @@ async function addAllBrand(brand, subcategory, numbers) {
     
     if (tg) tg.showAlert(`✅ Все маркеры добавлены (локально)`);
 }
-
 function renderMarkersCollection() {
     const container = document.getElementById('markersCollectionList');
     if (!container) return;
@@ -10296,7 +10286,12 @@ function renderMarkersCollection() {
         const totalCount = numbers.length;
         
         const collectedCount = numbers.filter(num => {
-            const key = `${set.brand}_${num}`;
+            let key;
+            if (set.brand === 'Tooli-Art' && set.subcategory) {
+                key = `${set.brand}_${set.subcategory}_${num}`;
+            } else {
+                key = `${set.brand}_${num}`;
+            }
             return userMarkersCollection[key] || false;
         }).length;
         
@@ -10320,9 +10315,14 @@ function renderMarkersCollection() {
         `;
         
         numbers.sort((a, b) => a - b).forEach(num => {
-            const key = `${set.brand}_${num}`;
+            let key;
+            if (set.brand === 'Tooli-Art' && set.subcategory) {
+                key = `${set.brand}_${set.subcategory}_${num}`;
+            } else {
+                key = `${set.brand}_${num}`;
+            }
             const collected = userMarkersCollection[key] || false;
-            html += `<div class="marker-number-btn ${collected ? 'collected' : ''}" onclick="updateMarkerInCollection('${set.brand}', ${num}, 'toggle')">${num}</div>`;
+            html += `<div class="marker-number-btn ${collected ? 'collected' : ''}" onclick="updateMarkerInCollection('${set.brand}', ${num}, 'toggle', '${set.subcategory || ''}')">${num}</div>`;
         });
         
         html += `</div></div>`;
