@@ -3307,6 +3307,9 @@
     max-height: 300px;
     overflow-y: auto;
 }
+.marker-set-content.grasp-grid {
+    grid-template-columns: repeat(6, 1fr) !important;
+}
 
 .marker-number-btn {
     aspect-ratio: 1;
@@ -10464,7 +10467,7 @@ function renderMarkersCollection() {
                 <div class="progress-bar-container" style="margin: 8px 0;">
                     <div class="progress-bar-fill" style="width: ${percent}%;"></div>
                 </div>
-                <div class="marker-set-content" id="set-${set.id}">
+               <div class="marker-set-content ${set.brand === 'Grasp' ? 'grasp-grid' : ''}" id="set-${set.id}">
         `;
         
         // ✅ ПРАВИЛЬНАЯ СОРТИРОВКА (числа + буквенные номера)
