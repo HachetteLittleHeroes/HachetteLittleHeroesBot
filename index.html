@@ -7696,50 +7696,72 @@ function openFigureModal(figure, isUnlocked) {
         }
         
         function showAddMarkerToCell() {
-            const modal = document.getElementById('addMarkerModal');
-            if (modal) modal.style.display = 'flex';
-        }
+    // Закрываем модалку ячейки (если она открыта)
+    const cellModal = document.querySelector('.modal-overlay[style*="display: flex"]');
+    if (cellModal && cellModal.innerHTML.includes('Ячейка')) {
+        cellModal.remove();
+    }
+    
+    // Открываем модалку добавления маркера
+    const modal = document.getElementById('addMarkerModal');
+    if (modal) modal.style.display = 'flex';
+}
         
         function closeAddMarkerModal() {
-            const modal = document.getElementById('addMarkerModal');
-            if (modal) modal.style.display = 'none';
-            const numInput = document.getElementById('addMarkerNumber');
-            const countInput = document.getElementById('addMarkerCount');
-            if (numInput) numInput.value = '';
-            if (countInput) countInput.value = '1';
-        }
+    const modal = document.getElementById('addMarkerModal');
+    if (modal) modal.style.display = 'none';
+    
+    const numInput = document.getElementById('addMarkerNumber');
+    const countInput = document.getElementById('addMarkerCount');
+    if (numInput) numInput.value = '';
+    if (countInput) countInput.value = '1';
+}
         
         function confirmAddMarker() {
-            const brandSelect = document.getElementById('addMarkerBrand');
-            const numberInput = document.getElementById('addMarkerNumber');
-            const countInput = document.getElementById('addMarkerCount');
-            const brand = brandSelect ? brandSelect.value : 'GuangNa';
-            const number = numberInput ? numberInput.value : '';
-            const count = countInput ? parseInt(countInput.value) : 1;
-            if (!number) { if (tg) tg.showAlert('Введите номер'); return; }
-            const org = inventory.organizers.find(o => o.id === currentOrganizerId);
-            if (org && currentCellRow !== null && currentCellCol !== null) {
-                if (!org.cells[currentCellRow]) org.cells[currentCellRow] = [];
-                if (!org.cells[currentCellRow][currentCellCol]) org.cells[currentCellRow][currentCellCol] = [];
-                const cellMarkers = org.cells[currentCellRow][currentCellCol];
-                const existing = cellMarkers.find(m => m.brand === brand && m.number === number);
-                if (existing) {
-                    existing.count += count;
-                } else {
-                    cellMarkers.push({ brand, number, count });
-                }
-                const key = `${brand}_${number}`;
-                if (!inventory.userMarkers) inventory.userMarkers = {};
-                inventory.userMarkers[key] = (inventory.userMarkers[key] || 0) + count;
-                saveInventory();
-                renderCellMarkers(cellMarkers);
-                renderOrganizers();
-                renderBrands();
-                if (tg) tg.showAlert(`Маркер ${brand} №${number} добавлен!`);
-            }
-            closeAddMarkerModal();
+    const brandSelect = document.getElementById('addMarkerBrand');
+    const numberInput = document.getElementById('addMarkerNumber');
+    const countInput = document.getElementById('addMarkerCount');
+    
+    const brand = brandSelect ? brandSelect.value : 'GuangNa';
+    const number = numberInput ? numberInput.value : '';
+    const count = countInput ? parseInt(countInput.value) : 1;
+    
+    if (!number) { 
+        if (tg) tg.showAlert('Введите номер'); 
+        return; 
+    }
+    
+    const org = inventory.organizers.find(o => o.id === currentOrganizerId);
+    if (org && currentCellRow !== null && currentCellCol !== null) {
+        if (!org.cells[currentCellRow]) org.cells[currentCellRow] = [];
+        if (!org.cells[currentCellRow][currentCellCol]) org.cells[currentCellRow][currentCellCol] = [];
+        
+        const cellMarkers = org.cells[currentCellRow][currentCellCol];
+        const existing = cellMarkers.find(m => m.brand === brand && m.number === number);
+        
+        if (existing) {
+            existing.count += count;
+        } else {
+            cellMarkers.push({ brand, number, count });
         }
         
+        const key = `${brand}_${number}`;
+        if (!inventory.userMarkers) inventory.userMarkers = {};
+        inventory.userMarkers[key] = (inventory.userMarkers[key] || 0) + count;
+        
+        saveInventory();
+        renderOrganizers();
+        renderBrands();
+        
+        if (tg) tg.showAlert(`Маркер ${brand} №${number} добавлен!`);
+    }
+    
+    // ✅ Закрываем модалку добавления
+    closeAddMarkerModal();
+    
+    // ✅ Открываем заново модалку ячейки с обновлённым содержимым
+    openCellModal(currentOrganizerId, currentCellRow, currentCellCol);
+}
         function removeMarkerFromCell(idx) {
             const org = inventory.organizers.find(o => o.id === currentOrganizerId);
             if (org && currentCellRow !== null && currentCellCol !== null) {
