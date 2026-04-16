@@ -10189,12 +10189,28 @@ let userMarkersCollection = {};
 async function loadMarkersCollection() {
     try {
         const response = await fetch(`${SERVER_URL}/api/markers_collection?user_id=${userId}`);
-        userMarkersCollection = await response.json();
-        updateMarkersCollectionStats();
+        const data = await response.json();
+        
+        if (data && typeof data === 'object') {
+            userMarkersCollection = data;
+        } else {
+            userMarkersCollection = {};
+        }
     } catch (error) {
         console.error('Error loading markers collection:', error);
-        userMarkersCollection = {};
+        // Пробуем загрузить из localStorage
+        const saved = localStorage.getItem(`markers_${userId}`);
+        if (saved) {
+            try {
+                userMarkersCollection = JSON.parse(saved);
+            } catch(e) {
+                userMarkersCollection = {};
+            }
+        } else {
+            userMarkersCollection = {};
+        }
     }
+    updateMarkersCollectionStats();
 }
 
 async function updateMarkerInCollection(brand, number, action) {
@@ -10204,8 +10220,22 @@ async function updateMarkerInCollection(brand, number, action) {
         action = userMarkersCollection[key] ? 'remove' : 'add';
     }
     
+    // Обновляем локально СРАЗУ
+    if (action === 'add') {
+        userMarkersCollection[key] = true;
+    } else {
+        delete userMarkersCollection[key];
+    }
+    
+    // Сохраняем в localStorage как резерв
+    localStorage.setItem(`markers_${userId}`, JSON.stringify(userMarkersCollection));
+    
+    updateMarkersCollectionStats();
+    renderMarkersCollection();
+    
+    // Отправляем на сервер в фоне
     try {
-        const response = await fetch(`${SERVER_URL}/api/markers_collection`, {
+        await fetch(`${SERVER_URL}/api/markers_collection`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -10215,28 +10245,8 @@ async function updateMarkerInCollection(brand, number, action) {
                 action: action
             })
         });
-        
-        const result = await response.json();
-        
-        if (result.status === 'ok') {
-            if (action === 'add') {
-                userMarkersCollection[key] = true;
-            } else if (action === 'remove') {
-                delete userMarkersCollection[key];
-            }
-            updateMarkersCollectionStats();
-            renderMarkersCollection();
-        }
     } catch (error) {
-        console.error('Error updating marker:', error);
-        // Обновляем локально даже при ошибке сервера
-        if (action === 'add') {
-            userMarkersCollection[key] = true;
-        } else {
-            delete userMarkersCollection[key];
-        }
-        updateMarkersCollectionStats();
-        renderMarkersCollection();
+        console.error('Error syncing to server:', error);
     }
 }
 async function addAllBrand(brand) {
@@ -10265,10 +10275,30 @@ async function addAllBrand(brand) {
             renderMarkersCollection();
             
             if (tg) tg.showAlert(`✅ Все маркеры ${brand} добавлены!`);
+        } else {
+            // Даже если сервер вернул ошибку — обновляем локально
+            const set = MARKER_SETS.find(s => s.brand === brand);
+            if (set) {
+                for (let i = 1; i <= set.maxNumber; i++) {
+                    userMarkersCollection[`${brand}_${i}`] = true;
+                }
+            }
+            updateMarkersCollectionStats();
+            renderMarkersCollection();
+            if (tg) tg.showAlert(`⚠️ Добавлено локально (сервер недоступен)`);
         }
     } catch (error) {
         console.error('Error adding all brand:', error);
-        if (tg) tg.showAlert('❌ Ошибка добавления');
+        // Обновляем локально
+        const set = MARKER_SETS.find(s => s.brand === brand);
+        if (set) {
+            for (let i = 1; i <= set.maxNumber; i++) {
+                userMarkersCollection[`${brand}_${i}`] = true;
+            }
+        }
+        updateMarkersCollectionStats();
+        renderMarkersCollection();
+        if (tg) tg.showAlert(`⚠️ Добавлено локально`);
     }
 }
 
