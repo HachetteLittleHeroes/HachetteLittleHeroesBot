@@ -10236,6 +10236,7 @@ async function loadMarkersCollection() {
     updateMarkersCollectionStats();
 }
 
+
 async function updateMarkerInCollection(brand, number, action, subcategory = '') {
     let key;
     if (brand === 'Tooli-Art' && subcategory) {
@@ -10248,17 +10249,37 @@ async function updateMarkerInCollection(brand, number, action, subcategory = '')
         action = userMarkersCollection[key] ? 'remove' : 'add';
     }
     
+    // Обновляем локально
     if (action === 'add') {
         userMarkersCollection[key] = true;
     } else {
         delete userMarkersCollection[key];
     }
     
+    // Сохраняем в localStorage
     localStorage.setItem(`markers_${userId}`, JSON.stringify(userMarkersCollection));
     updateMarkersCollectionStats();
     renderMarkersCollection();
+    
+    // ✅ ОТПРАВЛЯЕМ НА СЕРВЕР с правильным ключом
+    try {
+        await fetch(`${SERVER_URL}/api/markers_collection`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                user_id: userId,
+                brand: brand,
+                number: number,
+                subcategory: subcategory,  // ← ДОБАВЛЯЕМ ПОДКАТЕГОРИЮ
+                action: action
+            })
+        });
+    } catch (error) {
+        console.error('Error syncing to server:', error);
+    }
 }
 async function addAllBrand(brand, subcategory, numbers) {
+    // Обновляем локально
     numbers.forEach(num => {
         let key;
         if (brand === 'Tooli-Art' && subcategory) {
@@ -10273,7 +10294,24 @@ async function addAllBrand(brand, subcategory, numbers) {
     updateMarkersCollectionStats();
     renderMarkersCollection();
     
-    if (tg) tg.showAlert(`✅ Все маркеры добавлены (локально)`);
+    // ✅ ОТПРАВЛЯЕМ НА СЕРВЕР
+    try {
+        await fetch(`${SERVER_URL}/api/markers_collection`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                user_id: userId,
+                brand: brand,
+                subcategory: subcategory,  // ← ДОБАВЛЯЕМ ПОДКАТЕГОРИЮ
+                numbers: numbers,           // ← ОТПРАВЛЯЕМ ВСЕ НОМЕРА
+                action: 'add_all_brand'
+            })
+        });
+        if (tg) tg.showAlert(`✅ Все маркеры добавлены`);
+    } catch (error) {
+        console.error('Error syncing to server:', error);
+        if (tg) tg.showAlert(`⚠️ Добавлено локально (сервер недоступен)`);
+    }
 }
 function renderMarkersCollection() {
     const container = document.getElementById('markersCollectionList');
