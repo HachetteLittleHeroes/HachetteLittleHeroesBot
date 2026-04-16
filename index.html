@@ -3930,33 +3930,61 @@
         </div>
     </div>
 
-    <!-- Модалка добавления маркера -->
-    <div id="addMarkerModal" class="modal-overlay">
-        <div class="modal-content">
-            <h3>➕ Добавить маркер</h3>
-            <div class="form-group">
-                <label>Бренд:</label>
-                <select id="addMarkerBrand">
-                    <option value="GuangNa">GuangNa</option>
-                    <option value="Languo">Languo</option>
-                    <option value="Zibeef">Zibeef</option>
-                    <option value="Grasp">Grasp</option>
-                    <option value="InfiArt">InfiArt</option>
-                    <option value="Tooli-Art">Tooli-Art</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Номер маркера:</label>
-                <input type="text" id="addMarkerNumber" placeholder="Например: 101">
-            </div>
-            <div class="form-group">
-                <label>Количество:</label>
-                <input type="number" id="addMarkerCount" value="1" min="1" max="100">
-            </div>
-            <button class="modal-action-btn" onclick="confirmAddMarker()" style="cursor:pointer;">✅ Добавить</button>
-            <button class="modal-close-btn" onclick="closeAddMarkerModal()" style="cursor:pointer;">❌ Отмена</button>
+  <!-- Модалка добавления маркера -->
+<div id="addMarkerModal" class="modal-overlay">
+    <div class="modal-content">
+        <h3>➕ Добавить маркер</h3>
+        <div class="form-group">
+            <label>Бренд:</label>
+            <select id="addMarkerBrand" onchange="toggleSubcategorySelect()">
+                <option value="GuangNa">GuangNa</option>
+                <option value="Languo">Languo</option>
+                <option value="Zibeef">Zibeef</option>
+                <option value="Grasp">Grasp</option>
+                <option value="InfiArt">InfiArt</option>
+                <option value="Tooli-Art">Tooli-Art</option>
+            </select>
         </div>
+        
+        <!-- ✅ ВЫБОР ПОДКАТЕГОРИИ ДЛЯ TOOLI-ART -->
+        <div class="form-group" id="subcategoryGroup" style="display: none;">
+            <label>Набор:</label>
+            <select id="addMarkerSubcategory">
+                <option value="pastel">Pastel (24)</option>
+                <option value="jewel">Jewel (24)</option>
+                <option value="confetti">Confetti (24)</option>
+                <option value="metallic">Metallic (24)</option>
+                <option value="neon">Neon (24)</option>
+                <option value="glitter">Glitter (24)</option>
+                <option value="brown">Brown (22)</option>
+                <option value="purple">Purple (22)</option>
+                <option value="pink">Pink (22)</option>
+                <option value="skin">Skin (22)</option>
+                <option value="green">Green (22)</option>
+                <option value="gray">Gray (22)</option>
+                <option value="orange">Orange (22)</option>
+                <option value="redpink">Red&Pink (22)</option>
+                <option value="bluepurple">Blue&Purple (22)</option>
+                <option value="southwest">Southwest (28)</option>
+                <option value="wildflower">Wildflower (24)</option>
+                <option value="nocturnal">Nocturnal (28)</option>
+                <option value="essential">Essential (28)</option>
+                <option value="earth">Earth (36)</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label>Номер маркера:</label>
+            <input type="text" id="addMarkerNumber" placeholder="Например: 101">
+        </div>
+        <div class="form-group">
+            <label>Количество:</label>
+            <input type="number" id="addMarkerCount" value="1" min="1" max="100">
+        </div>
+        <button class="modal-action-btn" onclick="confirmAddMarker()" style="cursor:pointer;">✅ Добавить</button>
+        <button class="modal-close-btn" onclick="closeAddMarkerModal()" style="cursor:pointer;">❌ Отмена</button>
     </div>
+</div>
 
     <!-- Модалка выбора достижения для витрины -->
     <div id="showcaseSelectorModal" class="modal-overlay">
@@ -7775,9 +7803,12 @@ function openFigureModal(figure, isUnlocked) {
         const div = document.createElement('div');
         div.style.cssText = 'background: var(--bg); padding: 10px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;';
         
+        // ✅ Показываем подкатегорию для Tooli-Art
+        const subcategoryText = marker.subcategory ? ` (${marker.subcategory})` : '';
+        
         div.innerHTML = `
             <div>
-                <strong>${marker.brand}</strong> №${marker.number} 
+                <strong>${marker.brand}${subcategoryText}</strong> №${marker.number} 
                 <span style="margin-left: 8px; font-weight: bold; color: var(--accent);">×${marker.count}</span>
             </div>
             <div style="display: flex; gap: 5px;">
@@ -7792,13 +7823,17 @@ function openFigureModal(figure, isUnlocked) {
 }
         
         function showAddMarkerToCell() {
-    // Закрываем модалку ячейки (если она открыта)
+    // Закрываем модалку ячейки
     const cellModal = document.querySelector('.modal-overlay[style*="display: flex"]');
     if (cellModal && cellModal.innerHTML.includes('Ячейка')) {
         cellModal.remove();
     }
     
-    // Открываем модалку добавления маркера
+    // Сбрасываем подкатегорию
+    document.getElementById('subcategoryGroup').style.display = 'none';
+    document.getElementById('addMarkerBrand').value = 'GuangNa';
+    
+    // Открываем модалку
     const modal = document.getElementById('addMarkerModal');
     if (modal) modal.style.display = 'flex';
 }
@@ -7817,10 +7852,12 @@ function openFigureModal(figure, isUnlocked) {
     const brandSelect = document.getElementById('addMarkerBrand');
     const numberInput = document.getElementById('addMarkerNumber');
     const countInput = document.getElementById('addMarkerCount');
+    const subcategorySelect = document.getElementById('addMarkerSubcategory');
     
     const brand = brandSelect ? brandSelect.value : 'GuangNa';
     const number = numberInput ? numberInput.value : '';
     const count = countInput ? parseInt(countInput.value) : 1;
+    const subcategory = subcategorySelect ? subcategorySelect.value : '';
     
     if (!number) { 
         if (tg) tg.showAlert('Введите номер'); 
@@ -7833,15 +7870,33 @@ function openFigureModal(figure, isUnlocked) {
         if (!org.cells[currentCellRow][currentCellCol]) org.cells[currentCellRow][currentCellCol] = [];
         
         const cellMarkers = org.cells[currentCellRow][currentCellCol];
-        const existing = cellMarkers.find(m => m.brand === brand && m.number === number);
+        
+        // ✅ Формируем ключ с подкатегорией для Tooli-Art
+        let markerKey;
+        if (brand === 'Tooli-Art' && subcategory) {
+            markerKey = `${brand}_${subcategory}_${number}`;
+        } else {
+            markerKey = `${brand}_${number}`;
+        }
+        
+        const existing = cellMarkers.find(m => {
+            const key = m.subcategory ? `${m.brand}_${m.subcategory}_${m.number}` : `${m.brand}_${m.number}`;
+            return key === markerKey;
+        });
         
         if (existing) {
             existing.count += count;
         } else {
-            cellMarkers.push({ brand, number, count });
+            cellMarkers.push({ 
+                brand, 
+                number, 
+                count,
+                subcategory: brand === 'Tooli-Art' ? subcategory : null
+            });
         }
         
-        const key = `${brand}_${number}`;
+        // Обновляем инвентарь
+        const key = brand === 'Tooli-Art' && subcategory ? `${brand}_${subcategory}_${number}` : `${brand}_${number}`;
         if (!inventory.userMarkers) inventory.userMarkers = {};
         inventory.userMarkers[key] = (inventory.userMarkers[key] || 0) + count;
         
@@ -10826,6 +10881,16 @@ function filterColoringBooks() {
             addForm.style.display = query === '' ? 'block' : 'none';
         }
     });
+}
+function toggleSubcategorySelect() {
+    const brandSelect = document.getElementById('addMarkerBrand');
+    const subcategoryGroup = document.getElementById('subcategoryGroup');
+    
+    if (brandSelect.value === 'Tooli-Art') {
+        subcategoryGroup.style.display = 'block';
+    } else {
+        subcategoryGroup.style.display = 'none';
+    }
 }
     </script>
 </body>
