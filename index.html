@@ -2814,20 +2814,18 @@
             margin-left: 12px;
         }
         
-        .marker-search-result {
-            background: var(--card-bg);
-            border-radius: 12px;
-            padding: 12px;
-            margin-bottom: 8px;
-            border: 1px solid var(--border-color);
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .marker-search-result:hover {
-            background: rgba(255,149,0,0.1);
-            border-color: var(--accent);
-        }
+    .marker-search-result {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 8px;
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+}
+
+.marker-search-result:hover {
+    background: rgba(255,149,0,0.1);
+}
         
         .marker-search-result-header {
             display: flex;
@@ -2847,10 +2845,17 @@
             color: var(--text);
         }
         
-        .marker-search-result-location {
-            font-size: 12px;
-            color: var(--text-gray);
-        }
+      .marker-search-result-location {
+    cursor: pointer;
+    padding: 8px;
+    margin: 3px 0;
+    background: var(--bg);
+    border-radius: 8px;
+}
+.marker-search-result-location:hover {
+    background: var(--accent);
+    color: white;
+}
         
         .marker-search-result-count {
             background: var(--accent);
@@ -3741,7 +3746,7 @@
         <div id="coloringBooksContent" class="inventory-content" style="display: none;">
             <div class="search-box" style="margin-bottom: 15px;">
     <i class="fas fa-search"></i>
-    <input type="text" id="markerSearchInOrganizers" placeholder="Поиск маркера по номеру..." oninput="searchMarkerInOrganizers()">
+    <input type="text" id="coloringBooksSearch" placeholder="Поиск по названию раскраски..." oninput="filterColoringBooks()">
 </div>
             <!-- Категория: Раскраски по номерам -->
             <div class="coloring-category">
@@ -3784,7 +3789,7 @@
             </div>
         </div>
     </div>
-    <!-- ========== ОРГАНАЙЗЕРЫ ========== -->
+   <!-- ========== ОРГАНАЙЗЕРЫ ========== -->
 <div class="inventory-main-block" style="margin-top: 15px;">
     <div class="inventory-header" onclick="toggleInventoryBlock()">
         <div class="inventory-header-left">
@@ -3796,11 +3801,21 @@
         </div>
     </div>
     <div id="inventoryContent" class="inventory-content">
+        
+        <!-- ✅ ПОИСК МАРКЕРОВ -->
+        <div class="search-box" style="margin: 15px 0;">
+            <i class="fas fa-search"></i>
+            <input type="text" id="markerSearchInOrganizers" placeholder="Поиск маркера по номеру или бренду..." oninput="searchMarkerInOrganizers()">
+        </div>
+        <div id="markerSearchResults" style="display: none; margin-bottom: 15px; padding: 10px; background: var(--bg); border-radius: 12px;"></div>
+        
         <!-- Создать органайзер -->
-        <button class="create-organizer-btn" onclick="openOrganizerCreator()" style="margin-top: 15px;">
+        <button class="create-organizer-btn" onclick="openOrganizerCreator()">
             <i class="fas fa-plus"></i> Создать органайзер
         </button>
+        
         <div id="organizersList"></div>
+        
         <div id="selectedOrganizerView" style="display: none; margin-top: 15px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                 <h4 id="selectedOrganizerName" style="margin:0; font-size: 16px;"></h4>
@@ -3809,7 +3824,6 @@
             <div id="selectedOrganizerGrid"></div>
         </div>
     </div>
-</div>
 </div>
 
 <!-- ========== КОРЗИНА ========== -->
@@ -10417,6 +10431,37 @@ function changeMarkerCount(idx, delta) {
     renderCellMarkers(cellMarkers);
     renderOrganizers();
     renderBrands();
+}
+function filterColoringBooks() {
+    const query = document.getElementById('coloringBooksSearch')?.value.toLowerCase() || '';
+    
+    const categories = ['paint_by_number', 'alcohol', 'pencil', 'custom'];
+    
+    categories.forEach(category => {
+        const container = document.getElementById(`category-${category}`);
+        if (!container) return;
+        
+        const cards = container.querySelectorAll('.coloring-book-item');
+        let visibleCount = 0;
+        
+        cards.forEach(card => {
+            const nameEl = card.querySelector('.book-name');
+            const name = nameEl ? nameEl.innerText.toLowerCase() : '';
+            
+            if (query === '' || name.includes(query)) {
+                card.style.display = 'flex';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+        
+        // Скрываем форму добавления при поиске
+        const addForm = container.querySelector('.add-book-form')?.parentElement;
+        if (addForm) {
+            addForm.style.display = query === '' ? 'block' : 'none';
+        }
+    });
 }
     </script>
 </body>
