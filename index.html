@@ -7456,13 +7456,15 @@ function openFigureModal(figure, isUnlocked) {
                             cell.forEach(marker => {
                                 const markerNumber = String(marker.number).toLowerCase();
                                 const markerBrand = String(marker.brand).toLowerCase();
+                                const markerSubcategory = marker.subcategory ? String(marker.subcategory).toLowerCase() : '';
                                 
-                                if (markerNumber.includes(query) || markerBrand.includes(query)) {
+                                if (markerNumber.includes(query) || markerBrand.includes(query) || markerSubcategory.includes(query)) {
                                     results.push({
                                         orgId: org.id,
                                         orgName: org.name,
                                         brand: marker.brand,
                                         number: marker.number,
+                                        subcategory: marker.subcategory || null,
                                         count: marker.count,
                                         row: row,
                                         col: col,
@@ -7483,13 +7485,14 @@ function openFigureModal(figure, isUnlocked) {
         return;
     }
     
-    // Группируем по бренду и номеру
+    // Группируем по бренду, подкатегории и номеру
     const groupedResults = {};
     results.forEach(res => {
-        const key = `${res.brand}_${res.number}`;
+        const key = res.subcategory ? `${res.brand}_${res.subcategory}_${res.number}` : `${res.brand}_${res.number}`;
         if (!groupedResults[key]) {
             groupedResults[key] = {
                 brand: res.brand,
+                subcategory: res.subcategory,
                 number: res.number,
                 totalCount: 0,
                 locations: []
@@ -7509,10 +7512,13 @@ function openFigureModal(figure, isUnlocked) {
     let html = `<div style="margin-bottom: 10px;"><strong>🔍 Найдено маркеров: ${results.length}</strong></div>`;
     
     for (const [key, marker] of Object.entries(groupedResults)) {
+        // ✅ Отображаем подкатегорию, если есть
+        const subcategoryDisplay = marker.subcategory ? ` (${marker.subcategory})` : '';
+        
         html += `
             <div class="marker-search-result">
                 <div class="marker-search-result-header">
-                    <span class="marker-search-result-brand">${marker.brand}</span>
+                    <span class="marker-search-result-brand">${marker.brand}${subcategoryDisplay}</span>
                     <span class="marker-search-result-number">№${marker.number}</span>
                     <span class="marker-search-result-count">${marker.totalCount} шт</span>
                 </div>
