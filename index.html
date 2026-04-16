@@ -7713,18 +7713,37 @@ function openFigureModal(figure, isUnlocked) {
             renderCellMarkers(cellMarkers);
         }
         
+        
         function renderCellMarkers(markers) {
-            const container = document.getElementById('cellMarkersList');
-            if (!container) return;
-            if (!markers || markers.length === 0) { container.innerHTML = '<div class="no-results">Нет маркеров</div>'; return; }
-            container.innerHTML = '';
-            markers.forEach((marker, idx) => {
-                const div = document.createElement('div');
-                div.style.cssText = 'background: var(--bg); padding: 10px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;';
-                div.innerHTML = `<div><strong>${marker.brand}</strong> №${marker.number} ×${marker.count}</div><button class="photo-upload-btn" onclick="removeMarkerFromCell(${idx})" style="background: var(--status-red); color: white; padding: 4px 8px; cursor:pointer;">🗑</button>`;
-                container.appendChild(div);
-            });
-        }
+    const container = document.getElementById('cellMarkersList');
+    if (!container) return;
+    
+    if (!markers || markers.length === 0) {
+        container.innerHTML = '<div class="no-results">Нет маркеров</div>';
+        return;
+    }
+    
+    container.innerHTML = '';
+    
+    markers.forEach((marker, idx) => {
+        const div = document.createElement('div');
+        div.style.cssText = 'background: var(--bg); padding: 10px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;';
+        
+        div.innerHTML = `
+            <div>
+                <strong>${marker.brand}</strong> №${marker.number} 
+                <span style="margin-left: 8px; font-weight: bold; color: var(--accent);">×${marker.count}</span>
+            </div>
+            <div style="display: flex; gap: 5px;">
+                <button class="photo-upload-btn" onclick="changeMarkerCount(${idx}, -1)" style="background: var(--accent); color: white; padding: 4px 10px; cursor:pointer; border-radius: 5px;">−</button>
+                <button class="photo-upload-btn" onclick="changeMarkerCount(${idx}, 1)" style="background: var(--accent); color: white; padding: 4px 10px; cursor:pointer; border-radius: 5px;">+</button>
+                <button class="photo-upload-btn" onclick="removeMarkerFromCell(${idx})" style="background: var(--status-red); color: white; padding: 4px 10px; cursor:pointer; border-radius: 5px;">🗑</button>
+            </div>
+        `;
+        
+        container.appendChild(div);
+    });
+}
         
         function showAddMarkerToCell() {
     // Закрываем модалку ячейки (если она открыта)
@@ -7787,34 +7806,35 @@ function openFigureModal(figure, isUnlocked) {
         if (tg) tg.showAlert(`Маркер ${brand} №${number} добавлен!`);
     }
     
-    // ✅ Закрываем модалку добавления
     closeAddMarkerModal();
-    
-    // ✅ Открываем заново модалку ячейки с обновлённым содержимым
     openCellModal(currentOrganizerId, currentCellRow, currentCellCol);
 }
         function removeMarkerFromCell(idx) {
-            const org = inventory.organizers.find(o => o.id === currentOrganizerId);
-            if (org && currentCellRow !== null && currentCellCol !== null) {
-                if (!org.cells[currentCellRow]) org.cells[currentCellRow] = [];
-                if (!org.cells[currentCellRow][currentCellCol]) org.cells[currentCellRow][currentCellCol] = [];
-                const cellMarkers = org.cells[currentCellRow][currentCellCol];
-                const marker = cellMarkers[idx];
-                if (marker) {
-                    const key = `${marker.brand}_${marker.number}`;
-                    if (inventory.userMarkers) {
-                        inventory.userMarkers[key] = Math.max(0, (inventory.userMarkers[key] || 0) - marker.count);
-                        if (inventory.userMarkers[key] === 0) delete inventory.userMarkers[key];
-                    }
-                    cellMarkers.splice(idx, 1);
-                    saveInventory();
-                    renderCellMarkers(cellMarkers);
-                    renderOrganizers();
-                    renderBrands();
-                    if (tg) tg.showAlert('Маркер удален');
-                }
-            }
+    const org = inventory.organizers.find(o => o.id === currentOrganizerId);
+    if (!org || currentCellRow === null || currentCellCol === null) return;
+    
+    if (!org.cells[currentCellRow]) org.cells[currentCellRow] = [];
+    if (!org.cells[currentCellRow][currentCellCol]) org.cells[currentCellRow][currentCellCol] = [];
+    
+    const cellMarkers = org.cells[currentCellRow][currentCellCol];
+    const marker = cellMarkers[idx];
+    
+    if (marker) {
+        const key = `${marker.brand}_${marker.number}`;
+        if (inventory.userMarkers) {
+            inventory.userMarkers[key] = Math.max(0, (inventory.userMarkers[key] || 0) - marker.count);
+            if (inventory.userMarkers[key] === 0) delete inventory.userMarkers[key];
         }
+        cellMarkers.splice(idx, 1);
+        
+        saveInventory();
+        renderCellMarkers(cellMarkers);
+        renderOrganizers();
+        renderBrands();
+        
+        if (tg) tg.showAlert('Маркер удалён');
+    }
+}
         
         function deleteOrganizer(orgId) {
             console.log('🗑 Deleting organizer:', orgId);
@@ -10341,6 +10361,43 @@ function viewArtwork(bookKey, page) {
     };
     
     document.body.appendChild(modal);
+}
+function changeMarkerCount(idx, delta) {
+    const org = inventory.organizers.find(o => o.id === currentOrganizerId);
+    if (!org || currentCellRow === null || currentCellCol === null) return;
+    
+    if (!org.cells[currentCellRow]) org.cells[currentCellRow] = [];
+    if (!org.cells[currentCellRow][currentCellCol]) org.cells[currentCellRow][currentCellCol] = [];
+    
+    const cellMarkers = org.cells[currentCellRow][currentCellCol];
+    const marker = cellMarkers[idx];
+    
+    if (!marker) return;
+    
+    const newCount = marker.count + delta;
+    
+    if (newCount <= 0) {
+        // Удаляем полностью
+        const key = `${marker.brand}_${marker.number}`;
+        if (inventory.userMarkers) {
+            inventory.userMarkers[key] = Math.max(0, (inventory.userMarkers[key] || 0) - marker.count);
+            if (inventory.userMarkers[key] === 0) delete inventory.userMarkers[key];
+        }
+        cellMarkers.splice(idx, 1);
+    } else {
+        // Обновляем количество
+        const oldCount = marker.count;
+        marker.count = newCount;
+        
+        const key = `${marker.brand}_${marker.number}`;
+        if (!inventory.userMarkers) inventory.userMarkers = {};
+        inventory.userMarkers[key] = (inventory.userMarkers[key] || 0) + (newCount - oldCount);
+    }
+    
+    saveInventory();
+    renderCellMarkers(cellMarkers);
+    renderOrganizers();
+    renderBrands();
 }
     </script>
 </body>
