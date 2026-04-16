@@ -10228,7 +10228,39 @@ const MARKER_SETS = [
 },
     { id: 'languo', name: 'Languo', brand: 'Languo', maxNumber: 288 },
     { id: 'zibeef', name: 'Zibeef', brand: 'Zibeef', maxNumber: 240 },
-    { id: 'grasp', name: 'Grasp', brand: 'Grasp', maxNumber: 168 },
+    { 
+    id: 'grasp', 
+    name: 'Grasp', 
+    brand: 'Grasp', 
+    numbers: [
+        'B028',
+        'B117', 'B118', 'B119', 'B148', 'B153', 'B166', 'B207', 'B215', 'B278', 'B688',
+        'B689', 'B690', 'B708', 'B778', 'B779', 'B780', 'B781', 'B782', 'B793', 'B815',
+        'BG148', 'BG344',
+        'BR756', 'BR762', 'BR763', 'BR764',
+        'F01', 'F04', 'F06', 'F07', 'F08', 'F702', 'F703', 'F786',
+        'FP01', 'FP03',
+        'G147', 'G152', 'G154', 'G183', 'G202', 'G227', 'G250', 'G275', 'G277', 'G279',
+        'G281', 'G326', 'G519', 'G687', 'G694', 'G695', 'G697', 'G699', 'G770', 'G772',
+        'G773', 'G774', 'G775', 'G776', 'G777',
+        'GY209', 'GY376', 'GY404', 'GY504',
+        'HG272',
+        'M01', 'M02', 'M03', 'M04', 'M05', 'M06', 'M07', 'M08', 'M09', 'M10', 'M11', 'M12',
+        'NG212', 'NG270', 'NG271', 'NG274', 'NG693', 'NG767', 'NG768', 'NG769',
+        'O299', 'O548', 'O5115',
+        'P207', 'P264', 'P290', 'P345', 'P445', 'P520', 'P588', 'P5115',
+        'R109', 'R128', 'R129', 'R144', 'R146', 'R149', 'R150', 'R151', 'R158', 'R201',
+        'R207', 'R211', 'R218', 'R238', 'R260', 'R269', 'R344', 'R548', 'R605', 'R691',
+        'R692', 'R698', 'R701', 'R704', 'R705', 'R707', 'R714', 'R754', 'R755', 'R757',
+        'R758', 'R759', 'R760', 'R761', 'R765', 'R766', 'R783', 'R784', 'R785', 'R787',
+        'R789', 'R790', 'R835', 'R848',
+        'S',
+        'W01', 'W706',
+        'Y123', 'Y128', 'Y145', 'Y146', 'Y160', 'Y206', 'Y208', 'Y209', 'Y210', 'Y276',
+        'Y320', 'Y405', 'Y408', 'Y415', 'Y416', 'Y507', 'Y713', 'Y762', 'Y771', 'Y788',
+        'Y791', 'Y792', 'Y906'
+    ]
+},
     { id: 'infiart', name: 'InfiArt', brand: 'InfiArt', maxNumber: 288 },
     
     // Tooli-Art подкатегории
@@ -10435,7 +10467,22 @@ function renderMarkersCollection() {
                 <div class="marker-set-content" id="set-${set.id}">
         `;
         
-        numbers.sort((a, b) => a - b).forEach(num => {
+        // ✅ ПРАВИЛЬНАЯ СОРТИРОВКА (числа + буквенные номера)
+        const sortedNumbers = [...numbers].sort((a, b) => {
+            // Если оба числа — сортируем как числа
+            if (typeof a === 'number' && typeof b === 'number') {
+                return a - b;
+            }
+            // Если оба строки — сортируем по алфавиту
+            if (typeof a === 'string' && typeof b === 'string') {
+                return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
+            }
+            // Числа идут перед строками
+            if (typeof a === 'number') return -1;
+            return 1;
+        });
+        
+        sortedNumbers.forEach(num => {
             let key;
             if (set.brand === 'Tooli-Art' && set.subcategory) {
                 key = `${set.brand}_${set.subcategory}_${num}`;
@@ -10443,7 +10490,7 @@ function renderMarkersCollection() {
                 key = `${set.brand}_${num}`;
             }
             const collected = userMarkersCollection[key] || false;
-            html += `<div class="marker-number-btn ${collected ? 'collected' : ''}" onclick="updateMarkerInCollection('${set.brand}', ${num}, 'toggle', '${set.subcategory || ''}')">${num}</div>`;
+            html += `<div class="marker-number-btn ${collected ? 'collected' : ''}" onclick="updateMarkerInCollection('${set.brand}', '${num}', 'toggle', '${set.subcategory || ''}')">${num}</div>`;
         });
         
         html += `</div></div>`;
@@ -10451,7 +10498,6 @@ function renderMarkersCollection() {
     
     container.innerHTML = html;
 }
-
 function updateMarkersCollectionStats() {
     const count = Object.keys(userMarkersCollection).length;
     const statsEl = document.getElementById('markersCollectionStats');
