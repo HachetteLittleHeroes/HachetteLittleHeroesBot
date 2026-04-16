@@ -3304,13 +3304,15 @@
     grid-template-columns: repeat(8, 1fr);
     gap: 6px;
     padding: 10px 0;
+    max-height: 300px;
+    overflow-y: auto;
 }
 
 .marker-number-btn {
     aspect-ratio: 1;
     background: var(--bg);
     border: 2px solid var(--border-color);
-    border-radius: 10px;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -3325,6 +3327,9 @@
     background: var(--accent);
     border-color: var(--accent);
     color: white;
+}
+.marker-number-btn:active {
+    transform: scale(0.92);
 }
 
 .add-all-brand-btn {
@@ -10224,9 +10229,16 @@ async function updateMarkerInCollection(brand, number, action) {
         }
     } catch (error) {
         console.error('Error updating marker:', error);
+        // Обновляем локально даже при ошибке сервера
+        if (action === 'add') {
+            userMarkersCollection[key] = true;
+        } else {
+            delete userMarkersCollection[key];
+        }
+        updateMarkersCollectionStats();
+        renderMarkersCollection();
     }
 }
-
 async function addAllBrand(brand) {
     try {
         const response = await fetch(`${SERVER_URL}/api/markers_collection`, {
@@ -10287,15 +10299,11 @@ function renderMarkersCollection() {
                 <div class="marker-set-content" id="set-${set.id}">
         `;
         
-        // Показываем только первые 40 номеров для компактности
-        for (let i = 1; i <= Math.min(40, set.maxNumber); i++) {
+        // Показываем ВСЕ номера
+        for (let i = 1; i <= set.maxNumber; i++) {
             const key = `${set.brand}_${i}`;
             const collected = userMarkersCollection[key] || false;
             html += `<div class="marker-number-btn ${collected ? 'collected' : ''}" onclick="updateMarkerInCollection('${set.brand}', ${i}, 'toggle')">${i}</div>`;
-        }
-        
-        if (set.maxNumber > 40) {
-            html += `<div style="grid-column: span 4; text-align: center; color: var(--text-gray); font-size: 12px; padding: 5px;">... и ещё ${set.maxNumber - 40} номеров (используйте поиск)</div>`;
         }
         
         html += `</div></div>`;
