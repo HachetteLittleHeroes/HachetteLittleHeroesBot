@@ -3310,6 +3310,9 @@
 .marker-set-content.grasp-grid {
     grid-template-columns: repeat(6, 1fr) !important;
 }
+.marker-set-content.infiart-grid {
+    grid-template-columns: repeat(6, 1fr) !important;
+}
 
 .marker-number-btn {
     aspect-ratio: 1;
@@ -10297,7 +10300,74 @@ const MARKER_SETS = [
         'Y791', 'Y792', 'Y906'
     ]
 },
-    { id: 'infiart', name: 'InfiArt', brand: 'InfiArt', maxNumber: 288 },
+   { 
+    id: 'infiart', 
+    name: 'InfiArt', 
+    brand: 'InfiArt', 
+    numbers: [
+        // Числовые с O
+        'O107', 'O108', 'O111', 'O116', 'O121', 'O124', 'O169', 'O177', 'O186', 'O187',
+        'O193', 'O216', 'O222', 'O224', 'O226', 'O242', 'O289', 'O299', 'O305', 'O308',
+        'O311', 'O323', 'O363', 'O376', 'O388', 'O398', 'O399', 'O405', 'O411', 'O416',
+        'O423', 'O479', 'O489', 'O490', 'O510', 'O513', 'O522', 'O538', 'O548', 'O587',
+        'O1108', 'O1115', 'O3100', 'O4109', 'O5115',
+        // Oa
+        'Oa415', 'Oa513',
+        // B
+        'B105', 'B123', 'B124', 'B125', 'B126', 'B149', 'B153', 'B166', 'B186', 'B209',
+        'B222', 'B224', 'B242', 'B244', 'B261', 'B276', 'B288', 'B359', 'B364', 'B379',
+        'B408', 'B409', 'B425', 'B483', 'B564', 'B578', 'B1111',
+        // BG
+        'BG144', 'BG148', 'BG165', 'BG254', 'BG262', 'BG307', 'BG322', 'BG325', 'BG342', 'BG344',
+        'BG390', 'BG398', 'BG425', 'BG445', 'BG446', 'BG524', 'BG548', 'BG562', 'BG589', 'BG5109',
+        // F
+        'F01', 'F02', 'F03', 'F04', 'F05', 'F06', 'F07', 'F08', 'F12',
+        // FP
+        'FP01', 'FP02', 'FP03', 'FP04', 'FP05',
+        // G
+        'G108', 'G148', 'G155', 'G176', 'G183', 'G212', 'G225', 'G227', 'G250', 'G289',
+        'G323', 'G325', 'G326', 'G328', 'G378', 'G425', 'G427', 'G448', 'G478', 'G508',
+        'G511', 'G545', 'G4109',
+        // Ga
+        'Ga508',
+        // GY
+        'GY107', 'GY153', 'GY188', 'GY193', 'GY209', 'GY213', 'GY224', 'GY307', 'GY310', 'GY362',
+        'GY376', 'GY404', 'GY409', 'GY411', 'GY425', 'GY504', 'GY506', 'GY510', 'GY524', 'GY578',
+        // GYa
+        'GYa411',
+        // M
+        'M01', 'M02', 'M03', 'M04', 'M05', 'M06', 'M07', 'M08', 'M09', 'M10', 'M11', 'M12',
+        // N
+        'N39', 'N52',
+        // Na
+        'Na17',
+        // P
+        'P108', 'P124', 'P145', 'P164', 'P179', 'P207', 'P223', 'P224', 'P244', 'P245',
+        'P246', 'P264', 'P270', 'P290', 'P345', 'P348', 'P366', 'P380', 'P420', 'P436',
+        'P442', 'P443', 'P445', 'P455', 'P460', 'P471', 'P489', 'P497', 'P509', 'P5115',
+        'P520', 'P525', 'P543', 'P548', 'P579', 'P588', 'P4100',
+        // Pa
+        'Pa164', 'Pa290',
+        // R
+        'R107', 'R108', 'R121', 'R127', 'R129', 'R146', 'R166', 'R179', 'R207', 'R209',
+        'R264', 'R279', 'R309', 'R327', 'R344', 'R389', 'R407', 'R409', 'R425', 'R426',
+        'R448', 'R508', 'R525', 'R544', 'R546', 'R548',
+        // Ra
+        'Ra409', 'Ra425', 'Ra489', 'Ra524', 'Ra564',
+        // S
+        'S119',
+        // W
+        'W01',
+        // Y
+        'Y104', 'Y105', 'Y108', 'Y109', 'Y115', 'Y123', 'Y143', 'Y146', 'Y153', 'Y160',
+        'Y169', 'Y208', 'Y209', 'Y263', 'Y277', 'Y311', 'Y316', 'Y320', 'Y329', 'Y332',
+        'Y333', 'Y344', 'Y405', 'Y406', 'Y408', 'Y410', 'Y415', 'Y422', 'Y442', 'Y443',
+        'Y445', 'Y461', 'Y488', 'Y505', 'Y507', 'Y508', 'Y520', 'Y522', 'Y524', 'Y534',
+        'Y543', 'Y562', 'Y564', 'Y579',
+        // Ya
+        'Ya213'
+    ]
+},
     
     // Tooli-Art подкатегории
     { id: 'tooliart_pastel', name: 'Tooli-Art Pastel', brand: 'Tooli-Art', subcategory: 'pastel', numbers: Array.from({length: 24}, (_, i) => i + 1) },
@@ -10500,7 +10570,7 @@ function renderMarkersCollection() {
                 <div class="progress-bar-container" style="margin: 8px 0;">
                     <div class="progress-bar-fill" style="width: ${percent}%;"></div>
                 </div>
-               <div class="marker-set-content ${set.brand === 'Grasp' ? 'grasp-grid' : ''}" id="set-${set.id}">
+              <div class="marker-set-content ${set.brand === 'Grasp' ? 'grasp-grid' : ''} ${set.brand === 'InfiArt' ? 'infiart-grid' : ''}" id="set-${set.id}">
         `;
         
         // ✅ ПРАВИЛЬНАЯ СОРТИРОВКА (числа + буквенные номера)
