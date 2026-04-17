@@ -3643,22 +3643,37 @@
     </style>
 </head>
 <body>
-    <!-- ========== ПРОФИЛЬ ========== -->
+  <!-- ========== ПРОФИЛЬ ========== -->
 <div id="profile" class="page active">
     <!-- Заголовок с кнопками -->
-<div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 15px 0;">
-    <div class="header" style="padding: 0;">Профиль</div>
-    <div style="display: flex; gap: 10px;">
-        <!-- Кнопка друзей -->
-        <button onclick="openFriendsList()" style="background: var(--accent); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-            <i class="fas fa-address-book"></i>
-        </button>
-        <!-- Кнопка поиска -->
-        <button onclick="openUserSearch()" style="background: var(--accent); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-            <i class="fas fa-search"></i>
-        </button>
+    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 15px 0;">
+        <div class="header" style="padding: 0;">Профиль</div>
+        <div style="display: flex; gap: 10px;">
+            <!-- Кнопка друзей -->
+            <button onclick="openFriendsList()" style="background: var(--accent); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                <i class="fas fa-address-book"></i>
+            </button>
+            <!-- Кнопка поиска -->
+            <button onclick="openUserSearch()" style="background: var(--accent); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
     </div>
-</div>
+
+    <!-- Блок с аватаркой, именем и статусом -->
+    <div class="profile-header-block">
+        <div class="avatar-wrapper" onclick="toggleAvatarEditor()">
+            <img id="user-avatar" src="https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av2.png">
+            <div class="avatar-edit-icon"><i class="fas fa-pencil-alt"></i></div>
+        </div>
+        <div class="profile-info">
+            <div class="name-row" onclick="changeNickname()">
+                <h2 id="displayUsername">Без имени</h2>
+                <i class="fas fa-pencil-alt" style="color: var(--text-gray); font-size: 14px;"></i>
+            </div>
+            <button id="currentStatus" class="status-badge" onclick="openStatusInfo()">Без статуса</button>
+        </div>
+    </div>
 
     <div id="avatarEditor" class="avatar-editor">
         <p>Выберите аватарку:</p>
@@ -3667,72 +3682,71 @@
         <button class="upload-photo-btn" onclick="document.getElementById('customAvatarInput').click()"><i class="fas fa-camera"></i> Загрузить фото</button>
     </div>
 
-        <div class="balance-card">
-            <p class="balance-label">ВАШ БАЛАНС</p>
-            <div class="balance-main"><span id="userBalance">0</span> <i class="fas fa-book-open gold-book"></i></div>
-            <div class="balance-controls">
-                <button class="balance-btn" onclick="toggleSection('rewards-section')">Потратить ашетики 🏆</button>
-                <button class="balance-btn" onclick="toggleSection('earn-section')">Заработать ашетики 💰</button>
+    <div class="balance-card">
+        <p class="balance-label">ВАШ БАЛАНС</p>
+        <div class="balance-main"><span id="userBalance">0</span> <i class="fas fa-book-open gold-book"></i></div>
+        <div class="balance-controls">
+            <button class="balance-btn" onclick="toggleSection('rewards-section')">Потратить ашетики 🏆</button>
+            <button class="balance-btn" onclick="toggleSection('earn-section')">Заработать ашетики 💰</button>
+        </div>
+    </div>
+
+    <div id="rewards-section" class="rewards-section">
+        <h3>Товары за ашетики</h3>
+        <div class="rewards-grid">
+            <div class="reward-card" onclick="buyItem('bookmark')">
+                <img src="https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/bonusi/b1.png" class="reward-img">
+                <h4>Книжная закладка Hachette</h4>
+                <div class="reward-price"><span class="price-amount">750</span> <i class="fas fa-book-open gold-book"></i></div>
+                <button class="reward-buy-btn">Приобрести</button>
+            </div>
+            <div class="reward-card" onclick="buyItem('petites')">
+                <img src="https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/bonusi/b2.png" class="reward-img">
+                <h4>Petites Poupees</h4>
+                <div class="reward-price"><span class="price-amount">950</span> <i class="fas fa-book-open gold-book"></i></div>
+                <button class="reward-buy-btn">Приобрести</button>
+            </div>
+            <div class="reward-card" onclick="buyItem('tracker')">
+                <img src="https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/bonusi/b3.png" class="reward-img">
+                <h4>Трекер от Hachette</h4>
+                <div class="reward-price"><span class="price-amount">950</span> <i class="fas fa-book-open gold-book"></i></div>
+                <button class="reward-buy-btn">Приобрести</button>
+            </div>
+            <div class="reward-card" onclick="buyItem('alcohol')">
+                <img src="https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/bonusi/b4.png" class="reward-img">
+                <h4>Спиртовая раскраска</h4>
+                <div class="reward-price"><span class="price-amount">1250</span> <i class="fas fa-book-open gold-book"></i></div>
+                <button class="reward-buy-btn">Приобрести</button>
+            </div>
+            <div class="reward-card" onclick="buyItem('coloriages')">
+                <img src="https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/bonusi/b5.png" class="reward-img">
+                <h4>Hachette Coloriages (А4 том)</h4>
+                <div class="reward-price"><span class="price-amount">1500</span> <i class="fas fa-book-open gold-book"></i></div>
+                <button class="reward-buy-btn">Приобрести</button>
             </div>
         </div>
+    </div>
 
-        <div id="rewards-section" class="rewards-section">
-            <h3>Товары за ашетики</h3>
-            <div class="rewards-grid">
-                <div class="reward-card" onclick="buyItem('bookmark')">
-                    <img src="https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/bonusi/b1.png" class="reward-img">
-                    <h4>Книжная закладка Hachette</h4>
-                    <div class="reward-price"><span class="price-amount">750</span> <i class="fas fa-book-open gold-book"></i></div>
-                    <button class="reward-buy-btn">Приобрести</button>
-                </div>
-                <div class="reward-card" onclick="buyItem('petites')">
-                    <img src="https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/bonusi/b2.png" class="reward-img">
-                    <h4>Petites Poupees</h4>
-                    <div class="reward-price"><span class="price-amount">950</span> <i class="fas fa-book-open gold-book"></i></div>
-                    <button class="reward-buy-btn">Приобрести</button>
-                </div>
-                <div class="reward-card" onclick="buyItem('tracker')">
-                    <img src="https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/bonusi/b3.png" class="reward-img">
-                    <h4>Трекер от Hachette</h4>
-                    <div class="reward-price"><span class="price-amount">950</span> <i class="fas fa-book-open gold-book"></i></div>
-                    <button class="reward-buy-btn">Приобрести</button>
-                </div>
-                <div class="reward-card" onclick="buyItem('alcohol')">
-                    <img src="https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/bonusi/b4.png" class="reward-img">
-                    <h4>Спиртовая раскраска</h4>
-                    <div class="reward-price"><span class="price-amount">1250</span> <i class="fas fa-book-open gold-book"></i></div>
-                    <button class="reward-buy-btn">Приобрести</button>
-                </div>
-                <div class="reward-card" onclick="buyItem('coloriages')">
-                    <img src="https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/bonusi/b5.png" class="reward-img">
-                    <h4>Hachette Coloriages (А4 том)</h4>
-                    <div class="reward-price"><span class="price-amount">1500</span> <i class="fas fa-book-open gold-book"></i></div>
-                    <button class="reward-buy-btn">Приобрести</button>
-                </div>
-            </div>
+    <div id="earn-section" class="rewards-section" style="display:none;">
+        <h3>Как получить ашетики</h3>
+        <div class="earn-list">
+            <div class="earn-item"><div class="earn-left"><i class="fas fa-star"></i><span>За отзыв</span></div><div class="earn-right"><span class="earn-amount">+25</span><i class="fas fa-book-open gold-book"></i></div></div>
+            <div class="earn-item"><div class="earn-left"><i class="fas fa-shopping-cart"></i><span>За покупку от 3 000 ₽</span></div><div class="earn-right"><span class="earn-amount">+20</span><i class="fas fa-book-open gold-book"></i></div></div>
+            <div class="earn-item"><div class="earn-left"><i class="fas fa-shopping-cart"></i><span>За покупку от 5 000 ₽</span></div><div class="earn-right"><span class="earn-amount">+30</span><i class="fas fa-book-open gold-book"></i></div></div>
+            <div class="earn-item"><div class="earn-left"><i class="fas fa-shopping-cart"></i><span>За покупку от 7 500 ₽</span></div><div class="earn-right"><span class="earn-amount">+40</span><i class="fas fa-book-open gold-book"></i></div></div>
+            <div class="earn-item"><div class="earn-left"><i class="fas fa-shopping-cart"></i><span>За покупку от 10 000 ₽</span></div><div class="earn-right"><span class="earn-amount">+50</span><i class="fas fa-book-open gold-book"></i></div></div>
         </div>
+    </div>
 
-        <div id="earn-section" class="rewards-section" style="display:none;">
-            <h3>Как получить ашетики</h3>
-            <div class="earn-list">
-                <div class="earn-item"><div class="earn-left"><i class="fas fa-star"></i><span>За отзыв</span></div><div class="earn-right"><span class="earn-amount">+25</span><i class="fas fa-book-open gold-book"></i></div></div>
-                <div class="earn-item"><div class="earn-left"><i class="fas fa-shopping-cart"></i><span>За покупку от 3 000 ₽</span></div><div class="earn-right"><span class="earn-amount">+20</span><i class="fas fa-book-open gold-book"></i></div></div>
-                <div class="earn-item"><div class="earn-left"><i class="fas fa-shopping-cart"></i><span>За покупку от 5 000 ₽</span></div><div class="earn-right"><span class="earn-amount">+30</span><i class="fas fa-book-open gold-book"></i></div></div>
-                <div class="earn-item"><div class="earn-left"><i class="fas fa-shopping-cart"></i><span>За покупку от 7 500 ₽</span></div><div class="earn-right"><span class="earn-amount">+40</span><i class="fas fa-book-open gold-book"></i></div></div>
-                <div class="earn-item"><div class="earn-left"><i class="fas fa-shopping-cart"></i><span>За покупку от 10 000 ₽</span></div><div class="earn-right"><span class="earn-amount">+50</span><i class="fas fa-book-open gold-book"></i></div></div>
-            </div>
+    <div class="tasks-section">
+        <button class="tasks-header" onclick="toggleTasks()">
+            <span>Задания на статусы</span>
+            <i class="fas fa-chevron-down" id="tasksArrow"></i>
+        </button>
+        <div id="tasksContent" class="tasks-content">
+            <div id="branchTasksList"></div>
         </div>
-
-        <div class="tasks-section">
-            <button class="tasks-header" onclick="toggleTasks()">
-                <span>Задания на статусы</span>
-                <i class="fas fa-chevron-down" id="tasksArrow"></i>
-            </button>
-            <div id="tasksContent" class="tasks-content">
-                <div id="branchTasksList"></div>
-            </div>
-        </div>
-
+    </div>
         <!-- ========== ЗАДАНИЯ НА ВРЕМЯ ========== -->
         <div class="tasks-section time-tasks-section">
             <button class="tasks-header" onclick="toggleTimeTasks()">
