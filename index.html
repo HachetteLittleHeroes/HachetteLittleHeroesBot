@@ -10970,7 +10970,12 @@ let currentPublicUserId = null;
 function openUserSearch() {
     document.getElementById('userSearchModal').style.display = 'flex';
     document.getElementById('userSearchInput').value = '';
-    document.getElementById('userSearchResults').innerHTML = '<div class="no-results" style="padding: 20px;">🔍 Введите username или никнейм</div>';
+    document.getElementById('userSearchResults').innerHTML = '';  // ← пусто, без подсказки
+    
+    // Фокус на поле ввода
+    setTimeout(() => {
+        document.getElementById('userSearchInput').focus();
+    }, 100);
 }
 
 function closeUserSearch() {
@@ -11318,7 +11323,7 @@ function viewPublicBook(userId, category, bookName, hasArtworks) {
     <!-- Модалка поиска пользователей -->
 <div id="userSearchModal" class="modal-overlay">
     <div class="modal-content" style="max-width: 400px;">
-        <h3>🔍 Поиск пользователей</h3>
+        <h3>Поиск пользователей</h3>
         <div class="search-box" style="margin: 15px 0;">
             <i class="fas fa-search"></i>
             <input type="text" id="userSearchInput" placeholder="Username или никнейм..." oninput="searchUsers()">
