@@ -5886,39 +5886,62 @@ function openPempuduProfile() {
         }
         
         function renderAvatarPresets() {
-            const container = document.getElementById('avatarPresets');
-            if (!container) return;
-            container.innerHTML = '';
-            for (let i = 1; i <= 8; i++) {
-                const url = `https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av${i}.png`;
-                const div = document.createElement('div');
-                div.className = 'preset-avatar-item';
-                div.onclick = () => {
-                    user.avatar = url;
-                    saveUserData();
-                    const editor = document.getElementById('avatarEditor');
-                    if (editor) editor.style.display = 'none';
-                    if (tg) tg.showAlert('Аватар изменен!');
-                };
-                div.innerHTML = `<img src="${url}">`;
-                container.appendChild(div);
-            }
-        }
+    const container = document.getElementById('avatarPresets');
+    if (!container) return;
+    container.innerHTML = '';
+    for (let i = 1; i <= 8; i++) {
+        const url = `https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av${i}.png`;
+        const div = document.createElement('div');
+        div.className = 'preset-avatar-item';
+        div.onclick = () => {
+            user.avatar = url;
+            saveUserData();
+            
+            // ✅ Отправляем на сервер
+            saveAvatarToServer(url);
+            
+            const editor = document.getElementById('avatarEditor');
+            if (editor) editor.style.display = 'none';
+            if (tg) tg.showAlert('Аватар изменен!');
+        };
+        div.innerHTML = `<img src="${url}">`;
+        container.appendChild(div);
+    }
+}
         
         function handleCustomAvatar(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    user.avatar = e.target.result;
-                    saveUserData();
-                    const editor = document.getElementById('avatarEditor');
-                    if (editor) editor.style.display = 'none';
-                    if (tg) tg.showAlert('Аватар изменен!');
-                };
-                reader.readAsDataURL(file);
-            }
-        }
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            user.avatar = e.target.result;
+            saveUserData();
+            
+            // ✅ Отправляем на сервер
+            saveAvatarToServer(user.avatar);
+            
+            const editor = document.getElementById('avatarEditor');
+            if (editor) editor.style.display = 'none';
+            if (tg) tg.showAlert('Аватар изменен!');
+        };
+        reader.readAsDataURL(file);
+    }
+}
+async function saveAvatarToServer(avatarUrl) {
+    try {
+        await fetch(`${SERVER_URL}/api/save_avatar`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                user_id: userId,
+                avatar: avatarUrl
+            })
+        });
+        console.log('✅ Аватар сохранён на сервере');
+    } catch (error) {
+        console.error('❌ Ошибка сохранения аватара:', error);
+    }
+}
         
         function changeNickname() {
             const modal = document.getElementById('nameModal');
@@ -10228,6 +10251,20 @@ window.onload = async () => {
     await checkAndUnlockStatuses();
     await loadMarkersCollection();
     await loadColoringBooks();
+    
+    // ✅ ЗАГРУЖАЕМ АВАТАР С СЕРВЕРА
+    try {
+        const response = await fetch(`${SERVER_URL}/api/stats?user_id=${userId}`);
+        const stats = await response.json();
+        if (stats && stats.avatar) {
+            user.avatar = stats.avatar;
+            document.getElementById('user-avatar').src = user.avatar;
+            localStorage.setItem('coloring_user', JSON.stringify(user));
+            console.log('✅ Аватар загружен с сервера');
+        }
+    } catch (error) {
+        console.error('❌ Ошибка загрузки аватара:', error);
+    }
     
     if (user.status && !user.unlockedStatuses.includes(user.status)) {
         user.status = 'Без статуса';
