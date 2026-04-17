@@ -11127,16 +11127,15 @@ function closePublicProfile() {
 function renderPublicProfile(profile) {
     const container = document.getElementById('publicProfileContent');
     
-    // Витрина достижений
+    // ✅ РЕНДЕРИМ ВИТРИНУ ИЗ profile.showcase
     let showcaseHtml = '';
-    const achievements = Object.values(ACHIEVEMENTS_DB);
     const showcase = profile.showcase || [null, null, null];
     
     for (let i = 0; i < 3; i++) {
         const achId = showcase[i];
-        const ach = achievements.find(a => a.id === achId);
         
-        if (ach) {
+        if (achId && ACHIEVEMENTS_DB[achId]) {
+            const ach = ACHIEVEMENTS_DB[achId];
             showcaseHtml += `
                 <div class="showcase-slot filled">
                     <img src="${ach.img}" alt="${ach.name}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23ff9500%22/%3E%3Ctext x=%2250%22 y=%2250%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2240%22%3E🏆%3C/text%3E%3C/svg%3E'">
