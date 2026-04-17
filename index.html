@@ -3503,6 +3503,17 @@
     color: var(--accent);
     margin-top: 4px;
 }
+#bookPagesModal {
+    z-index: 100002 !important;
+}
+
+#publicProfileModal {
+    z-index: 100001 !important;
+}
+
+#userSearchModal {
+    z-index: 100001 !important;
+}
     </style>
 </head>
 <body>
@@ -10160,6 +10171,11 @@ function closeBookPagesModal() {
     currentBook = null;
     currentCategory = null;
     currentPage = null;
+    window.isViewOnly = false;
+    
+    // ✅ Возвращаем непрозрачность профилю
+    const profileModal = document.getElementById('publicProfileModal');
+    if (profileModal) profileModal.style.opacity = '1';
 }
 function uploadCustomCover(category, bookName) {
     const input = document.createElement('input');
@@ -11365,7 +11381,14 @@ function viewPublicBook(userId, category, bookName, hasArtworks) {
     document.getElementById('bookPagesCategory').innerText = `Работы пользователя`;
     
     renderBookPagesGrid(bookKey, config);
-    document.getElementById('bookPagesModal').style.display = 'flex';
+    
+    // ✅ Поднимаем модалку работ над профилем и затемняем профиль
+    const bookModal = document.getElementById('bookPagesModal');
+    bookModal.style.display = 'flex';
+    bookModal.style.zIndex = '100002';
+    
+    const profileModal = document.getElementById('publicProfileModal');
+    if (profileModal) profileModal.style.opacity = '0.3';
     
     // Скрываем input для загрузки
     const uploadInput = document.getElementById('bookPageUploadInput');
