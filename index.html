@@ -11070,10 +11070,8 @@ function searchUsers() {
 async function openPublicProfile(userId) {
     currentPublicUserId = userId;
     
-    // Закрываем модалку поиска
     closeUserSearch();
     
-    // Показываем модалку профиля
     const modal = document.getElementById('publicProfileModal');
     modal.style.display = 'flex';
     
@@ -11081,18 +11079,17 @@ async function openPublicProfile(userId) {
     container.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Загрузка профиля...</div>';
     
     try {
-        // ✅ ЗАГРУЖАЕМ ПОЛНЫЙ ПРОФИЛЬ С СЕРВЕРА
         const response = await fetch(`${SERVER_URL}/api/public_profile?user_id=${userId}`);
         const profile = await response.json();
         
-        console.log('📡 Профиль с сервера:', profile);
+        console.log('📡 Профиль загружен:', profile);
         
-        // ✅ Рендерим с актуальными данными
+        // Рендерим
         renderPublicProfile(profile);
         
     } catch (error) {
-        console.error('❌ Ошибка загрузки профиля:', error);
-        container.innerHTML = '<div class="no-results">❌ Ошибка загрузки профиля</div>';
+        console.error('❌ Ошибка:', error);
+        container.innerHTML = '<div class="no-results">❌ Ошибка загрузки</div>';
     }
 }
 
