@@ -11078,14 +11078,21 @@ async function openPublicProfile(userId) {
     modal.style.display = 'flex';
     
     const container = document.getElementById('publicProfileContent');
-    container.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Загрузка...</div>';
+    container.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Загрузка профиля...</div>';
     
     try {
+        // ✅ ЗАГРУЖАЕМ ПОЛНЫЙ ПРОФИЛЬ С СЕРВЕРА
         const response = await fetch(`${SERVER_URL}/api/public_profile?user_id=${userId}`);
         const profile = await response.json();
+        
+        console.log('📡 Профиль с сервера:', profile);
+        
+        // ✅ Рендерим с актуальными данными
         renderPublicProfile(profile);
+        
     } catch (error) {
-        container.innerHTML = '<div class="no-results">❌ Ошибка загрузки</div>';
+        console.error('❌ Ошибка загрузки профиля:', error);
+        container.innerHTML = '<div class="no-results">❌ Ошибка загрузки профиля</div>';
     }
 }
 
@@ -11097,7 +11104,7 @@ function closePublicProfile() {
 function renderPublicProfile(profile) {
     const container = document.getElementById('publicProfileContent');
     
-    // Витрина
+    // Витрина достижений
     let showcaseHtml = '';
     const achievements = Object.values(ACHIEVEMENTS_DB);
     const showcase = profile.showcase || [null, null, null];
@@ -11121,9 +11128,17 @@ function renderPublicProfile(profile) {
         }
     }
     
+    // ✅ ИСПОЛЬЗУЕМ АВАТАР ИЗ ПРОФИЛЯ
     const avatarUrl = profile.avatar || 'https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png';
+    
+    // ✅ ИСПОЛЬЗУЕМ ИМЯ И СТАТУС ИЗ ПРОФИЛЯ
+    const userName = profile.name || 'Пользователь';
+    const userStatus = profile.status || 'Без статуса';
+    
+    // ✅ СЧИТАЕМ КОЛИЧЕСТВО ФИГУРОК
     const figuresCount = profile.figures?.length || 0;
-    const markersCount = Object.keys(profile.markers || {}).length;
+    
+    // ✅ СЧИТАЕМ КОЛИЧЕСТВО РАСКРАСОК
     const booksCount = countColoringBooks(profile.coloring_books);
     
     let html = `
@@ -11133,9 +11148,9 @@ function renderPublicProfile(profile) {
             </div>
             <div class="profile-info">
                 <div class="name-row">
-                    <h2>${profile.name || 'Пользователь'}</h2>
+                    <h2>${userName}</h2>
                 </div>
-                <div class="status-badge">${profile.status || 'Без статуса'}</div>
+                <div class="status-badge">${userStatus}</div>
             </div>
         </div>
         
@@ -11163,22 +11178,6 @@ function renderPublicProfile(profile) {
         </div>
         
         <div class="inventory-main-block" style="margin-top: 10px;">
-            <div class="inventory-header" onclick="toggleBlock('modalMarkersContent', 'modalMarkersArrow')">
-                <div class="inventory-header-left">
-                    <i class="fas fa-paint-brush"></i>
-                    <span>Коллекция маркеров</span>
-                </div>
-                <div class="inventory-header-right">
-                    <span class="collection-badge">${markersCount}</span>
-                    <i class="fas fa-chevron-down" id="modalMarkersArrow"></i>
-                </div>
-            </div>
-            <div id="modalMarkersContent" class="inventory-content" style="display: none;">
-                <div id="modalMarkersList"></div>
-            </div>
-        </div>
-        
-        <div class="inventory-main-block" style="margin-top: 10px;">
             <div class="inventory-header" onclick="toggleBlock('modalBooksContent', 'modalBooksArrow')">
                 <div class="inventory-header-left">
                     <i class="fas fa-book"></i>
@@ -11196,6 +11195,8 @@ function renderPublicProfile(profile) {
     `;
     
     container.innerHTML = html;
+    
+    // ✅ СОХРАНЯЕМ ПРОФИЛЬ ДЛЯ РЕНДЕРИНГА ПРИ РАСКРЫТИИ БЛОКОВ
     container.dataset.profile = JSON.stringify(profile);
 }
 
@@ -11207,6 +11208,7 @@ function countColoringBooks(books) {
     }
     return total;
 }
+
 
 // Универсальное переключение блоков в модалке
 function toggleBlock(contentId, arrowId) {
