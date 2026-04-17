@@ -2184,9 +2184,11 @@
 }
 
 /* Сетка карточек — по 2 в ряд */
-#modalBooksContent .category-items {
-    grid-template-columns: repeat(2, 1fr) !important;
-    width: 100%;
+/* Сетка карточек — по 2 в ряд */
+.category-items {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
 }
 
 /* Карточка раскраски — вертикальная, как у персонажей */
@@ -2754,13 +2756,9 @@
             cursor: pointer !important;
         }
 
-     .modal-overlay {
-    z-index: 100000 !important;
-}
-
-#bookPagesModal {
-    z-index: 100001 !important;
-}
+        .modal-overlay {
+            z-index: 10000 !important;
+        }
 
         .nav {
             z-index: 1000 !important;
@@ -5908,30 +5906,19 @@ function openPempuduProfile() {
         }
         
         function handleCustomAvatar(event) {
-    const file = event.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            user.avatar = e.target.result;
-            saveUserData();
-            
-            // ✅ Отправляем на сервер
-            fetch(`${SERVER_URL}/api/save_avatar`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    user_id: userId,
-                    avatar: user.avatar
-                })
-            });
-            
-            const editor = document.getElementById('avatarEditor');
-            if (editor) editor.style.display = 'none';
-            if (tg) tg.showAlert('Аватар изменен!');
-        };
-        reader.readAsDataURL(file);
-    }
-}
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    user.avatar = e.target.result;
+                    saveUserData();
+                    const editor = document.getElementById('avatarEditor');
+                    if (editor) editor.style.display = 'none';
+                    if (tg) tg.showAlert('Аватар изменен!');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
         
         function changeNickname() {
             const modal = document.getElementById('nameModal');
@@ -9967,9 +9954,6 @@ function isPageUploaded(bookKey, page) {
 
 // Открыть модалку со страницами
 function openBookPagesModal(category, bookName) {
-    // ✅ Это свой профиль — можно загружать
-    window.isViewOnly = false;
-    
     currentBook = bookName;
     currentCategory = category;
     
@@ -9979,28 +9963,22 @@ function openBookPagesModal(category, bookName) {
     document.getElementById('bookPagesTitle').innerText = bookName;
     
     const categoryNames = {
-        paint_by_number: 'Раскраска по номерам',
-        alcohol: 'Спиртовая раскраска',
-        pencil: 'Раскраска для карандашей',
-        custom: 'Другая раскраска'
+        paint_by_number: '🎨 Раскраска по номерам',
+        alcohol: '🍷 Спиртовая раскраска',
+        pencil: '✏️ Раскраска для карандашей',
+        custom: '✨ Моя раскраска'
     };
     document.getElementById('bookPagesCategory').innerText = categoryNames[category] || '';
     
     renderBookPagesGrid(bookKey, config);
-    document.getElementById('bookPagesModal').style.display = 'flex';
     
-    // Показываем input для загрузки
-    const uploadInput = document.getElementById('bookPageUploadInput');
-    if (uploadInput) uploadInput.style.display = 'block';
+    document.getElementById('bookPagesModal').style.display = 'flex';
 }
 
 // Рендеринг сетки страниц
 function renderBookPagesGrid(bookKey, config) {
     const grid = document.getElementById('bookPagesGrid');
     const { totalPages, spreads } = config;
-    
-    // Определяем, чей профиль смотрим
-    const isOwnProfile = !window.isViewOnly;
     
     let html = '';
     let page = 1;
@@ -10016,25 +9994,15 @@ function renderBookPagesGrid(bookKey, config) {
             if (uploaded && artwork) {
                 html += `
                     <div class="book-page-btn uploaded" onclick="viewArtwork('${bookKey}', '${pageLabel}')">
-                        <img src="${artwork}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">
+                        <img src="${artwork}">
                     </div>
                 `;
             } else {
-                if (isOwnProfile) {
-                    // Свой профиль — можно загружать
-                    html += `
-                        <div class="book-page-btn" onclick="uploadArtwork('${bookKey}', '${pageLabel}')">
-                            ${pageLabel}
-                        </div>
-                    `;
-                } else {
-                    // Чужой профиль — просто показываем пустую страницу без возможности загрузки
-                    html += `
-                        <div class="book-page-btn">
-                            ${pageLabel}
-                        </div>
-                    `;
-                }
+                html += `
+    <div class="book-page-btn" onclick="uploadArtwork('${bookKey}', '${pageLabel}')">
+        ${pageLabel}
+    </div>
+`;
             }
             page += 2;
         } else {
@@ -10044,25 +10012,15 @@ function renderBookPagesGrid(bookKey, config) {
             if (uploaded && artwork) {
                 html += `
                     <div class="book-page-btn uploaded" onclick="viewArtwork('${bookKey}', '${page}')">
-                        <img src="${artwork}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">
+                        <img src="${artwork}">
                     </div>
                 `;
             } else {
-                if (isOwnProfile) {
-                    // Свой профиль — можно загружать
-                    html += `
-                        <div class="book-page-btn" onclick="uploadArtwork('${bookKey}', '${page}')">
-                            ${page}
-                        </div>
-                    `;
-                } else {
-                    // Чужой профиль — просто показываем пустую страницу без возможности загрузки
-                    html += `
-                        <div class="book-page-btn">
-                            ${page}
-                        </div>
-                    `;
-                }
+                html += `
+    <div class="book-page-btn" onclick="uploadArtwork('${bookKey}', '${page}')">
+        ${page}
+    </div>
+`;
             }
             page++;
         }
@@ -10169,9 +10127,6 @@ function closeBookPagesModal() {
     currentBook = null;
     currentCategory = null;
     currentPage = null;
-    
-    // ✅ Сбрасываем флаг просмотра
-    window.isViewOnly = false;
 }
 function uploadCustomCover(category, bookName) {
     const input = document.createElement('input');
@@ -11166,6 +11121,22 @@ function renderPublicProfile(profile) {
         </div>
         
         <div class="inventory-main-block" style="margin-top: 10px;">
+            <div class="inventory-header" onclick="toggleBlock('modalMarkersContent', 'modalMarkersArrow')">
+                <div class="inventory-header-left">
+                    <i class="fas fa-paint-brush"></i>
+                    <span>Коллекция маркеров</span>
+                </div>
+                <div class="inventory-header-right">
+                    <span class="collection-badge">${markersCount}</span>
+                    <i class="fas fa-chevron-down" id="modalMarkersArrow"></i>
+                </div>
+            </div>
+            <div id="modalMarkersContent" class="inventory-content" style="display: none;">
+                <div id="modalMarkersList"></div>
+            </div>
+        </div>
+        
+        <div class="inventory-main-block" style="margin-top: 10px;">
             <div class="inventory-header" onclick="toggleBlock('modalBooksContent', 'modalBooksArrow')">
                 <div class="inventory-header-left">
                     <i class="fas fa-book"></i>
@@ -11319,9 +11290,7 @@ function viewPublicBook(userId, category, bookName, hasArtworks) {
         return;
     }
     
-    // ✅ Устанавливаем флаг просмотра (чужой профиль)
-    window.isViewOnly = true;
-    
+    // Открываем модалку со страницами (аналогично своей, но только просмотр)
     currentBook = bookName;
     currentCategory = category;
     
@@ -11332,7 +11301,7 @@ function viewPublicBook(userId, category, bookName, hasArtworks) {
     fetch(`${SERVER_URL}/api/artworks?user_id=${userId}`)
         .then(r => r.json())
         .then(artworks => {
-            userArtworks = artworks;
+            userArtworks = artworks; // Временно подменяем для просмотра
             
             document.getElementById('bookPagesTitle').innerText = bookName;
             document.getElementById('bookPagesCategory').innerText = `Работы пользователя`;
@@ -11340,7 +11309,7 @@ function viewPublicBook(userId, category, bookName, hasArtworks) {
             renderBookPagesGrid(bookKey, config);
             document.getElementById('bookPagesModal').style.display = 'flex';
             
-            // Скрываем input для загрузки
+            // Блокируем загрузку (только просмотр)
             const uploadInput = document.getElementById('bookPageUploadInput');
             if (uploadInput) uploadInput.style.display = 'none';
         });
@@ -11349,9 +11318,10 @@ function viewPublicBook(userId, category, bookName, hasArtworks) {
     <!-- Модалка поиска пользователей -->
 <div id="userSearchModal" class="modal-overlay">
     <div class="modal-content" style="max-width: 400px;">
-        <h3>Поиск пользователей</h3>
+        <h3>🔍 Поиск пользователей</h3>
         <div class="search-box" style="margin: 15px 0;">
             <i class="fas fa-search"></i>
+            <input type="text" id="userSearchInput" placeholder="Username или никнейм..." oninput="searchUsers()">
         </div>
         <div id="userSearchResults" style="max-height: 400px; overflow-y: auto;"></div>
         <button class="modal-close-btn" onclick="closeUserSearch()">Закрыть</button>
