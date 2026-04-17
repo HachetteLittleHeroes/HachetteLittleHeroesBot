@@ -3518,6 +3518,40 @@
 .artwork-viewer-modal {
     z-index: 100003 !important;
 }
+/* Выравнивание ширины вкладок в публичном профиле */
+#modalFiguresContent,
+#modalBooksContent {
+    padding: 0 20px 20px !important;
+}
+
+#modalFiguresGrid,
+#modalBooksList {
+    width: 100%;
+}
+
+#modalBooksContent .category-items {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px;
+    width: 100%;
+}
+
+/* Убираем лишние отступы у раскрасок */
+#modalBooksContent .coloring-category {
+    padding: 0 !important;
+    margin-bottom: 15px !important;
+}
+
+#modalBooksContent .category-header {
+    padding: 0 !important;
+}
+
+/* Выравниваем карточки раскрасок по ширине с персонажами */
+#modalBooksContent .coloring-book-item {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+}
     </style>
 </head>
 <body>
