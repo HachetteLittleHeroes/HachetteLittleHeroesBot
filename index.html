@@ -3514,6 +3514,10 @@
 #userSearchModal {
     z-index: 100001 !important;
 }
+/* Модалка просмотра фото (поверх всех) */
+.artwork-viewer-modal {
+    z-index: 100003 !important;
+}
     </style>
 </head>
 <body>
@@ -10927,21 +10931,17 @@ function viewArtwork(bookKey, page) {
     if (!artwork) return;
     
     const modal = document.createElement('div');
-    modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.9);z-index:100001;display:flex;align-items:center;justify-content:center;padding:20px;';
+    modal.className = 'artwork-viewer-modal';  // ✅ ДОБАВЛЯЕМ КЛАСС
+    modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.9);z-index:100003;display:flex;align-items:center;justify-content:center;padding:20px;';
     
     modal.innerHTML = `
         <div style="max-width:90%;max-height:90%;position:relative;">
             <img src="${artwork}" style="max-width:100%;max-height:80vh;object-fit:contain;border-radius:16px;">
             <p style="color:white;text-align:center;margin-top:15px;">Страница ${page}</p>
-            <button id="closeArtworkBtn" style="position:absolute;top:-40px;right:0;background:none;border:none;color:white;font-size:30px;cursor:pointer;">&times;</button>
+            <button onclick="this.closest('.artwork-viewer-modal').remove()" style="position:absolute;top:-40px;right:0;background:none;border:none;color:white;font-size:30px;cursor:pointer;">&times;</button>
         </div>
     `;
     
-    // Закрытие по крестику
-    const closeBtn = modal.querySelector('#closeArtworkBtn');
-    closeBtn.onclick = () => modal.remove();
-    
-    // Закрытие по клику на фон
     modal.onclick = (e) => {
         if (e.target === modal) modal.remove();
     };
