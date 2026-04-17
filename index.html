@@ -3640,6 +3640,47 @@
     margin-top: 8px;
     width: 100%;
 }
+/* Кнопка "В друзьях" (неактивная) */
+.already-friend-btn {
+    background: var(--status-green);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    cursor: default;
+    margin-top: 8px;
+    width: 100%;
+    opacity: 0.8;
+}
+
+.friend-view-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.friend-remove-btn {
+    background: var(--status-red);
+    color: white;
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
     </style>
 </head>
 <body>
@@ -4307,7 +4348,7 @@
             showcase: [null, null, null],
             theme: localStorage.getItem('app_theme') || 'light'
         };
-        
+        let myFriends = [];
         let cart = {};
         let inventory = { organizers: [], userMarkers: {} };
         let markersDB = [];
@@ -10431,6 +10472,7 @@ window.onload = async () => {
     await checkAndUnlockStatuses();
     await loadMarkersCollection();
     await loadColoringBooks();
+    await loadMyFriends();
     
     // ✅ ЗАГРУЖАЕМ АВАТАР С СЕРВЕРА
     try {
@@ -11316,6 +11358,9 @@ function renderPublicProfile(profile) {
     // ✅ Проверяем, не свой ли это профиль
     const isOwnProfile = (String(profile.user_id) === String(userId));
     
+    // ✅ Проверяем, в друзьях ли пользователь
+    const isFriend = myFriends.some(f => String(f.user_id) === String(profile.user_id));
+    
     let html = `
         <div class="profile-header-block" style="margin: 0; padding: 15px;">
             <div class="avatar-wrapper">
@@ -11327,9 +11372,15 @@ function renderPublicProfile(profile) {
                 </div>
                 <div class="status-badge">${userStatus}</div>
                 ${!isOwnProfile ? `
-                    <button class="add-friend-btn" onclick="addFriend('${profile.user_id}')">
-                        <i class="fas fa-user-plus"></i> Добавить в друзья
-                    </button>
+                    ${isFriend ? `
+                        <button class="already-friend-btn" disabled>
+                            <i class="fas fa-check"></i> В друзьях
+                        </button>
+                    ` : `
+                        <button class="add-friend-btn" onclick="addFriend('${profile.user_id}')">
+                            <i class="fas fa-user-plus"></i> Добавить в друзья
+                        </button>
+                    `}
                 ` : ''}
             </div>
         </div>
@@ -11560,16 +11611,15 @@ async function openFriendsList() {
     container.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Загрузка...</div>';
     
     try {
-        const response = await fetch(`${SERVER_URL}/api/friends?user_id=${userId}`);
-        const friends = await response.json();
+        await loadMyFriends(); // Загружаем актуальный список
         
-        if (friends.length === 0) {
+        if (myFriends.length === 0) {
             container.innerHTML = '<div class="no-results" style="padding: 20px;">😕 У вас пока нет друзей</div>';
             return;
         }
         
         let html = '';
-        friends.forEach(friend => {
+        myFriends.forEach(friend => {
             html += `
                 <div class="friend-card">
                     <img src="${friend.avatar}" class="friend-avatar" onerror="this.src='https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png'">
@@ -11578,8 +11628,12 @@ async function openFriendsList() {
                         <div class="friend-username">${friend.username}</div>
                     </div>
                     <div style="display: flex; gap: 5px;">
-                        <button class="friend-view-btn" onclick="viewFriendProfile('${friend.user_id}')">👁️</button>
-                        <button class="friend-remove-btn" onclick="removeFriend('${friend.user_id}')">❌</button>
+                        <button class="friend-view-btn" onclick="viewFriendProfile('${friend.user_id}')">
+                            <i class="fas fa-user"></i>
+                        </button>
+                        <button class="friend-remove-btn" onclick="confirmRemoveFriend('${friend.user_id}', '${friend.name.replace(/'/g, "\\'")}')">
+                            <i class="fas fa-user-minus"></i>
+                        </button>
                     </div>
                 </div>
             `;
@@ -11600,19 +11654,20 @@ function viewFriendProfile(friendId) {
     openPublicProfile(friendId);
 }
 
-async function addFriend(friendId) {
-    try {
-        await fetch(`${SERVER_URL}/api/friends/add`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ user_id: userId, friend_id: friendId })
+// ✅ Подтверждение удаления
+function confirmRemoveFriend(friendId, friendName) {
+    if (tg) {
+        tg.showConfirm(`Удалить «${friendName}» из друзей?`, (confirm) => {
+            if (confirm) removeFriend(friendId);
         });
-        if (tg) tg.showAlert('✅ Добавлено в друзья!');
-    } catch (error) {
-        if (tg) tg.showAlert('❌ Ошибка');
+    } else {
+        if (confirm(`Удалить «${friendName}» из друзей?`)) {
+            removeFriend(friendId);
+        }
     }
 }
 
+// ✅ Удаление из друзей
 async function removeFriend(friendId) {
     try {
         await fetch(`${SERVER_URL}/api/friends/remove`, {
@@ -11620,10 +11675,63 @@ async function removeFriend(friendId) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ user_id: userId, friend_id: friendId })
         });
-        if (tg) tg.showAlert('❌ Удалено из друзей');
+        
+        // Обновляем глобальный список
+        await loadMyFriends();
+        
+        // Обновляем модалку
         openFriendsList();
+        
+        // Если открыт публичный профиль этого друга — обновляем кнопку
+        if (currentPublicUserId === friendId) {
+            const container = document.getElementById('publicProfileContent');
+            if (container && container.dataset.profile) {
+                const profile = JSON.parse(container.dataset.profile);
+                renderPublicProfile(profile);
+            }
+        }
+        
+        if (tg) tg.showAlert('❌ Удалено из друзей');
     } catch (error) {
         if (tg) tg.showAlert('❌ Ошибка');
+    }
+}
+
+// ✅ Добавление в друзья
+async function addFriend(friendId) {
+    try {
+        await fetch(`${SERVER_URL}/api/friends/add`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId, friend_id: friendId })
+        });
+        
+        // Обновляем глобальный список
+        await loadMyFriends();
+        
+        // Если открыт публичный профиль — обновляем кнопку
+        if (currentPublicUserId === friendId) {
+            const container = document.getElementById('publicProfileContent');
+            if (container && container.dataset.profile) {
+                const profile = JSON.parse(container.dataset.profile);
+                renderPublicProfile(profile);
+            }
+        }
+        
+        if (tg) tg.showAlert('✅ Добавлено в друзья!');
+    } catch (error) {
+        if (tg) tg.showAlert('❌ Ошибка');
+    }
+}
+
+// ✅ Загрузка списка друзей
+async function loadMyFriends() {
+    try {
+        const response = await fetch(`${SERVER_URL}/api/friends?user_id=${userId}`);
+        myFriends = await response.json();
+    } catch (error) {
+        console.error('Ошибка загрузки друзей:', error);
+        myFriends = [];
     }
 }
     </script>
