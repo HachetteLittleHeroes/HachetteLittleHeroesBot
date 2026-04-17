@@ -3579,32 +3579,86 @@
     margin: 0 !important;
     box-sizing: border-box !important;
 }
+/* Друзья */
+.friend-card {
+    background: var(--bg-header);
+    border-radius: 16px;
+    padding: 12px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border: 1px solid var(--border-color);
+}
+
+.friend-avatar {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.friend-info {
+    flex: 1;
+}
+
+.friend-name {
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--text);
+}
+
+.friend-username {
+    font-size: 12px;
+    color: var(--text-gray);
+}
+
+.friend-view-btn,
+.friend-remove-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.friend-remove-btn {
+    background: var(--status-red);
+}
+
+.add-friend-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    cursor: pointer;
+    margin-top: 8px;
+    width: 100%;
+}
     </style>
 </head>
 <body>
     <!-- ========== ПРОФИЛЬ ========== -->
 <div id="profile" class="page active">
-    <!-- Заголовок с кнопкой поиска -->
-    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 15px 0;">
-        <div class="header" style="padding: 0;">Профиль</div>
+    <!-- Заголовок с кнопками -->
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 15px 0;">
+    <div class="header" style="padding: 0;">Профиль</div>
+    <div style="display: flex; gap: 10px;">
+        <!-- Кнопка друзей -->
+        <button onclick="openFriendsList()" style="background: var(--accent); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <i class="fas fa-address-book"></i>
+        </button>
+        <!-- Кнопка поиска -->
         <button onclick="openUserSearch()" style="background: var(--accent); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
             <i class="fas fa-search"></i>
         </button>
     </div>
-    
-    <div class="profile-header-block">
-        <div class="avatar-wrapper" onclick="toggleAvatarEditor()">
-            <img id="user-avatar" src="https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av2.png">
-            <div class="avatar-edit-icon"><i class="fas fa-pencil-alt"></i></div>
-        </div>
-        <div class="profile-info">
-            <div class="name-row" onclick="changeNickname()">
-                <h2 id="displayUsername">Без имени</h2>
-                <i class="fas fa-pencil-alt" style="color: var(--text-gray); font-size: 14px;"></i>
-            </div>
-            <button id="currentStatus" class="status-badge" onclick="openStatusInfo()">Без статуса</button>
-        </div>
-    </div>
+</div>
 
     <div id="avatarEditor" class="avatar-editor">
         <p>Выберите аватарку:</p>
@@ -11245,6 +11299,9 @@ function renderPublicProfile(profile) {
     // ✅ СЧИТАЕМ КОЛИЧЕСТВО РАСКРАСОК
     const booksCount = countColoringBooks(profile.coloring_books);
     
+    // ✅ Проверяем, не свой ли это профиль
+    const isOwnProfile = (String(profile.user_id) === String(userId));
+    
     let html = `
         <div class="profile-header-block" style="margin: 0; padding: 15px;">
             <div class="avatar-wrapper">
@@ -11255,6 +11312,11 @@ function renderPublicProfile(profile) {
                     <h2>${userName}</h2>
                 </div>
                 <div class="status-badge">${userStatus}</div>
+                ${!isOwnProfile ? `
+                    <button class="add-friend-btn" onclick="addFriend('${profile.user_id}')">
+                        <i class="fas fa-user-plus"></i> Добавить в друзья
+                    </button>
+                ` : ''}
             </div>
         </div>
         
@@ -11475,6 +11537,81 @@ function viewPublicBook(userId, category, bookName, hasArtworks) {
     const uploadInput = document.getElementById('bookPageUploadInput');
     if (uploadInput) uploadInput.style.display = 'none';
 }
+// Открыть список друзей
+async function openFriendsList() {
+    const modal = document.getElementById('friendsListModal');
+    const container = document.getElementById('friendsListContainer');
+    
+    modal.style.display = 'flex';
+    container.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Загрузка...</div>';
+    
+    try {
+        const response = await fetch(`${SERVER_URL}/api/friends?user_id=${userId}`);
+        const friends = await response.json();
+        
+        if (friends.length === 0) {
+            container.innerHTML = '<div class="no-results" style="padding: 20px;">😕 У вас пока нет друзей</div>';
+            return;
+        }
+        
+        let html = '';
+        friends.forEach(friend => {
+            html += `
+                <div class="friend-card">
+                    <img src="${friend.avatar}" class="friend-avatar" onerror="this.src='https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png'">
+                    <div class="friend-info">
+                        <div class="friend-name">${friend.name}</div>
+                        <div class="friend-username">${friend.username}</div>
+                    </div>
+                    <div style="display: flex; gap: 5px;">
+                        <button class="friend-view-btn" onclick="viewFriendProfile('${friend.user_id}')">👁️</button>
+                        <button class="friend-remove-btn" onclick="removeFriend('${friend.user_id}')">❌</button>
+                    </div>
+                </div>
+            `;
+        });
+        
+        container.innerHTML = html;
+    } catch (error) {
+        container.innerHTML = '<div class="no-results">❌ Ошибка загрузки</div>';
+    }
+}
+
+function closeFriendsList() {
+    document.getElementById('friendsListModal').style.display = 'none';
+}
+
+function viewFriendProfile(friendId) {
+    closeFriendsList();
+    openPublicProfile(friendId);
+}
+
+async function addFriend(friendId) {
+    try {
+        await fetch(`${SERVER_URL}/api/friends/add`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId, friend_id: friendId })
+        });
+        if (tg) tg.showAlert('✅ Добавлено в друзья!');
+    } catch (error) {
+        if (tg) tg.showAlert('❌ Ошибка');
+    }
+}
+
+async function removeFriend(friendId) {
+    try {
+        await fetch(`${SERVER_URL}/api/friends/remove`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId, friend_id: friendId })
+        });
+        if (tg) tg.showAlert('❌ Удалено из друзей');
+        openFriendsList();
+    } catch (error) {
+        if (tg) tg.showAlert('❌ Ошибка');
+    }
+}
     </script>
     <!-- Модалка поиска пользователей -->
 <div id="userSearchModal" class="modal-overlay">
@@ -11497,6 +11634,14 @@ function viewPublicBook(userId, category, bookName, hasArtworks) {
             <h3 style="margin: 0;">Профиль</h3>
         </div>
         <div id="publicProfileContent"></div>
+    </div>
+</div>
+<!-- Модалка списка друзей -->
+<div id="friendsListModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 400px;">
+        <h3>Мои друзья</h3>
+        <div id="friendsListContainer" style="max-height: 400px; overflow-y: auto;"></div>
+        <button class="modal-close-btn" onclick="closeFriendsList()">Закрыть</button>
     </div>
 </div>
 </body>
