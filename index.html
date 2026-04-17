@@ -5749,84 +5749,105 @@ function openPempuduProfile() {
         }
         
         function openShowcaseSelector(slotIndex) {
-            const list = document.getElementById('showcaseAchievementsList');
-            if (!list) return;
-            list.innerHTML = '';
+    const list = document.getElementById('showcaseAchievementsList');
+    if (!list) return;
+    list.innerHTML = '';
+    
+    const allAchievements = Object.values(ACHIEVEMENTS_DB);
+    
+    if (allAchievements.length === 0) {
+        list.innerHTML = '<div class="no-results">Нет достижений</div>';
+    } else {
+        allAchievements.forEach(ach => {
+            const isUnlocked = user.achievements.includes(ach.id);
+            const isAlreadyInShowcase = user.showcase.includes(ach.id);
+            const isCurrentSlot = user.showcase[slotIndex] === ach.id;
             
-            const allAchievements = Object.values(ACHIEVEMENTS_DB);
+            const div = document.createElement('div');
+            div.style.cssText = `display:flex; align-items:center; gap:12px; padding:12px; margin-bottom:8px; border-radius:16px; background:var(--card-bg); border:1px solid var(--border-color); cursor:${isUnlocked ? 'pointer' : 'default'}; opacity:${isUnlocked ? '1' : '0.6'}; transition:all 0.2s;`;
             
-            if (allAchievements.length === 0) {
-                list.innerHTML = '<div class="no-results">Нет достижений</div>';
-            } else {
-                allAchievements.forEach(ach => {
-                    const isUnlocked = user.achievements.includes(ach.id);
-                    const isAlreadyInShowcase = user.showcase.includes(ach.id);
-                    const isCurrentSlot = user.showcase[slotIndex] === ach.id;
-                    
-                    const div = document.createElement('div');
-                    div.style.cssText = `display:flex; align-items:center; gap:12px; padding:12px; margin-bottom:8px; border-radius:16px; background:var(--card-bg); border:1px solid var(--border-color); cursor:${isUnlocked ? 'pointer' : 'default'}; opacity:${isUnlocked ? '1' : '0.6'}; transition:all 0.2s;`;
-                    
-                    if (isUnlocked) {
-                        div.onclick = () => {
-                            if (isAlreadyInShowcase && !isCurrentSlot) {
-                                if (tg) tg.showAlert('❌ Это достижение уже установлено в другой ячейке витрины');
-                                return;
-                            }
-                            user.showcase[slotIndex] = ach.id;
-                            saveUserData();
-                            renderShowcase();
-                            const modal = document.getElementById('showcaseSelectorModal');
-                            if (modal) modal.style.display = 'none';
-                            if (tg) tg.showAlert(`✅ Достижение "${ach.name}" установлено в витрину!`);
-                        };
+            if (isUnlocked) {
+                div.onclick = () => {
+                    if (isAlreadyInShowcase && !isCurrentSlot) {
+                        if (tg) tg.showAlert('❌ Это достижение уже установлено в другой ячейке витрины');
+                        return;
                     }
+                    user.showcase[slotIndex] = ach.id;
+                    saveUserData();
                     
-                    const img = document.createElement('img');
-                    img.src = ach.img;
-                    img.alt = ach.name;
-                    img.style.cssText = 'width: 50px; height: 50px; border-radius: 12px; object-fit: cover; background: #f0f0f0; flex-shrink: 0;';
-                    img.onerror = function() {
-                        this.src = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2250%22 height=%2250%22 viewBox=%220 0 50 50%22%3E%3Crect width=%2250%22 height=%2250%22 fill=%22%23ff9500%22/%3E%3Ctext x=%2225%22 y=%2225%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2220%22%3E🏆%3C/text%3E%3C/svg%3E';
-                    };
+                    // ✅ ОТПРАВЛЯЕМ ВИТРИНУ НА СЕРВЕР
+                    saveShowcaseToServer();
                     
-                    const infoDiv = document.createElement('div');
-                    infoDiv.style.cssText = 'flex:1;';
-                    infoDiv.innerHTML = `
-                        <div style="font-weight:600; font-size:14px; color:var(--text);">${ach.name}</div>
-                        <div style="font-size:11px; color:var(--text-gray); margin-top:2px;">${ach.condition}</div>
-                    `;
-                    
-                    const statusSpan = document.createElement('span');
-                    statusSpan.style.cssText = 'font-size:12px; padding:4px 8px; border-radius:20px; flex-shrink:0;';
-                    
-                    if (!isUnlocked) {
-                        statusSpan.innerHTML = '<i class="fas fa-lock"></i> Заблокировано';
-                        statusSpan.style.background = '#666';
-                        statusSpan.style.color = 'white';
-                    } else if (isAlreadyInShowcase && isCurrentSlot) {
-                        statusSpan.innerHTML = '<i class="fas fa-check"></i> Установлено';
-                        statusSpan.style.background = 'var(--status-green)';
-                        statusSpan.style.color = 'white';
-                    } else if (isAlreadyInShowcase && !isCurrentSlot) {
-                        statusSpan.innerHTML = '<i class="fas fa-check-circle"></i> В другой ячейке';
-                        statusSpan.style.background = 'var(--status-orange)';
-                        statusSpan.style.color = 'white';
-                    } else {
-                        statusSpan.innerHTML = 'Выбрать';
-                        statusSpan.style.background = 'var(--accent)';
-                        statusSpan.style.color = 'white';
-                    }
-                    
-                    div.appendChild(img);
-                    div.appendChild(infoDiv);
-                    div.appendChild(statusSpan);
-                    list.appendChild(div);
-                });
+                    renderShowcase();
+                    const modal = document.getElementById('showcaseSelectorModal');
+                    if (modal) modal.style.display = 'none';
+                    if (tg) tg.showAlert(`✅ Достижение "${ach.name}" установлено в витрину!`);
+                };
             }
             
-            const modal = document.getElementById('showcaseSelectorModal');
-            if (modal) modal.style.display = 'flex';
-        }
+            const img = document.createElement('img');
+            img.src = ach.img;
+            img.alt = ach.name;
+            img.style.cssText = 'width: 50px; height: 50px; border-radius: 12px; object-fit: cover; background: #f0f0f0; flex-shrink: 0;';
+            img.onerror = function() {
+                this.src = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2250%22 height=%2250%22 viewBox=%220 0 50 50%22%3E%3Crect width=%2250%22 height=%2250%22 fill=%22%23ff9500%22/%3E%3Ctext x=%2225%22 y=%2225%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2220%22%3E🏆%3C/text%3E%3C/svg%3E';
+            };
+            
+            const infoDiv = document.createElement('div');
+            infoDiv.style.cssText = 'flex:1;';
+            infoDiv.innerHTML = `
+                <div style="font-weight:600; font-size:14px; color:var(--text);">${ach.name}</div>
+                <div style="font-size:11px; color:var(--text-gray); margin-top:2px;">${ach.condition}</div>
+            `;
+            
+            const statusSpan = document.createElement('span');
+            statusSpan.style.cssText = 'font-size:12px; padding:4px 8px; border-radius:20px; flex-shrink:0;';
+            
+            if (!isUnlocked) {
+                statusSpan.innerHTML = '<i class="fas fa-lock"></i> Заблокировано';
+                statusSpan.style.background = '#666';
+                statusSpan.style.color = 'white';
+            } else if (isAlreadyInShowcase && isCurrentSlot) {
+                statusSpan.innerHTML = '<i class="fas fa-check"></i> Установлено';
+                statusSpan.style.background = 'var(--status-green)';
+                statusSpan.style.color = 'white';
+            } else if (isAlreadyInShowcase && !isCurrentSlot) {
+                statusSpan.innerHTML = '<i class="fas fa-check-circle"></i> В другой ячейке';
+                statusSpan.style.background = 'var(--status-orange)';
+                statusSpan.style.color = 'white';
+            } else {
+                statusSpan.innerHTML = 'Выбрать';
+                statusSpan.style.background = 'var(--accent)';
+                statusSpan.style.color = 'white';
+            }
+            
+            div.appendChild(img);
+            div.appendChild(infoDiv);
+            div.appendChild(statusSpan);
+            list.appendChild(div);
+        });
+    }
+    
+    const modal = document.getElementById('showcaseSelectorModal');
+    if (modal) modal.style.display = 'flex';
+}
+
+// ✅ ДОБАВЬ ЭТУ ФУНКЦИЮ
+async function saveShowcaseToServer() {
+    try {
+        await fetch(`${SERVER_URL}/api/save_showcase`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                user_id: userId,
+                showcase: user.showcase
+            })
+        });
+        console.log('✅ Витрина сохранена на сервере');
+    } catch (error) {
+        console.error('❌ Ошибка сохранения витрины:', error);
+    }
+}
         
         function openAchievementsGallery() {
             const list = document.getElementById('allAchievementsList');
