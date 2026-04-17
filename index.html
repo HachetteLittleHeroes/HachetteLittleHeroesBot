@@ -6031,24 +6031,34 @@ async function saveAvatarToServer(avatarUrl) {
         }
         
         function selectStatus(statusName) {
-            console.log('selectStatus called with:', statusName);
-            
-            if (!user.unlockedStatuses.includes(statusName)) {
-                const msg = `Статус "${statusName}" не разблокирован`;
-                if (tg) tg.showAlert(msg);
-                return;
-            }
-            
-            user.status = statusName;
-            saveUserData();
-            
-            const modal = document.getElementById('statusSelectModal');
-            if (modal) modal.style.display = 'none';
-            
-            updateUI();
-            
-            if (tg) tg.showAlert(`✅ Статус изменен на "${statusName}"`);
-        }
+    console.log('selectStatus called with:', statusName);
+    
+    if (!user.unlockedStatuses.includes(statusName)) {
+        const msg = `Статус "${statusName}" не разблокирован`;
+        if (tg) tg.showAlert(msg);
+        return;
+    }
+    
+    user.status = statusName;
+    saveUserData();
+    
+    // ✅ Сохраняем на сервер
+    fetch(`${SERVER_URL}/api/save_status`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            user_id: userId,
+            status: statusName
+        })
+    });
+    
+    const modal = document.getElementById('statusSelectModal');
+    if (modal) modal.style.display = 'none';
+    
+    updateUI();
+    
+    if (tg) tg.showAlert(`✅ Статус изменен на "${statusName}"`);
+}
         
         function openSupport() {
     // Оставляем для обратной совместимости
@@ -11325,35 +11335,41 @@ function renderPublicBooks(books, artworks, userId) {
 
 // Просмотр публичной раскраски (страницы)
 function viewPublicBook(userId, category, bookName, hasArtworks) {
-    if (hasArtworks === 0) {
+    // ✅ Используем artworks из профиля, а не hasArtworks
+    const container = document.getElementById('publicProfileContent');
+    const profile = JSON.parse(container.dataset.profile || '{}');
+    const artworks = profile.artworks || {};
+    
+    const bookKey = `${category}_${bookName}`;
+    const bookArtworks = artworks[bookKey] || {};
+    const artworksCount = Object.keys(bookArtworks).length;
+    
+    if (artworksCount === 0) {
         if (tg) tg.showAlert('У пользователя нет работ в этой раскраске');
         else alert('Нет работ');
         return;
     }
     
-    // Открываем модалку со страницами (аналогично своей, но только просмотр)
+    // ✅ Устанавливаем флаг просмотра (чужой профиль)
+    window.isViewOnly = true;
+    
     currentBook = bookName;
     currentCategory = category;
     
-    const bookKey = `${category}_${bookName}`;
     const config = BOOK_PAGES_CONFIG[bookName] || DEFAULT_PAGES_CONFIG;
     
-    // Загружаем работы пользователя
-    fetch(`${SERVER_URL}/api/artworks?user_id=${userId}`)
-        .then(r => r.json())
-        .then(artworks => {
-            userArtworks = artworks; // Временно подменяем для просмотра
-            
-            document.getElementById('bookPagesTitle').innerText = bookName;
-            document.getElementById('bookPagesCategory').innerText = `Работы пользователя`;
-            
-            renderBookPagesGrid(bookKey, config);
-            document.getElementById('bookPagesModal').style.display = 'flex';
-            
-            // Блокируем загрузку (только просмотр)
-            const uploadInput = document.getElementById('bookPageUploadInput');
-            if (uploadInput) uploadInput.style.display = 'none';
-        });
+    // ✅ Используем загруженные работы
+    userArtworks = artworks;
+    
+    document.getElementById('bookPagesTitle').innerText = bookName;
+    document.getElementById('bookPagesCategory').innerText = `Работы пользователя`;
+    
+    renderBookPagesGrid(bookKey, config);
+    document.getElementById('bookPagesModal').style.display = 'flex';
+    
+    // Скрываем input для загрузки
+    const uploadInput = document.getElementById('bookPageUploadInput');
+    if (uploadInput) uploadInput.style.display = 'none';
 }
     </script>
     <!-- Модалка поиска пользователей -->
