@@ -3693,6 +3693,26 @@
 [data-theme="dark"] .book-page-btn.completed {
     background: color-mix(in srgb, var(--accent) 20%, transparent) !important;
 }
+/* Поиск в публичном профиле */
+#publicBooksSearch {
+    background: var(--input-bg) !important;
+    color: var(--text) !important;
+    border: 1px solid var(--border-color) !important;
+}
+
+#publicBooksSearch::placeholder {
+    color: var(--text-gray) !important;
+}
+
+.public-category {
+    transition: all 0.2s;
+}
+
+.public-category .category-items {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
     </style>
 </head>
 <body>
@@ -11803,19 +11823,34 @@ function renderPublicMarkers(markers) {
 }
 
 // Рендеринг публичных раскрасок
+// Рендеринг публичных раскрасок
 function renderPublicBooks(books, artworks, userId) {
     const container = document.getElementById('modalBooksList');
     if (!container) return;
     
     const categories = ['paint_by_number', 'alcohol', 'pencil', 'custom'];
     const categoryNames = {
-        paint_by_number: '🎨 По номерам',
-        alcohol: '🍷 Спиртовые',
-        pencil: '✏️ Карандаши',
-        custom: '✨ Другие'
+        paint_by_number: 'По номерам',
+        alcohol: 'Спиртовые',
+        pencil: 'Карандаши',
+        custom: 'Другие'
     };
     
-    let html = '';
+    // ✅ ДОБАВЛЯЕМ ПОЛЕ ПОИСКА
+    let html = `
+        <div class="search-box" style="margin-bottom: 15px;">
+            <i class="fas fa-search"></i>
+            <input type="text" 
+                   id="publicBooksSearch" 
+                   placeholder="🔍 Поиск по названию раскраски..." 
+                   oninput="filterPublicBooks()"
+                   style="width: 100%;">
+        </div>
+        <div id="publicBooksFilteredContent">
+    `;
+    
+    // Сохраняем данные для фильтрации
+    window.publicBooksData = { books, artworks, userId };
     
     categories.forEach(category => {
         const userBooks = books[category] || [];
@@ -11824,8 +11859,11 @@ function renderPublicBooks(books, artworks, userId) {
         
         if (allBooks.length === 0) return;
         
-        html += `<h4 style="margin: 15px 0 10px;">${categoryNames[category]}</h4>`;
-        html += `<div class="category-items" style="grid-template-columns: repeat(2, 1fr);">`;
+        html += `
+            <div class="public-category" data-category="${category}">
+                <h4 style="margin: 15px 0 10px;">${categoryNames[category]}</h4>
+                <div class="category-items" style="grid-template-columns: repeat(2, 1fr);">
+        `;
         
         allBooks.forEach(bookName => {
             const collected = userBooks.some(b => (typeof b === 'string' ? b : b.name) === bookName);
@@ -11843,7 +11881,9 @@ function renderPublicBooks(books, artworks, userId) {
             }
             
             html += `
-                <div class="coloring-book-item ${collected ? 'collected' : ''}" onclick="viewPublicBook('${userId}', '${category}', '${bookName.replace(/'/g, "\\'")}', ${hasArtworks})">
+                <div class="coloring-book-item ${collected ? 'collected' : ''}" 
+                     data-book-name="${bookName.toLowerCase()}"
+                     onclick="viewPublicBook('${userId}', '${category}', '${bookName.replace(/'/g, "\\'")}', ${hasArtworks})">
                     <img src="${coverUrl}" class="book-cover" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23ff9500%22 rx=%2212%22/%3E%3Ctext x=%2250%22 y=%2250%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2240%22 font-family=%22Arial%22%3E📚%3C/text%3E%3C/svg%3E'">
                     <div class="book-info">
                         <div class="book-name">${bookName}</div>
@@ -11853,8 +11893,10 @@ function renderPublicBooks(books, artworks, userId) {
             `;
         });
         
-        html += `</div>`;
+        html += `</div></div>`;
     });
+    
+    html += `</div>`;
     
     container.innerHTML = html || '<div class="no-results">Нет раскрасок</div>';
 }
@@ -12136,6 +12178,55 @@ async function loadCompletedPages() {
 function updateBookProgress(bookKey) {
     const completedCount = userCompletedPages[bookKey] ? Object.keys(userCompletedPages[bookKey]).length : 0;
     // Можно добавить отображение прогресса в карточке
+}
+// Фильтрация раскрасок в публичном профиле
+function filterPublicBooks() {
+    const searchInput = document.getElementById('publicBooksSearch');
+    const filter = searchInput.value.toLowerCase().trim();
+    
+    const categories = document.querySelectorAll('.public-category');
+    
+    categories.forEach(category => {
+        const items = category.querySelectorAll('.coloring-book-item');
+        let visibleCount = 0;
+        
+        items.forEach(item => {
+            const bookName = item.getAttribute('data-book-name') || '';
+            
+            if (filter === '' || bookName.includes(filter)) {
+                item.style.display = 'flex';
+                visibleCount++;
+            } else {
+                item.style.display = 'none';
+            }
+        });
+        
+        // Скрываем категорию если нет видимых элементов
+        if (visibleCount === 0) {
+            category.style.display = 'none';
+        } else {
+            category.style.display = 'block';
+        }
+    });
+    
+    // Показываем сообщение если ничего не найдено
+    const container = document.getElementById('publicBooksFilteredContent');
+    const visibleCategories = Array.from(categories).filter(c => c.style.display !== 'none');
+    
+    if (visibleCategories.length === 0) {
+        // Добавляем сообщение если его ещё нет
+        if (!document.getElementById('noPublicBooksFound')) {
+            const noResults = document.createElement('div');
+            noResults.id = 'noPublicBooksFound';
+            noResults.className = 'no-results';
+            noResults.style.cssText = 'padding: 20px; text-align: center;';
+            noResults.innerHTML = '😕 Ничего не найдено';
+            container.appendChild(noResults);
+        }
+    } else {
+        const noResults = document.getElementById('noPublicBooksFound');
+        if (noResults) noResults.remove();
+    }
 }
     </script>
     <!-- Модалка поиска пользователей -->
