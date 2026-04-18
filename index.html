@@ -10710,6 +10710,9 @@ async function addCustomBook(category) {
             userColoringBooks[category].push(bookName);
             
             localStorage.setItem(`coloring_books_${userId}`, JSON.stringify(userColoringBooks));
+            
+            // ✅ Обновляем счётчики
+            updateCategoryCounters();
             updateColoringBooksStats();
             renderColoringBooks();
             
@@ -10884,6 +10887,8 @@ async function toggleColoringBook(category, bookName) {
                 console.error('Ошибка сервера:', error);
             }
             
+            // ✅ Обновляем счётчики
+            updateCategoryCounters();
             updateColoringBooksStats();
             renderColoringBooks();
             
@@ -10921,6 +10926,8 @@ async function toggleColoringBook(category, bookName) {
             console.error('Ошибка сервера:', error);
         }
         
+        // ✅ Обновляем счётчики
+        updateCategoryCounters();
         updateColoringBooksStats();
         renderColoringBooks();
         
@@ -10985,28 +10992,22 @@ function updateColoringBooksStats() {
     if (statsEl) statsEl.innerText = total;  // ← только число
 }
 
-function toggleColoringBooksBlock() {
+
+        function toggleColoringBooksBlock() {
     const content = document.getElementById('coloringBooksContent');
     const arrow = document.getElementById('coloringBooksArrow');
     
     if (content.style.display === 'none' || content.style.display === '') {
         content.style.display = 'block';
-        arrow.style.transform = 'rotate(180deg)';
+        if (arrow) arrow.style.transform = 'rotate(180deg)';
         
-        // Принудительно проверяем данные
-        if (!userColoringBooks || Object.keys(userColoringBooks).length === 0) {
-            userColoringBooks = {
-                paint_by_number: ["Цветы (Hachette)", "Животные (Hachette)"],
-                alcohol: ["Портреты", "Аниме"],
-                pencil: ["Природа", "Люди"],
-                custom: []
-            };
-        }
+        // ✅ Обновляем счётчики категорий
+        updateCategoryCounters();
         
         renderColoringBooks();
     } else {
         content.style.display = 'none';
-        arrow.style.transform = 'rotate(0deg)';
+        if (arrow) arrow.style.transform = 'rotate(0deg)';
     }
 }
 // ==========================================
@@ -13240,6 +13241,26 @@ function closeAllCategories() {
         if (content) {
             content.style.display = 'none';
             if (arrow) arrow.style.transform = 'rotate(0deg)';
+        }
+    });
+}
+        // Обновление счётчиков категорий
+function updateCategoryCounters() {
+    const categories = ['paint_by_number', 'alcohol', 'pencil', 'custom'];
+    
+    categories.forEach(category => {
+        const userBooks = userColoringBooks[category] || [];
+        const defaultBooks = DEFAULT_COLORING_BOOKS[category] || [];
+        
+        // Считаем общее количество уникальных раскрасок
+        const allBooks = [...new Set([
+            ...defaultBooks,
+            ...userBooks.map(b => typeof b === 'string' ? b : b.name)
+        ])];
+        
+        const countEl = document.getElementById(`category-count-${category}`);
+        if (countEl) {
+            countEl.textContent = `${userBooks.length}/${allBooks.length}`;
         }
     });
 }
