@@ -4263,26 +4263,15 @@
                 </button>
             </div>
             
-            <!-- ✅ КНОПКИ УПРАВЛЕНИЯ КАТЕГОРИЯМИ -->
-            <div style="display: flex; gap: 8px; margin-bottom: 15px;">
-                <button onclick="openAllCategories()" style="flex: 1; padding: 8px 12px; background: var(--accent); color: white; border: none; border-radius: 10px; font-size: 12px; cursor: pointer;">
-                    <i class="fas fa-folder-open"></i> Открыть все
-                </button>
-                <button onclick="closeAllCategories()" style="flex: 1; padding: 8px 12px; background: var(--text-gray); color: white; border: none; border-radius: 10px; font-size: 12px; cursor: pointer;">
-                    <i class="fas fa-folder"></i> Закрыть все
-                </button>
-            </div>
-            
             <!-- Категория: Раскраски по номерам -->
             <div class="coloring-category-wrapper">
                 <div class="category-header" onclick="toggleCategory('paint_by_number')">
                     <div style="display: flex; align-items: center; gap: 10px;">
                         <i class="fas fa-border-all"></i>
                         <span>Раскраски по номерам</span>
-                        <span id="category-count-paint_by_number" class="category-count">0</span>
                     </div>
                     <div style="display: flex; align-items: center; gap: 10px;">
-                        <button class="add-custom-btn" onclick="event.stopPropagation(); showAddCustomBook('paint_by_number')">+ Добавить</button>
+                        <span id="category-count-paint_by_number" class="category-count">0</span>
                         <i class="fas fa-chevron-down category-arrow" id="arrow-paint_by_number"></i>
                     </div>
                 </div>
@@ -4295,10 +4284,9 @@
                     <div style="display: flex; align-items: center; gap: 10px;">
                         <i class="fas fa-wine-bottle"></i>
                         <span>Спиртовые раскраски</span>
-                        <span id="category-count-alcohol" class="category-count">0</span>
                     </div>
                     <div style="display: flex; align-items: center; gap: 10px;">
-                        <button class="add-custom-btn" onclick="event.stopPropagation(); showAddCustomBook('alcohol')">+ Добавить</button>
+                        <span id="category-count-alcohol" class="category-count">0</span>
                         <i class="fas fa-chevron-down category-arrow" id="arrow-alcohol"></i>
                     </div>
                 </div>
@@ -4311,10 +4299,9 @@
                     <div style="display: flex; align-items: center; gap: 10px;">
                         <i class="fas fa-pencil-alt"></i>
                         <span>Раскраски для карандашей</span>
-                        <span id="category-count-pencil" class="category-count">0</span>
                     </div>
                     <div style="display: flex; align-items: center; gap: 10px;">
-                        <button class="add-custom-btn" onclick="event.stopPropagation(); showAddCustomBook('pencil')">+ Добавить</button>
+                        <span id="category-count-pencil" class="category-count">0</span>
                         <i class="fas fa-chevron-down category-arrow" id="arrow-pencil"></i>
                     </div>
                 </div>
@@ -4327,10 +4314,9 @@
                     <div style="display: flex; align-items: center; gap: 10px;">
                         <i class="fas fa-star"></i>
                         <span>Другие</span>
-                        <span id="category-count-custom" class="category-count">0</span>
                     </div>
                     <div style="display: flex; align-items: center; gap: 10px;">
-                        <button class="add-custom-btn" onclick="event.stopPropagation(); showAddCustomBook('custom')">+ Добавить</button>
+                        <span id="category-count-custom" class="category-count">0</span>
                         <i class="fas fa-chevron-down category-arrow" id="arrow-custom"></i>
                     </div>
                 </div>
@@ -4392,7 +4378,6 @@
         </div>
     </div>
 </div>  <!-- ✅ ЗАКРЫТИЕ #collection -->
-
 <!-- ========== КОРЗИНА ========== -->
 <div id="cart" class="page">
     <div class="header">Корзина</div>
