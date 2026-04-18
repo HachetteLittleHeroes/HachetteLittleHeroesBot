@@ -3840,6 +3840,36 @@
 .wishlist-heart-btn.active i {
     color: white;
 }
+        .filter-btn {
+    flex: 1;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    background: var(--card-bg);
+    color: var(--text-gray);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.filter-btn i {
+    font-size: 14px;
+}
+
+.filter-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+}
+
+.filter-btn:active {
+    transform: scale(0.96);
+}
     </style>
 </head>
 <body>
@@ -4164,44 +4194,89 @@
                 <i class="fas fa-search"></i>
                 <input type="text" id="coloringBooksSearch" placeholder="Поиск по названию раскраски..." oninput="filterColoringBooks()">
             </div>
+            
+            <!-- ✅ ПЕРЕКЛЮЧАТЕЛЬ ФИЛЬТРА -->
+            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                <button class="filter-btn active" id="filterAllBooks" onclick="setBooksFilter('all')">
+                    <i class="fas fa-list"></i> Все раскраски
+                </button>
+                <button class="filter-btn" id="filterCollectedBooks" onclick="setBooksFilter('collected')">
+                    <i class="fas fa-check-circle"></i> В коллекции
+                </button>
+            </div>
+            
+            <!-- ✅ КНОПКИ УПРАВЛЕНИЯ КАТЕГОРИЯМИ -->
+            <div style="display: flex; gap: 8px; margin-bottom: 15px;">
+                <button onclick="openAllCategories()" style="flex: 1; padding: 8px 12px; background: var(--accent); color: white; border: none; border-radius: 10px; font-size: 12px; cursor: pointer;">
+                    <i class="fas fa-folder-open"></i> Открыть все
+                </button>
+                <button onclick="closeAllCategories()" style="flex: 1; padding: 8px 12px; background: var(--text-gray); color: white; border: none; border-radius: 10px; font-size: 12px; cursor: pointer;">
+                    <i class="fas fa-folder"></i> Закрыть все
+                </button>
+            </div>
+            
             <!-- Категория: Раскраски по номерам -->
-            <div class="coloring-category">
-                <div class="category-header">
-                    <i class="fas fa-border-all"></i>
-                    <span>Раскраски по номерам</span>
-                    <button class="add-custom-btn" onclick="showAddCustomBook('paint_by_number')">+ Добавить</button>
+            <div class="coloring-category-wrapper">
+                <div class="category-header" onclick="toggleCategory('paint_by_number')">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-border-all"></i>
+                        <span>Раскраски по номерам</span>
+                        <span id="category-count-paint_by_number" class="category-count">0</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <button class="add-custom-btn" onclick="event.stopPropagation(); showAddCustomBook('paint_by_number')">+ Добавить</button>
+                        <i class="fas fa-chevron-down category-arrow" id="arrow-paint_by_number"></i>
+                    </div>
                 </div>
-                <div id="category-paint_by_number" class="category-items"></div>
+                <div id="category-paint_by_number" class="category-items category-content" style="display: none;"></div>
             </div>
             
             <!-- Категория: Спиртовые раскраски -->
-            <div class="coloring-category">
-                <div class="category-header">
-                    <i class="fas fa-wine-bottle"></i>
-                    <span>Спиртовые раскраски</span>
-                    <button class="add-custom-btn" onclick="showAddCustomBook('alcohol')">+ Добавить</button>
+            <div class="coloring-category-wrapper">
+                <div class="category-header" onclick="toggleCategory('alcohol')">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-wine-bottle"></i>
+                        <span>Спиртовые раскраски</span>
+                        <span id="category-count-alcohol" class="category-count">0</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <button class="add-custom-btn" onclick="event.stopPropagation(); showAddCustomBook('alcohol')">+ Добавить</button>
+                        <i class="fas fa-chevron-down category-arrow" id="arrow-alcohol"></i>
+                    </div>
                 </div>
-                <div id="category-alcohol" class="category-items"></div>
+                <div id="category-alcohol" class="category-items category-content" style="display: none;"></div>
             </div>
             
             <!-- Категория: Раскраски для карандашей -->
-            <div class="coloring-category">
-                <div class="category-header">
-                    <i class="fas fa-pencil-alt"></i>
-                    <span>Раскраски для карандашей</span>
-                    <button class="add-custom-btn" onclick="showAddCustomBook('pencil')">+ Добавить</button>
+            <div class="coloring-category-wrapper">
+                <div class="category-header" onclick="toggleCategory('pencil')">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-pencil-alt"></i>
+                        <span>Раскраски для карандашей</span>
+                        <span id="category-count-pencil" class="category-count">0</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <button class="add-custom-btn" onclick="event.stopPropagation(); showAddCustomBook('pencil')">+ Добавить</button>
+                        <i class="fas fa-chevron-down category-arrow" id="arrow-pencil"></i>
+                    </div>
                 </div>
-                <div id="category-pencil" class="category-items"></div>
+                <div id="category-pencil" class="category-items category-content" style="display: none;"></div>
             </div>
             
             <!-- Категория: Другие -->
-            <div class="coloring-category">
-                <div class="category-header">
-                    <i class="fas fa-star"></i>
-                    <span>Другие</span>
-                    <button class="add-custom-btn" onclick="showAddCustomBook('custom')">+ Добавить</button>
+            <div class="coloring-category-wrapper">
+                <div class="category-header" onclick="toggleCategory('custom')">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-star"></i>
+                        <span>Другие</span>
+                        <span id="category-count-custom" class="category-count">0</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <button class="add-custom-btn" onclick="event.stopPropagation(); showAddCustomBook('custom')">+ Добавить</button>
+                        <i class="fas fa-chevron-down category-arrow" id="arrow-custom"></i>
+                    </div>
                 </div>
-                <div id="category-custom" class="category-items"></div>
+                <div id="category-custom" class="category-items category-content" style="display: none;"></div>
             </div>
         </div>
     </div>
@@ -12269,7 +12344,6 @@ function renderPublicMarkers(markers) {
 }
 
 // Рендеринг публичных раскрасок
-// Рендеринг публичных раскрасок
 function renderPublicBooks(books, artworks, userId) {
     const container = document.getElementById('modalBooksList');
     if (!container) return;
@@ -12298,12 +12372,15 @@ function renderPublicBooks(books, artworks, userId) {
     // Сохраняем данные для фильтрации
     window.publicBooksData = { books, artworks, userId };
     
+    let hasAnyBooks = false;
+    
     categories.forEach(category => {
         const userBooks = books[category] || [];
-        const defaultBooks = DEFAULT_COLORING_BOOKS[category] || [];
-        const allBooks = [...new Set([...defaultBooks, ...userBooks.map(b => typeof b === 'string' ? b : b.name)])];
         
-        if (allBooks.length === 0) return;
+        // ✅ Показываем ТОЛЬКО добавленные раскраски
+        if (userBooks.length === 0) return;
+        
+        hasAnyBooks = true;
         
         html += `
             <div class="public-category" data-category="${category}">
@@ -12311,23 +12388,22 @@ function renderPublicBooks(books, artworks, userId) {
                 <div class="category-items" style="grid-template-columns: repeat(2, 1fr);">
         `;
         
-        allBooks.forEach(bookName => {
-            const collected = userBooks.some(b => (typeof b === 'string' ? b : b.name) === bookName);
+        userBooks.forEach(book => {
+            const bookName = typeof book === 'string' ? book : book.name;
             const bookKey = `${category}_${bookName}`;
             const hasArtworks = artworks[bookKey] ? Object.keys(artworks[bookKey]).length : 0;
             
             let coverUrl = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23ff9500' rx='12'/%3E%3Ctext x='50' y='50' text-anchor='middle' dy='.3em' fill='white' font-size='40' font-family='Arial'%3E📚%3C/text%3E%3C/svg%3E";
             
-            const bookObj = userBooks.find(b => (typeof b === 'string' ? b : b.name) === bookName);
-            if (bookObj && typeof bookObj === 'object' && bookObj.cover) {
-                coverUrl = bookObj.cover;
+            if (typeof book === 'object' && book.cover) {
+                coverUrl = book.cover;
                 if (coverUrl.startsWith('/')) coverUrl = SERVER_URL + coverUrl;
             } else if (DEFAULT_COVERS[bookName]) {
                 coverUrl = DEFAULT_COVERS[bookName];
             }
             
             html += `
-                <div class="coloring-book-item ${collected ? 'collected' : ''}" 
+                <div class="coloring-book-item" 
                      data-book-name="${bookName.toLowerCase()}"
                      onclick="viewPublicBook('${userId}', '${category}', '${bookName.replace(/'/g, "\\'")}', ${hasArtworks})">
                     <img src="${coverUrl}" class="book-cover" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23ff9500%22 rx=%2212%22/%3E%3Ctext x=%2250%22 y=%2250%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2240%22 font-family=%22Arial%22%3E📚%3C/text%3E%3C/svg%3E'">
@@ -12342,9 +12418,13 @@ function renderPublicBooks(books, artworks, userId) {
         html += `</div></div>`;
     });
     
+    if (!hasAnyBooks) {
+        html += '<div class="no-results" style="padding: 20px; text-align: center; color: var(--text-gray);">Нет раскрасок в коллекции</div>';
+    }
+    
     html += `</div>`;
     
-    container.innerHTML = html || '<div class="no-results">Нет раскрасок</div>';
+    container.innerHTML = html;
 }
 
 // Просмотр публичной раскраски (страницы)
@@ -12979,6 +13059,92 @@ function renderPublicWishlist(wishlist) {
     
     container.innerHTML = html;
 }
+        // Текущий фильтр для раскрасок
+let currentBooksFilter = 'all'; // 'all' или 'collected'
+
+// Функция установки фильтра
+function setBooksFilter(filter) {
+    currentBooksFilter = filter;
+    
+    // Обновляем активную кнопку
+    document.getElementById('filterAllBooks')?.classList.toggle('active', filter === 'all');
+    document.getElementById('filterCollectedBooks')?.classList.toggle('active', filter === 'collected');
+    
+    // Применяем фильтр
+    applyBooksFilter();
+}
+
+// Применение фильтра (объединяет поиск и фильтр коллекции)
+function applyBooksFilter() {
+    const searchQuery = document.getElementById('coloringBooksSearch')?.value.toLowerCase() || '';
+    
+    const categories = ['paint_by_number', 'alcohol', 'pencil', 'custom'];
+    
+    categories.forEach(category => {
+        const container = document.getElementById(`category-${category}`);
+        if (!container) return;
+        
+        const userBooks = userColoringBooks[category] || [];
+        const cards = container.querySelectorAll('.coloring-book-item');
+        let visibleCount = 0;
+        
+        cards.forEach(card => {
+            const nameEl = card.querySelector('.book-name');
+            const bookName = nameEl ? nameEl.innerText : '';
+            const matchesSearch = searchQuery === '' || bookName.toLowerCase().includes(searchQuery);
+            
+            // Проверяем, в коллекции ли раскраска
+            const isCollected = userBooks.some(b => 
+                (typeof b === 'string' ? b : b.name) === bookName
+            );
+            
+            // Применяем фильтр коллекции
+            const matchesFilter = currentBooksFilter === 'all' || 
+                                  (currentBooksFilter === 'collected' && isCollected);
+            
+            if (matchesSearch && matchesFilter) {
+                card.style.display = 'flex';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+        
+        // Скрываем форму добавления при активном фильтре "В коллекции"
+        const addForm = container.querySelector('.add-book-form')?.parentElement;
+        if (addForm) {
+            addForm.style.display = (searchQuery === '' && currentBooksFilter === 'all') ? 'block' : 'none';
+        }
+    });
+}
+
+// Обновляем существующую функцию filterColoringBooks
+const originalFilterColoringBooks = filterColoringBooks;
+filterColoringBooks = function() {
+    applyBooksFilter();
+};
+
+// Модифицируем renderColoringBooks для сброса фильтра при перерисовке
+const originalRenderColoringBooks2 = renderColoringBooks;
+renderColoringBooks = function() {
+    originalRenderColoringBooks2.call(this);
+    
+    // Сбрасываем фильтр на "Все"
+    currentBooksFilter = 'all';
+    document.getElementById('filterAllBooks')?.classList.add('active');
+    document.getElementById('filterCollectedBooks')?.classList.remove('active');
+    
+    // Добавляем сердечки
+    setTimeout(() => {
+        document.querySelectorAll('.coloring-book-item').forEach(card => {
+            const nameEl = card.querySelector('.book-name');
+            if (nameEl) {
+                const bookId = nameEl.innerText;
+                addWishlistHeartToBookCard(card, bookId);
+            }
+        });
+    }, 100);
+};
     </script>
     <!-- Модалка поиска пользователей -->
 <div id="userSearchModal" class="modal-overlay">
