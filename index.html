@@ -3684,6 +3684,15 @@
     align-items: center;
     justify-content: center;
 }
+.book-page-btn.completed {
+    background: var(--status-green);
+    border-color: var(--status-green);
+    color: white;
+}
+
+.book-page-btn.completed small {
+    color: white;
+}
     </style>
 </head>
 <body>
@@ -4352,6 +4361,7 @@
             theme: localStorage.getItem('app_theme') || 'light'
         };
         let myFriends = [];
+        let userCompletedPages = {};
         let cart = {};
         let inventory = { organizers: [], userMarkers: {} };
         let markersDB = [];
@@ -10507,6 +10517,9 @@ function renderBookPagesGrid(bookKey, config) {
     const grid = document.getElementById('bookPagesGrid');
     const { totalPages, spreads } = config;
     
+    // Определяем, чей профиль смотрим
+    const isOwnProfile = !window.isViewOnly;
+    
     let html = '';
     let page = 1;
     
@@ -10515,39 +10528,43 @@ function renderBookPagesGrid(bookKey, config) {
         
         if (isSpread) {
             const pageLabel = `${page}-${page + 1}`;
-            const uploaded = isPageUploaded(bookKey, pageLabel);
-            const artwork = getPageArtwork(bookKey, pageLabel);
+            const completed = isPageCompleted(bookKey, pageLabel);
             
-            if (uploaded && artwork) {
+            if (isOwnProfile) {
+                // Свой профиль — можно отмечать
                 html += `
-                    <div class="book-page-btn uploaded" onclick="viewArtwork('${bookKey}', '${pageLabel}')">
-                        <img src="${artwork}">
+                    <div class="book-page-btn ${completed ? 'completed' : ''}" onclick="togglePageCompletion('${bookKey}', '${pageLabel}', ${totalPages})">
+                        ${pageLabel}
+                        ${completed ? '<small>✅</small>' : ''}
                     </div>
                 `;
             } else {
+                // Чужой профиль — только просмотр
                 html += `
-    <div class="book-page-btn" onclick="uploadArtwork('${bookKey}', '${pageLabel}')">
-        ${pageLabel}
-    </div>
-`;
+                    <div class="book-page-btn ${completed ? 'completed' : ''}">
+                        ${pageLabel}
+                        ${completed ? '<small>✅</small>' : ''}
+                    </div>
+                `;
             }
             page += 2;
         } else {
-            const uploaded = isPageUploaded(bookKey, page);
-            const artwork = getPageArtwork(bookKey, page);
+            const completed = isPageCompleted(bookKey, page);
             
-            if (uploaded && artwork) {
+            if (isOwnProfile) {
                 html += `
-                    <div class="book-page-btn uploaded" onclick="viewArtwork('${bookKey}', '${page}')">
-                        <img src="${artwork}">
+                    <div class="book-page-btn ${completed ? 'completed' : ''}" onclick="togglePageCompletion('${bookKey}', '${page}', ${totalPages})">
+                        ${page}
+                        ${completed ? '<small>✅</small>' : ''}
                     </div>
                 `;
             } else {
                 html += `
-    <div class="book-page-btn" onclick="uploadArtwork('${bookKey}', '${page}')">
-        ${page}
-    </div>
-`;
+                    <div class="book-page-btn ${completed ? 'completed' : ''}">
+                        ${page}
+                        ${completed ? '<small>✅</small>' : ''}
+                    </div>
+                `;
             }
             page++;
         }
@@ -10761,6 +10778,7 @@ window.onload = async () => {
     await loadMarkersCollection();
     await loadColoringBooks();
     await loadMyFriends();
+    await loadCompletedPages();
     
     // ✅ ЗАГРУЖАЕМ АВАТАР С СЕРВЕРА
     try {
@@ -12021,6 +12039,106 @@ async function loadMyFriends() {
         console.error('Ошибка загрузки друзей:', error);
         myFriends = [];
     }
+}
+// Проверка, раскрашена ли страница
+function isPageCompleted(bookKey, page) {
+    return userCompletedPages[bookKey]?.hasOwnProperty(String(page)) || false;
+}
+
+// Отметить/снять отметку страницы
+function togglePageCompletion(bookKey, page, totalPages) {
+    if (!userCompletedPages[bookKey]) {
+        userCompletedPages[bookKey] = {};
+    }
+    
+    const isCompleted = userCompletedPages[bookKey][String(page)];
+    
+    if (isCompleted) {
+        // Снять отметку (с подтверждением)
+        if (tg) {
+            tg.showConfirm(`Снять отметку со страницы ${page}?`, (confirm) => {
+                if (confirm) {
+                    delete userCompletedPages[bookKey][String(page)];
+                    saveCompletedPages();
+                    updateBookProgress(bookKey);
+                    
+                    const config = BOOK_PAGES_CONFIG[currentBook] || DEFAULT_PAGES_CONFIG;
+                    renderBookPagesGrid(bookKey, config);
+                }
+            });
+        } else {
+            if (confirm(`Снять отметку со страницы ${page}?`)) {
+                delete userCompletedPages[bookKey][String(page)];
+                saveCompletedPages();
+                updateBookProgress(bookKey);
+                
+                const config = BOOK_PAGES_CONFIG[currentBook] || DEFAULT_PAGES_CONFIG;
+                renderBookPagesGrid(bookKey, config);
+            }
+        }
+    } else {
+        // Отметить как раскрашенную
+        userCompletedPages[bookKey][String(page)] = true;
+        saveCompletedPages();
+        updateBookProgress(bookKey);
+        
+        const config = BOOK_PAGES_CONFIG[currentBook] || DEFAULT_PAGES_CONFIG;
+        renderBookPagesGrid(bookKey, config);
+        
+        // Поздравление если все страницы раскрашены
+        const completedCount = Object.keys(userCompletedPages[bookKey]).length;
+        if (completedCount === totalPages) {
+            if (tg) tg.showAlert(`🎉 Поздравляем! Вы раскрасили всю раскраску «${currentBook}»!`);
+            else alert(`🎉 Поздравляем! Вы раскрасили всю раскраску «${currentBook}»!`);
+        }
+    }
+}
+
+// Сохранение прогресса
+function saveCompletedPages() {
+    localStorage.setItem(`completed_pages_${userId}`, JSON.stringify(userCompletedPages));
+    
+    // Отправляем на сервер
+    fetch(`${SERVER_URL}/api/save_completed_pages`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            user_id: userId,
+            completed_pages: userCompletedPages
+        })
+    }).catch(e => console.error('Ошибка сохранения на сервер:', e));
+}
+
+// Загрузка прогресса
+async function loadCompletedPages() {
+    const saved = localStorage.getItem(`completed_pages_${userId}`);
+    if (saved) {
+        try {
+            userCompletedPages = JSON.parse(saved);
+        } catch(e) {
+            userCompletedPages = {};
+        }
+    } else {
+        userCompletedPages = {};
+    }
+    
+    // Загружаем с сервера
+    try {
+        const response = await fetch(`${SERVER_URL}/api/stats?user_id=${userId}`);
+        const stats = await response.json();
+        if (stats.completed_pages) {
+            userCompletedPages = stats.completed_pages;
+            localStorage.setItem(`completed_pages_${userId}`, JSON.stringify(userCompletedPages));
+        }
+    } catch (error) {
+        console.error('Ошибка загрузки с сервера:', error);
+    }
+}
+
+// Обновление прогресса в карточке раскраски
+function updateBookProgress(bookKey) {
+    const completedCount = userCompletedPages[bookKey] ? Object.keys(userCompletedPages[bookKey]).length : 0;
+    // Можно добавить отображение прогресса в карточке
 }
     </script>
     <!-- Модалка поиска пользователей -->
