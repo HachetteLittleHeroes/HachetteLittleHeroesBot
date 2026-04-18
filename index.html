@@ -12207,7 +12207,7 @@ function countColoringBooks(books) {
 
 
 // Универсальное переключение блоков в модалке
-function toggleBlock(contentId, arrowId) {
+        function toggleBlock(contentId, arrowId) {
     const content = document.getElementById(contentId);
     const arrow = document.getElementById(arrowId);
     
@@ -12226,6 +12226,9 @@ function toggleBlock(contentId, arrowId) {
             renderPublicMarkers(profile.markers || {});
         } else if (contentId === 'modalBooksContent') {
             renderPublicBooks(profile.coloring_books || {}, profile.artworks || {}, profile.user_id);
+        } else if (contentId === 'modalWishlistContent') {
+            // ✅ Рендеринг вишлиста
+            renderPublicWishlist(profile.wishlist || []);
         }
     } else {
         content.style.display = 'none';
