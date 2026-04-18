@@ -4170,21 +4170,24 @@
     </div>
     
     <!-- ========== СПИСОК ЖЕЛАНИЙ ========== -->
-    <div class="wishlist-section" id="wishlistSection" style="margin-top: 15px;">
-        <div class="wishlist-header">
-            <h3 class="wishlist-title">
+    <div class="inventory-main-block" style="margin-top: 15px;">
+        <div class="inventory-header" onclick="toggleWishlistBlock()">
+            <div class="inventory-header-left">
                 <i class="fas fa-heart"></i>
-                Список желаний
-            </h3>
-            <span class="wishlist-count" id="wishlistCount">0</span>
+                <span>Список желаний</span>
+            </div>
+            <div class="inventory-header-right">
+                <span id="wishlistCount" class="collection-badge">0</span>
+                <i class="fas fa-chevron-down" id="wishlistArrow"></i>
+            </div>
         </div>
-        
-        <div class="wishlist-grid" id="wishlistGrid"></div>
-        
-        <div class="wishlist-empty" id="wishlistEmpty" style="display: none;">
-            <i class="far fa-heart" style="font-size: 40px; opacity: 0.5; margin-bottom: 16px; display: block;"></i>
-            <p>Здесь пока пусто</p>
-            <p style="font-size: 14px; margin-top: 8px;">Добавляйте раскраски в список желаний, нажимая на ♥</p>
+        <div id="wishlistContent" class="inventory-content" style="display: none;">
+            <div id="wishlistGrid" class="category-items" style="grid-template-columns: repeat(2, 1fr);"></div>
+            <div id="wishlistEmpty" style="display: none; text-align: center; padding: 30px; color: var(--text-gray);">
+                <i class="far fa-heart" style="font-size: 40px; opacity: 0.5; margin-bottom: 16px;"></i>
+                <p>Здесь пока пусто</p>
+                <p style="font-size: 13px; margin-top: 8px;">Добавляйте раскраски в список желаний, нажимая на ♥</p>
+            </div>
         </div>
     </div>
     
@@ -12609,6 +12612,21 @@ function filterPublicBooks() {
     } else {
         const noResults = document.getElementById('noPublicBooksFound');
         if (noResults) noResults.remove();
+    }
+}
+        function toggleWishlistBlock() {
+    const content = document.getElementById('wishlistContent');
+    const arrow = document.getElementById('wishlistArrow');
+    
+    if (content.style.display === 'none' || content.style.display === '') {
+        content.style.display = 'block';
+        if (arrow) arrow.style.transform = 'rotate(180deg)';
+        if (typeof Wishlist !== 'undefined') {
+            Wishlist.load();
+        }
+    } else {
+        content.style.display = 'none';
+        if (arrow) arrow.style.transform = 'rotate(0deg)';
     }
 }
     </script>
