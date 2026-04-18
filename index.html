@@ -4361,7 +4361,7 @@
         <div id="inventoryContent" class="inventory-content">
             <div class="search-box" style="margin: 15px 0;">
                 <i class="fas fa-search"></i>
-                <input type="text" id="markerSearchInOrganizers" placeholder="Поиск маркера по номеру или бренду..." oninput="searchMarkerInOrganizers()">
+                <input type="text" id="markerSearchInOrganizers" placeholder="Поиск маркера" oninput="searchMarkerInOrganizers()">
             </div>
             <div id="markerSearchResults" style="display: none; margin-bottom: 15px; padding: 10px; background: var(--bg); border-radius: 12px;"></div>
             <button class="create-organizer-btn" onclick="openOrganizerCreator()">
@@ -12407,7 +12407,7 @@ function renderPublicBooks(books, artworks, userId) {
             <i class="fas fa-search"></i>
             <input type="text" 
                    id="publicBooksSearch" 
-                   placeholder="🔍 Поиск по названию раскраски..." 
+                   placeholder="Поиск по названию" 
                    oninput="filterPublicBooks()"
                    style="width: 100%;">
         </div>
