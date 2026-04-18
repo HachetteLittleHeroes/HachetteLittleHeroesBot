@@ -3803,6 +3803,43 @@
 .wishlist-heart-btn.active {
     background: #ff6b6b;
 }
+        /* Кнопка-сердечко на карточке раскраски */
+.wishlist-heart-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    border: none;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    z-index: 10;
+}
+
+.wishlist-heart-btn:hover {
+    background: rgba(0, 0, 0, 0.7);
+    transform: scale(1.1);
+}
+
+.wishlist-heart-btn i {
+    font-size: 16px;
+    color: #ff6b6b;
+}
+
+.wishlist-heart-btn.active {
+    background: var(--accent);
+}
+
+.wishlist-heart-btn.active i {
+    color: white;
+}
     </style>
 </head>
 <body>
@@ -12063,6 +12100,9 @@ function renderPublicProfile(profile) {
     // ✅ СЧИТАЕМ КОЛИЧЕСТВО РАСКРАСОК
     const booksCount = countColoringBooks(profile.coloring_books);
     
+    // ✅ СЧИТАЕМ КОЛИЧЕСТВО В ВИШЛИСТЕ
+    const wishlistCount = profile.wishlist?.length || 0;
+    
     // ✅ Проверяем, не свой ли это профиль
     const isOwnProfile = (String(profile.user_id) === String(userId));
     
@@ -12129,6 +12169,23 @@ function renderPublicProfile(profile) {
             </div>
             <div id="modalBooksContent" class="inventory-content" style="display: none;">
                 <div id="modalBooksList"></div>
+            </div>
+        </div>
+        
+        <!-- ✅ СПИСОК ЖЕЛАНИЙ -->
+        <div class="inventory-main-block" style="margin-top: 10px;">
+            <div class="inventory-header" onclick="toggleBlock('modalWishlistContent', 'modalWishlistArrow')">
+                <div class="inventory-header-left">
+                    <i class="fas fa-heart"></i>
+                    <span>Список желаний</span>
+                </div>
+                <div class="inventory-header-right">
+                    <span class="collection-badge">${wishlistCount}</span>
+                    <i class="fas fa-chevron-down" id="modalWishlistArrow"></i>
+                </div>
+            </div>
+            <div id="modalWishlistContent" class="inventory-content" style="display: none;">
+                <div id="modalWishlistGrid" class="category-items" style="grid-template-columns: repeat(2, 1fr);"></div>
             </div>
         </div>
     `;
@@ -12628,6 +12685,296 @@ function filterPublicBooks() {
         content.style.display = 'none';
         if (arrow) arrow.style.transform = 'rotate(0deg)';
     }
+}
+        // ==========================================
+// ВИШЛИСТ - УПРАВЛЕНИЕ
+// ==========================================
+
+const Wishlist = {
+    currentUserId: userId,
+    
+    // Загрузка вишлиста
+    async load() {
+        const grid = document.getElementById('wishlistGrid');
+        const emptyEl = document.getElementById('wishlistEmpty');
+        const countEl = document.getElementById('wishlistCount');
+        
+        if (!grid) return;
+        
+        try {
+            const response = await fetch(`${SERVER_URL}/api/wishlist/get?user_id=${this.currentUserId}`);
+            const data = await response.json();
+            const wishlist = data.wishlist || [];
+            
+            // Обновляем счётчик
+            if (countEl) countEl.textContent = wishlist.length;
+            
+            // Показываем пустое состояние или грид
+            if (wishlist.length === 0) {
+                grid.style.display = 'none';
+                if (emptyEl) emptyEl.style.display = 'block';
+                return;
+            }
+            
+            grid.style.display = 'grid';
+            if (emptyEl) emptyEl.style.display = 'none';
+            
+            // Очищаем и заполняем
+            grid.innerHTML = '';
+            
+            for (const bookId of wishlist) {
+                const bookInfo = this.getBookInfo(bookId);
+                const item = this.createWishlistItem(bookId, bookInfo);
+                grid.appendChild(item);
+            }
+            
+        } catch (error) {
+            console.error('Ошибка загрузки вишлиста:', error);
+        }
+    },
+    
+    // Получить информацию о книге
+    getBookInfo(bookId) {
+        // Пытаемся найти обложку в DEFAULT_COVERS
+        let coverUrl = DEFAULT_COVERS[bookId] || 'assets/coloriages/default.jpg';
+        
+        // Определяем категорию
+        let category = 'paint_by_number';
+        if (DEFAULT_COLORING_BOOKS.alcohol?.includes(bookId)) category = 'alcohol';
+        else if (DEFAULT_COLORING_BOOKS.pencil?.includes(bookId)) category = 'pencil';
+        
+        return {
+            title: bookId,
+            cover: coverUrl,
+            category: category
+        };
+    },
+    
+    // Создать элемент вишлиста
+    createWishlistItem(bookId, bookInfo) {
+        const div = document.createElement('div');
+        div.className = 'coloring-book-item';
+        div.setAttribute('data-book-name', bookId.toLowerCase());
+        
+        div.innerHTML = `
+            <img src="${bookInfo.cover}" class="book-cover" alt="${bookInfo.title}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23ff9500%22 rx=%2212%22/%3E%3Ctext x=%2250%22 y=%2250%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2240%22%3E📚%3C/text%3E%3C/svg%3E'">
+            <div class="book-info">
+                <div class="book-name">${bookInfo.title}</div>
+            </div>
+        `;
+        
+        // Кнопка удаления
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'remove-btn';
+        removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+        removeBtn.style.cssText = 'background: var(--accent); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-top: 8px; cursor: pointer; border: none;';
+        removeBtn.onclick = (e) => {
+            e.stopPropagation();
+            this.remove(bookId);
+        };
+        div.appendChild(removeBtn);
+        
+        // Клик по карточке
+        div.onclick = () => {
+            // Можно открыть страницу раскраски
+            console.log('Открыть раскраску:', bookId);
+        };
+        
+        return div;
+    },
+    
+    // Добавить в вишлист
+    async add(bookId) {
+        if (!this.currentUserId) return false;
+        
+        try {
+            const response = await fetch(`${SERVER_URL}/api/wishlist/add`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    user_id: this.currentUserId, 
+                    book_id: bookId 
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (data.status === 'ok') {
+                this.showNotification('✅ Добавлено в список желаний!');
+                this.updateHeartButton(bookId, true);
+                
+                // Обновляем отображение
+                await this.load();
+                return true;
+            }
+        } catch (error) {
+            console.error('Ошибка добавления:', error);
+            this.showNotification('❌ Ошибка', 'error');
+        }
+        return false;
+    },
+    
+    // Удалить из вишлиста
+    async remove(bookId) {
+        if (!this.currentUserId) return;
+        
+        try {
+            const response = await fetch(`${SERVER_URL}/api/wishlist/remove`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    user_id: this.currentUserId, 
+                    book_id: bookId 
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (data.status === 'ok') {
+                this.showNotification('🗑️ Удалено из списка желаний');
+                this.updateHeartButton(bookId, false);
+                await this.load();
+            }
+        } catch (error) {
+            console.error('Ошибка удаления:', error);
+        }
+    },
+    
+    // Проверить, в вишлисте ли книга
+    async check(bookId) {
+        if (!this.currentUserId) return false;
+        
+        try {
+            const response = await fetch(`${SERVER_URL}/api/wishlist/get?user_id=${this.currentUserId}`);
+            const data = await response.json();
+            return (data.wishlist || []).includes(bookId);
+        } catch (error) {
+            return false;
+        }
+    },
+    
+    // Обновить кнопку-сердечко
+    updateHeartButton(bookId, isInWishlist) {
+        const btn = document.querySelector(`.wishlist-heart-btn[data-book-id="${bookId}"]`);
+        if (!btn) return;
+        
+        const icon = btn.querySelector('i');
+        
+        if (isInWishlist) {
+            btn.classList.add('active');
+            if (icon) icon.className = 'fas fa-heart';
+            btn.title = 'Удалить из списка желаний';
+        } else {
+            btn.classList.remove('active');
+            if (icon) icon.className = 'far fa-heart';
+            btn.title = 'Добавить в список желаний';
+        }
+    },
+    
+    // Показать уведомление
+    showNotification(message, type = 'success') {
+        if (typeof tg !== 'undefined' && tg.showPopup) {
+            tg.showPopup({ message: message });
+        } else {
+            alert(message);
+        }
+    }
+};
+
+// Функция переключения блока вишлиста
+function toggleWishlistBlock() {
+    const content = document.getElementById('wishlistContent');
+    const arrow = document.getElementById('wishlistArrow');
+    
+    if (content.style.display === 'none' || content.style.display === '') {
+        content.style.display = 'block';
+        if (arrow) arrow.style.transform = 'rotate(180deg)';
+        Wishlist.load();
+    } else {
+        content.style.display = 'none';
+        if (arrow) arrow.style.transform = 'rotate(0deg)';
+    }
+}
+
+// Функция для добавления кнопки-сердечка на карточку раскраски
+function addWishlistHeartToBookCard(cardElement, bookId) {
+    // Проверяем, нет ли уже кнопки
+    if (cardElement.querySelector('.wishlist-heart-btn')) return;
+    
+    // Создаём кнопку
+    const heartBtn = document.createElement('button');
+    heartBtn.className = 'wishlist-heart-btn';
+    heartBtn.setAttribute('data-book-id', bookId);
+    heartBtn.title = 'Добавить в список желаний';
+    heartBtn.innerHTML = '<i class="far fa-heart"></i>';
+    
+    heartBtn.onclick = async (e) => {
+        e.stopPropagation();
+        
+        const isActive = heartBtn.classList.contains('active');
+        
+        if (isActive) {
+            await Wishlist.remove(bookId);
+        } else {
+            await Wishlist.add(bookId);
+        }
+    };
+    
+    // Проверяем начальное состояние
+    Wishlist.check(bookId).then(inWishlist => {
+        if (inWishlist) {
+            heartBtn.classList.add('active');
+            heartBtn.querySelector('i').className = 'fas fa-heart';
+            heartBtn.title = 'Удалить из списка желаний';
+        }
+    });
+    
+    cardElement.style.position = 'relative';
+    cardElement.appendChild(heartBtn);
+}
+
+// Модифицируем renderColoringBooks для добавления сердечек
+const originalRenderColoringBooks = renderColoringBooks;
+renderColoringBooks = function() {
+    originalRenderColoringBooks.call(this);
+    
+    // Добавляем сердечки на все карточки
+    setTimeout(() => {
+        document.querySelectorAll('.coloring-book-item').forEach(card => {
+            const nameEl = card.querySelector('.book-name');
+            if (nameEl) {
+                const bookId = nameEl.innerText;
+                addWishlistHeartToBookCard(card, bookId);
+            }
+        });
+    }, 100);
+};
+        // Рендеринг публичного вишлиста
+function renderPublicWishlist(wishlist) {
+    const container = document.getElementById('modalWishlistGrid');
+    if (!container) return;
+    
+    if (!wishlist || wishlist.length === 0) {
+        container.innerHTML = '<div class="no-results" style="grid-column: span 2; padding: 20px; text-align: center;">Список желаний пуст</div>';
+        return;
+    }
+    
+    let html = '';
+    
+    wishlist.forEach(bookId => {
+        let coverUrl = DEFAULT_COVERS[bookId] || 'assets/coloriages/default.jpg';
+        
+        html += `
+            <div class="coloring-book-item">
+                <img src="${coverUrl}" class="book-cover" alt="${bookId}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23ff9500%22 rx=%2212%22/%3E%3Ctext x=%2250%22 y=%2250%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2240%22%3E📚%3C/text%3E%3C/svg%3E'">
+                <div class="book-info">
+                    <div class="book-name">${bookId}</div>
+                </div>
+            </div>
+        `;
+    });
+    
+    container.innerHTML = html;
 }
     </script>
     <!-- Модалка поиска пользователей -->
