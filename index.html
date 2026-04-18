@@ -13016,7 +13016,9 @@ function toggleWishlistBlock() {
     if (content.style.display === 'none' || content.style.display === '') {
         content.style.display = 'block';
         if (arrow) arrow.style.transform = 'rotate(180deg)';
-        Wishlist.load();
+        if (typeof Wishlist !== 'undefined') {
+            Wishlist.load();
+        }
     } else {
         content.style.display = 'none';
         if (arrow) arrow.style.transform = 'rotate(0deg)';
@@ -13248,6 +13250,21 @@ function updateCategoryCounters() {
             countEl.textContent = `${userBooks.length}/${allBooks.length}`;
         }
     });
+}
+        // Загрузка счётчика вишлиста при старте
+async function loadWishlistCount() {
+    try {
+        const response = await fetch(`${SERVER_URL}/api/wishlist/get?user_id=${userId}`);
+        const data = await response.json();
+        const wishlist = data.wishlist || [];
+        
+        const countEl = document.getElementById('wishlistCount');
+        if (countEl) {
+            countEl.textContent = wishlist.length;
+        }
+    } catch (error) {
+        console.error('Ошибка загрузки счётчика вишлиста:', error);
+    }
 }
     </script>
     <!-- Модалка поиска пользователей -->
