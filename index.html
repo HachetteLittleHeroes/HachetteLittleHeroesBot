@@ -11864,18 +11864,19 @@ function renderPublicBooks(books, artworks, userId) {
 
 // Просмотр публичной раскраски (страницы)
 function viewPublicBook(userId, category, bookName, hasArtworks) {
-    // ✅ Используем artworks из профиля, а не hasArtworks
+    // ✅ Используем completed_pages вместо artworks
     const container = document.getElementById('publicProfileContent');
     const profile = JSON.parse(container.dataset.profile || '{}');
-    const artworks = profile.artworks || {};
+    const completedPages = profile.completed_pages || {};
     
     const bookKey = `${category}_${bookName}`;
-    const bookArtworks = artworks[bookKey] || {};
-    const artworksCount = Object.keys(bookArtworks).length;
+    const bookCompleted = completedPages[bookKey] || {};
+    const completedCount = Object.keys(bookCompleted).length;
     
-    if (artworksCount === 0) {
-        if (tg) tg.showAlert('У пользователя нет работ в этой раскраске');
-        else alert('Нет работ');
+    // ✅ Проверяем количество отмеченных страниц
+    if (completedCount === 0) {
+        if (tg) tg.showAlert('У пользователя нет отмеченных страниц в этой раскраске');
+        else alert('Нет отмеченных страниц');
         return;
     }
     
@@ -11887,15 +11888,15 @@ function viewPublicBook(userId, category, bookName, hasArtworks) {
     
     const config = BOOK_PAGES_CONFIG[bookName] || DEFAULT_PAGES_CONFIG;
     
-    // ✅ Используем загруженные работы
-    userArtworks = artworks;
+    // ✅ Используем completed_pages для отображения
+    userCompletedPages = completedPages;
     
     document.getElementById('bookPagesTitle').innerText = bookName;
-    document.getElementById('bookPagesCategory').innerText = `Работы пользователя`;
+    document.getElementById('bookPagesCategory').innerText = `Отмечено страниц: ${completedCount}`;
     
     renderBookPagesGrid(bookKey, config);
     
-    // ✅ Поднимаем модалку работ над профилем и затемняем профиль
+    // ✅ Поднимаем модалку
     const bookModal = document.getElementById('bookPagesModal');
     bookModal.style.display = 'flex';
     bookModal.style.zIndex = '100002';
@@ -11903,7 +11904,7 @@ function viewPublicBook(userId, category, bookName, hasArtworks) {
     const profileModal = document.getElementById('publicProfileModal');
     if (profileModal) profileModal.style.opacity = '0.3';
     
-    // Скрываем input для загрузки
+    // Скрываем input для загрузки (если есть)
     const uploadInput = document.getElementById('bookPageUploadInput');
     if (uploadInput) uploadInput.style.display = 'none';
 }
