@@ -11057,23 +11057,25 @@ function openBookPagesModal(category, bookName) {
     currentCategory = category;
     
     const bookKey = `${category}_${bookName}`;
+    
+    // ✅ Получаем конфигурацию страниц (или используем по умолчанию)
     const config = BOOK_PAGES_CONFIG[bookName] || DEFAULT_PAGES_CONFIG;
     
     document.getElementById('bookPagesTitle').innerText = bookName;
     
     const categoryNames = {
-        paint_by_number: '🎨 Раскраска по номерам',
-        alcohol: '🍷 Спиртовая раскраска',
-        pencil: '✏️ Раскраска для карандашей',
-        custom: '✨ Моя раскраска'
+        paint_by_number: 'Раскраска по номерам',
+        alcohol: 'Спиртовая раскраска',
+        pencil: 'Раскраска для карандашей',
+        custom: 'Моя раскраска'
     };
-    document.getElementById('bookPagesCategory').innerText = categoryNames[category] || '';
+    document.getElementById('bookPagesCategory').innerText = 
+        `${categoryNames[category] || ''} • ${config.totalPages} страниц`;
     
     renderBookPagesGrid(bookKey, config);
     
     document.getElementById('bookPagesModal').style.display = 'flex';
 }
-
 // Рендеринг сетки страниц
 function renderBookPagesGrid(bookKey, config) {
     const grid = document.getElementById('bookPagesGrid');
@@ -11093,16 +11095,14 @@ function renderBookPagesGrid(bookKey, config) {
             const completed = isPageCompleted(bookKey, pageLabel);
             
             if (isOwnProfile) {
-                // Свой профиль — можно отмечать
                 html += `
-                    <div class="book-page-btn ${completed ? 'completed' : ''}" onclick="togglePageCompletion('${bookKey}', '${pageLabel}', ${totalPages})">
+                    <div class="book-page-btn ${completed ? 'completed' : ''} spread" onclick="togglePageCompletion('${bookKey}', '${pageLabel}', ${totalPages})">
                         ${pageLabel}
                     </div>
                 `;
             } else {
-                // Чужой профиль — только просмотр
                 html += `
-                    <div class="book-page-btn ${completed ? 'completed' : ''}">
+                    <div class="book-page-btn ${completed ? 'completed' : ''} spread">
                         ${pageLabel}
                     </div>
                 `;
