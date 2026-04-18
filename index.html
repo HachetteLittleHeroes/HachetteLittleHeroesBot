@@ -13203,6 +13203,46 @@ renderColoringBooks = function() {
         });
     }, 100);
 };
+        // ==========================================
+// УПРАВЛЕНИЕ КАТЕГОРИЯМИ РАСКРАСОК
+// ==========================================
+
+function toggleCategory(category) {
+    const content = document.getElementById(`category-${category}`);
+    const arrow = document.getElementById(`arrow-${category}`);
+    
+    if (!content) return;
+    
+    if (content.style.display === 'none' || content.style.display === '') {
+        content.style.display = 'grid';
+        if (arrow) arrow.style.transform = 'rotate(180deg)';
+    } else {
+        content.style.display = 'none';
+        if (arrow) arrow.style.transform = 'rotate(0deg)';
+    }
+}
+
+function openAllCategories() {
+    ['paint_by_number', 'alcohol', 'pencil', 'custom'].forEach(cat => {
+        const content = document.getElementById(`category-${cat}`);
+        const arrow = document.getElementById(`arrow-${cat}`);
+        if (content) {
+            content.style.display = 'grid';
+            if (arrow) arrow.style.transform = 'rotate(180deg)';
+        }
+    });
+}
+
+function closeAllCategories() {
+    ['paint_by_number', 'alcohol', 'pencil', 'custom'].forEach(cat => {
+        const content = document.getElementById(`category-${cat}`);
+        const arrow = document.getElementById(`arrow-${cat}`);
+        if (content) {
+            content.style.display = 'none';
+            if (arrow) arrow.style.transform = 'rotate(0deg)';
+        }
+    });
+}
     </script>
     <!-- Модалка поиска пользователей -->
 <div id="userSearchModal" class="modal-overlay">
