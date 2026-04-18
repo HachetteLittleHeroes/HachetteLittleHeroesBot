@@ -3685,13 +3685,13 @@
     justify-content: center;
 }
 .book-page-btn.completed {
-    background: var(--status-green);
-    border-color: var(--status-green);
-    color: white;
+    background: color-mix(in srgb, var(--accent) 15%, transparent) !important;
+    border-color: var(--accent) !important;
+    color: var(--text) !important;
 }
 
-.book-page-btn.completed small {
-    color: white;
+[data-theme="dark"] .book-page-btn.completed {
+    background: color-mix(in srgb, var(--accent) 20%, transparent) !important;
 }
     </style>
 </head>
@@ -10535,7 +10535,6 @@ function renderBookPagesGrid(bookKey, config) {
                 html += `
                     <div class="book-page-btn ${completed ? 'completed' : ''}" onclick="togglePageCompletion('${bookKey}', '${pageLabel}', ${totalPages})">
                         ${pageLabel}
-                        ${completed ? '<small>✅</small>' : ''}
                     </div>
                 `;
             } else {
