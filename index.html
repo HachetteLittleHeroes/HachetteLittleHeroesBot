@@ -10553,14 +10553,12 @@ function renderBookPagesGrid(bookKey, config) {
                 html += `
                     <div class="book-page-btn ${completed ? 'completed' : ''}" onclick="togglePageCompletion('${bookKey}', '${page}', ${totalPages})">
                         ${page}
-                        ${completed ? '<small>✅</small>' : ''}
                     </div>
                 `;
             } else {
                 html += `
                     <div class="book-page-btn ${completed ? 'completed' : ''}">
                         ${page}
-                        ${completed ? '<small>✅</small>' : ''}
                     </div>
                 `;
             }
