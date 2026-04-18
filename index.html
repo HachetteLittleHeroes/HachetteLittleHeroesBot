@@ -11917,7 +11917,7 @@ function toggleMarkersCollectionBlock() {
 }
 
 function filterMarkersCollection() {
-    const query = document.getElementById('markersCollectionSearch')?.value.toLowerCase() || '';
+    const query = document.getElementById('markersCollectionSearch')?.value.trim().toLowerCase() || '';
     
     const cards = document.querySelectorAll('.marker-set-card');
     
@@ -11925,13 +11925,13 @@ function filterMarkersCollection() {
         const brandEl = card.querySelector('strong');
         const brand = brandEl ? brandEl.innerText.toLowerCase() : '';
         
-        // Ищем все кнопки с номерами внутри этой карточки
         const numberBtns = card.querySelectorAll('.marker-number-btn');
         let hasVisibleNumber = false;
         
         numberBtns.forEach(btn => {
-            const number = btn.innerText.trim();
+            const number = String(btn.innerText).trim().toLowerCase();
             
+            // ✅ Ищем по бренду ИЛИ по номеру (включая буквы, например AG171)
             if (query === '' || brand.includes(query) || number.includes(query)) {
                 btn.style.display = 'flex';
                 hasVisibleNumber = true;
@@ -11940,7 +11940,7 @@ function filterMarkersCollection() {
             }
         });
         
-        // Показываем или скрываем всю карточку бренда
+        // Показываем карточку бренда, если есть видимые номера или бренд совпадает с поиском
         if (query === '' || brand.includes(query) || hasVisibleNumber) {
             card.style.display = 'block';
         } else {
