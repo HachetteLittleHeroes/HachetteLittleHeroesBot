@@ -12473,13 +12473,13 @@ function renderPublicBooks(books, artworks, userId) {
         custom: 'Другие'
     };
     
-    // ✅ ДОБАВЛЯЕМ ПОЛЕ ПОИСКА
+    // ✅ ПОЛЕ ПОИСКА
     let html = `
         <div class="search-box" style="margin-bottom: 15px;">
             <i class="fas fa-search"></i>
             <input type="text" 
                    id="publicBooksSearch" 
-                   placeholder="Поиск по названию" 
+                   placeholder="🔍 Поиск по названию раскраски..." 
                    oninput="filterPublicBooks()"
                    style="width: 100%;">
         </div>
@@ -12489,12 +12489,17 @@ function renderPublicBooks(books, artworks, userId) {
     // Сохраняем данные для фильтрации
     window.publicBooksData = { books, artworks, userId };
     
+    // ✅ Получаем completed_pages из профиля
+    const container_profile = document.getElementById('publicProfileContent');
+    const profile = JSON.parse(container_profile.dataset.profile || '{}');
+    const completedPages = profile.completed_pages || {};
+    
     let hasAnyBooks = false;
     
     categories.forEach(category => {
         const userBooks = books[category] || [];
         
-        // ✅ Показываем ТОЛЬКО добавленные раскраски
+        // Показываем ТОЛЬКО добавленные раскраски
         if (userBooks.length === 0) return;
         
         hasAnyBooks = true;
@@ -12509,6 +12514,13 @@ function renderPublicBooks(books, artworks, userId) {
             const bookName = typeof book === 'string' ? book : book.name;
             const bookKey = `${category}_${bookName}`;
             const hasArtworks = artworks[bookKey] ? Object.keys(artworks[bookKey]).length : 0;
+            
+            // ✅ Считаем прогресс для этой раскраски
+            const bookCompletedPages = completedPages[bookKey] || {};
+            const completedCount = Object.keys(bookCompletedPages).length;
+            const config = BOOK_PAGES_CONFIG[bookName] || DEFAULT_PAGES_CONFIG;
+            const totalPages = config.totalPages;
+            const progressPercent = totalPages > 0 ? Math.round((completedCount / totalPages) * 100) : 0;
             
             let coverUrl = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23ff9500' rx='12'/%3E%3Ctext x='50' y='50' text-anchor='middle' dy='.3em' fill='white' font-size='40' font-family='Arial'%3E📚%3C/text%3E%3C/svg%3E";
             
@@ -12527,6 +12539,20 @@ function renderPublicBooks(books, artworks, userId) {
                     <div class="book-info">
                         <div class="book-name">${bookName}</div>
                         ${hasArtworks > 0 ? `<div class="book-category">📸 ${hasArtworks} работ</div>` : ''}
+                        ${completedCount > 0 ? `
+                            <div class="book-progress-container" style="margin-top: 5px;">
+                                <div class="book-progress-bar" style="width: 100%; height: 4px; background: var(--border-color); border-radius: 2px; overflow: hidden;">
+                                    <div class="book-progress-fill" style="width: ${progressPercent}%; height: 100%; background: var(--accent);"></div>
+                                </div>
+                                <div class="book-progress-text" style="font-size: 10px; color: var(--text-gray); margin-top: 2px;">
+                                    ${completedCount}/${totalPages} (${progressPercent}%)
+                                </div>
+                            </div>
+                        ` : `
+                            <div class="book-progress-text" style="font-size: 10px; color: var(--text-gray); margin-top: 2px;">
+                                0/${totalPages} (0%)
+                            </div>
+                        `}
                     </div>
                 </div>
             `;
