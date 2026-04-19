@@ -3928,6 +3928,39 @@
     border-color: var(--accent);
     color: white;
 }
+        /* Прогресс категории */
+.category-progress {
+    background: var(--accent);
+    color: white;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* Прогресс в карточке раскраски */
+.book-progress-container {
+    margin-top: 5px;
+}
+
+.book-progress-bar {
+    width: 100%;
+    height: 4px;
+    background: var(--border-color);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.book-progress-fill {
+    height: 100%;
+    background: var(--accent);
+}
+
+.book-progress-text {
+    font-size: 10px;
+    color: var(--text-gray);
+    margin-top: 2px;
+}
     </style>
 </head>
 <body>
@@ -4271,6 +4304,7 @@
                         <span>Раскраски по номерам</span>
                     </div>
                     <div style="display: flex; align-items: center; gap: 10px;">
+                        <span id="category-progress-paint_by_number" class="category-progress">0%</span>
                         <span id="category-count-paint_by_number" class="category-count">0</span>
                         <i class="fas fa-chevron-down category-arrow" id="arrow-paint_by_number"></i>
                     </div>
@@ -4286,6 +4320,7 @@
                         <span>Спиртовые раскраски</span>
                     </div>
                     <div style="display: flex; align-items: center; gap: 10px;">
+                        <span id="category-progress-alcohol" class="category-progress">0%</span>
                         <span id="category-count-alcohol" class="category-count">0</span>
                         <i class="fas fa-chevron-down category-arrow" id="arrow-alcohol"></i>
                     </div>
@@ -4301,6 +4336,7 @@
                         <span>Раскраски для карандашей</span>
                     </div>
                     <div style="display: flex; align-items: center; gap: 10px;">
+                        <span id="category-progress-pencil" class="category-progress">0%</span>
                         <span id="category-count-pencil" class="category-count">0</span>
                         <i class="fas fa-chevron-down category-arrow" id="arrow-pencil"></i>
                     </div>
@@ -4316,6 +4352,7 @@
                         <span>Другие</span>
                     </div>
                     <div style="display: flex; align-items: center; gap: 10px;">
+                        <span id="category-progress-custom" class="category-progress">0%</span>
                         <span id="category-count-custom" class="category-count">0</span>
                         <i class="fas fa-chevron-down category-arrow" id="arrow-custom"></i>
                     </div>
@@ -4324,6 +4361,60 @@
             </div>
         </div>
     </div>
+
+    <!-- ========== СПИСОК ЖЕЛАНИЙ ========== -->
+    <div class="inventory-main-block" style="margin-top: 15px;">
+        <div class="inventory-header" onclick="toggleWishlistBlock()">
+            <div class="inventory-header-left">
+                <i class="fas fa-heart"></i>
+                <span>Список желаний</span>
+            </div>
+            <div class="inventory-header-right">
+                <span id="wishlistCount" class="collection-badge">0</span>
+                <i class="fas fa-chevron-down" id="wishlistArrow"></i>
+            </div>
+        </div>
+        <div id="wishlistContent" class="inventory-content" style="display: none;">
+            <div id="wishlistGrid" class="category-items" style="grid-template-columns: repeat(2, 1fr);"></div>
+            <div id="wishlistEmpty" style="display: none; text-align: center; padding: 30px; color: var(--text-gray);">
+                <i class="far fa-heart" style="font-size: 40px; opacity: 0.5; margin-bottom: 16px;"></i>
+                <p>Здесь пока пусто</p>
+                <p style="font-size: 13px; margin-top: 8px;">Добавляйте раскраски в список желаний, нажимая на ♥</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- ========== ОРГАНАЙЗЕРЫ ========== -->
+    <div class="inventory-main-block" style="margin-top: 15px;">
+        <div class="inventory-header" onclick="toggleInventoryBlock()">
+            <div class="inventory-header-left">
+                <i class="fas fa-boxes"></i>
+                <span>Органайзеры</span>
+            </div>
+            <div class="inventory-header-right">
+                <i class="fas fa-chevron-down" id="inventoryArrow"></i>
+            </div>
+        </div>
+        <div id="inventoryContent" class="inventory-content">
+            <div class="search-box" style="margin: 15px 0;">
+                <i class="fas fa-search"></i>
+                <input type="text" id="markerSearchInOrganizers" placeholder="Поиск маркера по номеру или бренду..." oninput="searchMarkerInOrganizers()">
+            </div>
+            <div id="markerSearchResults" style="display: none; margin-bottom: 15px; padding: 10px; background: var(--bg); border-radius: 12px;"></div>
+            <button class="create-organizer-btn" onclick="openOrganizerCreator()">
+                <i class="fas fa-plus"></i> Создать органайзер
+            </button>
+            <div id="organizersList"></div>
+            <div id="selectedOrganizerView" style="display: none; margin-top: 15px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <h4 id="selectedOrganizerName" style="margin:0; font-size: 16px;"></h4>
+                    <button class="close-view-btn" onclick="closeOrganizerView()">✖ Закрыть</button>
+                </div>
+                <div id="selectedOrganizerGrid"></div>
+            </div>
+        </div>
+    </div>
+</div>  <!-- ✅ ЗАКРЫТИЕ #collection -->
     
     <!-- ========== СПИСОК ЖЕЛАНИЙ ========== -->
     <div class="inventory-main-block" style="margin-top: 15px;">
@@ -10675,7 +10766,6 @@ async function addCustomBook(category) {
         return;
     }
     
-    // ✅ ОТПРАВЛЯЕМ НА СЕРВЕР
     try {
         const response = await fetch(`${SERVER_URL}/api/coloring_books`, {
             method: 'POST',
@@ -10696,9 +10786,9 @@ async function addCustomBook(category) {
             
             localStorage.setItem(`coloring_books_${userId}`, JSON.stringify(userColoringBooks));
             
-            // ✅ Обновляем счётчики
             updateCategoryCounters();
             updateColoringBooksStats();
+            updateAllCategoriesProgress(); // ✅ ДОБАВЛЕНО
             renderColoringBooks();
             
             input.value = '';
@@ -10769,7 +10859,7 @@ function addCoverToBook(category, bookName) {
     };
     input.click();
 }
-function renderColoringBooks() {
+        function renderColoringBooks() {
     const categories = ['paint_by_number', 'alcohol', 'pencil', 'custom'];
     
     categories.forEach(category => {
@@ -10792,11 +10882,25 @@ function renderColoringBooks() {
             }
         });
         
+        // Обновляем счётчик
+        const collectedCount = userBooks.length;
+        const totalCount = allBooks.length;
+        const countEl = document.getElementById(`category-count-${category}`);
+        if (countEl) countEl.textContent = `${collectedCount}/${totalCount}`;
+        
         let html = '';
         
         allBooks.forEach(book => {
             const bookName = book.name;
             const collected = userBooks.some(b => (typeof b === 'string' ? b : b.name) === bookName);
+            
+            // Считаем прогресс для этой раскраски
+            const bookKey = `${category}_${bookName}`;
+            const completedPages = userCompletedPages[bookKey] || {};
+            const completedCount = Object.keys(completedPages).length;
+            const config = BOOK_PAGES_CONFIG[bookName] || DEFAULT_PAGES_CONFIG;
+            const totalPages = config.totalPages;
+            const progressPercent = totalPages > 0 ? Math.round((completedCount / totalPages) * 100) : 0;
             
             // ✅ Правильно формируем URL обложки
             let coverUrl = book.cover || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23ff9500' rx='12'/%3E%3Ctext x='50' y='50' text-anchor='middle' dy='.3em' fill='white' font-size='40' font-family='Arial'%3E📚%3C/text%3E%3C/svg%3E";
@@ -10805,22 +10909,30 @@ function renderColoringBooks() {
             }
             
             html += `
-    <div class="coloring-book-item ${collected ? 'collected' : ''}">
-        <img src="${coverUrl}" class="book-cover" onclick="openBookPagesModal('${category}', '${bookName.replace(/'/g, "\\'")}')" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23ff9500%22 rx=%2212%22/%3E%3Ctext x=%2250%22 y=%2250%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2240%22 font-family=%22Arial%22%3E📚%3C/text%3E%3C/svg%3E'">
-        <div class="book-info" onclick="openBookPagesModal('${category}', '${bookName.replace(/'/g, "\\'")}')">
-            <div class="book-name">${bookName}</div>
-            ${book.custom ? '<div class="book-category">Моя раскраска</div>' : ''}
-        </div>
-        ${book.custom ? `
-            <button class="add-cover-btn" onclick="event.stopPropagation(); uploadCustomCover('${category}', '${bookName.replace(/'/g, "\\'")}')">
-                <i class="fas fa-camera"></i> Обложка
-            </button>
-        ` : ''}
-        <div class="remove-btn" onclick="event.stopPropagation(); toggleColoringBook('${category}', '${bookName.replace(/'/g, "\\'")}')">
-            ${collected ? '✓' : '+'}
-        </div>
-    </div>
-`;
+                <div class="coloring-book-item ${collected ? 'collected' : ''}" data-book-name="${bookName.toLowerCase()}">
+                    <img src="${coverUrl}" class="book-cover" onclick="openBookPagesModal('${category}', '${bookName.replace(/'/g, "\\'")}')" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23ff9500%22 rx=%2212%22/%3E%3Ctext x=%2250%22 y=%2250%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2240%22 font-family=%22Arial%22%3E📚%3C/text%3E%3C/svg%3E'">
+                    <div class="book-info" onclick="openBookPagesModal('${category}', '${bookName.replace(/'/g, "\\'")}')">
+                        <div class="book-name">${bookName}</div>
+                        ${collected ? `
+                            <div class="book-progress-container">
+                                <div class="book-progress-bar">
+                                    <div class="book-progress-fill" style="width: ${progressPercent}%;"></div>
+                                </div>
+                                <div class="book-progress-text">${completedCount}/${totalPages} (${progressPercent}%)</div>
+                            </div>
+                        ` : ''}
+                        ${book.custom ? '<div class="book-category">Моя раскраска</div>' : ''}
+                    </div>
+                    ${book.custom ? `
+                        <button class="add-cover-btn" onclick="event.stopPropagation(); uploadCustomCover('${category}', '${bookName.replace(/'/g, "\\'")}')">
+                            <i class="fas fa-camera"></i> Обложка
+                        </button>
+                    ` : ''}
+                    <div class="remove-btn" onclick="event.stopPropagation(); toggleColoringBook('${category}', '${bookName.replace(/'/g, "\\'")}')">
+                        ${collected ? '✓' : '+'}
+                    </div>
+                </div>
+            `;
         });
         
         // Форма добавления
@@ -10835,8 +10947,21 @@ function renderColoringBooks() {
         
         container.innerHTML = html;
     });
+    
+    // Обновляем общий счётчик и прогресс
+    updateColoringBooksStats();
+    updateAllCategoriesProgress();
+    
+    // Добавляем сердечки вишлиста
+    setTimeout(() => {
+        document.querySelectorAll('.coloring-book-item').forEach(card => {
+            const nameEl = card.querySelector('.book-name');
+            if (nameEl && typeof addWishlistHeartToBookCard === 'function') {
+                addWishlistHeartToBookCard(card, nameEl.innerText);
+            }
+        });
+    }, 100);
 }
-
 async function toggleColoringBook(category, bookName) {
     if (!userColoringBooks[category]) userColoringBooks[category] = [];
     
@@ -10846,17 +10971,16 @@ async function toggleColoringBook(category, bookName) {
     );
     
     if (collected) {
-        // ✅ ЗАПРАШИВАЕМ ПОДТВЕРЖДЕНИЕ ПЕРЕД УДАЛЕНИЕМ
         const doDelete = async () => {
             // Удаляем локально
             userColoringBooks[category] = userColoringBooks[category].filter(b => 
                 (typeof b === 'string' ? b : b.name) !== bookName
             );
             
-            // Сохраняем в localStorage (кеш)
+            // Сохраняем в localStorage
             localStorage.setItem(`coloring_books_${userId}`, JSON.stringify(userColoringBooks));
             
-            // ✅ ОТПРАВЛЯЕМ НА СЕРВЕР
+            // Отправляем на сервер
             try {
                 await fetch(`${SERVER_URL}/api/coloring_books`, {
                     method: 'POST',
@@ -10872,9 +10996,10 @@ async function toggleColoringBook(category, bookName) {
                 console.error('Ошибка сервера:', error);
             }
             
-            // ✅ Обновляем счётчики
+            // Обновляем счётчики и прогресс
             updateCategoryCounters();
             updateColoringBooksStats();
+            updateAllCategoriesProgress();
             renderColoringBooks();
             
             if (tg) tg.showAlert(`❌ "${bookName}" удалена`);
@@ -10895,7 +11020,7 @@ async function toggleColoringBook(category, bookName) {
         userColoringBooks[category].push(bookName);
         localStorage.setItem(`coloring_books_${userId}`, JSON.stringify(userColoringBooks));
         
-        // ✅ ОТПРАВЛЯЕМ НА СЕРВЕР
+        // Отправляем на сервер
         try {
             await fetch(`${SERVER_URL}/api/coloring_books`, {
                 method: 'POST',
@@ -10911,9 +11036,10 @@ async function toggleColoringBook(category, bookName) {
             console.error('Ошибка сервера:', error);
         }
         
-        // ✅ Обновляем счётчики
+        // Обновляем счётчики и прогресс
         updateCategoryCounters();
         updateColoringBooksStats();
+        updateAllCategoriesProgress();
         renderColoringBooks();
         
         if (tg) tg.showAlert(`✅ "${bookName}" добавлена!`);
@@ -12664,13 +12790,13 @@ function togglePageCompletion(bookKey, page, totalPages) {
     const isCompleted = userCompletedPages[bookKey][String(page)];
     
     if (isCompleted) {
-        // Снять отметку (с подтверждением)
         if (tg) {
             tg.showConfirm(`Снять отметку со страницы ${page}?`, (confirm) => {
                 if (confirm) {
                     delete userCompletedPages[bookKey][String(page)];
                     saveCompletedPages();
                     updateBookProgress(bookKey);
+                    updateAllCategoriesProgress(); // ✅ ДОБАВЛЕНО
                     
                     const config = BOOK_PAGES_CONFIG[currentBook] || DEFAULT_PAGES_CONFIG;
                     renderBookPagesGrid(bookKey, config);
@@ -12681,21 +12807,21 @@ function togglePageCompletion(bookKey, page, totalPages) {
                 delete userCompletedPages[bookKey][String(page)];
                 saveCompletedPages();
                 updateBookProgress(bookKey);
+                updateAllCategoriesProgress(); // ✅ ДОБАВЛЕНО
                 
                 const config = BOOK_PAGES_CONFIG[currentBook] || DEFAULT_PAGES_CONFIG;
                 renderBookPagesGrid(bookKey, config);
             }
         }
     } else {
-        // Отметить как раскрашенную
         userCompletedPages[bookKey][String(page)] = true;
         saveCompletedPages();
         updateBookProgress(bookKey);
+        updateAllCategoriesProgress(); // ✅ ДОБАВЛЕНО
         
         const config = BOOK_PAGES_CONFIG[currentBook] || DEFAULT_PAGES_CONFIG;
         renderBookPagesGrid(bookKey, config);
         
-        // Поздравление если все страницы раскрашены
         const completedCount = Object.keys(userCompletedPages[bookKey]).length;
         if (completedCount === totalPages) {
             if (tg) tg.showAlert(`🎉 Поздравляем! Вы раскрасили всю раскраску «${currentBook}»!`);
@@ -12732,7 +12858,6 @@ async function loadCompletedPages() {
         userCompletedPages = {};
     }
     
-    // Загружаем с сервера
     try {
         const response = await fetch(`${SERVER_URL}/api/stats?user_id=${userId}`);
         const stats = await response.json();
@@ -12743,6 +12868,9 @@ async function loadCompletedPages() {
     } catch (error) {
         console.error('Ошибка загрузки с сервера:', error);
     }
+    
+    // ✅ ДОБАВЛЕНО
+    updateAllCategoriesProgress();
 }
 
 // Обновление прогресса в карточке раскраски
@@ -13240,7 +13368,6 @@ function updateCategoryCounters() {
         const userBooks = userColoringBooks[category] || [];
         const defaultBooks = DEFAULT_COLORING_BOOKS[category] || [];
         
-        // Считаем общее количество уникальных раскрасок
         const allBooks = [...new Set([
             ...defaultBooks,
             ...userBooks.map(b => typeof b === 'string' ? b : b.name)
@@ -13251,6 +13378,8 @@ function updateCategoryCounters() {
             countEl.textContent = `${userBooks.length}/${allBooks.length}`;
         }
     });
+    
+    updateAllCategoriesProgress();
 }
         // Загрузка счётчика вишлиста при старте
 async function loadWishlistCount() {
@@ -13266,6 +13395,197 @@ async function loadWishlistCount() {
     } catch (error) {
         console.error('Ошибка загрузки счётчика вишлиста:', error);
     }
+}
+        // ==========================================
+// ПРОГРЕСС РАСКРАСОК
+// ==========================================
+
+// Расчёт прогресса для категории (только добавленные раскраски)
+function calculateCategoryProgress(category) {
+    const userBooks = userColoringBooks[category] || [];
+    
+    if (userBooks.length === 0) {
+        return { percent: 0, completed: 0, total: 0 };
+    }
+    
+    let totalCompletedPages = 0;
+    let totalPagesAll = 0;
+    
+    userBooks.forEach(book => {
+        const bookName = typeof book === 'string' ? book : book.name;
+        const bookKey = `${category}_${bookName}`;
+        const completedPages = userCompletedPages[bookKey] || {};
+        const completedCount = Object.keys(completedPages).length;
+        
+        const config = BOOK_PAGES_CONFIG[bookName] || DEFAULT_PAGES_CONFIG;
+        const totalPages = config.totalPages;
+        
+        totalCompletedPages += completedCount;
+        totalPagesAll += totalPages;
+    });
+    
+    const percent = totalPagesAll > 0 ? Math.round((totalCompletedPages / totalPagesAll) * 100) : 0;
+    
+    return { percent, completed: totalCompletedPages, total: totalPagesAll };
+}
+
+// Обновление прогресса для всех категорий
+function updateAllCategoriesProgress() {
+    const categories = ['paint_by_number', 'alcohol', 'pencil', 'custom'];
+    
+    categories.forEach(category => {
+        const progress = calculateCategoryProgress(category);
+        const progressEl = document.getElementById(`category-progress-${category}`);
+        
+        if (progressEl) {
+            progressEl.textContent = `${progress.percent}%`;
+        }
+    });
+}
+        // ==========================================
+// РЕНДЕРИНГ СОДЕРЖИМОГО КАТЕГОРИИ
+// ==========================================
+
+function renderCategoryContent(category) {
+    const container = document.getElementById(`category-${category}`);
+    if (!container) return;
+    
+    const userBooks = userColoringBooks[category] || [];
+    
+    const defaultBooks = (DEFAULT_COLORING_BOOKS[category] || []).map(name => ({
+        name: name,
+        custom: false,
+        cover: DEFAULT_COVERS[name] || 'assets/coloriages/default.jpg'
+    }));
+    
+    const allBooks = [...defaultBooks];
+    userBooks.forEach(book => {
+        const bookName = typeof book === 'string' ? book : book.name;
+        if (!allBooks.find(b => b.name === bookName)) {
+            allBooks.push(typeof book === 'string' ? { name: book, custom: true, cover: null } : book);
+        }
+    });
+    
+    // Обновляем счётчик и прогресс
+    const collectedCount = userBooks.length;
+    const totalCount = allBooks.length;
+    const countEl = document.getElementById(`category-count-${category}`);
+    if (countEl) countEl.textContent = `${collectedCount}/${totalCount}`;
+    
+    // Обновляем прогресс категории
+    updateAllCategoriesProgress();
+    
+    let html = '';
+    
+    allBooks.forEach(book => {
+        const bookName = book.name;
+        const collected = userBooks.some(b => (typeof b === 'string' ? b : b.name) === bookName);
+        
+        // Считаем прогресс для этой раскраски
+        const bookKey = `${category}_${bookName}`;
+        const completedPages = userCompletedPages[bookKey] || {};
+        const completedCount = Object.keys(completedPages).length;
+        const config = BOOK_PAGES_CONFIG[bookName] || DEFAULT_PAGES_CONFIG;
+        const totalPages = config.totalPages;
+        const progressPercent = totalPages > 0 ? Math.round((completedCount / totalPages) * 100) : 0;
+        
+        let coverUrl = book.cover || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23ff9500' rx='12'/%3E%3Ctext x='50' y='50' text-anchor='middle' dy='.3em' fill='white' font-size='40'%3E📚%3C/text%3E%3C/svg%3E";
+        if (coverUrl && coverUrl.startsWith('/custom_covers')) {
+            coverUrl = SERVER_URL + coverUrl;
+        }
+        
+        html += `
+            <div class="coloring-book-item ${collected ? 'collected' : ''}" data-book-name="${bookName.toLowerCase()}">
+                <img src="${coverUrl}" class="book-cover" onclick="openBookPagesModal('${category}', '${bookName.replace(/'/g, "\\'")}')" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23ff9500%22 rx=%2212%22/%3E%3Ctext x=%2250%22 y=%2250%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2240%22%3E📚%3C/text%3E%3C/svg%3E'">
+                <div class="book-info" onclick="openBookPagesModal('${category}', '${bookName.replace(/'/g, "\\'")}')">
+                    <div class="book-name">${bookName}</div>
+                    ${collected ? `
+                        <div class="book-progress-container">
+                            <div class="book-progress-bar">
+                                <div class="book-progress-fill" style="width: ${progressPercent}%;"></div>
+                            </div>
+                            <div class="book-progress-text">${completedCount}/${totalPages} (${progressPercent}%)</div>
+                        </div>
+                    ` : ''}
+                    ${book.custom ? '<div class="book-category">Моя раскраска</div>' : ''}
+                </div>
+                ${book.custom ? `
+                    <button class="add-cover-btn" onclick="event.stopPropagation(); uploadCustomCover('${category}', '${bookName.replace(/'/g, "\\'")}')">
+                        <i class="fas fa-camera"></i> Обложка
+                    </button>
+                ` : ''}
+                <div class="remove-btn" onclick="event.stopPropagation(); toggleColoringBook('${category}', '${bookName.replace(/'/g, "\\'")}')">
+                    ${collected ? '✓' : '+'}
+                </div>
+            </div>
+        `;
+    });
+    
+    // Форма добавления
+    html += `
+        <div style="grid-column: span 2; margin-top: 10px;">
+            <div class="add-book-form">
+                <input type="text" id="custom-book-${category}" placeholder="Название новой раскраски...">
+                <button class="add-custom-btn" onclick="addCustomBook('${category}')" style="flex: 1;">Добавить</button>
+            </div>
+        </div>
+    `;
+    
+    container.innerHTML = html;
+    
+    // Добавляем сердечки вишлиста
+    setTimeout(() => {
+        container.querySelectorAll('.coloring-book-item').forEach(card => {
+            const nameEl = card.querySelector('.book-name');
+            if (nameEl && typeof addWishlistHeartToBookCard === 'function') {
+                addWishlistHeartToBookCard(card, nameEl.innerText);
+            }
+        });
+    }, 50);
+}
+        // ==========================================
+// ПРОГРЕСС КАТЕГОРИЙ
+// ==========================================
+
+function calculateCategoryProgress(category) {
+    const userBooks = userColoringBooks[category] || [];
+    
+    if (userBooks.length === 0) {
+        return { percent: 0, completed: 0, total: 0 };
+    }
+    
+    let totalCompletedPages = 0;
+    let totalPagesAll = 0;
+    
+    userBooks.forEach(book => {
+        const bookName = typeof book === 'string' ? book : book.name;
+        const bookKey = `${category}_${bookName}`;
+        const completedPages = userCompletedPages[bookKey] || {};
+        const completedCount = Object.keys(completedPages).length;
+        
+        const config = BOOK_PAGES_CONFIG[bookName] || DEFAULT_PAGES_CONFIG;
+        const totalPages = config.totalPages;
+        
+        totalCompletedPages += completedCount;
+        totalPagesAll += totalPages;
+    });
+    
+    const percent = totalPagesAll > 0 ? Math.round((totalCompletedPages / totalPagesAll) * 100) : 0;
+    
+    return { percent, completed: totalCompletedPages, total: totalPagesAll };
+}
+
+function updateAllCategoriesProgress() {
+    const categories = ['paint_by_number', 'alcohol', 'pencil', 'custom'];
+    
+    categories.forEach(category => {
+        const progress = calculateCategoryProgress(category);
+        const progressEl = document.getElementById(`category-progress-${category}`);
+        
+        if (progressEl) {
+            progressEl.textContent = `${progress.percent}%`;
+        }
+    });
 }
     </script>
     <!-- Модалка поиска пользователей -->
