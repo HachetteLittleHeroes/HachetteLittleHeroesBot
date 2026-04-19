@@ -10871,25 +10871,19 @@ function addCoverToBook(category, bookName) {
             const bookName = book.name;
             const collected = userBooks.some(b => (typeof b === 'string' ? b : b.name) === bookName);
             
-            // ✅ Получаем количество страниц (приоритет: кастомная книга > сохранённая > конфиг > по умолчанию)
+            // ✅ ПРАВИЛЬНАЯ ЛОГИКА ПОЛУЧЕНИЯ totalPages
             let totalPages = DEFAULT_PAGES_CONFIG.totalPages;
             
-            // Ищем сохранённую книгу пользователя
+            // 1. Приоритет: кастомная книга из userBooks с totalPages
             const userBook = userBooks.find(b => (typeof b === 'string' ? b : b.name) === bookName);
-            
-            // Приоритет 1: кастомная книга из allBooks с totalPages
-            if (book.custom && book.totalPages) {
-                totalPages = book.totalPages;
-            } 
-            // Приоритет 2: сохранённая книга пользователя с totalPages
-            else if (userBook && typeof userBook === 'object' && userBook.totalPages) {
+            if (userBook && typeof userBook === 'object' && userBook.totalPages) {
                 totalPages = userBook.totalPages;
-            } 
-            // Приоритет 3: конфигурация
-            else {
-                const config = BOOK_PAGES_CONFIG[bookName] || DEFAULT_PAGES_CONFIG;
-                totalPages = config.totalPages;
             }
+            // 2. Приоритет: конфигурация BOOK_PAGES_CONFIG
+            else if (BOOK_PAGES_CONFIG[bookName] && BOOK_PAGES_CONFIG[bookName].totalPages) {
+                totalPages = BOOK_PAGES_CONFIG[bookName].totalPages;
+            }
+            // 3. Приоритет: DEFAULT_PAGES_CONFIG (уже установлен)
             
             // ✅ Считаем прогресс (каждый ключ в completedPages = 1 отмеченная страница/разворот)
             const bookKey = `${category}_${bookName}`;
@@ -11480,11 +11474,17 @@ function openBookPagesModal(category, bookName) {
         return name === bookName && typeof b === 'object' && b.totalPages;
     });
     
+    // ✅ Правильная логика получения конфигурации
     let config;
     if (customBook && customBook.totalPages) {
+        // Кастомная книга с указанным количеством страниц
         config = { totalPages: customBook.totalPages, spreads: [] };
+    } else if (BOOK_PAGES_CONFIG[bookName]) {
+        // Стандартная книга из конфигурации (с разворотами)
+        config = BOOK_PAGES_CONFIG[bookName];
     } else {
-        config = BOOK_PAGES_CONFIG[bookName] || DEFAULT_PAGES_CONFIG;
+        // Книга не найдена — используем значения по умолчанию
+        config = DEFAULT_PAGES_CONFIG;
     }
     
     document.getElementById('bookPagesTitle').innerText = bookName;
@@ -13743,17 +13743,16 @@ function calculateCategoryProgress(category) {
         const bookName = typeof book === 'string' ? book : book.name;
         const bookKey = `${category}_${bookName}`;
         const completedPages = userCompletedPages[bookKey] || {};
-        
-        // ✅ Правильный подсчёт: каждый ключ в completedPages = 1 отмеченная страница/разворот
         const completedCount = Object.keys(completedPages).length;
         
-        // Получаем конфигурацию
-        let totalPages;
+        // ✅ Правильная логика
+        let totalPages = 60;
         if (typeof book === 'object' && book.totalPages) {
             totalPages = book.totalPages;
+        } else if (BOOK_PAGES_CONFIG[bookName]) {
+            totalPages = BOOK_PAGES_CONFIG[bookName].totalPages;
         } else {
-            const config = BOOK_PAGES_CONFIG[bookName] || DEFAULT_PAGES_CONFIG;
-            totalPages = config.totalPages;
+            totalPages = DEFAULT_PAGES_CONFIG.totalPages;
         }
         
         totalCompletedPages += completedCount;
@@ -13761,7 +13760,6 @@ function calculateCategoryProgress(category) {
     });
     
     const percent = totalPagesAll > 0 ? Math.round((totalCompletedPages / totalPagesAll) * 100) : 0;
-    
     return { percent, completed: totalCompletedPages, total: totalPagesAll };
 }
 // Обновление прогресса для всех категорий
