@@ -12963,6 +12963,7 @@ function renderPublicBooks(books, artworks, userId) {
 }
 
 // Просмотр публичной раскраски (страницы)
+
 function viewPublicBook(userId, category, bookName, hasArtworks) {
     const container = document.getElementById('publicProfileContent');
     const profile = JSON.parse(container.dataset.profile || '{}');
@@ -12972,34 +12973,49 @@ function viewPublicBook(userId, category, bookName, hasArtworks) {
     const bookCompleted = completedPages[bookKey] || {};
     const completedCount = Object.keys(bookCompleted).length;
     
+    // ✅ Ищем книгу в коллекции пользователя
+    const userBooks = profile.coloring_books?.[category] || [];
+    const savedBook = userBooks.find(b => {
+        const name = typeof b === 'string' ? b : b.name;
+        return name === bookName;
+    });
+    
+    // ✅ Получаем конфигурацию (totalPages и spreads)
+    let config;
+    if (savedBook && typeof savedBook === 'object') {
+        config = {
+            totalPages: savedBook.totalPages || DEFAULT_PAGES_CONFIG.totalPages,
+            spreads: savedBook.spreads || []
+        };
+    } else if (BOOK_PAGES_CONFIG[bookName]) {
+        config = BOOK_PAGES_CONFIG[bookName];
+    } else {
+        config = DEFAULT_PAGES_CONFIG;
+    }
+    
+    // ✅ Проверяем, есть ли отмеченные страницы
     if (completedCount === 0) {
         if (tg) tg.showAlert('У пользователя нет отмеченных страниц в этой раскраске');
         else alert('Нет отмеченных страниц');
         return;
     }
     
-    // ✅ Ищем кастомную книгу
-    const userBooks = profile.coloring_books?.[category] || [];
-    const customBook = userBooks.find(b => {
-        const name = typeof b === 'string' ? b : b.name;
-        return name === bookName && typeof b === 'object' && b.totalPages;
-    });
-    
-    let config;
-    if (customBook && customBook.totalPages) {
-        config = { totalPages: customBook.totalPages, spreads: [] };
-    } else {
-        config = BOOK_PAGES_CONFIG[bookName] || DEFAULT_PAGES_CONFIG;
-    }
-    
     window.isViewOnly = true;
     
     currentBook = bookName;
     currentCategory = category;
-    userCompletedPages = completedPages;
+    userCompletedPages = completedPages;  // ✅ Используем completed_pages из профиля
+    
+    const spreadsCount = config.spreads?.length || 0;
+    const totalCells = config.totalPages - spreadsCount;
     
     document.getElementById('bookPagesTitle').innerText = bookName;
-    document.getElementById('bookPagesCategory').innerText = `Отмечено страниц: ${completedCount} / ${config.totalPages}`;
+    
+    let infoText = `Отмечено: ${completedCount} / ${totalCells}`;
+    if (spreadsCount > 0) {
+        infoText += ` • ${config.totalPages} стр. • ${spreadsCount} разв.`;
+    }
+    document.getElementById('bookPagesCategory').innerText = infoText;
     
     renderBookPagesGrid(bookKey, config);
     
