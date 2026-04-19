@@ -10705,10 +10705,17 @@ function handleCoverSelect(category) {
 
 async function addCustomBook(category) {
     const input = document.getElementById(`custom-book-${category}`);
+    const pagesInput = document.getElementById(`custom-book-pages-${category}`);
     const bookName = input?.value.trim();
+    const totalPages = pagesInput ? parseInt(pagesInput.value) : 60;
     
     if (!bookName) {
         if (tg) tg.showAlert('❌ Введите название раскраски');
+        return;
+    }
+    
+    if (totalPages < 1 || totalPages > 500) {
+        if (tg) tg.showAlert('❌ Количество страниц должно быть от 1 до 500');
         return;
     }
     
@@ -10720,7 +10727,8 @@ async function addCustomBook(category) {
                 user_id: userId,
                 category: category,
                 book_name: bookName,
-                action: 'add'
+                action: 'add',
+                total_pages: totalPages  // ✅ Отправляем количество страниц
             })
         });
         
@@ -10728,17 +10736,32 @@ async function addCustomBook(category) {
         
         if (result.status === 'ok') {
             if (!userColoringBooks[category]) userColoringBooks[category] = [];
-            userColoringBooks[category].push(bookName);
+            
+            // Сохраняем с количеством страниц
+            userColoringBooks[category].push({
+                name: bookName,
+                custom: true,
+                totalPages: totalPages
+            });
+            
+            // Добавляем в конфигурацию
+            BOOK_PAGES_CONFIG[bookName] = {
+                totalPages: totalPages,
+                spreads: []
+            };
             
             localStorage.setItem(`coloring_books_${userId}`, JSON.stringify(userColoringBooks));
             
             updateCategoryCounters();
             updateColoringBooksStats();
-            updateAllCategoriesProgress(); // ✅ ДОБАВЛЕНО
+            updateAllCategoriesProgress();
             renderColoringBooks();
             
             input.value = '';
-            if (tg) tg.showAlert(`✅ "${bookName}" добавлена!`);
+            if (pagesInput) pagesInput.value = '60';
+            
+            if (tg) tg.showAlert(`✅ "${bookName}" добавлена (${totalPages} стр.)!`);
+            else alert(`✅ "${bookName}" добавлена (${totalPages} стр.)!`);
         }
     } catch (error) {
         console.error('Ошибка:', error);
@@ -10881,15 +10904,18 @@ function addCoverToBook(category, bookName) {
             `;
         });
         
-        // Форма добавления
-        html += `
-            <div style="grid-column: span 2; margin-top: 10px;">
-                <div class="add-book-form">
-                    <input type="text" id="custom-book-${category}" placeholder="Название новой раскраски...">
-                    <button class="add-custom-btn" onclick="addCustomBook('${category}')" style="flex: 1;">Добавить</button>
-                </div>
+      // Форма добавления (вместо старой)
+html += `
+    <div style="grid-column: span 2; margin-top: 10px;">
+        <div class="add-book-form">
+            <input type="text" id="custom-book-${category}" placeholder="Название новой раскраски...">
+            <div style="display: flex; gap: 8px; margin-top: 8px;">
+                <input type="number" id="custom-book-pages-${category}" placeholder="Страниц" value="60" min="1" max="500" style="flex: 1; padding: 10px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text); font-size: 14px;">
+                <button class="add-custom-btn" onclick="addCustomBook('${category}')" style="flex: 1;">Добавить</button>
             </div>
-        `;
+        </div>
+    </div>
+`;
         
         container.innerHTML = html;
     });
@@ -11405,8 +11431,19 @@ function openBookPagesModal(category, bookName) {
     
     const bookKey = `${category}_${bookName}`;
     
-    // ✅ Получаем конфигурацию страниц (или используем по умолчанию)
-    const config = BOOK_PAGES_CONFIG[bookName] || DEFAULT_PAGES_CONFIG;
+    // ✅ Ищем кастомную книгу
+    const userBooks = userColoringBooks[category] || [];
+    const customBook = userBooks.find(b => {
+        const name = typeof b === 'string' ? b : b.name;
+        return name === bookName && typeof b === 'object' && b.totalPages;
+    });
+    
+    let config;
+    if (customBook && customBook.totalPages) {
+        config = { totalPages: customBook.totalPages, spreads: [] };
+    } else {
+        config = BOOK_PAGES_CONFIG[bookName] || DEFAULT_PAGES_CONFIG;
+    }
     
     document.getElementById('bookPagesTitle').innerText = bookName;
     
@@ -12847,7 +12884,6 @@ function renderPublicBooks(books, artworks, userId) {
 
 // Просмотр публичной раскраски (страницы)
 function viewPublicBook(userId, category, bookName, hasArtworks) {
-    // ✅ Используем completed_pages вместо artworks
     const container = document.getElementById('publicProfileContent');
     const profile = JSON.parse(container.dataset.profile || '{}');
     const completedPages = profile.completed_pages || {};
@@ -12856,40 +12892,43 @@ function viewPublicBook(userId, category, bookName, hasArtworks) {
     const bookCompleted = completedPages[bookKey] || {};
     const completedCount = Object.keys(bookCompleted).length;
     
-    // ✅ Проверяем количество отмеченных страниц
     if (completedCount === 0) {
         if (tg) tg.showAlert('У пользователя нет отмеченных страниц в этой раскраске');
         else alert('Нет отмеченных страниц');
         return;
     }
     
-    // ✅ Устанавливаем флаг просмотра (чужой профиль)
+    // ✅ Ищем кастомную книгу
+    const userBooks = profile.coloring_books?.[category] || [];
+    const customBook = userBooks.find(b => {
+        const name = typeof b === 'string' ? b : b.name;
+        return name === bookName && typeof b === 'object' && b.totalPages;
+    });
+    
+    let config;
+    if (customBook && customBook.totalPages) {
+        config = { totalPages: customBook.totalPages, spreads: [] };
+    } else {
+        config = BOOK_PAGES_CONFIG[bookName] || DEFAULT_PAGES_CONFIG;
+    }
+    
     window.isViewOnly = true;
     
     currentBook = bookName;
     currentCategory = category;
-    
-    const config = BOOK_PAGES_CONFIG[bookName] || DEFAULT_PAGES_CONFIG;
-    
-    // ✅ Используем completed_pages для отображения
     userCompletedPages = completedPages;
     
     document.getElementById('bookPagesTitle').innerText = bookName;
-    document.getElementById('bookPagesCategory').innerText = `Отмечено страниц: ${completedCount}`;
+    document.getElementById('bookPagesCategory').innerText = `Отмечено страниц: ${completedCount} / ${config.totalPages}`;
     
     renderBookPagesGrid(bookKey, config);
     
-    // ✅ Поднимаем модалку
     const bookModal = document.getElementById('bookPagesModal');
     bookModal.style.display = 'flex';
     bookModal.style.zIndex = '100002';
     
     const profileModal = document.getElementById('publicProfileModal');
     if (profileModal) profileModal.style.opacity = '0.3';
-    
-    // Скрываем input для загрузки (если есть)
-    const uploadInput = document.getElementById('bookPageUploadInput');
-    if (uploadInput) uploadInput.style.display = 'none';
 }
 // Открыть список друзей
 async function openFriendsList() {
@@ -13728,12 +13767,21 @@ function renderCategoryContent(category) {
         const bookName = book.name;
         const collected = userBooks.some(b => (typeof b === 'string' ? b : b.name) === bookName);
         
+        // ✅ Получаем количество страниц (приоритет: кастомная книга > конфиг > по умолчанию)
+        let totalPages = DEFAULT_PAGES_CONFIG.totalPages;
+        const userBook = userBooks.find(b => (typeof b === 'string' ? b : b.name) === bookName);
+        
+        if (userBook && typeof userBook === 'object' && userBook.totalPages) {
+            totalPages = userBook.totalPages;
+        } else {
+            const config = BOOK_PAGES_CONFIG[bookName] || DEFAULT_PAGES_CONFIG;
+            totalPages = config.totalPages;
+        }
+        
         // Считаем прогресс для этой раскраски
         const bookKey = `${category}_${bookName}`;
         const completedPages = userCompletedPages[bookKey] || {};
         const completedCount = Object.keys(completedPages).length;
-        const config = BOOK_PAGES_CONFIG[bookName] || DEFAULT_PAGES_CONFIG;
-        const totalPages = config.totalPages;
         const progressPercent = totalPages > 0 ? Math.round((completedCount / totalPages) * 100) : 0;
         
         let coverUrl = book.cover || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23ff9500' rx='12'/%3E%3Ctext x='50' y='50' text-anchor='middle' dy='.3em' fill='white' font-size='40'%3E📚%3C/text%3E%3C/svg%3E";
@@ -13768,12 +13816,15 @@ function renderCategoryContent(category) {
         `;
     });
     
-    // Форма добавления
+    // ✅ Форма добавления с полем для количества страниц
     html += `
         <div style="grid-column: span 2; margin-top: 10px;">
             <div class="add-book-form">
                 <input type="text" id="custom-book-${category}" placeholder="Название новой раскраски...">
-                <button class="add-custom-btn" onclick="addCustomBook('${category}')" style="flex: 1;">Добавить</button>
+                <div style="display: flex; gap: 8px; margin-top: 8px;">
+                    <input type="number" id="custom-book-pages-${category}" placeholder="Страниц" value="60" min="1" max="500" style="flex: 1; padding: 10px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text); font-size: 14px;">
+                    <button class="add-custom-btn" onclick="addCustomBook('${category}')" style="flex: 1;">Добавить</button>
+                </div>
             </div>
         </div>
     `;
