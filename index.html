@@ -10621,10 +10621,20 @@ async function loadColoringBooks() {
         const data = await response.json();
         
         if (data && typeof data === 'object') {
-            // ✅ Сервер возвращает правильную структуру с обложками
-            userColoringBooks = data;
+            // ✅ Восстанавливаем объекты с totalPages
+            userColoringBooks = {};
+            
+            for (const category in data) {
+                userColoringBooks[category] = data[category].map(book => {
+                    if (typeof book === 'string') {
+                        // Старый формат — конвертируем в объект с дефолтными страницами
+                        return { name: book, custom: true, totalPages: 60 };
+                    }
+                    return book; // Уже объект
+                });
+            }
         } else {
-            // Грузим из localStorage как запасной вариант
+            // Загрузка из localStorage
             const saved = localStorage.getItem(`coloring_books_${userId}`);
             if (saved) {
                 userColoringBooks = JSON.parse(saved);
@@ -10633,12 +10643,10 @@ async function loadColoringBooks() {
             }
         }
         
-        // Сохраняем в localStorage как кеш
         localStorage.setItem(`coloring_books_${userId}`, JSON.stringify(userColoringBooks));
         updateColoringBooksStats();
     } catch (error) {
         console.error('Ошибка загрузки:', error);
-        // Грузим из localStorage
         const saved = localStorage.getItem(`coloring_books_${userId}`);
         if (saved) userColoringBooks = JSON.parse(saved);
         updateColoringBooksStats();
@@ -10863,18 +10871,27 @@ function addCoverToBook(category, bookName) {
             const bookName = book.name;
             const collected = userBooks.some(b => (typeof b === 'string' ? b : b.name) === bookName);
             
-            // ✅ Получаем количество страниц (приоритет: кастомная книга > конфиг > по умолчанию)
+            // ✅ Получаем количество страниц (приоритет: кастомная книга > сохранённая > конфиг > по умолчанию)
             let totalPages = DEFAULT_PAGES_CONFIG.totalPages;
+            
+            // Ищем сохранённую книгу пользователя
             const userBook = userBooks.find(b => (typeof b === 'string' ? b : b.name) === bookName);
             
-            if (userBook && typeof userBook === 'object' && userBook.totalPages) {
+            // Приоритет 1: кастомная книга из allBooks с totalPages
+            if (book.custom && book.totalPages) {
+                totalPages = book.totalPages;
+            } 
+            // Приоритет 2: сохранённая книга пользователя с totalPages
+            else if (userBook && typeof userBook === 'object' && userBook.totalPages) {
                 totalPages = userBook.totalPages;
-            } else {
+            } 
+            // Приоритет 3: конфигурация
+            else {
                 const config = BOOK_PAGES_CONFIG[bookName] || DEFAULT_PAGES_CONFIG;
                 totalPages = config.totalPages;
             }
             
-            // Считаем прогресс для этой раскраски
+            // ✅ Считаем прогресс (каждый ключ в completedPages = 1 отмеченная страница/разворот)
             const bookKey = `${category}_${bookName}`;
             const completedPages = userCompletedPages[bookKey] || {};
             const completedCount = Object.keys(completedPages).length;
@@ -13726,10 +13743,18 @@ function calculateCategoryProgress(category) {
         const bookName = typeof book === 'string' ? book : book.name;
         const bookKey = `${category}_${bookName}`;
         const completedPages = userCompletedPages[bookKey] || {};
+        
+        // ✅ Правильный подсчёт: каждый ключ в completedPages = 1 отмеченная страница/разворот
         const completedCount = Object.keys(completedPages).length;
         
-        const config = BOOK_PAGES_CONFIG[bookName] || DEFAULT_PAGES_CONFIG;
-        const totalPages = config.totalPages;
+        // Получаем конфигурацию
+        let totalPages;
+        if (typeof book === 'object' && book.totalPages) {
+            totalPages = book.totalPages;
+        } else {
+            const config = BOOK_PAGES_CONFIG[bookName] || DEFAULT_PAGES_CONFIG;
+            totalPages = config.totalPages;
+        }
         
         totalCompletedPages += completedCount;
         totalPagesAll += totalPages;
@@ -13739,7 +13764,6 @@ function calculateCategoryProgress(category) {
     
     return { percent, completed: totalCompletedPages, total: totalPagesAll };
 }
-
 // Обновление прогресса для всех категорий
 function updateAllCategoriesProgress() {
     const categories = ['paint_by_number', 'alcohol', 'pencil', 'custom'];
