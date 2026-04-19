@@ -12231,10 +12231,13 @@ async function addAllBrand(brand, subcategory, numbers) {
     // Обновляем локально
     numbers.forEach(num => {
         let key;
+        // ✅ Преобразуем номер в строку (для буквенных номеров типа AG171)
+        const numStr = String(num);
+        
         if (brand === 'Tooli-Art' && subcategory) {
-            key = `${brand}_${subcategory}_${num}`;
+            key = `${brand}_${subcategory}_${numStr}`;
         } else {
-            key = `${brand}_${num}`;
+            key = `${brand}_${numStr}`;
         }
         userMarkersCollection[key] = true;
     });
@@ -12245,7 +12248,7 @@ async function addAllBrand(brand, subcategory, numbers) {
     
     // ✅ ОТПРАВЛЯЕМ НА СЕРВЕР
     if (brand === 'Tooli-Art' && subcategory) {
-        // Отправляем каждый номер отдельно (как add)
+        // Отправляем каждый номер отдельно
         for (const num of numbers) {
             try {
                 await fetch(`${SERVER_URL}/api/markers_collection`, {
@@ -12254,17 +12257,17 @@ async function addAllBrand(brand, subcategory, numbers) {
                     body: JSON.stringify({
                         user_id: userId,
                         brand: brand,
-                        number: num,
+                        number: String(num),  // ✅ Преобразуем в строку
                         subcategory: subcategory,
                         action: 'add'
                     })
                 });
             } catch (error) {
-                console.error('Error syncing to server:', error);
+                console.error('Error syncing Tooli-Art to server:', error);
             }
         }
     } else {
-        // Для остальных брендов — старая логика
+        // Для остальных брендов — отправляем все номера
         try {
             await fetch(`${SERVER_URL}/api/markers_collection`, {
                 method: 'POST',
@@ -12272,6 +12275,7 @@ async function addAllBrand(brand, subcategory, numbers) {
                 body: JSON.stringify({
                     user_id: userId,
                     brand: brand,
+                    numbers: numbers.map(n => String(n)),  // ✅ Преобразуем в строки
                     action: 'add_all_brand'
                 })
             });
