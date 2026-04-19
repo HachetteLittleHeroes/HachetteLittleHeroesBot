@@ -4415,60 +4415,6 @@
         </div>
     </div>
 </div>  <!-- ✅ ЗАКРЫТИЕ #collection -->
-    
-    <!-- ========== СПИСОК ЖЕЛАНИЙ ========== -->
-    <div class="inventory-main-block" style="margin-top: 15px;">
-        <div class="inventory-header" onclick="toggleWishlistBlock()">
-            <div class="inventory-header-left">
-                <i class="fas fa-heart"></i>
-                <span>Список желаний</span>
-            </div>
-            <div class="inventory-header-right">
-                <span id="wishlistCount" class="collection-badge">0</span>
-                <i class="fas fa-chevron-down" id="wishlistArrow"></i>
-            </div>
-        </div>
-        <div id="wishlistContent" class="inventory-content" style="display: none;">
-            <div id="wishlistGrid" class="category-items" style="grid-template-columns: repeat(2, 1fr);"></div>
-            <div id="wishlistEmpty" style="display: none; text-align: center; padding: 30px; color: var(--text-gray);">
-                <i class="far fa-heart" style="font-size: 40px; opacity: 0.5; margin-bottom: 16px;"></i>
-                <p>Здесь пока пусто</p>
-                <p style="font-size: 13px; margin-top: 8px;">Добавляйте раскраски в список желаний, нажимая на ♥</p>
-            </div>
-        </div>
-    </div>
-    
-    <!-- ========== ОРГАНАЙЗЕРЫ ========== -->
-    <div class="inventory-main-block" style="margin-top: 15px;">
-        <div class="inventory-header" onclick="toggleInventoryBlock()">
-            <div class="inventory-header-left">
-                <i class="fas fa-boxes"></i>
-                <span>Органайзеры</span>
-            </div>
-            <div class="inventory-header-right">
-                <i class="fas fa-chevron-down" id="inventoryArrow"></i>
-            </div>
-        </div>
-        <div id="inventoryContent" class="inventory-content">
-            <div class="search-box" style="margin: 15px 0;">
-                <i class="fas fa-search"></i>
-                <input type="text" id="markerSearchInOrganizers" placeholder="Поиск маркера" oninput="searchMarkerInOrganizers()">
-            </div>
-            <div id="markerSearchResults" style="display: none; margin-bottom: 15px; padding: 10px; background: var(--bg); border-radius: 12px;"></div>
-            <button class="create-organizer-btn" onclick="openOrganizerCreator()">
-                <i class="fas fa-plus"></i> Создать органайзер
-            </button>
-            <div id="organizersList"></div>
-            <div id="selectedOrganizerView" style="display: none; margin-top: 15px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                    <h4 id="selectedOrganizerName" style="margin:0; font-size: 16px;"></h4>
-                    <button class="close-view-btn" onclick="closeOrganizerView()">✖ Закрыть</button>
-                </div>
-                <div id="selectedOrganizerGrid"></div>
-            </div>
-        </div>
-    </div>
-</div>  <!-- ✅ ЗАКРЫТИЕ #collection -->
 <!-- ========== КОРЗИНА ========== -->
 <div id="cart" class="page">
     <div class="header">Корзина</div>
