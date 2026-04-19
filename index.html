@@ -12228,12 +12228,18 @@ async function updateMarkerInCollection(brand, number, action, subcategory = '')
     }
 }
 async function addAllBrand(brand, subcategory, numbers) {
+    console.log('📦 addAllBrand вызвана:', brand, subcategory, numbers.length);
+    
+    if (!numbers || !Array.isArray(numbers) || numbers.length === 0) {
+        console.error('❌ numbers не массив или пуст:', numbers);
+        if (tg) tg.showAlert('❌ Ошибка: неверный формат данных');
+        return;
+    }
+    
     // Обновляем локально
     numbers.forEach(num => {
-        let key;
-        // ✅ Преобразуем номер в строку (для буквенных номеров типа AG171)
         const numStr = String(num);
-        
+        let key;
         if (brand === 'Tooli-Art' && subcategory) {
             key = `${brand}_${subcategory}_${numStr}`;
         } else {
@@ -12246,9 +12252,8 @@ async function addAllBrand(brand, subcategory, numbers) {
     updateMarkersCollectionStats();
     renderMarkersCollection();
     
-    // ✅ ОТПРАВЛЯЕМ НА СЕРВЕР
+    // Отправляем на сервер
     if (brand === 'Tooli-Art' && subcategory) {
-        // Отправляем каждый номер отдельно
         for (const num of numbers) {
             try {
                 await fetch(`${SERVER_URL}/api/markers_collection`, {
@@ -12257,17 +12262,16 @@ async function addAllBrand(brand, subcategory, numbers) {
                     body: JSON.stringify({
                         user_id: userId,
                         brand: brand,
-                        number: String(num),  // ✅ Преобразуем в строку
+                        number: String(num),
                         subcategory: subcategory,
                         action: 'add'
                     })
                 });
             } catch (error) {
-                console.error('Error syncing Tooli-Art to server:', error);
+                console.error('Error syncing:', error);
             }
         }
     } else {
-        // Для остальных брендов — отправляем все номера
         try {
             await fetch(`${SERVER_URL}/api/markers_collection`, {
                 method: 'POST',
@@ -12275,22 +12279,22 @@ async function addAllBrand(brand, subcategory, numbers) {
                 body: JSON.stringify({
                     user_id: userId,
                     brand: brand,
-                    numbers: numbers.map(n => String(n)),  // ✅ Преобразуем в строки
+                    numbers: numbers.map(n => String(n)),
                     action: 'add_all_brand'
                 })
             });
         } catch (error) {
-            console.error('Error syncing to server:', error);
+            console.error('Error syncing:', error);
         }
     }
     
-    if (tg) tg.showAlert(`✅ Маркеры добавлены`);
+    if (tg) tg.showAlert(`✅ Добавлено ${numbers.length} маркеров`);
 }
 function renderMarkersCollection() {
     const container = document.getElementById('markersCollectionList');
     if (!container) return;
     
-    // ✅ Сохраняем скролл для каждого открытого сета
+    // Сохраняем скролл для каждого открытого сета
     const scrollPositions = {};
     document.querySelectorAll('.marker-set-content').forEach(el => {
         if (el.id) {
@@ -12316,6 +12320,7 @@ function renderMarkersCollection() {
         
         const percent = Math.round((collectedCount / totalCount) * 100);
         
+        // ✅ Используем data-атрибуты вместо onclick с JSON
         html += `
             <div class="marker-set-card" style="margin-bottom: 15px; border-bottom: 1px solid var(--border-color);">
                 <div style="display: flex; align-items: center; justify-content: space-between;">
@@ -12323,7 +12328,10 @@ function renderMarkersCollection() {
                         <strong style="font-size: 16px;">${set.name}</strong>
                         <span style="margin-left: 10px; font-size: 13px; color: var(--text-gray);">${collectedCount}/${totalCount}</span>
                     </div>
-                    <button class="add-all-brand-btn" onclick="addAllBrand('${set.brand}', '${set.subcategory || ''}', ${JSON.stringify(numbers)})">
+                    <button class="add-all-brand-btn" 
+                            data-brand="${set.brand}" 
+                            data-subcategory="${set.subcategory || ''}" 
+                            data-numbers='${JSON.stringify(numbers)}'>
                         <i class="fas fa-plus"></i> Добавить всё
                     </button>
                 </div>
@@ -12334,10 +12342,9 @@ function renderMarkersCollection() {
         `;
         
         const sortedNumbers = [...numbers].sort((a, b) => {
-            if (typeof a === 'number' && typeof b === 'number') return a - b;
-            if (typeof a === 'string' && typeof b === 'string') return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
-            if (typeof a === 'number') return -1;
-            return 1;
+            const aStr = String(a);
+            const bStr = String(b);
+            return aStr.localeCompare(bStr, undefined, { numeric: true, sensitivity: 'base' });
         });
         
         sortedNumbers.forEach(num => {
@@ -12356,13 +12363,26 @@ function renderMarkersCollection() {
     
     container.innerHTML = html;
     
-    // ✅ Восстанавливаем скролл для каждого сета
+    // ✅ Добавляем обработчики для кнопок "Добавить всё"
     setTimeout(() => {
+        document.querySelectorAll('.add-all-brand-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const brand = this.dataset.brand;
+                const subcategory = this.dataset.subcategory || '';
+                const numbers = JSON.parse(this.dataset.numbers || '[]');
+                
+                console.log('📦 Добавить всё:', brand, subcategory, numbers.length, 'маркеров');
+                addAllBrand(brand, subcategory, numbers);
+            });
+        });
+        
+        // Восстанавливаем скролл
         for (const [id, scrollTop] of Object.entries(scrollPositions)) {
             const el = document.getElementById(id);
             if (el) el.scrollTop = scrollTop;
         }
-    }, 10);
+    }, 50);
 }
 function updateMarkersCollectionStats() {
     const count = Object.keys(userMarkersCollection).length;
