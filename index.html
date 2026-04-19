@@ -10863,12 +10863,21 @@ function addCoverToBook(category, bookName) {
             const bookName = book.name;
             const collected = userBooks.some(b => (typeof b === 'string' ? b : b.name) === bookName);
             
+            // ✅ Получаем количество страниц (приоритет: кастомная книга > конфиг > по умолчанию)
+            let totalPages = DEFAULT_PAGES_CONFIG.totalPages;
+            const userBook = userBooks.find(b => (typeof b === 'string' ? b : b.name) === bookName);
+            
+            if (userBook && typeof userBook === 'object' && userBook.totalPages) {
+                totalPages = userBook.totalPages;
+            } else {
+                const config = BOOK_PAGES_CONFIG[bookName] || DEFAULT_PAGES_CONFIG;
+                totalPages = config.totalPages;
+            }
+            
             // Считаем прогресс для этой раскраски
             const bookKey = `${category}_${bookName}`;
             const completedPages = userCompletedPages[bookKey] || {};
             const completedCount = Object.keys(completedPages).length;
-            const config = BOOK_PAGES_CONFIG[bookName] || DEFAULT_PAGES_CONFIG;
-            const totalPages = config.totalPages;
             const progressPercent = totalPages > 0 ? Math.round((completedCount / totalPages) * 100) : 0;
             
             // ✅ Правильно формируем URL обложки
@@ -10904,18 +10913,18 @@ function addCoverToBook(category, bookName) {
             `;
         });
         
-      // Форма добавления (вместо старой)
-html += `
-    <div style="grid-column: span 2; margin-top: 10px;">
-        <div class="add-book-form">
-            <input type="text" id="custom-book-${category}" placeholder="Название новой раскраски...">
-            <div style="display: flex; gap: 8px; margin-top: 8px;">
-                <input type="number" id="custom-book-pages-${category}" placeholder="Страниц" value="60" min="1" max="500" style="flex: 1; padding: 10px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text); font-size: 14px;">
-                <button class="add-custom-btn" onclick="addCustomBook('${category}')" style="flex: 1;">Добавить</button>
+        // Форма добавления с полем для страниц
+        html += `
+            <div style="grid-column: span 2; margin-top: 10px;">
+                <div class="add-book-form">
+                    <input type="text" id="custom-book-${category}" placeholder="Название новой раскраски...">
+                    <div style="display: flex; gap: 8px; margin-top: 8px;">
+                        <input type="number" id="custom-book-pages-${category}" placeholder="Страниц" value="60" min="1" max="500" style="flex: 1; padding: 10px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text); font-size: 14px;">
+                        <button class="add-custom-btn" onclick="addCustomBook('${category}')" style="flex: 1;">Добавить</button>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
-`;
+        `;
         
         container.innerHTML = html;
     });
@@ -11059,10 +11068,15 @@ async function updateCustomBook(category, bookName, action) {
 }
 
 function showAddCustomBook(category) {
-    const input = document.getElementById(`custom-book-${category}`);
-    if (input) {
-        input.focus();
-        input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    // Прокручиваем к форме
+    const container = document.getElementById(`category-${category}`);
+    if (container) {
+        const form = container.querySelector('.add-book-form');
+        if (form) {
+            form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            const input = document.getElementById(`custom-book-${category}`);
+            if (input) input.focus();
+        }
     }
 }
 
