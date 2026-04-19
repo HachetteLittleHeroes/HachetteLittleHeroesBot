@@ -10626,13 +10626,17 @@ async function loadColoringBooks() {
             for (const category in data) {
                 userColoringBooks[category] = (data[category] || []).map(book => {
                     if (typeof book === 'string') {
-                        // ✅ Старая запись (строка) — преобразуем в объект с данными из BOOK_PAGES_CONFIG
                         const config = BOOK_PAGES_CONFIG[book] || DEFAULT_PAGES_CONFIG;
                         return {
                             name: book,
                             custom: false,
-                            totalPages: config.totalPages
+                            totalPages: config.totalPages,
+                            spreads: config.spreads || []  // ✅ Восстанавливаем развороты
                         };
+                    }
+                    // ✅ Если в объекте нет spreads — добавляем из конфига
+                    if (!book.spreads && BOOK_PAGES_CONFIG[book.name]) {
+                        book.spreads = BOOK_PAGES_CONFIG[book.name].spreads || [];
                     }
                     return book;
                 });
@@ -11031,13 +11035,14 @@ async function toggleColoringBook(category, bookName) {
             }
         }
     } else {
-        // ✅ ДОБАВЛЕНИЕ — сохраняем как объект с totalPages из BOOK_PAGES_CONFIG
+        // ✅ ДОБАВЛЕНИЕ — сохраняем как объект с totalPages И spreads из BOOK_PAGES_CONFIG
         const config = BOOK_PAGES_CONFIG[bookName] || DEFAULT_PAGES_CONFIG;
         
         const bookEntry = {
             name: bookName,
             custom: false,
-            totalPages: config.totalPages
+            totalPages: config.totalPages,
+            spreads: config.spreads || []  // ✅ Сохраняем развороты
         };
         
         userColoringBooks[category].push(bookEntry);
@@ -11052,7 +11057,8 @@ async function toggleColoringBook(category, bookName) {
                     category: category,
                     book_name: bookName,
                     action: 'add',
-                    total_pages: config.totalPages
+                    total_pages: config.totalPages,
+                    spreads: config.spreads || []  // ✅ Отправляем развороты
                 })
             });
         } catch (error) {
@@ -11486,33 +11492,33 @@ function openBookPagesModal(category, bookName) {
     
     const bookKey = `${category}_${bookName}`;
     
-    // ✅ Ищем кастомную книгу
+    // ✅ Ищем сохранённую книгу
     const userBooks = userColoringBooks[category] || [];
-    const customBook = userBooks.find(b => {
+    const savedBook = userBooks.find(b => {
         const name = typeof b === 'string' ? b : b.name;
-        return name === bookName && typeof b === 'object' && b.totalPages;
+        return name === bookName;
     });
     
-    // ✅ Правильная логика получения конфигурации
     let config;
-    if (customBook && customBook.totalPages) {
-        // Кастомная книга с указанным количеством страниц
-        config = { totalPages: customBook.totalPages, spreads: [] };
+    if (savedBook && typeof savedBook === 'object') {
+        // ✅ Используем сохранённые данные (totalPages и spreads)
+        config = {
+            totalPages: savedBook.totalPages || DEFAULT_PAGES_CONFIG.totalPages,
+            spreads: savedBook.spreads || []
+        };
     } else if (BOOK_PAGES_CONFIG[bookName]) {
-        // Стандартная книга из конфигурации (с разворотами)
         config = BOOK_PAGES_CONFIG[bookName];
     } else {
-        // Книга не найдена — используем значения по умолчанию
         config = DEFAULT_PAGES_CONFIG;
     }
     
     document.getElementById('bookPagesTitle').innerText = bookName;
     
     const categoryNames = {
-        paint_by_number: 'Раскраска по номерам',
-        alcohol: 'Спиртовая раскраска',
-        pencil: 'Раскраска для карандашей',
-        custom: 'Моя раскраска'
+        paint_by_number: '🎨 Раскраска по номерам',
+        alcohol: '🍷 Спиртовая раскраска',
+        pencil: '✏️ Раскраска для карандашей',
+        custom: '✨ Моя раскраска'
     };
     document.getElementById('bookPagesCategory').innerText = 
         `${categoryNames[category] || ''} • ${config.totalPages} страниц`;
