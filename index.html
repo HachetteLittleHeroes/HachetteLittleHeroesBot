@@ -10890,25 +10890,28 @@ function addCoverToBook(category, bookName) {
             const bookName = book.name;
             const collected = userBooks.some(b => (typeof b === 'string' ? b : b.name) === bookName);
             
-            // ✅ ПРАВИЛЬНАЯ ЛОГИКА ПОЛУЧЕНИЯ totalPages
+            // ✅ Получаем totalPages и spreads
             let totalPages = DEFAULT_PAGES_CONFIG.totalPages;
+            let spreads = [];
             
-            // 1. Приоритет: кастомная книга из userBooks с totalPages
             const userBook = userBooks.find(b => (typeof b === 'string' ? b : b.name) === bookName);
-            if (userBook && typeof userBook === 'object' && userBook.totalPages) {
-                totalPages = userBook.totalPages;
-            }
-            // 2. Приоритет: конфигурация BOOK_PAGES_CONFIG
-            else if (BOOK_PAGES_CONFIG[bookName] && BOOK_PAGES_CONFIG[bookName].totalPages) {
-                totalPages = BOOK_PAGES_CONFIG[bookName].totalPages;
-            }
-            // 3. Приоритет: DEFAULT_PAGES_CONFIG (уже установлен)
             
-            // ✅ Считаем прогресс (каждый ключ в completedPages = 1 отмеченная страница/разворот)
+            if (userBook && typeof userBook === 'object') {
+                totalPages = userBook.totalPages || totalPages;
+                spreads = userBook.spreads || [];
+            } else if (BOOK_PAGES_CONFIG[bookName]) {
+                totalPages = BOOK_PAGES_CONFIG[bookName].totalPages;
+                spreads = BOOK_PAGES_CONFIG[bookName].spreads || [];
+            }
+            
+            // ✅ Количество ячеек = страницы - развороты (каждый разворот = 1 ячейка вместо 2)
+            const totalCells = totalPages - spreads.length;
+            
+            // Считаем прогресс
             const bookKey = `${category}_${bookName}`;
             const completedPages = userCompletedPages[bookKey] || {};
             const completedCount = Object.keys(completedPages).length;
-            const progressPercent = totalPages > 0 ? Math.round((completedCount / totalPages) * 100) : 0;
+            const progressPercent = totalCells > 0 ? Math.round((completedCount / totalCells) * 100) : 0;
             
             // ✅ Правильно формируем URL обложки с параметром для кеширования
             let coverUrl = book.cover || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23ff9500' rx='12'/%3E%3Ctext x='50' y='50' text-anchor='middle' dy='.3em' fill='white' font-size='40' font-family='Arial'%3E📚%3C/text%3E%3C/svg%3E";
@@ -10937,7 +10940,7 @@ function addCoverToBook(category, bookName) {
                                 <div class="book-progress-bar">
                                     <div class="book-progress-fill" style="width: ${progressPercent}%;"></div>
                                 </div>
-                                <div class="book-progress-text">${completedCount}/${totalPages} (${progressPercent}%)</div>
+                                <div class="book-progress-text">${completedCount}/${totalCells} (${progressPercent}%)</div>
                             </div>
                         ` : ''}
                         ${book.custom ? '<div class="book-category">Моя раскраска</div>' : ''}
@@ -11512,16 +11515,26 @@ function openBookPagesModal(category, bookName) {
         config = DEFAULT_PAGES_CONFIG;
     }
     
+    // ✅ Правильное количество ячеек для отображения
+    const spreadsCount = config.spreads?.length || 0;
+    const totalCells = config.totalPages - spreadsCount;
+    
     document.getElementById('bookPagesTitle').innerText = bookName;
     
     const categoryNames = {
-        paint_by_number: '🎨 Раскраска по номерам',
-        alcohol: '🍷 Спиртовая раскраска',
-        pencil: '✏️ Раскраска для карандашей',
-        custom: '✨ Моя раскраска'
+        paint_by_number: 'Раскраска по номерам',
+        alcohol: 'Спиртовая раскраска',
+        pencil: 'Раскраска для карандашей',
+        custom: 'Моя раскраска'
     };
-    document.getElementById('bookPagesCategory').innerText = 
-        `${categoryNames[category] || ''} • ${config.totalPages} страниц`;
+    
+    // ✅ Показываем страницы, ячейки и развороты
+    let infoText = `${categoryNames[category] || ''} • ${config.totalPages} стр.`;
+    if (spreadsCount > 0) {
+        infoText += ` • ${spreadsCount} разв. • ${totalCells} ячеек`;
+    }
+    
+    document.getElementById('bookPagesCategory').innerText = infoText;
     
     renderBookPagesGrid(bookKey, config);
     
@@ -13768,23 +13781,31 @@ function calculateCategoryProgress(category) {
         const bookName = typeof book === 'string' ? book : book.name;
         const bookKey = `${category}_${bookName}`;
         const completedPages = userCompletedPages[bookKey] || {};
+        
+        // ✅ Количество отмеченных ячеек (страниц и разворотов)
         const completedCount = Object.keys(completedPages).length;
         
-        // ✅ Правильная логика
-        let totalPages = 60;
-        if (typeof book === 'object' && book.totalPages) {
+        // ✅ Получаем конфигурацию
+        let totalPages, spreads;
+        if (typeof book === 'object') {
             totalPages = book.totalPages;
-        } else if (BOOK_PAGES_CONFIG[bookName]) {
-            totalPages = BOOK_PAGES_CONFIG[bookName].totalPages;
+            spreads = book.spreads || [];
         } else {
-            totalPages = DEFAULT_PAGES_CONFIG.totalPages;
+            const config = BOOK_PAGES_CONFIG[bookName] || DEFAULT_PAGES_CONFIG;
+            totalPages = config.totalPages;
+            spreads = config.spreads || [];
         }
         
+        // ✅ ПРАВИЛЬНЫЙ РАСЧЁТ: количество ячеек = totalPages - количество разворотов
+        // (потому что каждый разворот занимает 1 ячейку вместо 2)
+        const totalCells = totalPages - spreads.length;
+        
         totalCompletedPages += completedCount;
-        totalPagesAll += totalPages;
+        totalPagesAll += totalCells;
     });
     
     const percent = totalPagesAll > 0 ? Math.round((totalCompletedPages / totalPagesAll) * 100) : 0;
+    
     return { percent, completed: totalCompletedPages, total: totalPagesAll };
 }
 // Обновление прогресса для всех категорий
