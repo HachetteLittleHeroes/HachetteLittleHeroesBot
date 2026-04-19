@@ -10621,60 +10621,30 @@ async function loadColoringBooks() {
         const data = await response.json();
         
         if (data && typeof data === 'object') {
-            // ✅ Восстанавливаем объекты с totalPages
             userColoringBooks = { paint_by_number: [], alcohol: [], pencil: [], custom: [] };
             
             for (const category in data) {
-                const books = data[category] || [];
-                
-                userColoringBooks[category] = books.map(book => {
-                    // Если это строка — преобразуем в объект
+                userColoringBooks[category] = (data[category] || []).map(book => {
                     if (typeof book === 'string') {
-                        // Проверяем, есть ли эта книга в BOOK_PAGES_CONFIG
-                        if (BOOK_PAGES_CONFIG[book]) {
-                            return {
-                                name: book,
-                                custom: true,
-                                totalPages: BOOK_PAGES_CONFIG[book].totalPages
-                            };
-                        } else {
-                            return {
-                                name: book,
-                                custom: true,
-                                totalPages: 60 // значение по умолчанию
-                            };
-                        }
+                        // ✅ Старая запись (строка) — преобразуем в объект с данными из BOOK_PAGES_CONFIG
+                        const config = BOOK_PAGES_CONFIG[book] || DEFAULT_PAGES_CONFIG;
+                        return {
+                            name: book,
+                            custom: false,
+                            totalPages: config.totalPages
+                        };
                     }
-                    // Если это уже объект — оставляем как есть
                     return book;
                 });
             }
-            
-            console.log('✅ Коллекция раскрасок загружена:', userColoringBooks);
-        } else {
-            // Загрузка из localStorage
-            const saved = localStorage.getItem(`coloring_books_${userId}`);
-            if (saved) {
-                userColoringBooks = JSON.parse(saved);
-            } else {
-                userColoringBooks = { paint_by_number: [], alcohol: [], pencil: [], custom: [] };
-            }
         }
         
-        // Сохраняем в localStorage как кеш
         localStorage.setItem(`coloring_books_${userId}`, JSON.stringify(userColoringBooks));
         updateColoringBooksStats();
-        updateAllCategoriesProgress();
-        
     } catch (error) {
         console.error('Ошибка загрузки:', error);
-        // Грузим из localStorage
         const saved = localStorage.getItem(`coloring_books_${userId}`);
-        if (saved) {
-            userColoringBooks = JSON.parse(saved);
-        } else {
-            userColoringBooks = { paint_by_number: [], alcohol: [], pencil: [], custom: [] };
-        }
+        if (saved) userColoringBooks = JSON.parse(saved);
         updateColoringBooksStats();
     }
 }
@@ -11019,16 +10989,14 @@ async function toggleColoringBook(category, bookName) {
     );
     
     if (collected) {
+        // УДАЛЕНИЕ (без изменений)
         const doDelete = async () => {
-            // Удаляем локально
             userColoringBooks[category] = userColoringBooks[category].filter(b => 
                 (typeof b === 'string' ? b : b.name) !== bookName
             );
             
-            // Сохраняем в localStorage
             localStorage.setItem(`coloring_books_${userId}`, JSON.stringify(userColoringBooks));
             
-            // Отправляем на сервер
             try {
                 await fetch(`${SERVER_URL}/api/coloring_books`, {
                     method: 'POST',
@@ -11044,7 +11012,6 @@ async function toggleColoringBook(category, bookName) {
                 console.error('Ошибка сервера:', error);
             }
             
-            // Обновляем счётчики и прогресс
             updateCategoryCounters();
             updateColoringBooksStats();
             updateAllCategoriesProgress();
@@ -11064,11 +11031,18 @@ async function toggleColoringBook(category, bookName) {
             }
         }
     } else {
-        // Добавляем локально
-        userColoringBooks[category].push(bookName);
+        // ✅ ДОБАВЛЕНИЕ — сохраняем как объект с totalPages из BOOK_PAGES_CONFIG
+        const config = BOOK_PAGES_CONFIG[bookName] || DEFAULT_PAGES_CONFIG;
+        
+        const bookEntry = {
+            name: bookName,
+            custom: false,
+            totalPages: config.totalPages
+        };
+        
+        userColoringBooks[category].push(bookEntry);
         localStorage.setItem(`coloring_books_${userId}`, JSON.stringify(userColoringBooks));
         
-        // Отправляем на сервер
         try {
             await fetch(`${SERVER_URL}/api/coloring_books`, {
                 method: 'POST',
@@ -11077,14 +11051,14 @@ async function toggleColoringBook(category, bookName) {
                     user_id: userId,
                     category: category,
                     book_name: bookName,
-                    action: 'add'
+                    action: 'add',
+                    total_pages: config.totalPages
                 })
             });
         } catch (error) {
             console.error('Ошибка сервера:', error);
         }
         
-        // Обновляем счётчики и прогресс
         updateCategoryCounters();
         updateColoringBooksStats();
         updateAllCategoriesProgress();
