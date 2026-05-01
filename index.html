@@ -3961,6 +3961,80 @@
     color: var(--text-gray);
     margin-top: 2px;
 }
+        /* Бестиарий */
+.bestiary-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 10px;
+    text-align: center;
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.bestiary-card:active {
+    transform: scale(0.97);
+}
+
+.bestiary-card-image {
+    width: 100%;
+    aspect-ratio: 1/1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 6px;
+    background: var(--bg);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.bestiary-card-image img {
+    width: 80%;
+    height: 80%;
+    object-fit: contain;
+}
+
+.bestiary-card-name {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.2;
+}
+
+.bestiary-card-count {
+    font-size: 10px;
+    color: var(--text-gray);
+    margin-top: 2px;
+}
+
+/* Модалка бестиария */
+#bestiaryModal .appearance-item {
+    background: var(--bg);
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    border: 1px solid var(--border-color);
+}
+
+#bestiaryModal .appearance-item:hover {
+    background: var(--card-bg);
+}
+
+#bestiaryModal .appearance-pages {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 5px;
+}
+
+#bestiaryModal .page-badge {
+    background: var(--accent);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+}
     </style>
 </head>
 <body>
@@ -4360,6 +4434,27 @@
                 </div>
                 <div id="category-custom" class="category-items category-content" style="display: none;"></div>
             </div>
+        </div>
+    </div>
+
+        <!-- ========== БЕСТИАРИЙ ========== -->
+    <div class="inventory-main-block" style="margin-top: 15px;">
+        <div class="inventory-header" onclick="toggleBestiaryBlock()">
+            <div class="inventory-header-left">
+                <i class="fas fa-dragon"></i>
+                <span>Бестиарий</span>
+            </div>
+            <div class="inventory-header-right">
+                <span id="bestiaryStats" class="collection-badge">0</span>
+                <i class="fas fa-chevron-down" id="bestiaryArrow"></i>
+            </div>
+        </div>
+        <div id="bestiaryContent" class="inventory-content" style="display: none;">
+            <div class="search-box" style="margin-bottom: 15px;">
+                <i class="fas fa-search"></i>
+                <input type="text" id="bestiarySearch" placeholder="Поиск персонажа..." oninput="filterBestiary()">
+            </div>
+            <div id="bestiaryGrid" class="collection-grid" style="grid-template-columns: repeat(3, 1fr);"></div>
         </div>
     </div>
 
@@ -7557,6 +7652,7 @@ if (userId === 496779756 || userId === 1413249095) {
     loadMarkersCollection();
     loadColoringBooks();
     loadInventory();
+    renderBestiary();
     break;
     break;
         case 'markers':
@@ -11902,6 +11998,74 @@ window.onload = async () => {
     console.log('Balance:', user.balance);
     console.log('Collection loaded:', userCollection.length, 'figures');
 };
+        //БЕСТИАРИЙ
+        const BESTIARY = [
+    {
+        id: "simba",
+        name: "Симба",
+        film: "Король Лев",
+        image: "assets/bestiary/simba.png",
+        appearances: [
+            { book: "Les Grands Classiques tome 1", pages: [3, 7, 12, 15, 22] },
+            { book: "Les Grands Classiques tome 4", pages: [1, 8, 14] },
+            { book: "100% Simba", pages: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }
+        ]
+    },
+    {
+        id: "nala",
+        name: "Нала",
+        film: "Король Лев",
+        image: "assets/bestiary/nala.png",
+        appearances: [
+            { book: "Les Grands Classiques tome 1", pages: [8, 15] },
+            { book: "100% Simba", pages: [5, 8, 12] }
+        ]
+    },
+    {
+        id: "stitch",
+        name: "Стич",
+        film: "Лило и Стич",
+        image: "assets/bestiary/stitch.png",
+        appearances: [
+            { book: "Stitch au numero", pages: [2, 5, 9, 14] },
+            { book: "Lilo et Stitch", pages: [1, 3, 7, 11] },
+            { book: "100% Stitch", pages: [1, 2, 3, 4, 5] },
+            { book: "200% Stitch", pages: [1, 2, 3, 4] },
+            { book: "300% Stitch", pages: [1, 2, 3] }
+        ]
+    },
+    {
+        id: "lilo",
+        name: "Лило",
+        film: "Лило и Стич",
+        image: "assets/bestiary/lilo.png",
+        appearances: [
+            { book: "Lilo et Stitch", pages: [1, 5, 10] },
+            { book: "Stitch au numero", pages: [3, 8] }
+        ]
+    },
+    {
+        id: "winnie",
+        name: "Винни-Пух",
+        film: "Винни-Пух",
+        image: "assets/bestiary/winnie.png",
+        appearances: [
+            { book: "Les Grands Classiques tome 2", pages: [4, 8, 15] },
+            { book: "100% Winnie", pages: [1, 2, 3, 4, 5, 6, 7] }
+        ]
+    },
+    {
+        id: "ariel",
+        name: "Ариэль",
+        film: "Русалочка",
+        image: "assets/bestiary/ariel.png",
+        appearances: [
+            { book: "Princesses tome 1", pages: [2, 6, 11] },
+            { book: "La petite Sirene", pages: [1, 3, 5, 8, 12] }
+        ]
+    }
+    // ... остальные персонажи ...
+];
 // ==========================================
 // КОЛЛЕКЦИЯ МАРКЕРОВ (НА СЕРВЕРЕ)
 // ==========================================
@@ -14092,6 +14256,155 @@ function renderCategoryContent(category) {
     
     alert(info);
 });
+        // ==========================================
+// БЕСТИАРИЙ
+// ==========================================
+
+function toggleBestiaryBlock() {
+    const content = document.getElementById('bestiaryContent');
+    const arrow = document.getElementById('bestiaryArrow');
+    
+    if (content.style.display === 'none' || content.style.display === '') {
+        content.style.display = 'block';
+        if (arrow) arrow.style.transform = 'rotate(180deg)';
+        renderBestiary();
+    } else {
+        content.style.display = 'none';
+        if (arrow) arrow.style.transform = 'rotate(0deg)';
+    }
+}
+
+function renderBestiary() {
+    const grid = document.getElementById('bestiaryGrid');
+    if (!grid) return;
+    
+    const statsEl = document.getElementById('bestiaryStats');
+    if (statsEl) statsEl.textContent = BESTIARY.length;
+    
+    let html = '';
+    
+    BESTIARY.forEach(character => {
+        // Считаем количество упоминаний
+        let totalAppearances = 0;
+        character.appearances.forEach(a => {
+            totalAppearances += a.pages.length;
+        });
+        
+        html += `
+            <div class="bestiary-card" onclick="openBestiaryDetail('${character.id}')" data-film="${character.film.toLowerCase()}">
+                <div class="bestiary-card-image">
+                    <img src="${character.image}" 
+                         alt="${character.name}" 
+                         loading="lazy"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23ff9500%22 rx=%2212%22/%3E%3Ctext x=%2250%22 y=%2250%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2240%22%3E🦁%3C/text%3E%3C/svg%3E'">
+                </div>
+                <div class="bestiary-card-name">${character.name}</div>
+                <div class="bestiary-card-film" style="font-size: 10px; color: var(--accent); margin-top: 2px;">🎬 ${character.film}</div>
+                <div class="bestiary-card-count">${totalAppearances} упоминаний</div>
+            </div>
+        `;
+    });
+    
+    grid.innerHTML = html;
+}
+
+function openBestiaryDetail(characterId) {
+    const character = BESTIARY.find(c => c.id === characterId);
+    if (!character) return;
+    
+    const modal = document.createElement('div');
+    modal.id = 'bestiaryModal';
+    modal.className = 'modal-overlay';
+    modal.style.display = 'flex';
+    modal.style.zIndex = '100001';
+    
+    let appearancesHtml = '';
+    
+    character.appearances.forEach(appearance => {
+        const pagesHtml = appearance.pages.map(p => `<span class="page-badge">стр. ${p}</span>`).join('');
+        
+        appearancesHtml += `
+            <div class="appearance-item" onclick="openBookFromBestiary('${appearance.book.replace(/'/g, "\\'")}')">
+                <strong>📖 ${appearance.book}</strong>
+                <div class="appearance-pages">${pagesHtml}</div>
+            </div>
+        `;
+    });
+    
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width: 400px;">
+            <div style="text-align: center; margin-bottom: 15px;">
+                <img src="${character.image}" 
+                     alt="${character.name}" 
+                     style="width: 80px; height: 80px; object-fit: contain; border-radius: 16px;"
+                     onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2280%22%3E%3Crect width=%2280%22 height=%2280%22 fill=%22%23ff9500%22 rx=%2216%22/%3E%3Ctext x=%2240%22 y=%2240%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2230%22%3E🦁%3C/text%3E%3C/svg%3E'">
+                <h3 style="margin: 10px 0 5px;">${character.name}</h3>
+                <p style="color: var(--accent); font-size: 13px;">🎬 ${character.film}</p>
+                <p style="color: var(--text-gray); font-size: 13px;">
+                    Встречается в ${character.appearances.length} томах
+                </p>
+            </div>
+            ${appearancesHtml}
+            <button class="modal-close-btn" onclick="document.getElementById('bestiaryModal').remove()" style="width: 100%; margin-top: 15px;">Закрыть</button>
+        </div>
+    `;
+    
+    modal.onclick = function(e) {
+        if (e.target === modal) modal.remove();
+    };
+    
+    document.body.appendChild(modal);
+}
+
+function openBookFromBestiary(bookName) {
+    // Закрываем модалку бестиария
+    const modal = document.getElementById('bestiaryModal');
+    if (modal) modal.remove();
+    
+    // Определяем категорию
+    let category = 'paint_by_number';
+    if (DEFAULT_COLORING_BOOKS.alcohol?.includes(bookName)) category = 'alcohol';
+    else if (DEFAULT_COLORING_BOOKS.pencil?.includes(bookName)) category = 'pencil';
+    
+    // Открываем модалку с страницами
+    openBookPagesModal(category, bookName);
+}
+
+function filterBestiary() {
+    const query = document.getElementById('bestiarySearch')?.value.toLowerCase().trim() || '';
+    const cards = document.querySelectorAll('.bestiary-card');
+    
+    cards.forEach(card => {
+        if (query === '') {
+            card.style.display = 'block';
+            return;
+        }
+        
+        // Имя персонажа
+        const nameEl = card.querySelector('.bestiary-card-name');
+        const name = nameEl?.innerText.toLowerCase() || '';
+        
+        // Название фильма из data-атрибута
+        const film = card.getAttribute('data-film') || '';
+        
+        // ID персонажа из onclick
+        const onclick = card.getAttribute('onclick') || '';
+        const characterId = onclick.match(/'([^']+)'/)?.[1] || '';
+        
+        const character = BESTIARY.find(c => c.id === characterId);
+        
+        // Проверяем совпадение по имени, фильму и томам
+        let matches = name.includes(query) || film.includes(query);
+        
+        if (!matches && character) {
+            matches = character.appearances.some(a => 
+                a.book.toLowerCase().includes(query)
+            );
+        }
+        
+        card.style.display = matches ? 'block' : 'none';
+    });
+}
     </script>
     
     <!-- Модалка поиска пользователей -->
