@@ -4035,6 +4035,20 @@
     border-radius: 10px;
     font-size: 11px;
 }
+        .page-badge {
+    background: var(--accent);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    display: inline-block;
+    margin: 2px;
+}
+
+.page-badge.spread {
+    background: linear-gradient(135deg, var(--accent), #ff6b6b);
+    font-weight: 600;
+}
     </style>
 </head>
 <body>
@@ -16016,7 +16030,14 @@ function openBestiaryDetail(characterId) {
     let appearancesHtml = '';
     
     character.appearances.forEach(appearance => {
-        const pagesHtml = appearance.pages.map(p => `<span class="page-badge">стр. ${p}</span>`).join('');
+        // Форматируем страницы с учётом разворотов
+        const pagesHtml = appearance.pages.map(p => {
+            if (typeof p === 'string' && p.includes('-')) {
+                return `<span class="page-badge spread">разв. ${p}</span>`;
+            } else {
+                return `<span class="page-badge">стр. ${p}</span>`;
+            }
+        }).join('');
         
         appearancesHtml += `
             <div class="appearance-item" onclick="openBookFromBestiary('${appearance.book.replace(/'/g, "\\'")}')">
@@ -16050,7 +16071,6 @@ function openBestiaryDetail(characterId) {
     
     document.body.appendChild(modal);
 }
-
 function openBookFromBestiary(bookName) {
     // Закрываем модалку бестиария
     const modal = document.getElementById('bestiaryModal');
