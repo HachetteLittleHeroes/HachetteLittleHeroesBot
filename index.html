@@ -4049,6 +4049,52 @@
     background: linear-gradient(135deg, var(--accent), #ff6b6b);
     font-weight: 600;
 }
+      .upload-page-btn {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.5);
+    border: none;
+    color: white;
+    font-size: 11px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s;
+    z-index: 5;
+}
+
+.book-page-btn:hover .upload-page-btn,
+.book-page-btn:active .upload-page-btn {
+    opacity: 1;
+}
+
+.book-page-btn.uploaded {
+    border: 2px solid var(--accent);
+}
+
+.book-page-btn img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.book-page-btn small {
+    position: absolute;
+    bottom: 3px;
+    right: 5px;
+    font-size: 12px;
+    background: rgba(0,0,0,0.5);
+    color: white;
+    padding: 2px 5px;
+    border-radius: 10px;
+}  
     </style>
 </head>
 <body>
@@ -11669,8 +11715,6 @@ function renderBookPagesGrid(bookKey, config) {
     const { totalPages, spreads } = config;
     
     const isOwnProfile = !window.isViewOnly;
-    
-    // ✅ Функция для экранирования апострофов
     const escapeQuotes = (str) => String(str).replace(/'/g, "\\'");
     
     let html = '';
@@ -11678,56 +11722,112 @@ function renderBookPagesGrid(bookKey, config) {
     
     while (page <= totalPages) {
         const isSpread = spreads.includes(page);
+        const pageLabel = isSpread ? `${page}-${page + 1}` : String(page);
+        const completed = isPageCompleted(bookKey, pageLabel);
+        const hasArtwork = getPageArtwork(bookKey, pageLabel);
         
-        if (isSpread) {
-            const pageLabel = `${page}-${page + 1}`;
-            const completed = isPageCompleted(bookKey, pageLabel);
-            
-            if (isOwnProfile) {
-                html += `
-                    <div class="book-page-btn ${completed ? 'completed' : ''} spread" onclick="togglePageCompletion('${escapeQuotes(bookKey)}', '${escapeQuotes(pageLabel)}', ${totalPages})">
-                        ${pageLabel}
-                    </div>
-                `;
-            } else {
-                html += `
-                    <div class="book-page-btn ${completed ? 'completed' : ''} spread">
-                        ${pageLabel}
-                    </div>
-                `;
-            }
-            page += 2;
+        if (isOwnProfile) {
+            // Свой профиль — можно отмечать и загружать фото
+            html += `
+                <div class="book-page-btn ${completed ? 'completed' : ''} ${hasArtwork ? 'uploaded' : ''}" 
+                     onclick="togglePageCompletion('${escapeQuotes(bookKey)}', '${pageLabel}', ${totalPages})">
+                    ${hasArtwork ? `<img src="${hasArtwork}" alt="стр. ${pageLabel}">` : pageLabel}
+                    <button class="upload-page-btn" 
+                            onclick="event.stopPropagation(); uploadPageArtwork('${escapeQuotes(bookKey)}', '${pageLabel}')"
+                            title="Загрузить фото">
+                        <i class="fas fa-camera"></i>
+                    </button>
+                    ${completed ? '<small>✅</small>' : ''}
+                </div>
+            `;
         } else {
-            const completed = isPageCompleted(bookKey, page);
-            
-            if (isOwnProfile) {
-                html += `
-                    <div class="book-page-btn ${completed ? 'completed' : ''}" onclick="togglePageCompletion('${escapeQuotes(bookKey)}', '${page}', ${totalPages})">
-                        ${page}
-                    </div>
-                `;
-            } else {
-                html += `
-                    <div class="book-page-btn ${completed ? 'completed' : ''}">
-                        ${page}
-                    </div>
-                `;
-            }
-            page++;
+            // Чужой профиль — только просмотр
+            html += `
+                <div class="book-page-btn ${completed ? 'completed' : ''} ${hasArtwork ? 'uploaded' : ''}" 
+                     onclick="${hasArtwork ? `viewArtwork('${escapeQuotes(bookKey)}', '${pageLabel}')` : ''}">
+                    ${hasArtwork ? `<img src="${hasArtwork}" alt="стр. ${pageLabel}">` : pageLabel}
+                </div>
+            `;
         }
+        
+        page += isSpread ? 2 : 1;
     }
     
     grid.innerHTML = html;
 }
-
-// Загрузка фото для страницы
-function uploadArtwork(bookKey, page) {
-    currentPage = page;
+        function uploadPageArtwork(bookKey, page) {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
     
-    const input = document.getElementById('bookPageUploadInput');
-    input.onchange = handleArtworkSelected;
+    input.onchange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        if (tg && tg.MainButton) {
+            tg.MainButton.setText('⏳ Загрузка...').show();
+        }
+        
+        try {
+            const formData = new FormData();
+            formData.append('user_id', userId.toString());
+            formData.append('book_key', bookKey);
+            formData.append('page', String(page));
+            formData.append('photo', file);
+            
+            const response = await fetch(`${SERVER_URL}/api/artworks/upload`, {
+                method: 'POST',
+                body: formData
+            });
+            
+            const result = await response.json();
+            
+            if (result.status === 'ok') {
+                if (!userArtworks[bookKey]) userArtworks[bookKey] = {};
+                userArtworks[bookKey][String(page)] = result.url;
+                
+                const config = BOOK_PAGES_CONFIG[currentBook] || DEFAULT_PAGES_CONFIG;
+                renderBookPagesGrid(bookKey, config);
+                
+                if (tg) {
+                    tg.MainButton.hide();
+                    tg.showPopup({ message: '✅ Фото загружено!' });
+                }
+            }
+        } catch (error) {
+            console.error('Ошибка загрузки:', error);
+            if (tg) tg.MainButton.hide();
+            if (tg) tg.showAlert('❌ Ошибка загрузки');
+        }
+    };
+    
     input.click();
 }
+        function getPageArtwork(bookKey, page) {
+    const url = userArtworks[bookKey]?.[String(page)];
+    if (!url) return null;
+    return url;
+}
+function viewArtwork(bookKey, page) {
+    const artwork = getPageArtwork(bookKey, page);
+    if (!artwork) return;
+    
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.style.cssText = 'z-index: 100003; display: flex; align-items: center; justify-content: center;';
+    modal.innerHTML = `
+        <div style="max-width: 90%; max-height: 90%; position: relative;">
+            <img src="${artwork}" style="max-width: 100%; max-height: 80vh; object-fit: contain; border-radius: 16px;">
+            <button onclick="this.closest('.modal-overlay').remove()" 
+                    style="position: absolute; top: -40px; right: 0; background: none; border: none; color: white; font-size: 30px; cursor: pointer;">
+                &times;
+            </button>
+        </div>
+    `;
+    modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+    document.body.appendChild(modal);
+}
+
 
 // Сжатие изображения
 function compressImage(file, maxWidth = 800, quality = 0.7) {
