@@ -17450,6 +17450,12 @@ async function openPublicProfile(userId) {
     container.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Загрузка профиля...</div>';
     
     try {
+        // ✅ Загружаем работы пользователя
+        const artworksResponse = await fetch(`${SERVER_URL}/api/artworks?user_id=${userId}`);
+        userArtworks = await artworksResponse.json();
+        console.log('📸 Загружены работы пользователя:', userId);
+        
+        // Загружаем профиль
         const response = await fetch(`${SERVER_URL}/api/public_profile?user_id=${userId}`);
         const profile = await response.json();
         
@@ -17467,6 +17473,9 @@ async function openPublicProfile(userId) {
 function closePublicProfile() {
     document.getElementById('publicProfileModal').style.display = 'none';
     currentPublicUserId = null;
+    
+    // ✅ Восстанавливаем свои работы
+    loadUserArtworks();
 }
 
 function renderPublicProfile(profile) {
