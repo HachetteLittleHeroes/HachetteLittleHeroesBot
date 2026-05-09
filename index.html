@@ -4846,6 +4846,14 @@
         
         let userId = 496779756;
         let userName = 'Без имени';
+        let imageEditorData = null;
+let cropData = {
+    startX: 0,
+    startY: 0,
+    endX: 0,
+    endY: 0,
+    isDragging: false
+};
         
         const urlParams = new URLSearchParams(window.location.search);
         const urlUserId = urlParams.get('id');
@@ -20865,14 +20873,7 @@ function filterBestiary() {
 // РЕДАКТОР ИЗОБРАЖЕНИЙ (поворот + свободная обрезка)
 // ==========================================
 
-var imageEditorData = null;
-var cropData = {
-    startX: 0,
-    startY: 0,
-    endX: 0,
-    endY: 0,
-    isDragging: false
-};
+
 
 function openImageEditor(file, callback) {
     const reader = new FileReader();
