@@ -4846,14 +4846,7 @@
         
         let userId = 496779756;
         let userName = 'Без имени';
-        let imageEditorData = null;
-let cropData = {
-    startX: 0,
-    startY: 0,
-    endX: 0,
-    endY: 0,
-    isDragging: false
-};
+       
         
         const urlParams = new URLSearchParams(window.location.search);
         const urlUserId = urlParams.get('id');
@@ -11812,7 +11805,177 @@ function renderBookPagesGrid(bookKey, config) {
     
     grid.innerHTML = html;
 }
-      function uploadPageArtwork(bookKey, page) {
+// ==========================================
+// РЕДАКТОР ФОТО (поворот + обрезка)
+// ==========================================
+
+function openImageEditor(file, callback) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const modal = document.createElement('div');
+        modal.className = 'modal-overlay';
+        modal.style.cssText = 'z-index:100004;display:flex;align-items:center;justify-content:center;';
+        
+        var rotation = 0;
+        var cropMode = false;
+        var cropStartX, cropStartY, cropEndX, cropEndY, isDragging = false;
+        
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width:95%;padding:15px;text-align:center;">
+                <h4 style="margin:0 0 10px;">✂️ Редактор фото</h4>
+                <div id="editorWrap" style="position:relative;display:inline-block;max-width:100%;cursor:crosshair;">
+                    <img id="editorImg" src="${e.target.result}" style="max-width:100%;max-height:50vh;display:block;transform:rotate(0deg);">
+                    <div id="cropBox" style="display:none;position:absolute;border:2px dashed white;pointer-events:none;"></div>
+                </div>
+                <div style="display:flex;gap:10px;margin-top:15px;justify-content:center;flex-wrap:wrap;">
+                    <button class="editor-btn" id="btnRotateLeft"><i class="fas fa-undo"></i></button>
+                    <button class="editor-btn" id="btnRotateRight"><i class="fas fa-redo"></i></button>
+                    <button class="editor-btn" id="btnCrop"><i class="fas fa-crop-alt"></i></button>
+                    <button class="editor-btn" id="btnReset"><i class="fas fa-times"></i></button>
+                    <button class="editor-btn" id="btnDone" style="background:var(--status-green);color:white;width:auto;padding:0 20px;border-radius:25px;"><i class="fas fa-check"></i> Готово</button>
+                </div>
+                <button class="modal-close-btn" id="btnCancel" style="width:100%;margin-top:10px;">Отмена</button>
+            </div>
+        `;
+        
+        modal.onclick = function(ev) { if (ev.target === modal) modal.remove(); };
+        document.body.appendChild(modal);
+        
+        const img = document.getElementById('editorImg');
+        const cropBox = document.getElementById('cropBox');
+        const wrap = document.getElementById('editorWrap');
+        
+        document.getElementById('btnRotateLeft').onclick = function() {
+            rotation = (rotation - 90) % 360;
+            img.style.transform = 'rotate(' + rotation + 'deg)';
+        };
+        
+        document.getElementById('btnRotateRight').onclick = function() {
+            rotation = (rotation + 90) % 360;
+            img.style.transform = 'rotate(' + rotation + 'deg)';
+        };
+        
+        document.getElementById('btnCrop').onclick = function() {
+            cropMode = !cropMode;
+            cropBox.style.display = cropMode ? 'block' : 'none';
+            this.style.background = cropMode ? 'var(--accent)' : '';
+            this.style.color = cropMode ? 'white' : '';
+        };
+        
+        document.getElementById('btnReset').onclick = function() {
+            rotation = 0;
+            cropMode = false;
+            cropBox.style.display = 'none';
+            img.style.transform = 'rotate(0deg)';
+            document.getElementById('btnCrop').style.background = '';
+            document.getElementById('btnCrop').style.color = '';
+        };
+        
+        // Обрезка мышкой
+        wrap.onmousedown = function(ev) {
+            if (!cropMode) return;
+            ev.preventDefault();
+            const rect = wrap.getBoundingClientRect();
+            cropStartX = ev.clientX - rect.left;
+            cropStartY = ev.clientY - rect.top;
+            isDragging = true;
+        };
+        
+        wrap.onmousemove = function(ev) {
+            if (!isDragging) return;
+            ev.preventDefault();
+            const rect = wrap.getBoundingClientRect();
+            cropEndX = ev.clientX - rect.left;
+            cropEndY = ev.clientY - rect.top;
+            const x1 = Math.min(cropStartX, cropEndX);
+            const y1 = Math.min(cropStartY, cropEndY);
+            const w = Math.abs(cropEndX - cropStartX);
+            const h = Math.abs(cropEndY - cropStartY);
+            cropBox.style.cssText = 'display:block;position:absolute;border:2px dashed white;left:' + x1 + 'px;top:' + y1 + 'px;width:' + w + 'px;height:' + h + 'px;';
+        };
+        
+        wrap.onmouseup = function() { isDragging = false; };
+        
+        // Обрезка пальцем
+        wrap.ontouchstart = function(ev) {
+            if (!cropMode) return;
+            ev.preventDefault();
+            const touch = ev.touches[0];
+            const rect = wrap.getBoundingClientRect();
+            cropStartX = touch.clientX - rect.left;
+            cropStartY = touch.clientY - rect.top;
+            isDragging = true;
+        };
+        
+        wrap.ontouchmove = function(ev) {
+            if (!isDragging) return;
+            ev.preventDefault();
+            const touch = ev.touches[0];
+            const rect = wrap.getBoundingClientRect();
+            cropEndX = touch.clientX - rect.left;
+            cropEndY = touch.clientY - rect.top;
+            const x1 = Math.min(cropStartX, cropEndX);
+            const y1 = Math.min(cropStartY, cropEndY);
+            const w = Math.abs(cropEndX - cropStartX);
+            const h = Math.abs(cropEndY - cropStartY);
+            cropBox.style.cssText = 'display:block;position:absolute;border:2px dashed white;left:' + x1 + 'px;top:' + y1 + 'px;width:' + w + 'px;height:' + h + 'px;';
+        };
+        
+        wrap.ontouchend = function() { isDragging = false; };
+        
+        // Готово
+        document.getElementById('btnDone').onclick = function() {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const tempImg = new Image();
+            
+            tempImg.onload = function() {
+                if (rotation % 360 !== 0) {
+                    const rad = (rotation * Math.PI) / 180;
+                    canvas.width = (rotation % 180 === 0) ? tempImg.width : tempImg.height;
+                    canvas.height = (rotation % 180 === 0) ? tempImg.height : tempImg.width;
+                    ctx.save();
+                    ctx.translate(canvas.width / 2, canvas.height / 2);
+                    ctx.rotate(rad);
+                    ctx.drawImage(tempImg, -tempImg.width / 2, -tempImg.height / 2);
+                    ctx.restore();
+                } else {
+                    canvas.width = tempImg.width;
+                    canvas.height = tempImg.height;
+                    ctx.drawImage(tempImg, 0, 0);
+                }
+                
+                if (cropMode && cropEndX !== undefined && Math.abs(cropEndX - cropStartX) > 10) {
+                    const rect = wrap.getBoundingClientRect();
+                    const scaleX = tempImg.width / rect.width;
+                    const scaleY = tempImg.height / rect.height;
+                    const sx = Math.min(cropStartX, cropEndX) * scaleX;
+                    const sy = Math.min(cropStartY, cropEndY) * scaleY;
+                    const sw = Math.abs(cropEndX - cropStartX) * scaleX;
+                    const sh = Math.abs(cropEndY - cropStartY) * scaleY;
+                    
+                    const cropCanvas = document.createElement('canvas');
+                    cropCanvas.width = sw;
+                    cropCanvas.height = sh;
+                    cropCanvas.getContext('2d').drawImage(canvas, sx, sy, sw, sh, 0, 0, sw, sh);
+                    cropCanvas.toBlob(function(blob) { modal.remove(); callback(blob); }, 'image/jpeg', 0.85);
+                } else {
+                    canvas.toBlob(function(blob) { modal.remove(); callback(blob); }, 'image/jpeg', 0.85);
+                }
+            };
+            tempImg.src = e.target.result;
+        };
+        
+        document.getElementById('btnCancel').onclick = function() { modal.remove(); };
+    };
+    reader.readAsDataURL(file);
+}
+
+// ==========================================
+// ЗАГРУЗКА ФОТО
+// ==========================================
+
+function uploadPageArtwork(bookKey, page) {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
@@ -11821,15 +11984,10 @@ function renderBookPagesGrid(bookKey, config) {
         const file = e.target.files[0];
         if (!file) return;
         
-        // ✅ Открываем редактор (поворот + обрезка)
         openImageEditor(file, async (editedBlob) => {
-            // После редактирования — продолжаем как раньше
-            if (tg && tg.MainButton) {
-                tg.MainButton.setText('⏳ Загрузка...').show();
-            }
+            if (tg && tg.MainButton) tg.MainButton.setText('⏳ Загрузка...').show();
             
             try {
-                // Сжимаем отредактированное фото
                 const compressed = await compressImage(editedBlob, 800, 0.7);
                 
                 const formData = new FormData();
@@ -11838,228 +11996,20 @@ function renderBookPagesGrid(bookKey, config) {
                 formData.append('page', String(page));
                 formData.append('photo', compressed, 'artwork.jpg');
                 
-                const response = await fetch(`${SERVER_URL}/api/artworks/upload`, {
-                    method: 'POST',
-                    body: formData
-                });
-                
+                const response = await fetch(`${SERVER_URL}/api/artworks/upload`, { method: 'POST', body: formData });
                 const result = await response.json();
                 
                 if (result.status === 'ok') {
                     if (!userArtworks[bookKey]) userArtworks[bookKey] = {};
                     userArtworks[bookKey][String(page)] = result.url;
-                    
-                    const config = BOOK_PAGES_CONFIG[currentBook] || DEFAULT_PAGES_CONFIG;
-                    renderBookPagesGrid(bookKey, config);
-                    
-                    if (tg) {
-                        tg.MainButton.hide();
-                        tg.showPopup({ message: '✅ Фото загружено!' });
-                    }
+                    renderBookPagesGrid(bookKey, BOOK_PAGES_CONFIG[currentBook] || DEFAULT_PAGES_CONFIG);
+                    if (tg) { tg.MainButton.hide(); tg.showPopup({ message: '✅ Фото загружено!' }); }
                 }
             } catch (error) {
-                console.error('Ошибка загрузки:', error);
-                if (tg) tg.MainButton.hide();
-                if (tg) tg.showAlert('❌ Ошибка загрузки');
+                console.error('Ошибка:', error);
+                if (tg) { tg.MainButton.hide(); tg.showAlert('❌ Ошибка загрузки'); }
             }
         });
-    };
-    
-    input.click();
-}
-        function getPageArtwork(bookKey, page) {
-    const url = userArtworks[bookKey]?.[String(page)];
-    if (!url) return null;
-    return url;
-}
-function viewArtwork(bookKey, page) {
-    const artwork = getPageArtwork(bookKey, page);
-    if (!artwork) return;
-    
-    const modal = document.createElement('div');
-    modal.className = 'modal-overlay';
-    modal.style.cssText = 'z-index: 100003; display: flex; align-items: center; justify-content: center;';
-    modal.innerHTML = `
-        <div style="max-width: 90%; max-height: 90%; position: relative;">
-            <img src="${artwork}" style="max-width: 100%; max-height: 80vh; object-fit: contain; border-radius: 16px;">
-            <button onclick="this.closest('.modal-overlay').remove()" 
-                    style="position: absolute; top: -40px; right: 0; background: none; border: none; color: white; font-size: 30px; cursor: pointer;">
-                &times;
-            </button>
-        </div>
-    `;
-    modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-    document.body.appendChild(modal);
-}
-
-
-// Сжатие изображения
-function compressImage(file, maxWidth = 800, quality = 0.7) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const img = new Image();
-            img.onload = () => {
-                const canvas = document.createElement('canvas');
-                const scale = maxWidth / img.width;
-                canvas.width = maxWidth;
-                canvas.height = img.height * scale;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                canvas.toBlob((blob) => {
-                    if (blob) {
-                        resolve(blob);
-                    } else {
-                        reject(new Error('Не удалось сжать фото'));
-                    }
-                }, 'image/jpeg', quality);
-            };
-            img.onerror = reject;
-            img.src = e.target.result;
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-    });
-}
-// Обработка выбора фото
-async function handleArtworkSelected(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-    
-    // Показываем индикатор загрузки
-    if (tg && tg.MainButton) {
-        tg.MainButton.setText('⏳ Загрузка на сервер...').show();
-    }
-    
-    try {
-        const compressed = await compressImage(file, 800, 0.7);
-        
-        const formData = new FormData();
-        formData.append('user_id', userId.toString());
-        formData.append('book_key', `${currentCategory}_${currentBook}`);
-        formData.append('page', String(currentPage));
-        formData.append('photo', compressed, 'artwork.jpg');
-        
-        const response = await fetch(`${SERVER_URL}/api/artworks/upload`, {
-            method: 'POST',
-            body: formData
-        });
-        
-        const result = await response.json();
-        
-        if (result.status === 'ok') {
-            const bookKey = `${currentCategory}_${currentBook}`;
-            
-            // ✅ Сохраняем ТОЛЬКО в оперативную память (не в localStorage)
-            if (!userArtworks[bookKey]) userArtworks[bookKey] = {};
-            userArtworks[bookKey][String(currentPage)] = result.url;
-            
-            // Обновляем модалку
-            const config = BOOK_PAGES_CONFIG[currentBook] || DEFAULT_PAGES_CONFIG;
-            renderBookPagesGrid(bookKey, config);
-            
-            // Скрываем индикатор
-            if (tg && tg.MainButton) {
-                tg.MainButton.hide();
-            }
-            
-            if (tg) tg.showPopup({ message: `✅ Загружено на сервер!` });
-            else alert('✅ Загружено на сервер!');
-        } else {
-            throw new Error(result.message || 'Ошибка сервера');
-        }
-    } catch (error) {
-        console.error('Ошибка загрузки:', error);
-        if (tg && tg.MainButton) tg.MainButton.hide();
-        if (tg) tg.showAlert('❌ Ошибка загрузки на сервер');
-        else alert('❌ Ошибка загрузки');
-    }
-}
-
-// Закрыть модалку
-function closeBookPagesModal() {
-    document.getElementById('bookPagesModal').style.display = 'none';
-    currentBook = null;
-    currentCategory = null;
-    currentPage = null;
-    window.isViewOnly = false;
-    
-    // ✅ Возвращаем непрозрачность профилю
-    const profileModal = document.getElementById('publicProfileModal');
-    if (profileModal) profileModal.style.opacity = '1';
-}
-function uploadCustomCover(category, bookName) {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-    
-    input.onchange = async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        
-        if (tg && tg.MainButton) {
-            tg.MainButton.setText('⏳ Загрузка обложки...').show();
-        }
-        
-        try {
-            const compressed = await compressImage(file, 400, 0.7);
-            
-            const formData = new FormData();
-            formData.append('user_id', userId.toString());
-            formData.append('category', category);
-            formData.append('book_name', bookName);
-            formData.append('cover', compressed, 'cover.jpg');
-            
-            const response = await fetch(`${SERVER_URL}/api/coloring_books/custom`, {
-                method: 'POST',
-                body: formData
-            });
-            
-            const result = await response.json();
-            
-            if (result.status === 'ok') {
-                // ✅ ОБНОВЛЯЕМ существующую раскраску, а не добавляем новую
-                const books = userColoringBooks[category];
-                for (let i = 0; i < books.length; i++) {
-                    const b = books[i];
-                    const name = typeof b === 'string' ? b : b.name;
-                    if (name === bookName) {
-                        if (typeof b === 'string') {
-                            books[i] = { name: b, custom: true, cover: result.cover };
-                        } else {
-                            b.cover = result.cover;
-                        }
-                        break;
-                    }
-                }
-                
-                // ✅ Сохраняем в localStorage
-                localStorage.setItem(`coloring_books_${userId}`, JSON.stringify(userColoringBooks));
-                
-                // ✅ ОТПРАВЛЯЕМ ОБНОВЛЕНИЕ НА СЕРВЕР (синхронизируем всю коллекцию)
-                await fetch(`${SERVER_URL}/api/coloring_books`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        user_id: userId,
-                        data: userColoringBooks
-                    })
-                });
-                
-                renderColoringBooks();
-                
-                if (tg) {
-                    tg.MainButton.hide();
-                    tg.showPopup({ message: '✅ Обложка обновлена!' });
-                }
-            }
-        } catch (error) {
-            console.error('Ошибка:', error);
-            if (tg) {
-                tg.MainButton.hide();
-                tg.showAlert('❌ Ошибка загрузки');
-            }
-        }
     };
     
     input.click();
@@ -20869,182 +20819,7 @@ function filterBestiary() {
         card.style.display = matches ? 'block' : 'none';
     });
 }
-    // ==========================================
-// РЕДАКТОР ИЗОБРАЖЕНИЙ (поворот + свободная обрезка)
-// ==========================================
-
-
-
-function openImageEditor(file, callback) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        imageEditorData = {
-            src: e.target.result,
-            rotation: 0,
-            callback: callback,
-            cropActive: false
-        };
-        showImageEditorModal();
-    };
-    reader.readAsDataURL(file);
-}
-
-function showImageEditorModal() {
-    const oldModal = document.getElementById('imageEditorModal');
-    if (oldModal) oldModal.remove();
     
-    const modal = document.createElement('div');
-    modal.id = 'imageEditorModal';
-    modal.className = 'modal-overlay';
-    modal.style.cssText = 'z-index: 100004; display: flex; align-items: center; justify-content: center;';
-    
-    modal.innerHTML = `
-        <div class="modal-content" style="max-width: 95%; padding: 15px; text-align: center;">
-            <h4 style="margin: 0 0 10px;">✂️ Редактор фото</h4>
-            <div id="editorContainer" style="position: relative; display: inline-block; max-width: 100%; overflow: hidden; cursor: crosshair; touch-action: none;">
-                <img id="editorImage" src="${imageEditorData.src}" style="max-width: 100%; max-height: 50vh; display: block;" draggable="false">
-                <div id="cropOverlay" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
-                    <div id="cropDimTop" style="position: absolute; background: rgba(0,0,0,0.5);"></div>
-                    <div id="cropDimBottom" style="position: absolute; background: rgba(0,0,0,0.5);"></div>
-                    <div id="cropDimLeft" style="position: absolute; background: rgba(0,0,0,0.5);"></div>
-                    <div id="cropDimRight" style="position: absolute; background: rgba(0,0,0,0.5);"></div>
-                    <div id="cropBorder" style="position: absolute; border: 2px dashed white;"></div>
-                </div>
-            </div>
-            <div style="display: flex; gap: 10px; margin-top: 15px; justify-content: center; flex-wrap: wrap;">
-                <button class="editor-btn" onclick="rotateImage(-90)"><i class="fas fa-undo"></i></button>
-                <button class="editor-btn" onclick="rotateImage(90)"><i class="fas fa-redo"></i></button>
-                <button class="editor-btn" id="cropToggleBtn" onclick="toggleCropMode()"><i class="fas fa-crop-alt"></i></button>
-                <button class="editor-btn" onclick="resetCrop()"><i class="fas fa-times"></i></button>
-                <button class="editor-btn" style="background: var(--status-green); color: white; width: auto; padding: 0 20px; border-radius: 25px;" onclick="saveEditedImage()"><i class="fas fa-check"></i> Готово</button>
-            </div>
-            <button class="modal-close-btn" onclick="document.getElementById('imageEditorModal').remove()" style="width: 100%; margin-top: 10px;">Отмена</button>
-        </div>
-    `;
-    
-    modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-    document.body.appendChild(modal);
-    
-    setTimeout(() => {
-        const container = document.getElementById('editorContainer');
-        if (container) {
-            container.addEventListener('mousedown', startCrop);
-            container.addEventListener('mousemove', moveCrop);
-            container.addEventListener('mouseup', endCrop);
-            container.addEventListener('touchstart', startCropTouch, { passive: false });
-            container.addEventListener('touchmove', moveCropTouch, { passive: false });
-            container.addEventListener('touchend', endCrop);
-        }
-    }, 100);
-}
-
-function toggleCropMode() {
-    imageEditorData.cropActive = !imageEditorData.cropActive;
-    const overlay = document.getElementById('cropOverlay');
-    const btn = document.getElementById('cropToggleBtn');
-    if (imageEditorData.cropActive) {
-        overlay.style.display = 'block';
-        btn.style.background = 'var(--accent)';
-        btn.style.color = 'white';
-    } else {
-        overlay.style.display = 'none';
-        btn.style.background = '';
-        btn.style.color = '';
-        cropData = { startX: 0, startY: 0, endX: 0, endY: 0, isDragging: false };
-    }
-}
-
-function getContainerPos(container) {
-    const rect = container.getBoundingClientRect();
-    return { left: rect.left, top: rect.top, width: rect.width, height: rect.height };
-}
-
-function startCrop(e) {
-    if (!imageEditorData.cropActive) return;
-    e.preventDefault();
-    const container = document.getElementById('editorContainer');
-    const pos = getContainerPos(container);
-    cropData.startX = (e.clientX - pos.left) / pos.width;
-    cropData.startY = (e.clientY - pos.top) / pos.height;
-    cropData.isDragging = true;
-}
-
-function moveCrop(e) {
-    if (!cropData.isDragging) return;
-    e.preventDefault();
-    const container = document.getElementById('editorContainer');
-    const pos = getContainerPos(container);
-    cropData.endX = Math.max(0, Math.min(1, (e.clientX - pos.left) / pos.width));
-    cropData.endY = Math.max(0, Math.min(1, (e.clientY - pos.top) / pos.height));
-    updateCropOverlay(pos.width, pos.height);
-}
-
-function endCrop() {
-    cropData.isDragging = false;
-}
-
-function startCropTouch(e) {
-    if (!imageEditorData.cropActive) return;
-    e.preventDefault();
-    const touch = e.touches[0];
-    const container = document.getElementById('editorContainer');
-    const pos = getContainerPos(container);
-    cropData.startX = (touch.clientX - pos.left) / pos.width;
-    cropData.startY = (touch.clientY - pos.top) / pos.height;
-    cropData.isDragging = true;
-}
-
-function moveCropTouch(e) {
-    if (!cropData.isDragging) return;
-    e.preventDefault();
-    const touch = e.touches[0];
-    const container = document.getElementById('editorContainer');
-    const pos = getContainerPos(container);
-    cropData.endX = Math.max(0, Math.min(1, (touch.clientX - pos.left) / pos.width));
-    cropData.endY = Math.max(0, Math.min(1, (touch.clientY - pos.top) / pos.height));
-    updateCropOverlay(pos.width, pos.height);
-}
-
-function updateCropOverlay(width, height) {
-    const x1 = Math.min(cropData.startX, cropData.endX) * width;
-    const y1 = Math.min(cropData.startY, cropData.endY) * height;
-    const x2 = Math.max(cropData.startX, cropData.endX) * width;
-    const y2 = Math.max(cropData.startY, cropData.endY) * height;
-    document.getElementById('cropDimTop').style.cssText = `top:0;left:0;width:100%;height:${y1}px;`;
-    document.getElementById('cropDimBottom').style.cssText = `top:${y2}px;left:0;width:100%;height:${height-y2}px;`;
-    document.getElementById('cropDimLeft').style.cssText = `top:${y1}px;left:0;width:${x1}px;height:${y2-y1}px;`;
-    document.getElementById('cropDimRight').style.cssText = `top:${y1}px;left:${x2}px;width:${width-x2}px;height:${y2-y1}px;`;
-    document.getElementById('cropBorder').style.cssText = `top:${y1}px;left:${x1}px;width:${x2-x1}px;height:${y2-y1}px;border:2px dashed white;`;
-}
-
-function resetCrop() {
-    cropData = { startX: 0, startY: 0, endX: 0, endY: 0, isDragging: false };
-    document.getElementById('cropOverlay').style.display = 'none';
-    imageEditorData.cropActive = false;
-}
-
-function rotateImage(degrees) {
-    imageEditorData.rotation = (imageEditorData.rotation + degrees) % 360;
-    const img = document.getElementById('editorImage');
-    if (img) img.style.transform = `rotate(${imageEditorData.rotation}deg)`;
-}
-
-function saveEditedImage() {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    const tempImg = new Image();
-    tempImg.onload = () => {
-        canvas.width = tempImg.width;
-        canvas.height = tempImg.height;
-        ctx.drawImage(tempImg, 0, 0);
-        canvas.toBlob((blob) => {
-            document.getElementById('imageEditorModal').remove();
-            imageEditorData.callback(blob);
-        }, 'image/jpeg', 0.85);
-    };
-    tempImg.src = imageEditorData.src;
-}
-
     </script>
     
     <!-- Модалка поиска пользователей -->
