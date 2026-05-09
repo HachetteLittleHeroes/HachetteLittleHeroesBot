@@ -4561,7 +4561,7 @@
         <div id="bestiaryContent" class="inventory-content" style="display: none;">
             <div class="search-box" style="margin-bottom: 15px;">
                 <i class="fas fa-search"></i>
-                <input type="text" id="bestiarySearch" placeholder="Поиск персонажа..." oninput="filterBestiary()">
+               <input type="text" id="bestiarySearch" placeholder="Поиск персонажа..." oninput="filterBestiary()" autocomplete="off" enterkeyhint="done">
             </div>
             <div id="bestiaryGrid" class="collection-grid" style="grid-template-columns: repeat(3, 1fr);"></div>
         </div>
@@ -21312,6 +21312,29 @@ function filterBestiary() {
         card.style.display = matches ? 'block' : 'none';
     });
 }
+        // ==========================================
+// УБИРАЕМ КЛАВИАТУРУ ПРИ ПОИСКЕ В БЕСТИАРИИ
+// ==========================================
+
+document.addEventListener('DOMContentLoaded', function() {
+    const bestiarySearch = document.getElementById('bestiarySearch');
+    if (bestiarySearch) {
+        // Enter = убрать клавиатуру
+        bestiarySearch.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                this.blur();
+            }
+        });
+    }
+});
+
+// Клик в любое место вне поля поиска = убрать клавиатуру
+document.addEventListener('click', function(e) {
+    const bestiarySearch = document.getElementById('bestiarySearch');
+    if (bestiarySearch && e.target !== bestiarySearch) {
+        bestiarySearch.blur();
+    }
+});
     </script>
     
     <!-- Модалка поиска пользователей -->
