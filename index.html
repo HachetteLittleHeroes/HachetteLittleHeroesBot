@@ -4391,6 +4391,51 @@
         </div>
     </div>
 
+    <!-- ========== СТАТИСТИКА ========== -->
+    <div id="stats" class="page">
+        <div class="header">Статистика</div>
+        <div class="inventory-main-block">
+            <div class="inventory-header" onclick="openStatsBlock('paint_by_number')">
+                <div class="inventory-header-left">
+                    <i class="fas fa-border-all"></i>
+                    <span>Раскраски по номерам</span>
+                </div>
+                <i class="fas fa-chevron-down" id="arrow-stats-paint_by_number"></i>
+            </div>
+            <div id="stats-content-paint_by_number" class="inventory-content" style="display: none;"></div>
+        </div>
+        <div class="inventory-main-block" style="margin-top: 10px;">
+            <div class="inventory-header" onclick="openStatsBlock('alcohol')">
+                <div class="inventory-header-left">
+                    <i class="fas fa-wine-bottle"></i>
+                    <span>Спиртовые раскраски</span>
+                </div>
+                <i class="fas fa-chevron-down" id="arrow-stats-alcohol"></i>
+            </div>
+            <div id="stats-content-alcohol" class="inventory-content" style="display: none;"></div>
+        </div>
+        <div class="inventory-main-block" style="margin-top: 10px;">
+            <div class="inventory-header" onclick="openStatsBlock('pencil')">
+                <div class="inventory-header-left">
+                    <i class="fas fa-pencil-alt"></i>
+                    <span>Раскраски карандашами</span>
+                </div>
+                <i class="fas fa-chevron-down" id="arrow-stats-pencil"></i>
+            </div>
+            <div id="stats-content-pencil" class="inventory-content" style="display: none;"></div>
+        </div>
+        <div class="inventory-main-block" style="margin-top: 10px;">
+            <div class="inventory-header" onclick="openStatsBlock('chart')">
+                <div class="inventory-header-left">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Прогресс по месяцам</span>
+                </div>
+                <i class="fas fa-chevron-down" id="arrow-stats-chart"></i>
+            </div>
+            <div id="stats-content-chart" class="inventory-content" style="display: none;"></div>
+        </div>
+    </div>
+
     <!-- ========== ИИ ПАЛИТРА (НОВАЯ ВЕРСИЯ) ========== -->
 <div id="aipalette" class="page">
     <div class="header">
@@ -4398,7 +4443,6 @@
         <span class="ai-alpha-badge">Альфа-тест</span>
     </div>
     <div class="ai-section">
-        <!-- Выбор источника маркеров -->
         <div style="margin: 15px;">
             <label style="color: var(--text); font-weight: 600; margin-bottom: 8px; display: block;">🔍 Искать среди:</label>
             <select id="aiFilterType" style="width: 100%; padding: 12px; border-radius: 12px; background: var(--bg-header); color: var(--text); border: 1px solid var(--border-color); font-size: 14px;">
@@ -4410,33 +4454,17 @@
                 <option value="">Загрузка брендов...</option>
             </select>
         </div>
-        
-        <!-- Загрузка фото (можно несколько) -->
         <div class="upload-area" onclick="document.getElementById('aiInput').click()" style="margin: 15px;">
             <i class="fas fa-cloud-upload-alt"></i>
-            <p>Нажмите, чтобы выбрать фото (можно несколько)</p>
-            <small style="color: var(--text-gray);">1 фото = 1 цвет</small>
+            <p>Нажмите, чтобы выбрать фото</p>
         </div>
         <input type="file" id="aiInput" accept="image/*" multiple style="display: none;">
-        
-        <!-- Результаты -->
         <div id="aiResults" style="margin: 15px;"></div>
-        
-        <!-- Админ-панель (скрыта для обычных пользователей) -->
         <div id="adminAiBlock" class="admin-panel" style="display: none;">
             <h4><i class="fas fa-robot"></i> Обучение ИИ (Админ)</h4>
-            <div class="form-group">
-                <label>Фото маркера</label>
-                <input type="file" id="aiTrainFile" accept="image/*">
-            </div>
-            <div class="form-group">
-                <label>Бренд</label>
-                <input type="text" id="aiTrainBrand" placeholder="Например: GuangNa">
-            </div>
-            <div class="form-group">
-                <label>Номер маркера</label>
-                <input type="text" id="aiTrainNumber" placeholder="Например: 101">
-            </div>
+            <div class="form-group"><label>Фото маркера</label><input type="file" id="aiTrainFile" accept="image/*"></div>
+            <div class="form-group"><label>Бренд</label><input type="text" id="aiTrainBrand" placeholder="Например: GuangNa"></div>
+            <div class="form-group"><label>Номер маркера</label><input type="text" id="aiTrainNumber" placeholder="Например: 101"></div>
             <button onclick="trainAIMarker()"><i class="fas fa-brain"></i> Обучить ИИ</button>
             <div id="aiTrainStatus" class="info-text"></div>
         </div>
@@ -4502,7 +4530,6 @@
                 <input type="text" id="coloringBooksSearch" placeholder="Поиск по названию раскраски..." oninput="filterColoringBooks()">
             </div>
             
-            <!-- ✅ ПЕРЕКЛЮЧАТЕЛЬ ФИЛЬТРА -->
             <div style="display: flex; gap: 10px; margin-bottom: 15px;">
                 <button class="filter-btn active" id="filterAllBooks" onclick="setBooksFilter('all')">
                     <i class="fas fa-list"></i> Все раскраски
@@ -4512,7 +4539,6 @@
                 </button>
             </div>
             
-            <!-- Категория: Раскраски по номерам -->
             <div class="coloring-category-wrapper">
                 <div class="category-header" onclick="toggleCategory('paint_by_number')">
                     <div style="display: flex; align-items: center; gap: 10px;">
@@ -4528,7 +4554,6 @@
                 <div id="category-paint_by_number" class="category-items category-content" style="display: none;"></div>
             </div>
             
-            <!-- Категория: Спиртовые раскраски -->
             <div class="coloring-category-wrapper">
                 <div class="category-header" onclick="toggleCategory('alcohol')">
                     <div style="display: flex; align-items: center; gap: 10px;">
@@ -4544,7 +4569,6 @@
                 <div id="category-alcohol" class="category-items category-content" style="display: none;"></div>
             </div>
             
-            <!-- Категория: Раскраски для карандашей -->
             <div class="coloring-category-wrapper">
                 <div class="category-header" onclick="toggleCategory('pencil')">
                     <div style="display: flex; align-items: center; gap: 10px;">
@@ -4560,7 +4584,6 @@
                 <div id="category-pencil" class="category-items category-content" style="display: none;"></div>
             </div>
             
-            <!-- Категория: Другие -->
             <div class="coloring-category-wrapper">
                 <div class="category-header" onclick="toggleCategory('custom')">
                     <div style="display: flex; align-items: center; gap: 10px;">
@@ -4651,7 +4674,7 @@
             </div>
         </div>
     </div>
-</div>  <!-- ✅ ЗАКРЫТИЕ #collection -->
+</div>
 <!-- ========== КОРЗИНА ========== -->
 <div id="cart" class="page">
     <div class="header">Корзина</div>
@@ -4668,6 +4691,7 @@
        <button id="btn-profile" class="nav-btn active" onclick="tab('profile')"><i class="fas fa-user"></i><span>Профиль</span></button>
 <button id="btn-collection" class="nav-btn" onclick="tab('collection')"><i class="fas fa-gem"></i><span>Коллекция</span></button>
 <button id="btn-markers" class="nav-btn" onclick="tab('markers')"><i class="fas fa-pen"></i><span>Маркеры</span></button>
+<button id="btn-stats" class="nav-btn" onclick="tab('stats')"><i class="fas fa-chart-bar"></i><span>Статистика</span></button>
         <button id="btn-answers" class="nav-btn" onclick="tab('answers')"><i class="fas fa-book"></i><span>Ответы</span></button>
         <button id="btn-aipalette" class="nav-btn" onclick="tab('aipalette')"><i class="fas fa-magic"></i><span>ИИ Палитра</span></button>
         <button id="btn-cart" class="nav-btn" onclick="tab('cart')"><i class="fas fa-shopping-cart"></i><span>Корзина</span><span id="cartBadge" class="badge" style="display:none;">0</span></button>
