@@ -4176,6 +4176,90 @@
     min-width: 100% !important;
     min-height: 100% !important;
 }
+        .stats-numbers {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.stats-number-card {
+    text-align: center;
+    background: var(--bg);
+    border-radius: 12px;
+    padding: 12px 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.stats-number-card:hover {
+    background: var(--accent);
+    color: white;
+}
+
+.stats-number-card .number {
+    font-size: 24px;
+    font-weight: 800;
+}
+
+.stats-number-card .label {
+    font-size: 11px;
+    margin-top: 2px;
+    opacity: 0.8;
+}
+
+.stats-number-card.active {
+    background: var(--accent);
+    color: white;
+}
+
+/* График */
+.month-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    height: 200px;
+    padding: 10px 0;
+}
+
+.month-bar {
+    flex: 1;
+    background: var(--accent);
+    border-radius: 8px 8px 0 0;
+    min-height: 4px;
+    position: relative;
+    transition: height 0.3s;
+}
+
+.month-bar-label {
+    position: absolute;
+    bottom: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 10px;
+    color: var(--text-gray);
+    white-space: nowrap;
+}
+
+.month-bar-value {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.stats-feedback {
+    text-align: center;
+    padding: 15px;
+    background: var(--bg);
+    border-radius: 12px;
+    margin-top: 15px;
+    font-size: 14px;
+    color: var(--text);
+}
     </style>
 </head>
 <body>
@@ -4391,55 +4475,56 @@
         </div>
     </div>
 
-    <!-- ========== ИИ ПАЛИТРА (НОВАЯ ВЕРСИЯ) ========== -->
-<div id="aipalette" class="page">
-    <div class="header">
-        ИИ Палитра ✨
-        <span class="ai-alpha-badge">Альфа-тест</span>
+   <!-- ========== СТАТИСТИКА ========== -->
+<div id="stats" class="page">
+    <div class="header">Статистика</div>
+    
+    <!-- Категория: Раскраски по номерам -->
+    <div class="inventory-main-block" style="margin-top: 15px;">
+        <div class="inventory-header" onclick="toggleStatsBlock('paint_by_number')">
+            <div class="inventory-header-left">
+                <i class="fas fa-border-all"></i>
+                <span>Раскраски по номерам</span>
+            </div>
+            <i class="fas fa-chevron-down" id="arrow-stats-paint_by_number"></i>
+        </div>
+        <div id="stats-content-paint_by_number" class="inventory-content" style="display: none;"></div>
     </div>
-    <div class="ai-section">
-        <!-- Выбор источника маркеров -->
-        <div style="margin: 15px;">
-            <label style="color: var(--text); font-weight: 600; margin-bottom: 8px; display: block;">🔍 Искать среди:</label>
-            <select id="aiFilterType" style="width: 100%; padding: 12px; border-radius: 12px; background: var(--bg-header); color: var(--text); border: 1px solid var(--border-color); font-size: 14px;">
-                <option value="all">🌟 Все бренды</option>
-                <option value="inventory">📦 Мой инвентарь</option>
-                <option value="brand">🏷️ Выбрать бренд...</option>
-            </select>
-            <select id="aiFilterBrand" style="display: none; width: 100%; margin-top: 10px; padding: 12px; border-radius: 12px; background: var(--bg-header); color: var(--text); border: 1px solid var(--border-color); font-size: 14px;">
-                <option value="">Загрузка брендов...</option>
-            </select>
-        </div>
-        
-        <!-- Загрузка фото (можно несколько) -->
-        <div class="upload-area" onclick="document.getElementById('aiInput').click()" style="margin: 15px;">
-            <i class="fas fa-cloud-upload-alt"></i>
-            <p>Нажмите, чтобы выбрать фото (можно несколько)</p>
-            <small style="color: var(--text-gray);">1 фото = 1 цвет</small>
-        </div>
-        <input type="file" id="aiInput" accept="image/*" multiple style="display: none;">
-        
-        <!-- Результаты -->
-        <div id="aiResults" style="margin: 15px;"></div>
-        
-        <!-- Админ-панель (скрыта для обычных пользователей) -->
-        <div id="adminAiBlock" class="admin-panel" style="display: none;">
-            <h4><i class="fas fa-robot"></i> Обучение ИИ (Админ)</h4>
-            <div class="form-group">
-                <label>Фото маркера</label>
-                <input type="file" id="aiTrainFile" accept="image/*">
+    
+    <!-- Категория: Спиртовые раскраски -->
+    <div class="inventory-main-block" style="margin-top: 15px;">
+        <div class="inventory-header" onclick="toggleStatsBlock('alcohol')">
+            <div class="inventory-header-left">
+                <i class="fas fa-wine-bottle"></i>
+                <span>Спиртовые раскраски</span>
             </div>
-            <div class="form-group">
-                <label>Бренд</label>
-                <input type="text" id="aiTrainBrand" placeholder="Например: GuangNa">
-            </div>
-            <div class="form-group">
-                <label>Номер маркера</label>
-                <input type="text" id="aiTrainNumber" placeholder="Например: 101">
-            </div>
-            <button onclick="trainAIMarker()"><i class="fas fa-brain"></i> Обучить ИИ</button>
-            <div id="aiTrainStatus" class="info-text"></div>
+            <i class="fas fa-chevron-down" id="arrow-stats-alcohol"></i>
         </div>
+        <div id="stats-content-alcohol" class="inventory-content" style="display: none;"></div>
+    </div>
+    
+    <!-- Категория: Раскраски карандашами -->
+    <div class="inventory-main-block" style="margin-top: 15px;">
+        <div class="inventory-header" onclick="toggleStatsBlock('pencil')">
+            <div class="inventory-header-left">
+                <i class="fas fa-pencil-alt"></i>
+                <span>Раскраски карандашами</span>
+            </div>
+            <i class="fas fa-chevron-down" id="arrow-stats-pencil"></i>
+        </div>
+        <div id="stats-content-pencil" class="inventory-content" style="display: none;"></div>
+    </div>
+    
+    <!-- График прогресса по месяцам -->
+    <div class="inventory-main-block" style="margin-top: 15px;">
+        <div class="inventory-header" onclick="toggleStatsBlock('chart')">
+            <div class="inventory-header-left">
+                <i class="fas fa-chart-line"></i>
+                <span>Прогресс по месяцам</span>
+            </div>
+            <i class="fas fa-chevron-down" id="arrow-stats-chart"></i>
+        </div>
+        <div id="stats-content-chart" class="inventory-content" style="display: none;"></div>
     </div>
 </div>
 <!-- ========== КОЛЛЕКЦИЯ ========== -->
@@ -4669,7 +4754,7 @@
 <button id="btn-collection" class="nav-btn" onclick="tab('collection')"><i class="fas fa-gem"></i><span>Коллекция</span></button>
 <button id="btn-markers" class="nav-btn" onclick="tab('markers')"><i class="fas fa-pen"></i><span>Маркеры</span></button>
         <button id="btn-answers" class="nav-btn" onclick="tab('answers')"><i class="fas fa-book"></i><span>Ответы</span></button>
-        <button id="btn-aipalette" class="nav-btn" onclick="tab('aipalette')"><i class="fas fa-magic"></i><span>ИИ Палитра</span></button>
+        <button id="btn-stats" class="nav-btn" onclick="tab('stats')"><i class="fas fa-chart-bar"></i><span>Статистика</span></button>
         <button id="btn-cart" class="nav-btn" onclick="tab('cart')"><i class="fas fa-shopping-cart"></i><span>Корзина</span><span id="cartBadge" class="badge" style="display:none;">0</span></button>
     </nav>
     <!-- ========== МОДАЛЬНЫЕ ОКНА ========== -->
@@ -7806,6 +7891,9 @@ if (userId === 496779756 || userId === 1413249095) {
         case 'answers':
             renderVolumes();
             break;
+            case 'stats':
+    renderStatsCategory('paint_by_number');
+    break;
         case 'profile':
             updateUI();
             refreshUserProgress();
@@ -21857,6 +21945,220 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+        // ==========================================
+// СТАТИСТИКА
+// ==========================================
+
+function toggleStatsBlock(category) {
+    var content = document.getElementById('stats-content-' + category);
+    var arrow = document.getElementById('arrow-stats-' + category);
+    
+    if (content.style.display === 'none' || content.style.display === '') {
+        content.style.display = 'block';
+        if (arrow) arrow.style.transform = 'rotate(180deg)';
+        renderStatsCategory(category);
+    } else {
+        content.style.display = 'none';
+        if (arrow) arrow.style.transform = 'rotate(0deg)';
+    }
+}
+
+function renderStatsCategory(category) {
+    if (category === 'chart') {
+        renderMonthChart();
+        return;
+    }
+    
+    var container = document.getElementById('stats-content-' + category);
+    
+    var now = new Date();
+    var weekAgo = now.getTime() - 7 * 24 * 60 * 60 * 1000;
+    var monthAgo = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+    
+    var weekCount = 0, monthCount = 0, totalCount = 0;
+    var weekWorks = [], monthWorks = [], totalWorks = [];
+    
+    var userBooks = userColoringBooks[category] || [];
+    
+    userBooks.forEach(function(book) {
+        var bookName = typeof book === 'string' ? book : book.name;
+        var bookKey = category + '_' + bookName;
+        var pages = userCompletedPages[bookKey] || {};
+        
+        for (var page in pages) {
+            totalCount++;
+            var date = (window.completedPagesDates && window.completedPagesDates[bookKey + '|' + page]) || 0;
+            
+            var artworkUrl = getPageArtwork(bookKey, page);
+            
+            totalWorks.push({
+                bookKey: bookKey,
+                bookName: bookName,
+                page: page,
+                date: date,
+                artwork: artworkUrl
+            });
+            
+            if (date >= monthAgo) {
+                monthCount++;
+                monthWorks.push({ bookKey, bookName, page, date, artwork: artworkUrl });
+            }
+            if (date >= weekAgo) {
+                weekCount++;
+                weekWorks.push({ bookKey, bookName, page, date, artwork: artworkUrl });
+            }
+        }
+    });
+    
+    container.innerHTML = `
+        <div class="stats-numbers">
+            <div class="stats-number-card active" id="card-week-${category}" onclick="showWorksList('${category}', 'week')">
+                <div class="number">${weekCount}</div>
+                <div class="label">За неделю</div>
+            </div>
+            <div class="stats-number-card" id="card-month-${category}" onclick="showWorksList('${category}', 'month')">
+                <div class="number">${monthCount}</div>
+                <div class="label">За месяц</div>
+            </div>
+            <div class="stats-number-card" id="card-total-${category}" onclick="showWorksList('${category}', 'total')">
+                <div class="number">${totalCount}</div>
+                <div class="label">Всего</div>
+            </div>
+        </div>
+        <div id="works-list-${category}" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;"></div>
+    `;
+    
+    // Показываем недельные работы по умолчанию
+    showWorksList(category, 'week');
+}
+
+var currentWorksList = {};
+
+function showWorksList(category, period) {
+    // Обновляем активную карточку
+    document.querySelectorAll('#stats-content-' + category + ' .stats-number-card').forEach(function(c) {
+        c.classList.remove('active');
+    });
+    var card = document.getElementById('card-' + period + '-' + category);
+    if (card) card.classList.add('active');
+    
+    var now = new Date();
+    var weekAgo = now.getTime() - 7 * 24 * 60 * 60 * 1000;
+    var monthAgo = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+    
+    var works = [];
+    var userBooks = userColoringBooks[category] || [];
+    
+    userBooks.forEach(function(book) {
+        var bookName = typeof book === 'string' ? book : book.name;
+        var bookKey = category + '_' + bookName;
+        var pages = userCompletedPages[bookKey] || {};
+        
+        for (var page in pages) {
+            var date = (window.completedPagesDates && window.completedPagesDates[bookKey + '|' + page]) || 0;
+            var artworkUrl = getPageArtwork(bookKey, page);
+            
+            var include = false;
+            if (period === 'week') include = date >= weekAgo;
+            else if (period === 'month') include = date >= monthAgo;
+            else include = true;
+            
+            if (include) {
+                works.push({ bookKey, bookName, page, date, artwork: artworkUrl });
+            }
+        }
+    });
+    
+    var listContainer = document.getElementById('works-list-' + category);
+    var html = '';
+    
+    works.forEach(function(w) {
+        if (w.artwork) {
+            html += `<div class="book-page-btn uploaded" style="aspect-ratio:1;overflow:hidden;border-radius:10px;cursor:pointer;" onclick="viewArtwork('${w.bookKey.replace(/'/g, "\\'")}', '${w.page}')">
+                <img src="${w.artwork}" style="width:100%;height:100%;object-fit:cover;">
+            </div>`;
+        } else {
+            html += `<div class="book-page-btn completed" style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;" onclick="uploadPageArtwork('${w.bookKey.replace(/'/g, "\\'")}', '${w.page}')">
+                <div style="text-align:center;">
+                    <div style="font-size:11px;">${w.bookName.substring(0,15)}</div>
+                    <div style="font-size:24px;margin:5px 0;">📸</div>
+                    <div style="font-size:10px;">стр. ${w.page}</div>
+                </div>
+            </div>`;
+        }
+    });
+    
+    if (works.length === 0) {
+        html = '<div class="no-results" style="grid-column: span 3; padding: 20px;">Нет работ за этот период</div>';
+    }
+    
+    listContainer.innerHTML = html;
+}
+
+function renderMonthChart() {
+    var container = document.getElementById('stats-content-chart');
+    
+    var now = new Date();
+    var months = [];
+    
+    for (var i = 5; i >= 0; i--) {
+        var d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        months.push({
+            name: ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'][d.getMonth()],
+            year: d.getFullYear(),
+            timestamp: d.getTime(),
+            count: 0
+        });
+    }
+    
+    // Считаем работы по месяцам
+    for (var bookKey in userCompletedPages) {
+        for (var page in userCompletedPages[bookKey]) {
+            var date = (window.completedPagesDates && window.completedPagesDates[bookKey + '|' + page]) || 0;
+            if (date) {
+                for (var m = months.length - 1; m >= 0; m--) {
+                    if (date >= months[m].timestamp) {
+                        months[m].count++;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    
+    var maxCount = Math.max.apply(null, months.map(function(m) { return m.count; })) || 1;
+    
+    var html = '<div class="month-chart">';
+    months.forEach(function(m) {
+        var height = (m.count / maxCount) * 150;
+        html += `
+            <div class="month-bar" style="height: ${Math.max(height, 4)}px;">
+                <div class="month-bar-value">${m.count}</div>
+                <div class="month-bar-label">${m.name}</div>
+            </div>
+        `;
+    });
+    html += '</div>';
+    
+    // Фидбек
+    var thisMonth = months[months.length - 1].count;
+    var lastMonth = months[months.length - 2].count;
+    var feedback = '';
+    
+    if (thisMonth > lastMonth) {
+        feedback = '🔥 Отлично! В этом месяце вы раскрасили больше, чем в прошлом!';
+    } else if (thisMonth < lastMonth) {
+        feedback = '💪 Не сбавляйте темп! В прошлом месяце было больше работ.';
+    } else if (thisMonth === 0) {
+        feedback = '🎨 Начните раскрашивать в этом месяце!';
+    } else {
+        feedback = '👍 Стабильно! Держите темп!';
+    }
+    
+    html += '<div class="stats-feedback">' + feedback + '</div>';
+    
+    container.innerHTML = html;
+}
         
     </script>
     
