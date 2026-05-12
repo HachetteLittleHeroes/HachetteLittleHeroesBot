@@ -21972,7 +21972,195 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+        // ==========================================
+// СТАТИСТИКА
+// ==========================================
+
+function openStatsBlock(category) {
+    var content = document.getElementById('stats-content-' + category);
+    var arrow = document.getElementById('arrow-stats-' + category);
+    
+    if (!content || !arrow) return;
+    
+    if (content.style.display === 'none' || content.style.display === '') {
+        content.style.display = 'block';
+        arrow.style.transform = 'rotate(180deg)';
+        if (category !== 'chart') {
+            renderStatsCategory(category);
+        } else {
+            renderMonthChart();
+        }
+    } else {
+        content.style.display = 'none';
+        arrow.style.transform = 'rotate(0deg)';
+    }
+}
+        function renderStatsCategory(category) {
+    var container = document.getElementById('stats-content-' + category);
+    if (!container) return;
+    
+    var now = new Date();
+    var weekAgo = now.getTime() - 7 * 24 * 60 * 60 * 1000;
+    var monthAgo = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+    
+    var weekCount = 0, monthCount = 0, totalCount = 0;
+    
+    var userBooks = userColoringBooks[category] || [];
+    
+    userBooks.forEach(function(book) {
+        var bookName = typeof book === 'string' ? book : book.name;
+        var bookKey = category + '_' + bookName;
+        var pages = userCompletedPages[bookKey] || {};
         
+        for (var page in pages) {
+            totalCount++;
+            var date = (window.completedPagesDates && window.completedPagesDates[bookKey + '|' + page]) || 0;
+            
+            if (date >= monthAgo) monthCount++;
+            if (date >= weekAgo) weekCount++;
+        }
+    });
+    
+    container.innerHTML = `
+        <div class="stats-numbers">
+            <div class="stats-number-card active" onclick="showStatsWorks('${category}', 'week')">
+                <div class="number">${weekCount}</div>
+                <div class="label">За неделю</div>
+            </div>
+            <div class="stats-number-card" onclick="showStatsWorks('${category}', 'month')">
+                <div class="number">${monthCount}</div>
+                <div class="label">За месяц</div>
+            </div>
+            <div class="stats-number-card" onclick="showStatsWorks('${category}', 'total')">
+                <div class="number">${totalCount}</div>
+                <div class="label">Всего</div>
+            </div>
+        </div>
+        <div id="stats-works-${category}" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;"></div>
+    `;
+    
+    // Показываем недельные работы
+    showStatsWorks(category, 'week');
+}
+        function showStatsWorks(category, period) {
+    var cards = document.querySelectorAll('#stats-content-' + category + ' .stats-number-card');
+    cards.forEach(function(c) { c.classList.remove('active'); });
+    
+    var activeCard = document.querySelector('#stats-content-' + category + ' .stats-number-card[onclick*="' + period + '"]');
+    if (activeCard) activeCard.classList.add('active');
+    
+    var now = new Date();
+    var weekAgo = now.getTime() - 7 * 24 * 60 * 60 * 1000;
+    var monthAgo = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+    
+    var works = [];
+    var userBooks = userColoringBooks[category] || [];
+    
+    userBooks.forEach(function(book) {
+        var bookName = typeof book === 'string' ? book : book.name;
+        var bookKey = category + '_' + bookName;
+        var pages = userCompletedPages[bookKey] || {};
+        
+        for (var page in pages) {
+            var date = (window.completedPagesDates && window.completedPagesDates[bookKey + '|' + page]) || 0;
+            var artworkUrl = getPageArtwork(bookKey, page);
+            
+            var include = false;
+            if (period === 'week') include = date >= weekAgo;
+            else if (period === 'month') include = date >= monthAgo;
+            else include = true;
+            
+            if (include) {
+                works.push({ bookKey: bookKey, bookName: bookName, page: page, artwork: artworkUrl });
+            }
+        }
+    });
+    
+    var listContainer = document.getElementById('stats-works-' + category);
+    var html = '';
+    
+    works.forEach(function(w) {
+        if (w.artwork) {
+            html += `<div class="book-page-btn uploaded" style="aspect-ratio:1;overflow:hidden;border-radius:10px;cursor:pointer;" onclick="viewArtwork('${w.bookKey.replace(/'/g, "\\'")}', '${w.page}')">
+                <img src="${w.artwork}" style="width:100%;height:100%;object-fit:cover;">
+            </div>`;
+        } else {
+            html += `<div class="book-page-btn completed" style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;" onclick="uploadPageArtwork('${w.bookKey.replace(/'/g, "\\'")}', '${w.page}')">
+                <div style="text-align:center;">
+                    <div style="font-size:11px;">${w.bookName.substring(0,15)}</div>
+                    <div style="font-size:24px;margin:5px 0;">📸</div>
+                    <div style="font-size:10px;">стр. ${w.page}</div>
+                </div>
+            </div>`;
+        }
+    });
+    
+    if (works.length === 0) {
+        html = '<div class="no-results" style="grid-column:span 3;padding:20px;text-align:center;color:var(--text-gray);">Нет работ за этот период</div>';
+    }
+    
+    listContainer.innerHTML = html;
+}
+        function renderMonthChart() {
+    var container = document.getElementById('stats-content-chart');
+    if (!container) return;
+    
+    var now = new Date();
+    var months = [];
+    
+    for (var i = 5; i >= 0; i--) {
+        var d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        months.push({
+            name: ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'][d.getMonth()],
+            count: 0
+        });
+    }
+    
+    for (var bookKey in userCompletedPages) {
+        for (var page in userCompletedPages[bookKey]) {
+            var date = (window.completedPagesDates && window.completedPagesDates[bookKey + '|' + page]) || 0;
+            if (date) {
+                for (var m = months.length - 1; m >= 0; m--) {
+                    var monthStart = new Date(now.getFullYear(), now.getMonth() - (5 - m), 1).getTime();
+                    if (date >= monthStart) {
+                        months[m].count++;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    
+    var maxCount = 1;
+    months.forEach(function(m) { if (m.count > maxCount) maxCount = m.count; });
+    
+    var html = '<div class="month-chart">';
+    months.forEach(function(m) {
+        var height = Math.max((m.count / maxCount) * 150, 4);
+        html += `
+            <div class="month-bar" style="height:${height}px;">
+                <div class="month-bar-value">${m.count}</div>
+                <div class="month-bar-label">${m.name}</div>
+            </div>
+        `;
+    });
+    html += '</div>';
+    
+    var thisMonth = months[months.length - 1].count;
+    var lastMonth = months[months.length - 2].count;
+    var feedback = '';
+    
+    if (thisMonth > lastMonth) {
+        feedback = '🔥 Отлично! В этом месяце вы раскрасили больше, чем в прошлом!';
+    } else if (thisMonth === 0) {
+        feedback = '🎨 Начните раскрашивать в этом месяце!';
+    } else {
+        feedback = '👍 Продолжайте в том же духе!';
+    }
+    
+    html += '<div class="stats-feedback">' + feedback + '</div>';
+    container.innerHTML = html;
+}
     </script>
     
     <!-- Модалка поиска пользователей -->
