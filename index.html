@@ -4481,7 +4481,7 @@
     
     <!-- Категория: Раскраски по номерам -->
     <div class="inventory-main-block" style="margin-top: 15px;">
-        <div class="inventory-header" onclick="toggleStatsBlock('paint_by_number')">
+        <div class="inventory-header" onclick="openStatsBlock('paint_by_number')">
             <div class="inventory-header-left">
                 <i class="fas fa-border-all"></i>
                 <span>Раскраски по номерам</span>
@@ -4493,7 +4493,7 @@
     
     <!-- Категория: Спиртовые раскраски -->
     <div class="inventory-main-block" style="margin-top: 15px;">
-        <div class="inventory-header" onclick="toggleStatsBlock('alcohol')">
+        <div class="inventory-header" onclick="openStatsBlock('alcohol')">
             <div class="inventory-header-left">
                 <i class="fas fa-wine-bottle"></i>
                 <span>Спиртовые раскраски</span>
@@ -4505,7 +4505,7 @@
     
     <!-- Категория: Раскраски карандашами -->
     <div class="inventory-main-block" style="margin-top: 15px;">
-        <div class="inventory-header" onclick="toggleStatsBlock('pencil')">
+        <div class="inventory-header" onclick="openStatsBlock('pencil')">
             <div class="inventory-header-left">
                 <i class="fas fa-pencil-alt"></i>
                 <span>Раскраски карандашами</span>
@@ -4517,7 +4517,7 @@
     
     <!-- График прогресса по месяцам -->
     <div class="inventory-main-block" style="margin-top: 15px;">
-        <div class="inventory-header" onclick="toggleStatsBlock('chart')">
+        <div class="inventory-header" onclick="openStatsBlock('chart')">
             <div class="inventory-header-left">
                 <i class="fas fa-chart-line"></i>
                 <span>Прогресс по месяцам</span>
@@ -21949,7 +21949,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // СТАТИСТИКА
 // ==========================================
 
-function toggleStatsBlock(category) {
+function openStatsBlock(category) {
     var content = document.getElementById('stats-content-' + category);
     var arrow = document.getElementById('arrow-stats-' + category);
     
