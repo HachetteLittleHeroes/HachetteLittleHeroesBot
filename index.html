@@ -21948,14 +21948,17 @@ function renderMonthChart() {
     var container = document.getElementById('stats-content-chart');
     if (!container) return;
     
-    var startYear = 2026;
-    var startMonth = 4;
+    var now = new Date();
+    var currentMonth = now.getMonth(); // 0-11
+    var currentYear = now.getFullYear();
     
+    // Формируем 6 последних месяцев, включая текущий
     var months = [];
-    for (var i = 0; i < 6; i++) {
-        var d = new Date(startYear, startMonth + i, 1);
+    for (var i = 5; i >= 0; i--) {
+        var d = new Date(currentYear, currentMonth - i, 1);
         months.push({
             name: ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'][d.getMonth()],
+            year: d.getFullYear(),
             timestamp: d.getTime(),
             paintCount: 0,
             alcoholCount: 0
@@ -21963,14 +21966,11 @@ function renderMonthChart() {
     }
     
     for (var bookKey in userCompletedPages) {
-  var category;
-if (bookKey.startsWith('paint_by_number_')) {
-    category = 'paint_by_number';
-} else if (bookKey.startsWith('alcohol_')) {
-    category = 'alcohol';
-} else {
-    category = 'custom';
-}
+        var category;
+        if (bookKey.startsWith('paint_by_number_')) category = 'paint_by_number';
+        else if (bookKey.startsWith('alcohol_')) category = 'alcohol';
+        else continue;
+        
         for (var page in userCompletedPages[bookKey]) {
             var date = (window.completedPagesDates && window.completedPagesDates[bookKey + '|' + page]) || 0;
             if (!date) continue;
@@ -21985,32 +21985,35 @@ if (bookKey.startsWith('paint_by_number_')) {
     }
     
     var maxCount = 1;
-    months.forEach(function(m) { if (m.paintCount + m.alcoholCount > maxCount) maxCount = m.paintCount + m.alcoholCount; });
+    months.forEach(function(m) {
+        if (m.paintCount > maxCount) maxCount = m.paintCount;
+        if (m.alcoholCount > maxCount) maxCount = m.alcoholCount;
+    });
     
     var html = '<div style="display:flex;gap:20px;margin-bottom:15px;justify-content:center;font-size:12px;">';
     html += '<div><span style="display:inline-block;width:12px;height:12px;background:var(--accent);border-radius:3px;margin-right:5px;"></span> По номерам</div>';
     html += '<div><span style="display:inline-block;width:12px;height:12px;background:var(--accent);opacity:0.4;border-radius:3px;margin-right:5px;"></span> Спиртовые</div>';
     html += '</div><div class="month-chart">';
     
-   months.forEach(function(m) {
-    var total = m.paintCount + m.alcoholCount;
-    var paintH = Math.max((m.paintCount / maxCount) * 150, 0);
-    var alcoholH = Math.max((m.alcoholCount / maxCount) * 150, 0);
-    
-    html += '<div style="flex:1;display:flex;flex-direction:column;align-items:center;">';
-    html += '<div style="font-size:10px;margin-bottom:2px;">' + total + '</div>';
-    html += '<div style="width:100%;height:150px;display:flex;flex-direction:column-reverse;">';
-    html += '<div style="width:100%;height:' + paintH + 'px;background:var(--accent);border-radius:2px 2px 0 0;"></div>';
-    html += '<div style="width:100%;height:' + alcoholH + 'px;background:var(--accent);opacity:0.4;border-radius:2px 2px 0 0;"></div>';
-    html += '</div><div style="font-size:10px;color:var(--text-gray);margin-top:4px;">' + m.name + '</div></div>';
-});
+    months.forEach(function(m) {
+        var paintH = Math.max((m.paintCount / maxCount) * 150, 2);
+        var alcoholH = Math.max((m.alcoholCount / maxCount) * 150, 2);
+        
+        html += '<div style="flex:1;display:flex;flex-direction:column;align-items:center;">';
+        html += '<div style="font-size:9px;margin-bottom:2px;">' + m.paintCount + ' | ' + m.alcoholCount + '</div>';
+        html += '<div style="width:100%;height:150px;display:flex;gap:3px;">';
+        html += '<div style="flex:1;display:flex;flex-direction:column-reverse;"><div style="width:100%;height:' + paintH + 'px;background:var(--accent);border-radius:2px 2px 0 0;"></div></div>';
+        html += '<div style="flex:1;display:flex;flex-direction:column-reverse;"><div style="width:100%;height:' + alcoholH + 'px;background:var(--accent);opacity:0.4;border-radius:2px 2px 0 0;"></div></div>';
+        html += '</div>';
+        html += '<div style="font-size:9px;color:var(--text-gray);margin-top:4px;">' + m.name + '</div></div>';
+    });
     html += '</div>';
     
     var thisM = months[months.length-1];
     var lastM = months.length>1 ? months[months.length-2] : null;
     var thisTotal = thisM.paintCount + thisM.alcoholCount;
     var lastTotal = lastM ? lastM.paintCount + lastM.alcoholCount : 0;
-    var fb = thisTotal > lastTotal ? '🔥 Больше, чем в прошлом!' : thisTotal === 0 ? '🎨 Начни раскрашивать!' : '👍 Продолжай в том же духе!!';
+    var fb = thisTotal > lastTotal ? '🔥 Больше, чем в прошлом!' : thisTotal === 0 ? '🎨 Начни раскрашивать!' : '👍 Стабильно!';
     
     html += '<div class="stats-feedback">' + fb + '</div>';
     container.innerHTML = html;
