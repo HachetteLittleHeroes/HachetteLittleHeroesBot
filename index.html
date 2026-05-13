@@ -20183,7 +20183,12 @@ function renderPublicProfile(profile) {
             if (dt >= monthAgo) monthWorks++;
             if (dt >= weekAgo) weekWorks++;
             
-            var cat = bk.split('_')[0];
+            var cat;
+            if (bk.startsWith('paint_by_number_')) cat = 'paint_by_number';
+            else if (bk.startsWith('alcohol_')) cat = 'alcohol';
+            else if (bk.startsWith('pencil_')) cat = 'pencil';
+            else cat = 'custom';
+            
             var bname = bk.substring(cat.length + 1);
             if (!booksStats[bname]) booksStats[bname] = { week: 0, month: 0, total: 0, cat: cat };
             booksStats[bname].total++;
