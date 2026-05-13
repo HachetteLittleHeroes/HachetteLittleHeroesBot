@@ -20704,16 +20704,30 @@ function togglePageCompletion(bookKey, page, totalPages) {
 function saveCompletedPages() {
     localStorage.setItem(`completed_pages_${userId}`, JSON.stringify(userCompletedPages));
     
-    // Отправляем на сервер
+    // Отправляем completed_pages
     fetch(`${SERVER_URL}/api/save_completed_pages`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
             user_id: userId,
-            completed_pages: userCompletedPages,
-            completed_pages_dates: window.completedPagesDates || {}
+            completed_pages: userCompletedPages
         })
-    }).catch(e => console.error('Ошибка сохранения на сервер:', e));
+    }).catch(e => console.error('Ошибка сохранения страниц:', e));
+    
+    // ✅ Отправляем даты отдельно (каждую по одной)
+    if (window.completedPagesDates) {
+        for (var key in window.completedPagesDates) {
+            fetch(`${SERVER_URL}/api/save_dates`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    user_id: userId,
+                    date_key: key,
+                    date_value: window.completedPagesDates[key]
+                })
+            }).catch(e => console.error('Ошибка сохранения даты:', e));
+        }
+    }
 }
 
 // Загрузка прогресса
