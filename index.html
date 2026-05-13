@@ -22012,7 +22012,7 @@ function renderMonthChart() {
     var lastM = months.length>1 ? months[months.length-2] : null;
     var thisTotal = thisM.paintCount + thisM.alcoholCount;
     var lastTotal = lastM ? lastM.paintCount + lastM.alcoholCount : 0;
-    var fb = thisTotal > lastTotal ? '🔥 Больше, чем в прошлом!' : thisTotal === 0 ? '🎨 Начни раскрашивать!' : '👍 Стабильно!';
+    var fb = thisTotal > lastTotal ? '🔥 Больше, чем в прошлом месяце!' : thisTotal === 0 ? '🎨 Начни раскрашивать!' : '👍 Продолжай в том же духе!';
     
     html += '<div class="stats-feedback">' + fb + '</div>';
     container.innerHTML = html;
