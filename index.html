@@ -22090,7 +22090,6 @@ function showBooksList(category, period) {
     var container = document.getElementById('stats-content-' + category);
     var booksStats = container._booksStats || {};
     
-    // Подсвечиваем активную карточку
     var cards = container.querySelectorAll('.stats-number-card');
     cards.forEach(function(c) { c.classList.remove('active'); });
     var activeCard = container.querySelector('.stats-number-card[onclick*="' + period + '"]');
@@ -22107,7 +22106,6 @@ function showBooksList(category, period) {
     for (var bookName in booksStats) {
         var stat = booksStats[bookName];
         
-        // Фильтруем работы по периоду
         var filteredWorks = stat.works.filter(function(w) {
             if (period === 'week') return w.date >= weekAgo;
             if (period === 'month') return w.date >= monthAgo;
@@ -22119,14 +22117,15 @@ function showBooksList(category, period) {
         
         html += '<div class="inventory-subblock" style="margin-bottom:10px;background:var(--bg);border-radius:12px;border:1px solid var(--border-color);overflow:hidden;">';
         html += '<div class="subblock-header" onclick="toggleStatsBook(this)" style="display:flex;justify-content:space-between;align-items:center;padding:12px 15px;cursor:pointer;">';
-      var coverUrl = DEFAULT_COVERS[bookName] || '';
-if (coverUrl && !coverUrl.startsWith('http')) coverUrl = '';
-html += '<div style="display:flex;align-items:center;gap:10px;">';
-if (coverUrl) {
-    html += '<img src="' + coverUrl + '" style="width:40px;height:53px;object-fit:cover;border-radius:6px;" onerror="this.style.display=\'none\'">';
-}
-html += '<div><strong>' + bookName + '</strong><span style="margin-left:10px;font-size:13px;color:var(--text-gray);">' + filteredWorks.length + ' работ</span></div>';
-html += '</div>';
+        
+        var coverUrl = DEFAULT_COVERS[bookName] || '';
+        if (coverUrl && !coverUrl.startsWith('http')) coverUrl = '';
+        html += '<div style="display:flex;align-items:center;gap:10px;">';
+        if (coverUrl) {
+            html += '<img src="' + coverUrl + '" style="width:40px;height:53px;object-fit:cover;border-radius:6px;" onerror="this.style.display=\'none\'">';
+        }
+        html += '<div><strong>' + bookName + '</strong><span style="margin-left:10px;font-size:13px;color:var(--text-gray);">' + filteredWorks.length + ' работ</span></div>';
+        html += '</div>';
         html += '<i class="fas fa-chevron-down" style="color:var(--text-gray);transition:transform 0.3s;"></i>';
         html += '</div>';
         html += '<div class="subblock-content" style="display:none;padding:10px 15px;border-top:1px solid var(--border-color);">';
@@ -22143,7 +22142,8 @@ html += '</div>';
                 html += '<span style="position:absolute;bottom:2px;right:4px;font-size:9px;background:rgba(0,0,0,0.6);color:white;padding:1px 4px;border-radius:4px;">' + dateStr + '</span>';
                 html += '</div>';
             } else {
-                html += '<div class="book-page-btn completed" style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer;position:relative;" onclick="uploadPageArtwork(\'' + w.bookKey.replace(/'/g, "\\'") + '\', \'' + w.page + '\')">';
+                // ✅ Исправлено: uploadFromStats вместо uploadPageArtwork
+                html += '<div class="book-page-btn completed" style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer;position:relative;" onclick="uploadFromStats(\'' + category + '\', \'' + bookName.replace(/'/g, "\\'") + '\', \'' + w.bookKey.replace(/'/g, "\\'") + '\', \'' + w.page + '\')">';
                 html += '<div style="text-align:center;">';
                 html += '<div style="font-size:20px;">📸</div>';
                 html += '<div style="font-size:10px;">стр. ' + w.page + '</div>';
@@ -22162,7 +22162,11 @@ html += '</div>';
     
     listContainer.innerHTML = html;
 }
-
+        function uploadFromStats(category, bookName, bookKey, page) {
+    currentBook = bookName;
+    currentCategory = category;
+    uploadPageArtwork(bookKey, page);
+}
 function toggleStatsBook(header) {
     var content = header.nextElementSibling;
     var arrow = header.querySelector('i');
