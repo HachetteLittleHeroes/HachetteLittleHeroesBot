@@ -11981,7 +11981,7 @@ function renderBookPagesGrid(bookKey, config) {
         reader.readAsDataURL(file);
     });
 }
-    function uploadPageArtwork(bookKey, page) {
+   function uploadPageArtwork(bookKey, page) {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
@@ -11993,25 +11993,27 @@ function renderBookPagesGrid(bookKey, config) {
         openPhotoEditor(file, function(editedBlob) {
             if (tg && tg.MainButton) tg.MainButton.setText('Загрузка...').show();
             
-            var compressed = compressImage(editedBlob, 800, 0.7);
-            
-            compressed.then(function(compressedBlob) {
+            compressImage(editedBlob, 800, 0.7).then(function(compressed) {
                 var formData = new FormData();
                 formData.append('user_id', userId.toString());
                 formData.append('book_key', bookKey);
                 formData.append('page', String(page));
-                formData.append('photo', compressedBlob, 'artwork.jpg');
+                formData.append('photo', compressed, 'artwork.jpg');
                 
                 return fetch(SERVER_URL + '/api/artworks/upload', { method: 'POST', body: formData });
-            }).then(function(response) {
-                return response.json();
-            }).then(function(result) {
+            }).then(function(r) { return r.json(); }).then(function(result) {
                 if (result.status === 'ok') {
                     if (!userArtworks[bookKey]) userArtworks[bookKey] = {};
                     userArtworks[bookKey][String(page)] = result.url;
                     
                     if (!userCompletedPages[bookKey]) userCompletedPages[bookKey] = {};
                     userCompletedPages[bookKey][String(page)] = true;
+                    
+                    // ✅ Сохраняем дату
+                    if (!window.completedPagesDates) window.completedPagesDates = {};
+                    window.completedPagesDates[bookKey + '|' + page] = Date.now();
+                    localStorage.setItem('completed_pages_dates_' + userId, JSON.stringify(window.completedPagesDates));
+                    
                     saveCompletedPages();
                     updateAllCategoriesProgress();
                     
@@ -12027,7 +12029,6 @@ function renderBookPagesGrid(bookKey, config) {
     
     input.click();
 }
-
 // ==========================================
 // РЕДАКТОР ФОТО (ОБРЕЗКА → ПОВОРОТ)
 // ==========================================
