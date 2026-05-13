@@ -21935,43 +21935,79 @@ function renderMonthChart() {
         months.push({
             name: ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'][d.getMonth()],
             timestamp: d.getTime(),
-            count: 0
+            paintCount: 0,
+            alcoholCount: 0
         });
     }
     
     for (var bookKey in userCompletedPages) {
+        var category = bookKey.split('_')[0];
+        
         for (var page in userCompletedPages[bookKey]) {
             var date = (window.completedPagesDates && window.completedPagesDates[bookKey + '|' + page]) || 0;
             if (!date) continue;
             
             for (var m = months.length - 1; m >= 0; m--) {
                 if (date >= months[m].timestamp) {
-                    months[m].count++;
+                    if (category === 'paint_by_number') {
+                        months[m].paintCount++;
+                    } else if (category === 'alcohol') {
+                        months[m].alcoholCount++;
+                    }
                     break;
                 }
             }
         }
     }
     
+    // Переключатель
+    var html = '<div style="display:flex;gap:10px;margin-bottom:15px;">';
+    html += '<button class="filter-btn active" id="chartFilterPaint" onclick="switchChartCategory(\'paint\')"><i class="fas fa-border-all"></i> По номерам</button>';
+    html += '<button class="filter-btn" id="chartFilterAlcohol" onclick="switchChartCategory(\'alcohol\')"><i class="fas fa-wine-bottle"></i> Спиртовые</button>';
+    html += '</div>';
+    html += '<div id="chartBars"></div>';
+    
+    container.innerHTML = html;
+    container._monthsData = months;
+    
+    switchChartCategory('paint');
+}
+
+function switchChartCategory(category) {
+    var container = document.getElementById('stats-content-chart');
+    var months = container._monthsData || [];
+    
+    document.getElementById('chartFilterPaint').classList.toggle('active', category === 'paint');
+    document.getElementById('chartFilterAlcohol').classList.toggle('active', category === 'alcohol');
+    
     var maxCount = 1;
-    months.forEach(function(m) { if (m.count > maxCount) maxCount = m.count; });
+    months.forEach(function(m) {
+        var count = category === 'paint' ? m.paintCount : m.alcoholCount;
+        if (count > maxCount) maxCount = count;
+    });
     
     var html = '<div class="month-chart">';
     months.forEach(function(m) {
-        var height = Math.max((m.count / maxCount) * 150, 4);
-        html += '<div class="month-bar" style="height:' + height + 'px;"><div class="month-bar-value">' + m.count + '</div><div class="month-bar-label">' + m.name + '</div></div>';
+        var count = category === 'paint' ? m.paintCount : m.alcoholCount;
+        var height = Math.max((count / maxCount) * 150, 4);
+        html += '<div class="month-bar" style="height:' + height + 'px;"><div class="month-bar-value">' + count + '</div><div class="month-bar-label">' + m.name + '</div></div>';
     });
     html += '</div>';
     
-    var thisMonth = months[months.length - 1].count;
-    var lastMonth = months.length > 1 ? months[months.length - 2].count : 0;
+    var thisMonth = months[months.length - 1];
+    var thisCount = category === 'paint' ? thisMonth.paintCount : thisMonth.alcoholCount;
+    var lastMonth = months.length > 1 ? months[months.length - 2] : null;
+    var lastCount = lastMonth ? (category === 'paint' ? lastMonth.paintCount : lastMonth.alcoholCount) : 0;
+    
+    var name = category === 'paint' ? 'раскрасках по номерам' : 'спиртовых раскрасках';
     var feedback = '';
-    if (thisMonth > lastMonth) feedback = '🔥 Отлично! В этом месяце вы раскрасили больше, чем в прошлом!';
-    else if (thisMonth === 0) feedback = '🎨 Начните раскрашивать в этом месяце!';
-    else feedback = '👍 Стабильно! Держите темп!';
+    if (lastMonth && thisCount > lastCount) feedback = '🔥 Отлично! В этом месяце больше работ в ' + name + '!';
+    else if (thisCount === 0) feedback = '🎨 Начни раскрашивать в ' + name + '!';
+    else feedback = '👍 Продолжай в том же духе!';
     
     html += '<div class="stats-feedback">' + feedback + '</div>';
-    container.innerHTML = html;
+    
+    document.getElementById('chartBars').innerHTML = html;
 }
       var bestiaryStatsData = [];
 var bestiaryStatsCurrentPeriod = 'total';
