@@ -4506,16 +4506,6 @@
             <div id="stats-content-alcohol" class="inventory-content" style="display: none;"></div>
         </div>
         <div class="inventory-main-block" style="margin-top: 10px;">
-            <div class="inventory-header" onclick="openStatsBlock('pencil')">
-                <div class="inventory-header-left">
-                    <i class="fas fa-pencil-alt"></i>
-                    <span>Раскраски карандашами</span>
-                </div>
-                <i class="fas fa-chevron-down" id="arrow-stats-pencil"></i>
-            </div>
-            <div id="stats-content-pencil" class="inventory-content" style="display: none;"></div>
-        </div>
-        <div class="inventory-main-block" style="margin-top: 10px;">
             <div class="inventory-header" onclick="openStatsBlock('chart')">
                 <div class="inventory-header-left">
                     <i class="fas fa-chart-line"></i>
@@ -22143,8 +22133,7 @@ function showBooksList(category, period) {
                 html += '<span style="position:absolute;bottom:2px;right:4px;font-size:9px;background:rgba(0,0,0,0.6);color:white;padding:1px 4px;border-radius:4px;">' + dateStr + '</span>';
                 html += '</div>';
             } else {
-                // ✅ Исправлено: uploadFromStats вместо uploadPageArtwork
-                html += '<div class="book-page-btn completed" style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer;position:relative;" onclick="uploadFromStats(\'' + category + '\', \'' + bookName.replace(/'/g, "\\'") + '\', \'' + w.bookKey.replace(/'/g, "\\'") + '\', \'' + w.page + '\')">';
+                html += '<div class="book-page-btn completed" style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:12px;position:relative;">';
                 html += '<div style="text-align:center;">';
                 html += '<div style="font-size:20px;">📸</div>';
                 html += '<div style="font-size:10px;">стр. ' + w.page + '</div>';
