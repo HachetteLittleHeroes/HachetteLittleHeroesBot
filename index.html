@@ -22066,9 +22066,10 @@ function renderBestiaryStats() {
             <div class="stats-number-card" onclick="switchBestiaryPeriod('month')"><div class="number">${totalMonth}</div><div class="label">За месяц</div></div>
             <div class="stats-number-card active" onclick="switchBestiaryPeriod('total')"><div class="number">${totalAll}</div><div class="label">Всего</div></div>
         </div>
-        <div class="search-box" style="margin-bottom: 15px;">
+        <div class="search-box" style="margin-bottom: 15px; display: flex; gap: 8px; align-items: center;">
             <i class="fas fa-search"></i>
-            <input type="text" id="bestiaryStatsSearch" placeholder="Поиск персонажа..." oninput="filterBestiaryStats()">
+            <input type="text" id="bestiaryStatsSearch" placeholder="Поиск персонажа..." oninput="filterBestiaryStats()" style="flex: 1;">
+            <button onclick="document.getElementById('bestiaryStatsSearch').blur();" style="background: var(--accent); color: white; border: none; padding: 8px 14px; border-radius: 10px; font-size: 13px; white-space: nowrap; cursor: pointer;">Готово</button>
         </div>
         <div id="bestiaryStatsList"></div>
     `;
