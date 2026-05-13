@@ -20771,15 +20771,19 @@ async function loadCompletedPages() {
     try {
         const response = await fetch(`${SERVER_URL}/api/stats?user_id=${userId}`);
         const stats = await response.json();
-        if (stats.completed_pages) {
+        if (stats && stats.completed_pages) {
             userCompletedPages = stats.completed_pages;
             localStorage.setItem(`completed_pages_${userId}`, JSON.stringify(userCompletedPages));
+        }
+        // ✅ Загружаем даты с сервера
+        if (stats && stats.completed_pages_dates) {
+            window.completedPagesDates = stats.completed_pages_dates;
+            localStorage.setItem('completed_pages_dates_' + userId, JSON.stringify(window.completedPagesDates));
         }
     } catch (error) {
         console.error('Ошибка загрузки с сервера:', error);
     }
     
-    // ✅ ДОБАВЛЕНО
     updateAllCategoriesProgress();
 }
 
