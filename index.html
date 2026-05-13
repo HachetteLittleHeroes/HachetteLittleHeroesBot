@@ -22232,10 +22232,7 @@ function renderPublicStatsBooks() {
     var container = document.getElementById('publicProfileContent');
     var booksStats = container._pubBooksStats || {};
     var period = container._pubPeriod || 'week';
-    
-    var now = new Date();
-    var weekAgo = now.getTime() - 7 * 24 * 60 * 60 * 1000;
-    var monthAgo = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+    var userId = container._pubUserId || '';
     
     var listContainer = document.getElementById('pubStatsBooksList');
     var html = '';
@@ -22247,9 +22244,10 @@ function renderPublicStatsBooks() {
         if (count === 0) continue;
         hasBooks = true;
         
+        var cat = stat.cat || 'paint_by_number';
         var coverUrl = DEFAULT_COVERS[bookName] || '';
         
-        html += '<div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--bg);border-radius:10px;margin-bottom:8px;">';
+        html += '<div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--bg);border-radius:10px;margin-bottom:8px;cursor:pointer;" data-uid="' + userId + '" data-cat="' + cat + '" data-book="' + bookName.replace(/"/g, '&quot;').replace(/'/g, '&#39;') + '" onclick="var el=this; viewPublicBook(el.getAttribute(\'data-uid\'), el.getAttribute(\'data-cat\'), el.getAttribute(\'data-book\'), 0)">';
         if (coverUrl) html += '<img src="' + coverUrl + '" style="width:35px;height:47px;object-fit:cover;border-radius:5px;" onerror="this.style.display=\'none\'">';
         html += '<div><strong>' + bookName + '</strong><span style="margin-left:8px;font-size:13px;color:var(--text-gray);">' + count + ' работ</span></div>';
         html += '</div>';
