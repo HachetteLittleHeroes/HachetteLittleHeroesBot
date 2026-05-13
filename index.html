@@ -20270,7 +20270,63 @@ function renderPublicProfile(profile) {
             </div>
         </div>
     `;
-    
+    // ✅ Статистика
+var totalWorks = 0;
+var weekWorks = 0;
+var monthWorks = 0;
+var now = new Date();
+var weekAgo = now.getTime() - 7 * 24 * 60 * 60 * 1000;
+var monthAgo = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+
+var profileCompletedPages = profile.completed_pages || {};
+var profileCompletedDates = profile.completed_pages_dates || {};
+
+for (var bk in profileCompletedPages) {
+    for (var pg in profileCompletedPages[bk]) {
+        totalWorks++;
+        var dt = profileCompletedDates[bk + '|' + pg] || 0;
+        if (dt >= monthAgo) monthWorks++;
+        if (dt >= weekAgo) weekWorks++;
+    }
+}
+
+// Считаем персонажей
+var bestiaryTotal = 0;
+var bestiaryColored = 0;
+BESTIARY.forEach(function(ch) {
+    ch.appearances.forEach(function(app) {
+        var cat = 'paint_by_number';
+        if (DEFAULT_COLORING_BOOKS.alcohol && DEFAULT_COLORING_BOOKS.alcohol.indexOf(app.book) !== -1) cat = 'alcohol';
+        var bKey = cat + '_' + app.book;
+        var userPages = profileCompletedPages[bKey] || {};
+        app.pages.forEach(function(p) {
+            bestiaryTotal++;
+            if (userPages.hasOwnProperty(String(p))) bestiaryColored++;
+        });
+    });
+});
+
+html += `
+    <div class="inventory-main-block" style="margin-top: 10px;">
+        <div class="inventory-header" onclick="toggleBlock('modalStatsContent', 'modalStatsArrow')">
+            <div class="inventory-header-left">
+                <i class="fas fa-chart-bar"></i>
+                <span>Статистика</span>
+            </div>
+            <i class="fas fa-chevron-down" id="modalStatsArrow"></i>
+        </div>
+        <div id="modalStatsContent" class="inventory-content" style="display: none;">
+            <div class="stats-numbers" style="margin-bottom: 15px;">
+                <div class="stats-number-card"><div class="number">${weekWorks}</div><div class="label">За неделю</div></div>
+                <div class="stats-number-card"><div class="number">${monthWorks}</div><div class="label">За месяц</div></div>
+                <div class="stats-number-card"><div class="number">${totalWorks}</div><div class="label">Всего</div></div>
+            </div>
+            <div class="stats-numbers">
+                <div class="stats-number-card"><div class="number">${bestiaryColored}/${bestiaryTotal}</div><div class="label">Персонажи</div></div>
+            </div>
+        </div>
+    </div>
+`;
     container.innerHTML = html;
     
     // ✅ СОХРАНЯЕМ ПРОФИЛЬ ДЛЯ РЕНДЕРИНГА ПРИ РАСКРЫТИИ БЛОКОВ
@@ -20749,7 +20805,8 @@ function saveCompletedPages() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
             user_id: userId,
-            completed_pages: userCompletedPages
+            completed_pages: userCompletedPages,
+            completed_pages_dates: window.completedPagesDates || {}
         })
     }).catch(e => console.error('Ошибка сохранения на сервер:', e));
 }
