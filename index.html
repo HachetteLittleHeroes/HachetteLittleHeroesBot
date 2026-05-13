@@ -22001,7 +22001,137 @@ function switchBestiaryPeriod(period) {
     
     filterBestiaryStats();
 }
+var bestiaryStatsData = [];
+var bestiaryStatsCurrentPeriod = 'total';
 
+function renderBestiaryStats() {
+    var container = document.getElementById('stats-content-bestiary');
+    if (!container) return;
+    
+    var now = new Date();
+    var weekAgo = now.getTime() - 7 * 24 * 60 * 60 * 1000;
+    var monthAgo = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+    
+    var coloredPages = {};
+    for (var bookKey in userCompletedPages) {
+        coloredPages[bookKey] = {};
+        for (var page in userCompletedPages[bookKey]) {
+            var date = (window.completedPagesDates && window.completedPagesDates[bookKey + '|' + page]) || 0;
+            coloredPages[bookKey][page] = date;
+        }
+    }
+    
+    bestiaryStatsData = [];
+    
+    BESTIARY.forEach(function(character) {
+        var totalAppearances = 0;
+        var totalColored = 0;
+        var weekColored = 0;
+        var monthColored = 0;
+        
+        character.appearances.forEach(function(appearance) {
+            var bookKey = '';
+            var bookName = appearance.book;
+            var cat = 'paint_by_number';
+            if (DEFAULT_COLORING_BOOKS.alcohol && DEFAULT_COLORING_BOOKS.alcohol.indexOf(bookName) !== -1) cat = 'alcohol';
+            bookKey = cat + '_' + bookName;
+            
+            var userPages = coloredPages[bookKey] || {};
+            
+            appearance.pages.forEach(function(p) {
+                totalAppearances++;
+                var pageStr = String(p);
+                if (userPages.hasOwnProperty(pageStr)) {
+                    totalColored++;
+                    var date = userPages[pageStr] || 0;
+                    if (date >= monthAgo) monthColored++;
+                    if (date >= weekAgo) weekColored++;
+                }
+            });
+        });
+        
+        if (totalAppearances > 0) {
+            bestiaryStatsData.push({
+                id: character.id,
+                name: character.name,
+                film: character.film,
+                image: character.image,
+                total: totalAppearances,
+                totalColored: totalColored,
+                totalPercent: Math.round((totalColored / totalAppearances) * 100),
+                weekColored: weekColored,
+                weekPercent: Math.round((weekColored / totalAppearances) * 100),
+                monthColored: monthColored,
+                monthPercent: Math.round((monthColored / totalAppearances) * 100)
+            });
+        }
+    });
+    
+    bestiaryStatsData.sort(function(a, b) { return b.totalPercent - a.totalPercent; });
+    
+    var totalWeek = bestiaryStatsData.reduce(function(s, c) { return s + c.weekColored; }, 0);
+    var totalMonth = bestiaryStatsData.reduce(function(s, c) { return s + c.monthColored; }, 0);
+    var totalAll = bestiaryStatsData.reduce(function(s, c) { return s + c.totalColored; }, 0);
+    
+    container.innerHTML = `
+        <div class="stats-numbers">
+            <div class="stats-number-card" onclick="switchBestiaryPeriod('week')"><div class="number">${totalWeek}</div><div class="label">За неделю</div></div>
+            <div class="stats-number-card" onclick="switchBestiaryPeriod('month')"><div class="number">${totalMonth}</div><div class="label">За месяц</div></div>
+            <div class="stats-number-card active" onclick="switchBestiaryPeriod('total')"><div class="number">${totalAll}</div><div class="label">Всего</div></div>
+        </div>
+        <div class="search-box" style="margin-bottom: 15px;">
+            <i class="fas fa-search"></i>
+            <input type="text" id="bestiaryStatsSearch" placeholder="Поиск персонажа..." oninput="filterBestiaryStats()">
+        </div>
+        <div id="bestiaryStatsList"></div>
+    `;
+    
+    bestiaryStatsCurrentPeriod = 'total';
+    filterBestiaryStats();
+}
+
+function switchBestiaryPeriod(period) {
+    bestiaryStatsCurrentPeriod = period;
+    var cards = document.querySelectorAll('#stats-content-bestiary .stats-number-card');
+    cards.forEach(function(c) { c.classList.remove('active'); });
+    var activeCard = document.querySelector('#stats-content-bestiary .stats-number-card[onclick*="' + period + '"]');
+    if (activeCard) activeCard.classList.add('active');
+    filterBestiaryStats();
+}
+
+function filterBestiaryStats() {
+    var query = document.getElementById('bestiaryStatsSearch')?.value.toLowerCase().trim() || '';
+    var listContainer = document.getElementById('bestiaryStatsList');
+    var filtered = bestiaryStatsData;
+    
+    if (query !== '') {
+        filtered = filtered.filter(function(cs) { return cs.name.toLowerCase().includes(query) || cs.film.toLowerCase().includes(query); });
+    }
+    
+    if (bestiaryStatsCurrentPeriod === 'week') filtered = filtered.filter(function(cs) { return cs.weekColored > 0; });
+    else if (bestiaryStatsCurrentPeriod === 'month') filtered = filtered.filter(function(cs) { return cs.monthColored > 0; });
+    
+    if (bestiaryStatsCurrentPeriod === 'week') filtered.sort(function(a, b) { return b.weekPercent - a.weekPercent; });
+    else if (bestiaryStatsCurrentPeriod === 'month') filtered.sort(function(a, b) { return b.monthPercent - a.monthPercent; });
+    else filtered.sort(function(a, b) { return b.totalPercent - a.totalPercent; });
+    
+    var html = '';
+    if (filtered.length === 0) {
+        html = '<div class="no-results" style="padding:20px;text-align:center;">Нет раскрашенных персонажей</div>';
+    } else {
+        filtered.forEach(function(cs) {
+            var colored = bestiaryStatsCurrentPeriod === 'week' ? cs.weekColored : bestiaryStatsCurrentPeriod === 'month' ? cs.monthColored : cs.totalColored;
+            var percent = bestiaryStatsCurrentPeriod === 'week' ? cs.weekPercent : bestiaryStatsCurrentPeriod === 'month' ? cs.monthPercent : cs.totalPercent;
+            
+            html += '<div class="stats-bestiary-card">';
+            html += '<img src="' + cs.image + '" alt="' + cs.name + '" onerror="this.src=\'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22%3E%3Crect width=%2240%22 height=%2240%22 fill=%22%23ff9500%22 rx=%228%22/%3E%3Ctext x=%2220%22 y=%2220%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2216%22%3E🦁%3C/text%3E%3C/svg%3E\'">';
+            html += '<div class="stats-bestiary-info"><div class="stats-bestiary-name">' + cs.name + '</div><div class="stats-bestiary-film">' + cs.film + '</div>';
+            html += '<div class="progress-bar-container" style="margin-top:5px;height:6px;"><div class="progress-bar-fill" style="width:' + percent + '%;height:100%;"></div></div></div>';
+            html += '<div class="stats-bestiary-progress">' + colored + '/' + cs.total + '</div></div>';
+        });
+    }
+    listContainer.innerHTML = html;
+}
 function filterBestiaryStats() {
     var query = document.getElementById('bestiaryStatsSearch')?.value.toLowerCase().trim() || '';
     var listContainer = document.getElementById('bestiaryStatsList');
