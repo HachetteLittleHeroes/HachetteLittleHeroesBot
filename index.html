@@ -4267,6 +4267,44 @@
     color: var(--text);
     border: 1px solid var(--border-color);
 }
+        .stats-bestiary-card {
+    background: var(--bg);
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 8px;
+    border: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.stats-bestiary-card img {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.stats-bestiary-info {
+    flex: 1;
+}
+
+.stats-bestiary-name {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text);
+}
+
+.stats-bestiary-film {
+    font-size: 11px;
+    color: var(--text-gray);
+}
+
+.stats-bestiary-progress {
+    text-align: right;
+    font-weight: 600;
+    color: var(--accent);
+}
     </style>
 </head>
 <body>
@@ -4505,6 +4543,16 @@
             </div>
             <div id="stats-content-alcohol" class="inventory-content" style="display: none;"></div>
         </div>
+        <div class="inventory-main-block" style="margin-top: 10px;">
+    <div class="inventory-header" onclick="openStatsBlock('bestiary')">
+        <div class="inventory-header-left">
+            <i class="fas fa-dragon"></i>
+            <span>Персонажи</span>
+        </div>
+        <i class="fas fa-chevron-down" id="arrow-stats-bestiary"></i>
+    </div>
+    <div id="stats-content-bestiary" class="inventory-content" style="display: none;"></div>
+</div>
         <div class="inventory-main-block" style="margin-top: 10px;">
             <div class="inventory-header" onclick="openStatsBlock('chart')">
                 <div class="inventory-header-left">
@@ -22003,10 +22051,12 @@ function openStatsBlock(category) {
     if (content.style.display === 'none' || content.style.display === '') {
         content.style.display = 'block';
         arrow.style.transform = 'rotate(180deg)';
-        if (category !== 'chart') {
-            renderStatsCategory(category);
-        } else {
+        if (category === 'chart') {
             renderMonthChart();
+        } else if (category === 'bestiary') {
+            renderBestiaryStats();
+        } else {
+            renderStatsCategory(category);
         }
     } else {
         content.style.display = 'none';
@@ -22215,6 +22265,85 @@ function renderMonthChart() {
     var feedback = thisMonth > lastMonth ? '🔥 Отлично! В этом месяце больше!' : thisMonth === 0 ? '🎨 Начните раскрашивать!' : '👍 Продолжайте!';
     
     html += '<div class="stats-feedback">' + feedback + '</div>';
+    container.innerHTML = html;
+}
+        function renderBestiaryStats() {
+    var container = document.getElementById('stats-content-bestiary');
+    if (!container) return;
+    
+    // Собираем все раскрашенные страницы
+    var coloredPages = {}; // {book: [pages]}
+    for (var bookKey in userCompletedPages) {
+        coloredPages[bookKey] = Object.keys(userCompletedPages[bookKey]);
+    }
+    
+    // Считаем статистику по персонажам
+    var characterStats = [];
+    
+    BESTIARY.forEach(function(character) {
+        var totalAppearances = 0;
+        var coloredAppearances = 0;
+        
+        character.appearances.forEach(function(appearance) {
+            var bookKey = '';
+            // Ищем bookKey для этого тома
+            for (var cat in userColoringBooks) {
+                var found = userColoringBooks[cat].find(function(b) {
+                    return (typeof b === 'string' ? b : b.name) === appearance.book;
+                });
+                if (found) {
+                    bookKey = cat + '_' + appearance.book;
+                    break;
+                }
+            }
+            
+            if (!bookKey) return;
+            
+            var userPages = coloredPages[bookKey] || [];
+            
+            appearance.pages.forEach(function(p) {
+                totalAppearances++;
+                var pageStr = String(p);
+                if (userPages.indexOf(pageStr) !== -1) {
+                    coloredAppearances++;
+                }
+            });
+        });
+        
+        if (totalAppearances > 0) {
+            characterStats.push({
+                id: character.id,
+                name: character.name,
+                film: character.film,
+                image: character.image,
+                total: totalAppearances,
+                colored: coloredAppearances,
+                percent: Math.round((coloredAppearances / totalAppearances) * 100)
+            });
+        }
+    });
+    
+    // Сортируем по проценту (сначала недоделанные)
+    characterStats.sort(function(a, b) { return b.percent - a.percent; });
+    
+    var html = '';
+    
+    if (characterStats.length === 0) {
+        html = '<div class="no-results" style="padding:20px;text-align:center;color:var(--text-gray);">Нет данных</div>';
+    } else {
+        characterStats.forEach(function(cs) {
+            html += '<div class="stats-bestiary-card">';
+            html += '<img src="' + cs.image + '" alt="' + cs.name + '" onerror="this.src=\'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22%3E%3Crect width=%2240%22 height=%2240%22 fill=%22%23ff9500%22 rx=%228%22/%3E%3Ctext x=%2220%22 y=%2220%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2216%22%3E🦁%3C/text%3E%3C/svg%3E\'">';
+            html += '<div class="stats-bestiary-info">';
+            html += '<div class="stats-bestiary-name">' + cs.name + '</div>';
+            html += '<div class="stats-bestiary-film">' + cs.film + '</div>';
+            html += '<div class="progress-bar-container" style="margin-top:5px;height:6px;"><div class="progress-bar-fill" style="width:' + cs.percent + '%;height:100%;"></div></div>';
+            html += '</div>';
+            html += '<div class="stats-bestiary-progress">' + cs.colored + '/' + cs.total + '</div>';
+            html += '</div>';
+        });
+    }
+    
     container.innerHTML = html;
 }
     </script>
