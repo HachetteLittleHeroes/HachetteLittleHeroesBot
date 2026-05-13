@@ -21949,10 +21949,9 @@ function renderMonthChart() {
     if (!container) return;
     
     var now = new Date();
-    var currentMonth = now.getMonth(); // 0-11
+    var currentMonth = now.getMonth();
     var currentYear = now.getFullYear();
     
-    // Формируем 6 последних месяцев, включая текущий
     var months = [];
     for (var i = 5; i >= 0; i--) {
         var d = new Date(currentYear, currentMonth - i, 1);
@@ -22000,12 +21999,12 @@ function renderMonthChart() {
         var alcoholH = Math.max((m.alcoholCount / maxCount) * 150, 2);
         
         html += '<div style="flex:1;display:flex;flex-direction:column;align-items:center;">';
-        html += '<div style="font-size:9px;margin-bottom:2px;">' + m.paintCount + ' | ' + m.alcoholCount + '</div>';
+        html += '<div style="font-size:13px;font-weight:600;margin-bottom:2px;">' + m.paintCount + ' | ' + m.alcoholCount + '</div>';
         html += '<div style="width:100%;height:150px;display:flex;gap:3px;">';
         html += '<div style="flex:1;display:flex;flex-direction:column-reverse;"><div style="width:100%;height:' + paintH + 'px;background:var(--accent);border-radius:2px 2px 0 0;"></div></div>';
         html += '<div style="flex:1;display:flex;flex-direction:column-reverse;"><div style="width:100%;height:' + alcoholH + 'px;background:var(--accent);opacity:0.4;border-radius:2px 2px 0 0;"></div></div>';
         html += '</div>';
-        html += '<div style="font-size:9px;color:var(--text-gray);margin-top:4px;">' + m.name + '</div></div>';
+        html += '<div style="font-size:12px;font-weight:500;color:var(--text-gray);margin-top:4px;">' + m.name + '</div></div>';
     });
     html += '</div>';
     
