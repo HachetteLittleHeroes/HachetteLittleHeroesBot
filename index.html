@@ -20763,22 +20763,37 @@ async function loadCompletedPages() {
             localStorage.setItem(`completed_pages_${userId}`, JSON.stringify(userCompletedPages));
         }
         // ✅ Загружаем даты с сервера
-       if (stats && stats.completed_pages_dates) {
-    // Объединяем серверные даты с локальными (локальные не затираем)
-    for (var key in stats.completed_pages_dates) {
-        if (!window.completedPagesDates[key]) {
-            window.completedPagesDates[key] = stats.completed_pages_dates[key];
-        }
-    }
+        if (stats && stats.completed_pages_dates) {
+            // Объединяем серверные даты с локальными (локальные не затираем)
+            for (var key in stats.completed_pages_dates) {
+                if (!window.completedPagesDates[key]) {
+                    window.completedPagesDates[key] = stats.completed_pages_dates[key];
+                }
+            }
             localStorage.setItem('completed_pages_dates_' + userId, JSON.stringify(window.completedPagesDates));
         }
     } catch (error) {
         console.error('Ошибка загрузки с сервера:', error);
     }
     
+    // ✅ Загружаем даты из отдельного API
+    try {
+        const datesResp = await fetch(`${SERVER_URL}/api/get_dates?user_id=${userId}`);
+        const datesData = await datesResp.json();
+        if (datesData && datesData.dates) {
+            for (var key in datesData.dates) {
+                if (!window.completedPagesDates[key]) {
+                    window.completedPagesDates[key] = datesData.dates[key];
+                }
+            }
+            localStorage.setItem('completed_pages_dates_' + userId, JSON.stringify(window.completedPagesDates));
+        }
+    } catch (error) {
+        console.error('Ошибка загрузки дат из API:', error);
+    }
+    
     updateAllCategoriesProgress();
 }
-
 // Обновление прогресса в карточке раскраски
 function updateBookProgress(bookKey) {
     const completedCount = userCompletedPages[bookKey] ? Object.keys(userCompletedPages[bookKey]).length : 0;
