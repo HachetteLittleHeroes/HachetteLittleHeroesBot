@@ -21958,7 +21958,8 @@ function renderMonthChart() {
     }
     
     for (var bookKey in userCompletedPages) {
-        var category = bookKey.split('_')[0];
+       var parts = bookKey.split('_');
+var category = parts[0] + '_' + parts[1]; // "paint_by_number" или "alcohol"
         for (var page in userCompletedPages[bookKey]) {
             var date = (window.completedPagesDates && window.completedPagesDates[bookKey + '|' + page]) || 0;
             if (!date) continue;
