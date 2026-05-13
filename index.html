@@ -20145,7 +20145,6 @@ function closePublicProfile() {
 function renderPublicProfile(profile) {
     const container = document.getElementById('publicProfileContent');
     
-    // Витрина
     let showcaseHtml = '';
     const showcase = profile.showcase || [null, null, null];
     
@@ -20167,8 +20166,8 @@ function renderPublicProfile(profile) {
     const wishlistCount = profile.wishlist?.length || 0;
     const isOwnProfile = (String(profile.user_id) === String(userId));
     const isFriend = myFriends.some(f => String(f.user_id) === String(profile.user_id));
+    const pubUserId = profile.user_id;
     
-    // Статистика
     var totalWorks = 0, weekWorks = 0, monthWorks = 0;
     var now = new Date();
     var weekAgo = now.getTime() - 7 * 24 * 60 * 60 * 1000;
@@ -20184,9 +20183,9 @@ function renderPublicProfile(profile) {
             if (dt >= monthAgo) monthWorks++;
             if (dt >= weekAgo) weekWorks++;
             
-            var parts = bk.split('_');
-            var bname = parts.slice(1).join('_');
-            if (!booksStats[bname]) booksStats[bname] = { week: 0, month: 0, total: 0 };
+            var cat = bk.split('_')[0];
+            var bname = bk.substring(cat.length + 1);
+            if (!booksStats[bname]) booksStats[bname] = { week: 0, month: 0, total: 0, cat: cat };
             booksStats[bname].total++;
             if (dt >= monthAgo) booksStats[bname].month++;
             if (dt >= weekAgo) booksStats[bname].week++;
@@ -20199,7 +20198,7 @@ function renderPublicProfile(profile) {
             <div class="profile-info">
                 <div class="name-row"><h2>${userName}</h2></div>
                 <div class="status-badge">${userStatus}</div>
-                ${!isOwnProfile ? (isFriend ? `<button class="already-friend-btn" disabled><i class="fas fa-check"></i> В друзьях</button>` : `<button class="add-friend-btn" onclick="addFriend('${profile.user_id}')"><i class="fas fa-user-plus"></i> Добавить в друзья</button>`) : ''}
+                ${!isOwnProfile ? (isFriend ? `<button class="already-friend-btn" disabled><i class="fas fa-check"></i> В друзьях</button>` : `<button class="add-friend-btn" onclick="addFriend('${pubUserId}')"><i class="fas fa-user-plus"></i> Добавить в друзья</button>`) : ''}
             </div>
         </div>
         <div class="showcase-container" style="margin: 15px 0;"><h3>Витрина достижений</h3><div class="showcase-grid">${showcaseHtml}</div></div>
@@ -20232,6 +20231,7 @@ function renderPublicProfile(profile) {
     container.dataset.profile = JSON.stringify(profile);
     container._pubBooksStats = booksStats;
     container._pubPeriod = 'week';
+    container._pubUserId = pubUserId;
 }
 
 function switchPublicStats(period) {
@@ -20252,6 +20252,7 @@ function renderPublicStatsBooks() {
     var container = document.getElementById('publicProfileContent');
     var booksStats = container._pubBooksStats || {};
     var period = container._pubPeriod || 'week';
+    var userId = container._pubUserId || '';
     
     var listContainer = document.getElementById('pubStatsBooksList');
     var html = '';
@@ -20263,8 +20264,10 @@ function renderPublicStatsBooks() {
         if (count === 0) continue;
         hasBooks = true;
         
+        var cat = stat.cat || 'paint_by_number';
         var coverUrl = DEFAULT_COVERS[bookName] || '';
-        html += '<div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--bg);border-radius:10px;margin-bottom:8px;">';
+        
+        html += '<div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--bg);border-radius:10px;margin-bottom:8px;cursor:pointer;" onclick="viewPublicBook(\'' + userId + '\', \'' + cat + '\', \'' + bookName.replace(/'/g, "\\'") + '\', ' + count + ')">';
         if (coverUrl) html += '<img src="' + coverUrl + '" style="width:35px;height:47px;object-fit:cover;border-radius:5px;" onerror="this.style.display=\'none\'">';
         html += '<div><strong>' + bookName + '</strong><span style="margin-left:8px;font-size:13px;color:var(--text-gray);">' + count + ' работ</span></div>';
         html += '</div>';
@@ -20273,6 +20276,7 @@ function renderPublicStatsBooks() {
     if (!hasBooks) html = '<div class="no-results" style="padding:20px;text-align:center;color:var(--text-gray);">Нет работ</div>';
     listContainer.innerHTML = html;
 }
+
 function countColoringBooks(books) {
     if (!books) return 0;
     let total = 0;
@@ -21924,7 +21928,7 @@ function renderMonthChart() {
     if (!container) return;
     
     var startYear = 2026;
-    var startMonth = 4; // Май
+    var startMonth = 4;
     
     var months = [];
     for (var i = 0; i < 6; i++) {
@@ -21939,11 +21943,9 @@ function renderMonthChart() {
     
     for (var bookKey in userCompletedPages) {
         var category = bookKey.split('_')[0];
-        
         for (var page in userCompletedPages[bookKey]) {
             var date = (window.completedPagesDates && window.completedPagesDates[bookKey + '|' + page]) || 0;
             if (!date) continue;
-            
             for (var m = months.length - 1; m >= 0; m--) {
                 if (date >= months[m].timestamp) {
                     if (category === 'paint_by_number') months[m].paintCount++;
@@ -21954,152 +21956,37 @@ function renderMonthChart() {
         }
     }
     
-    // Переключатель
-    var html = '<div style="display:flex;gap:10px;margin-bottom:15px;">';
-    html += '<button class="filter-btn active" id="chartFilterPaint" onclick="switchChartCategory(\'paint\')"><i class="fas fa-border-all"></i> По номерам</button>';
-    html += '<button class="filter-btn" id="chartFilterAlcohol" onclick="switchChartCategory(\'alcohol\')"><i class="fas fa-wine-bottle"></i> Спиртовые</button>';
-    html += '</div>';
-    html += '<div id="chartBars"></div>';
-    
-    container.innerHTML = html;
-    container._monthsData = months;
-    
-    switchChartCategory('paint');
-}
-
-function switchChartCategory(category) {
-    var container = document.getElementById('stats-content-chart');
-    var months = container._monthsData || [];
-    
-    document.getElementById('chartFilterPaint').classList.toggle('active', category === 'paint');
-    document.getElementById('chartFilterAlcohol').classList.toggle('active', category === 'alcohol');
-    
     var maxCount = 1;
-    months.forEach(function(m) {
-        var count = category === 'paint' ? m.paintCount : m.alcoholCount;
-        if (count > maxCount) maxCount = count;
-    });
+    months.forEach(function(m) { if (m.paintCount + m.alcoholCount > maxCount) maxCount = m.paintCount + m.alcoholCount; });
     
-    var html = '<div class="month-chart">';
+    var html = '<div style="display:flex;gap:20px;margin-bottom:15px;justify-content:center;font-size:12px;">';
+    html += '<div><span style="display:inline-block;width:12px;height:12px;background:var(--accent);border-radius:3px;margin-right:5px;"></span> По номерам</div>';
+    html += '<div><span style="display:inline-block;width:12px;height:12px;background:var(--accent);opacity:0.4;border-radius:3px;margin-right:5px;"></span> Спиртовые</div>';
+    html += '</div><div class="month-chart">';
+    
     months.forEach(function(m) {
-        var count = category === 'paint' ? m.paintCount : m.alcoholCount;
-        var height = Math.max((count / maxCount) * 150, 4);
-        html += '<div class="month-bar" style="height:' + height + 'px;"><div class="month-bar-value">' + count + '</div><div class="month-bar-label">' + m.name + '</div></div>';
+        var total = m.paintCount + m.alcoholCount;
+        var paintH = Math.max((m.paintCount / maxCount) * 150, 0);
+        var alcoholH = Math.max((m.alcoholCount / maxCount) * 150, 0);
+        
+        html += '<div style="flex:1;display:flex;flex-direction:column;align-items:center;">';
+        html += '<div style="font-size:10px;margin-bottom:2px;">' + total + '</div>';
+        html += '<div style="width:100%;height:150px;display:flex;flex-direction:column-reverse;">';
+        html += '<div style="width:100%;height:' + paintH + 'px;background:var(--accent);border-radius:2px 2px 0 0;"></div>';
+        html += '<div style="width:100%;height:' + alcoholH + 'px;background:var(--accent);opacity:0.4;border-radius:2px 2px 0 0;"></div>';
+        html += '</div><div style="font-size:10px;color:var(--text-gray);margin-top:4px;">' + m.name + '</div></div>';
     });
     html += '</div>';
     
-    var thisMonth = months[months.length - 1];
-    var thisCount = category === 'paint' ? thisMonth.paintCount : thisMonth.alcoholCount;
-    var lastMonth = months.length > 1 ? months[months.length - 2] : null;
-    var lastCount = lastMonth ? (category === 'paint' ? lastMonth.paintCount : lastMonth.alcoholCount) : 0;
+    var thisM = months[months.length-1];
+    var lastM = months.length>1 ? months[months.length-2] : null;
+    var thisTotal = thisM.paintCount + thisM.alcoholCount;
+    var lastTotal = lastM ? lastM.paintCount + lastM.alcoholCount : 0;
+    var fb = thisTotal > lastTotal ? '🔥 Больше, чем в прошлом!' : thisTotal === 0 ? '🎨 Начни раскрашивать!' : '👍 Продолжай в том же духе!!';
     
-    var name = category === 'paint' ? 'раскрасках по номерам' : 'спиртовых раскрасках';
-    var feedback = '';
-    if (lastMonth && thisCount > lastCount) feedback = '🔥 Отлично! В этом месяце больше работ в ' + name + '!';
-    else if (thisCount === 0) feedback = '🎨 Начни раскрашивать в ' + name + '!';
-    else feedback = '👍 Продолжай в том же духе!';
-    
-    html += '<div class="stats-feedback">' + feedback + '</div>';
-    document.getElementById('chartBars').innerHTML = html;
+    html += '<div class="stats-feedback">' + fb + '</div>';
+    container.innerHTML = html;
 }
-      var bestiaryStatsData = [];
-var bestiaryStatsCurrentPeriod = 'total';
-
-function renderBestiaryStats() {
-    var container = document.getElementById('stats-content-bestiary');
-    if (!container) return;
-    
-    var now = new Date();
-    var weekAgo = now.getTime() - 7 * 24 * 60 * 60 * 1000;
-    var monthAgo = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
-    
-    // Собираем раскрашенные страницы с датами
-    var coloredPages = {}; // {bookKey: {page: date}}
-    for (var bookKey in userCompletedPages) {
-        coloredPages[bookKey] = {};
-        for (var page in userCompletedPages[bookKey]) {
-            var date = (window.completedPagesDates && window.completedPagesDates[bookKey + '|' + page]) || 0;
-            coloredPages[bookKey][page] = date;
-        }
-    }
-    
-    // Считаем статистику
-    bestiaryStatsData = [];
-    
-    BESTIARY.forEach(function(character) {
-        var totalAppearances = 0;
-        var totalColored = 0;
-        var weekColored = 0;
-        var monthColored = 0;
-        
-        character.appearances.forEach(function(appearance) {
-            var bookKey = '';
-            for (var cat in userColoringBooks) {
-                var found = userColoringBooks[cat].find(function(b) {
-                    return (typeof b === 'string' ? b : b.name) === appearance.book;
-                });
-                if (found) {
-                    bookKey = cat + '_' + appearance.book;
-                    break;
-                }
-            }
-            
-            if (!bookKey) return;
-            
-            var userPages = coloredPages[bookKey] || {};
-            
-            appearance.pages.forEach(function(p) {
-                totalAppearances++;
-                var pageStr = String(p);
-                if (userPages.hasOwnProperty(pageStr)) {
-                    totalColored++;
-                    var date = userPages[pageStr] || 0;
-                    if (date >= monthAgo) monthColored++;
-                    if (date >= weekAgo) weekColored++;
-                }
-            });
-        });
-        
-        if (totalAppearances > 0) {
-            bestiaryStatsData.push({
-                id: character.id,
-                name: character.name,
-                film: character.film,
-                image: character.image,
-                total: totalAppearances,
-                totalColored: totalColored,
-                totalPercent: Math.round((totalColored / totalAppearances) * 100),
-                weekColored: weekColored,
-                weekPercent: Math.round((weekColored / totalAppearances) * 100),
-                monthColored: monthColored,
-                monthPercent: Math.round((monthColored / totalAppearances) * 100)
-            });
-        }
-    });
-    
-    bestiaryStatsData.sort(function(a, b) { return b.totalPercent - a.totalPercent; });
-    
-    var totalWeek = bestiaryStatsData.reduce(function(s, c) { return s + c.weekColored; }, 0);
-    var totalMonth = bestiaryStatsData.reduce(function(s, c) { return s + c.monthColored; }, 0);
-    var totalAll = bestiaryStatsData.reduce(function(s, c) { return s + c.totalColored; }, 0);
-    
-    container.innerHTML = `
-        <div class="stats-numbers">
-            <div class="stats-number-card" onclick="switchBestiaryPeriod('week')"><div class="number">${totalWeek}</div><div class="label">За неделю</div></div>
-            <div class="stats-number-card" onclick="switchBestiaryPeriod('month')"><div class="number">${totalMonth}</div><div class="label">За месяц</div></div>
-            <div class="stats-number-card active" onclick="switchBestiaryPeriod('total')"><div class="number">${totalAll}</div><div class="label">Всего</div></div>
-        </div>
-        <div class="search-box" style="margin-bottom: 15px;">
-            <i class="fas fa-search"></i>
-            <input type="text" id="bestiaryStatsSearch" placeholder="Поиск персонажа..." oninput="filterBestiaryStats()">
-        </div>
-        <div id="bestiaryStatsList"></div>
-    `;
-    
-    bestiaryStatsCurrentPeriod = 'total';
-    filterBestiaryStats();
-}
-
 function switchBestiaryPeriod(period) {
     bestiaryStatsCurrentPeriod = period;
     
