@@ -12229,6 +12229,18 @@ window.onload = async () => {
     const savedCart = localStorage.getItem('coloring_cart');
     if (savedCart) cart = JSON.parse(savedCart);
     
+    // ✅ Загружаем даты отметок страниц
+    var savedDates = localStorage.getItem('completed_pages_dates_' + userId);
+    if (savedDates) {
+        try {
+            window.completedPagesDates = JSON.parse(savedDates);
+        } catch(e) {
+            window.completedPagesDates = {};
+        }
+    } else {
+        window.completedPagesDates = {};
+    }
+    
     // Загружаем баланс с сервера
     await loadUserBalance();
     updateUI();
