@@ -20168,35 +20168,6 @@ function renderPublicProfile(profile) {
     const isFriend = myFriends.some(f => String(f.user_id) === String(profile.user_id));
     const pubUserId = profile.user_id;
     
-    var totalWorks = 0, weekWorks = 0, monthWorks = 0;
-    var now = new Date();
-    var weekAgo = now.getTime() - 7 * 24 * 60 * 60 * 1000;
-    var monthAgo = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
-    var profileCompletedPages = profile.completed_pages || {};
-    var profileCompletedDates = profile.completed_pages_dates || {};
-    var booksStats = {};
-    
-    for (var bk in profileCompletedPages) {
-        for (var pg in profileCompletedPages[bk]) {
-            totalWorks++;
-            var dt = profileCompletedDates[bk + '|' + pg] || 0;
-            if (dt >= monthAgo) monthWorks++;
-            if (dt >= weekAgo) weekWorks++;
-            
-            var cat;
-            if (bk.startsWith('paint_by_number_')) cat = 'paint_by_number';
-            else if (bk.startsWith('alcohol_')) cat = 'alcohol';
-            else if (bk.startsWith('pencil_')) cat = 'pencil';
-            else cat = 'custom';
-            
-            var bname = bk.substring(cat.length + 1);
-            if (!booksStats[bname]) booksStats[bname] = { week: 0, month: 0, total: 0, cat: cat };
-            booksStats[bname].total++;
-            if (dt >= monthAgo) booksStats[bname].month++;
-            if (dt >= weekAgo) booksStats[bname].week++;
-        }
-    }
-    
     let html = `
         <div class="profile-header-block" style="margin: 0; padding: 15px;">
             <div class="avatar-wrapper"><img src="${avatarUrl}" onerror="this.src='https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png'"></div>
@@ -20219,26 +20190,11 @@ function renderPublicProfile(profile) {
             <div class="inventory-header" onclick="toggleBlock('modalWishlistContent', 'modalWishlistArrow')"><div class="inventory-header-left"><i class="fas fa-heart"></i><span>Список желаний</span></div><div class="inventory-header-right"><span class="collection-badge">${wishlistCount}</span><i class="fas fa-chevron-down" id="modalWishlistArrow"></i></div></div>
             <div id="modalWishlistContent" class="inventory-content" style="display: none;"><div id="modalWishlistGrid" class="category-items" style="grid-template-columns: repeat(2, 1fr);"></div></div>
         </div>
-        <div class="inventory-main-block" style="margin-top: 10px;">
-            <div class="inventory-header" onclick="toggleBlock('modalStatsContent', 'modalStatsArrow')"><div class="inventory-header-left"><i class="fas fa-chart-bar"></i><span>Статистика</span></div><i class="fas fa-chevron-down" id="modalStatsArrow"></i></div>
-            <div id="modalStatsContent" class="inventory-content" style="display: none;">
-                <div class="stats-numbers" style="margin-bottom:15px;">
-                    <div class="stats-number-card active" id="pubCardWeek" onclick="switchPublicStats('week')"><div class="number">${weekWorks}</div><div class="label">За неделю</div></div>
-                    <div class="stats-number-card" id="pubCardMonth" onclick="switchPublicStats('month')"><div class="number">${monthWorks}</div><div class="label">За месяц</div></div>
-                    <div class="stats-number-card" id="pubCardTotal" onclick="switchPublicStats('total')"><div class="number">${totalWorks}</div><div class="label">Всего</div></div>
-                </div>
-                <div id="pubStatsBooksList"></div>
-            </div>
-        </div>
     `;
     
     container.innerHTML = html;
     container.dataset.profile = JSON.stringify(profile);
-    container._pubBooksStats = booksStats;
-    container._pubPeriod = 'week';
-    container._pubUserId = pubUserId;
 }
-
 function switchPublicStats(period) {
     var container = document.getElementById('publicProfileContent');
     container._pubPeriod = period;
