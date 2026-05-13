@@ -20935,9 +20935,14 @@ function togglePageCompletion(bookKey, page, totalPages) {
             tg.showConfirm(`Снять отметку со страницы ${page}?`, (confirm) => {
                 if (confirm) {
                     delete userCompletedPages[bookKey][String(page)];
+                    // ✅ Удаляем дату
+                    if (window.completedPagesDates) {
+                        delete window.completedPagesDates[bookKey + '|' + page];
+                        localStorage.setItem('completed_pages_dates_' + userId, JSON.stringify(window.completedPagesDates));
+                    }
                     saveCompletedPages();
                     updateBookProgress(bookKey);
-                    updateAllCategoriesProgress(); // ✅ ДОБАВЛЕНО
+                    updateAllCategoriesProgress();
                     
                     const config = BOOK_PAGES_CONFIG[currentBook] || DEFAULT_PAGES_CONFIG;
                     renderBookPagesGrid(bookKey, config);
@@ -20946,9 +20951,14 @@ function togglePageCompletion(bookKey, page, totalPages) {
         } else {
             if (confirm(`Снять отметку со страницы ${page}?`)) {
                 delete userCompletedPages[bookKey][String(page)];
+                // ✅ Удаляем дату
+                if (window.completedPagesDates) {
+                    delete window.completedPagesDates[bookKey + '|' + page];
+                    localStorage.setItem('completed_pages_dates_' + userId, JSON.stringify(window.completedPagesDates));
+                }
                 saveCompletedPages();
                 updateBookProgress(bookKey);
-                updateAllCategoriesProgress(); // ✅ ДОБАВЛЕНО
+                updateAllCategoriesProgress();
                 
                 const config = BOOK_PAGES_CONFIG[currentBook] || DEFAULT_PAGES_CONFIG;
                 renderBookPagesGrid(bookKey, config);
@@ -20956,9 +20966,14 @@ function togglePageCompletion(bookKey, page, totalPages) {
         }
     } else {
         userCompletedPages[bookKey][String(page)] = true;
+        // ✅ Сохраняем дату отметки
+        if (!window.completedPagesDates) window.completedPagesDates = {};
+        window.completedPagesDates[bookKey + '|' + page] = Date.now();
+        localStorage.setItem('completed_pages_dates_' + userId, JSON.stringify(window.completedPagesDates));
+        
         saveCompletedPages();
         updateBookProgress(bookKey);
-        updateAllCategoriesProgress(); // ✅ ДОБАВЛЕНО
+        updateAllCategoriesProgress();
         
         const config = BOOK_PAGES_CONFIG[currentBook] || DEFAULT_PAGES_CONFIG;
         renderBookPagesGrid(bookKey, config);
@@ -22092,7 +22107,14 @@ function showBooksList(category, period) {
         
         html += '<div class="inventory-subblock" style="margin-bottom:10px;background:var(--bg);border-radius:12px;border:1px solid var(--border-color);overflow:hidden;">';
         html += '<div class="subblock-header" onclick="toggleStatsBook(this)" style="display:flex;justify-content:space-between;align-items:center;padding:12px 15px;cursor:pointer;">';
-        html += '<div><strong>' + bookName + '</strong><span style="margin-left:10px;font-size:13px;color:var(--text-gray);">' + filteredWorks.length + ' работ</span></div>';
+      var coverUrl = DEFAULT_COVERS[bookName] || '';
+if (coverUrl && !coverUrl.startsWith('http')) coverUrl = '';
+html += '<div style="display:flex;align-items:center;gap:10px;">';
+if (coverUrl) {
+    html += '<img src="' + coverUrl + '" style="width:40px;height:53px;object-fit:cover;border-radius:6px;" onerror="this.style.display=\'none\'">';
+}
+html += '<div><strong>' + bookName + '</strong><span style="margin-left:10px;font-size:13px;color:var(--text-gray);">' + filteredWorks.length + ' работ</span></div>';
+html += '</div>';
         html += '<i class="fas fa-chevron-down" style="color:var(--text-gray);transition:transform 0.3s;"></i>';
         html += '</div>';
         html += '<div class="subblock-content" style="display:none;padding:10px 15px;border-top:1px solid var(--border-color);">';
