@@ -21972,7 +21972,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
-        // ==========================================
+      // ==========================================
 // СТАТИСТИКА
 // ==========================================
 
@@ -21995,7 +21995,8 @@ function openStatsBlock(category) {
         arrow.style.transform = 'rotate(0deg)';
     }
 }
-        function renderStatsCategory(category) {
+
+function renderStatsCategory(category) {
     var container = document.getElementById('stats-content-' + category);
     if (!container) return;
     
@@ -22003,7 +22004,9 @@ function openStatsBlock(category) {
     var weekAgo = now.getTime() - 7 * 24 * 60 * 60 * 1000;
     var monthAgo = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
     
-    var weekCount = 0, monthCount = 0, totalCount = 0;
+    // Собираем статистику по томам
+    var booksStats = {}; // {bookName: {week: 0, month: 0, total: 0, works: []}}
+    var totalWeek = 0, totalMonth = 0, totalAll = 0;
     
     var userBooks = userColoringBooks[category] || [];
     
@@ -22012,96 +22015,134 @@ function openStatsBlock(category) {
         var bookKey = category + '_' + bookName;
         var pages = userCompletedPages[bookKey] || {};
         
+        if (Object.keys(pages).length === 0) return;
+        
+        if (!booksStats[bookName]) {
+            booksStats[bookName] = { week: 0, month: 0, total: 0, works: [], bookKey: bookKey };
+        }
+        
         for (var page in pages) {
-            totalCount++;
             var date = (window.completedPagesDates && window.completedPagesDates[bookKey + '|' + page]) || 0;
+            var artworkUrl = getPageArtwork(bookKey, page);
             
-            if (date >= monthAgo) monthCount++;
-            if (date >= weekAgo) weekCount++;
+            booksStats[bookName].total++;
+            booksStats[bookName].works.push({
+                page: page,
+                date: date,
+                artwork: artworkUrl,
+                bookKey: bookKey
+            });
+            
+            totalAll++;
+            if (date >= monthAgo) { booksStats[bookName].month++; totalMonth++; }
+            if (date >= weekAgo) { booksStats[bookName].week++; totalWeek++; }
         }
     });
     
-    container.innerHTML = `
-        <div class="stats-numbers">
-            <div class="stats-number-card active" onclick="showStatsWorks('${category}', 'week')">
-                <div class="number">${weekCount}</div>
-                <div class="label">За неделю</div>
-            </div>
-            <div class="stats-number-card" onclick="showStatsWorks('${category}', 'month')">
-                <div class="number">${monthCount}</div>
-                <div class="label">За месяц</div>
-            </div>
-            <div class="stats-number-card" onclick="showStatsWorks('${category}', 'total')">
-                <div class="number">${totalCount}</div>
-                <div class="label">Всего</div>
-            </div>
-        </div>
-        <div id="stats-works-${category}" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;"></div>
-    `;
+    var categoryNames = {
+        'paint_by_number': '🎨 Раскраски по номерам',
+        'alcohol': '🍷 Спиртовые раскраски'
+    };
     
-    // Показываем недельные работы
-    showStatsWorks(category, 'week');
+    var html = '<div class="stats-numbers">';
+    html += '<div class="stats-number-card active" onclick="showBooksList(\'' + category + '\', \'week\')"><div class="number">' + totalWeek + '</div><div class="label">За неделю</div></div>';
+    html += '<div class="stats-number-card" onclick="showBooksList(\'' + category + '\', \'month\')"><div class="number">' + totalMonth + '</div><div class="label">За месяц</div></div>';
+    html += '<div class="stats-number-card" onclick="showBooksList(\'' + category + '\', \'total\')"><div class="number">' + totalAll + '</div><div class="label">Всего</div></div>';
+    html += '</div>';
+    html += '<div id="stats-books-' + category + '"></div>';
+    
+    container.innerHTML = html;
+    
+    // Сохраняем данные для использования
+    container._booksStats = booksStats;
+    
+    showBooksList(category, 'week');
 }
-        function showStatsWorks(category, period) {
-    var cards = document.querySelectorAll('#stats-content-' + category + ' .stats-number-card');
-    cards.forEach(function(c) { c.classList.remove('active'); });
+
+function showBooksList(category, period) {
+    var container = document.getElementById('stats-content-' + category);
+    var booksStats = container._booksStats || {};
     
-    var activeCard = document.querySelector('#stats-content-' + category + ' .stats-number-card[onclick*="' + period + '"]');
+    // Подсвечиваем активную карточку
+    var cards = container.querySelectorAll('.stats-number-card');
+    cards.forEach(function(c) { c.classList.remove('active'); });
+    var activeCard = container.querySelector('.stats-number-card[onclick*="' + period + '"]');
     if (activeCard) activeCard.classList.add('active');
     
     var now = new Date();
     var weekAgo = now.getTime() - 7 * 24 * 60 * 60 * 1000;
     var monthAgo = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
     
-    var works = [];
-    var userBooks = userColoringBooks[category] || [];
-    
-    userBooks.forEach(function(book) {
-        var bookName = typeof book === 'string' ? book : book.name;
-        var bookKey = category + '_' + bookName;
-        var pages = userCompletedPages[bookKey] || {};
-        
-        for (var page in pages) {
-            var date = (window.completedPagesDates && window.completedPagesDates[bookKey + '|' + page]) || 0;
-            var artworkUrl = getPageArtwork(bookKey, page);
-            
-            var include = false;
-            if (period === 'week') include = date >= weekAgo;
-            else if (period === 'month') include = date >= monthAgo;
-            else include = true;
-            
-            if (include) {
-                works.push({ bookKey: bookKey, bookName: bookName, page: page, artwork: artworkUrl });
-            }
-        }
-    });
-    
-    var listContainer = document.getElementById('stats-works-' + category);
+    var listContainer = document.getElementById('stats-books-' + category);
     var html = '';
+    var hasBooks = false;
     
-    works.forEach(function(w) {
-        if (w.artwork) {
-            html += `<div class="book-page-btn uploaded" style="aspect-ratio:1;overflow:hidden;border-radius:10px;cursor:pointer;" onclick="viewArtwork('${w.bookKey.replace(/'/g, "\\'")}', '${w.page}')">
-                <img src="${w.artwork}" style="width:100%;height:100%;object-fit:cover;">
-            </div>`;
-        } else {
-            html += `<div class="book-page-btn completed" style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;" onclick="uploadPageArtwork('${w.bookKey.replace(/'/g, "\\'")}', '${w.page}')">
-                <div style="text-align:center;">
-                    <div style="font-size:11px;">${w.bookName.substring(0,15)}</div>
-                    <div style="font-size:24px;margin:5px 0;">📸</div>
-                    <div style="font-size:10px;">стр. ${w.page}</div>
-                </div>
-            </div>`;
-        }
-    });
+    for (var bookName in booksStats) {
+        var stat = booksStats[bookName];
+        
+        // Фильтруем работы по периоду
+        var filteredWorks = stat.works.filter(function(w) {
+            if (period === 'week') return w.date >= weekAgo;
+            if (period === 'month') return w.date >= monthAgo;
+            return true;
+        });
+        
+        if (filteredWorks.length === 0) continue;
+        hasBooks = true;
+        
+        html += '<div class="inventory-subblock" style="margin-bottom:10px;background:var(--bg);border-radius:12px;border:1px solid var(--border-color);overflow:hidden;">';
+        html += '<div class="subblock-header" onclick="toggleStatsBook(this)" style="display:flex;justify-content:space-between;align-items:center;padding:12px 15px;cursor:pointer;">';
+        html += '<div><strong>' + bookName + '</strong><span style="margin-left:10px;font-size:13px;color:var(--text-gray);">' + filteredWorks.length + ' работ</span></div>';
+        html += '<i class="fas fa-chevron-down" style="color:var(--text-gray);transition:transform 0.3s;"></i>';
+        html += '</div>';
+        html += '<div class="subblock-content" style="display:none;padding:10px 15px;border-top:1px solid var(--border-color);">';
+        html += '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">';
+        
+        filteredWorks.sort(function(a, b) { return b.date - a.date; });
+        
+        filteredWorks.forEach(function(w) {
+            var dateStr = w.date ? new Date(w.date).toLocaleDateString('ru-RU') : '';
+            
+            if (w.artwork) {
+                html += '<div class="book-page-btn uploaded" style="aspect-ratio:1;overflow:hidden;border-radius:10px;cursor:pointer;position:relative;" onclick="viewArtwork(\'' + w.bookKey.replace(/'/g, "\\'") + '\', \'' + w.page + '\')">';
+                html += '<img src="' + w.artwork + '" style="width:100%;height:100%;object-fit:cover;">';
+                html += '<span style="position:absolute;bottom:2px;right:4px;font-size:9px;background:rgba(0,0,0,0.6);color:white;padding:1px 4px;border-radius:4px;">' + dateStr + '</span>';
+                html += '</div>';
+            } else {
+                html += '<div class="book-page-btn completed" style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer;position:relative;" onclick="uploadPageArtwork(\'' + w.bookKey.replace(/'/g, "\\'") + '\', \'' + w.page + '\')">';
+                html += '<div style="text-align:center;">';
+                html += '<div style="font-size:20px;">📸</div>';
+                html += '<div style="font-size:10px;">стр. ' + w.page + '</div>';
+                html += '<span style="font-size:9px;color:var(--text-gray);">' + dateStr + '</span>';
+                html += '</div>';
+                html += '</div>';
+            }
+        });
+        
+        html += '</div></div></div>';
+    }
     
-    if (works.length === 0) {
-        html = '<div class="no-results" style="grid-column:span 3;padding:20px;text-align:center;color:var(--text-gray);">Нет работ за этот период</div>';
+    if (!hasBooks) {
+        html = '<div class="no-results" style="padding:20px;text-align:center;color:var(--text-gray);">Нет работ за этот период</div>';
     }
     
     listContainer.innerHTML = html;
 }
-        function renderMonthChart() {
+
+function toggleStatsBook(header) {
+    var content = header.nextElementSibling;
+    var arrow = header.querySelector('i');
+    
+    if (content.style.display === 'none' || content.style.display === '') {
+        content.style.display = 'block';
+        if (arrow) arrow.style.transform = 'rotate(180deg)';
+    } else {
+        content.style.display = 'none';
+        if (arrow) arrow.style.transform = 'rotate(0deg)';
+    }
+}
+
+function renderMonthChart() {
     var container = document.getElementById('stats-content-chart');
     if (!container) return;
     
@@ -22112,6 +22153,7 @@ function openStatsBlock(category) {
         var d = new Date(now.getFullYear(), now.getMonth() - i, 1);
         months.push({
             name: ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'][d.getMonth()],
+            timestamp: d.getTime(),
             count: 0
         });
     }
@@ -22121,8 +22163,7 @@ function openStatsBlock(category) {
             var date = (window.completedPagesDates && window.completedPagesDates[bookKey + '|' + page]) || 0;
             if (date) {
                 for (var m = months.length - 1; m >= 0; m--) {
-                    var monthStart = new Date(now.getFullYear(), now.getMonth() - (5 - m), 1).getTime();
-                    if (date >= monthStart) {
+                    if (date >= months[m].timestamp) {
                         months[m].count++;
                         break;
                     }
@@ -22137,26 +22178,13 @@ function openStatsBlock(category) {
     var html = '<div class="month-chart">';
     months.forEach(function(m) {
         var height = Math.max((m.count / maxCount) * 150, 4);
-        html += `
-            <div class="month-bar" style="height:${height}px;">
-                <div class="month-bar-value">${m.count}</div>
-                <div class="month-bar-label">${m.name}</div>
-            </div>
-        `;
+        html += '<div class="month-bar" style="height:' + height + 'px;"><div class="month-bar-value">' + m.count + '</div><div class="month-bar-label">' + m.name + '</div></div>';
     });
     html += '</div>';
     
     var thisMonth = months[months.length - 1].count;
     var lastMonth = months[months.length - 2].count;
-    var feedback = '';
-    
-    if (thisMonth > lastMonth) {
-        feedback = '🔥 Отлично! В этом месяце вы раскрасили больше, чем в прошлом!';
-    } else if (thisMonth === 0) {
-        feedback = '🎨 Начните раскрашивать в этом месяце!';
-    } else {
-        feedback = '👍 Продолжайте в том же духе!';
-    }
+    var feedback = thisMonth > lastMonth ? '🔥 Отлично! В этом месяце больше!' : thisMonth === 0 ? '🎨 Начните раскрашивать!' : '👍 Продолжайте!';
     
     html += '<div class="stats-feedback">' + feedback + '</div>';
     container.innerHTML = html;
