@@ -20768,6 +20768,18 @@ async function loadCompletedPages() {
         userCompletedPages = {};
     }
     
+    // Загружаем даты из localStorage
+    var savedDates = localStorage.getItem('completed_pages_dates_' + userId);
+    if (savedDates) {
+        try {
+            window.completedPagesDates = JSON.parse(savedDates);
+        } catch(e) {
+            window.completedPagesDates = {};
+        }
+    } else {
+        window.completedPagesDates = {};
+    }
+    
     try {
         const response = await fetch(`${SERVER_URL}/api/stats?user_id=${userId}`);
         const stats = await response.json();
