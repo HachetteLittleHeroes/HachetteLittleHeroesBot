@@ -22286,8 +22286,7 @@ function renderPublicStatsBooks() {
     if (!hasBooks) html = '<div class="no-results" style="padding:20px;text-align:center;color:var(--text-gray);">Нет работ</div>';
     
     listContainer.innerHTML = html;
-}
-        function openPublicBookPages(userId, category, bookName) {
+}function openPublicBookPages(userId, category, bookName) {
     var container = document.getElementById('publicProfileContent');
     var profile = JSON.parse(container.dataset.profile || '{}');
     var completedPages = profile.completed_pages || {};
@@ -22295,28 +22294,37 @@ function renderPublicStatsBooks() {
     var bookKey = category + '_' + bookName;
     var bookCompleted = completedPages[bookKey] || {};
     
-    // Считаем отмеченные страницы
-    var completedPagesCount = 0;
-    for (var page in bookCompleted) {
-        completedPagesCount += page.includes('-') ? 2 : 1;
-    }
+    // ✅ Проверяем, есть ли отмеченные страницы
+    var hasPages = false;
+    for (var p in bookCompleted) { hasPages = true; break; }
     
-    if (completedPagesCount === 0) {
+    if (!hasPages) {
         if (tg) tg.showAlert('У пользователя нет отмеченных страниц в этой раскраске');
         else alert('Нет отмеченных страниц');
         return;
     }
     
-    // Получаем конфигурацию
-    var config = BOOK_PAGES_CONFIG[bookName] || DEFAULT_PAGES_CONFIG;
-    
+    // ✅ Временно подменяем userCompletedPages на страницы ТОЛЬКО этого тома
     window.isViewOnly = true;
     currentBook = bookName;
     currentCategory = category;
-    userCompletedPages = completedPages;
+    
+    // Сохраняем оригинал
+    var originalCompletedPages = userCompletedPages;
+    
+    // ✅ Показываем ТОЛЬКО отмеченные страницы этого тома
+    userCompletedPages = {};
+    userCompletedPages[bookKey] = bookCompleted;
+    
+    var config = BOOK_PAGES_CONFIG[bookName] || DEFAULT_PAGES_CONFIG;
     
     document.getElementById('bookPagesTitle').innerText = bookName;
-    document.getElementById('bookPagesCategory').innerText = 'Отмечено: ' + completedPagesCount + ' / ' + config.totalPages + ' стр.';
+    
+    var completedCount = 0;
+    for (var page in bookCompleted) {
+        completedCount += page.includes('-') ? 2 : 1;
+    }
+    document.getElementById('bookPagesCategory').innerText = 'Отмечено: ' + completedCount + ' / ' + config.totalPages + ' стр.';
     
     renderBookPagesGrid(bookKey, config);
     
@@ -22326,6 +22334,14 @@ function renderPublicStatsBooks() {
     
     var profileModal = document.getElementById('publicProfileModal');
     if (profileModal) profileModal.style.opacity = '0.3';
+    
+    // ✅ Восстанавливаем оригинал при закрытии модалки
+    var oldClose = closeBookPagesModal;
+    closeBookPagesModal = function() {
+        userCompletedPages = originalCompletedPages;
+        closeBookPagesModal = oldClose;
+        oldClose();
+    };
 }
     </script>
     
