@@ -20272,7 +20272,7 @@ function renderPublicStatsBooks() {
         var cat = stat.cat || 'paint_by_number';
         var coverUrl = DEFAULT_COVERS[bookName] || '';
         
-        html += '<div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--bg);border-radius:10px;margin-bottom:8px;cursor:pointer;" onclick="viewPublicBook(\'' + userId + '\', \'' + cat + '\', \'' + bookName.replace(/'/g, "\\'") + '\', ' + count + ')">';
+        html += '<div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--bg);border-radius:10px;margin-bottom:8px;cursor:pointer;" onclick="openPublicBookPages(\'' + userId + '\', \'' + cat + '\', \'' + bookName.replace(/'/g, "\\'") + '\')">';
         if (coverUrl) html += '<img src="' + coverUrl + '" style="width:35px;height:47px;object-fit:cover;border-radius:5px;" onerror="this.style.display=\'none\'">';
         html += '<div><strong>' + bookName + '</strong><span style="margin-left:8px;font-size:13px;color:var(--text-gray);">' + count + ' работ</span></div>';
         html += '</div>';
@@ -22286,6 +22286,46 @@ function renderPublicStatsBooks() {
     if (!hasBooks) html = '<div class="no-results" style="padding:20px;text-align:center;color:var(--text-gray);">Нет работ</div>';
     
     listContainer.innerHTML = html;
+}
+        function openPublicBookPages(userId, category, bookName) {
+    var container = document.getElementById('publicProfileContent');
+    var profile = JSON.parse(container.dataset.profile || '{}');
+    var completedPages = profile.completed_pages || {};
+    
+    var bookKey = category + '_' + bookName;
+    var bookCompleted = completedPages[bookKey] || {};
+    
+    // Считаем отмеченные страницы
+    var completedPagesCount = 0;
+    for (var page in bookCompleted) {
+        completedPagesCount += page.includes('-') ? 2 : 1;
+    }
+    
+    if (completedPagesCount === 0) {
+        if (tg) tg.showAlert('У пользователя нет отмеченных страниц в этой раскраске');
+        else alert('Нет отмеченных страниц');
+        return;
+    }
+    
+    // Получаем конфигурацию
+    var config = BOOK_PAGES_CONFIG[bookName] || DEFAULT_PAGES_CONFIG;
+    
+    window.isViewOnly = true;
+    currentBook = bookName;
+    currentCategory = category;
+    userCompletedPages = completedPages;
+    
+    document.getElementById('bookPagesTitle').innerText = bookName;
+    document.getElementById('bookPagesCategory').innerText = 'Отмечено: ' + completedPagesCount + ' / ' + config.totalPages + ' стр.';
+    
+    renderBookPagesGrid(bookKey, config);
+    
+    var bookModal = document.getElementById('bookPagesModal');
+    bookModal.style.display = 'flex';
+    bookModal.style.zIndex = '100002';
+    
+    var profileModal = document.getElementById('publicProfileModal');
+    if (profileModal) profileModal.style.opacity = '0.3';
 }
     </script>
     
