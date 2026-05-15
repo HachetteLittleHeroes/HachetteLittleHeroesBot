@@ -22495,39 +22495,39 @@ function viewPublicArtwork(imageUrl) {
     modal.style.display = 'flex';
     modal.style.zIndex = '100010';
 }
-      function openBestiaryStatsDetail(characterId) {
+     function openBestiaryStatsDetail(characterId) {
     const character = BESTIARY.find(c => c.id === characterId);
     if (!character) return;
     
-    // Собираем только те страницы, которые ещё НЕ раскрашены
     let remainingHtml = '';
     let totalRemaining = 0;
     
+    console.log('=== checking character:', character.name);
+    
     character.appearances.forEach(appearance => {
-        // Определяем категорию
         let category = 'paint_by_number';
         if (DEFAULT_COLORING_BOOKS.alcohol?.includes(appearance.book)) category = 'alcohol';
         else if (DEFAULT_COLORING_BOOKS.pencil?.includes(appearance.book)) category = 'pencil';
         
         const bookKey = `${category}_${appearance.book}`;
         const completedPages = userCompletedPages[bookKey] || {};
-        
-        // ✅ Получаем чистые ключи страниц (без префикса bookKey)
         const completedPageKeys = Object.keys(completedPages).map(k => k.replace(bookKey + '_', ''));
         
-        // Проверяем, есть ли эта книга в коллекции пользователя
         const userBooks = userColoringBooks[category] || [];
         const isInCollection = userBooks.some(b => 
             (typeof b === 'string' ? b : b.name) === appearance.book
         );
         
-        if (!isInCollection) return; // Пропускаем книги не в коллекции
+        console.log(`  Book: ${appearance.book}, cat: ${category}, inCollection: ${isInCollection}, pages: ${appearance.pages}`);
         
-        // ✅ Фильтруем нераскрашенные страницы — проверяем по чистым ключам
+        if (!isInCollection) return;
+        
         const uncoloredPages = appearance.pages.filter(p => {
             const pageStr = String(p);
             return !completedPageKeys.includes(pageStr);
         });
+        
+        console.log(`  Uncolored: ${uncoloredPages.length}`);
         
         if (uncoloredPages.length > 0) {
             totalRemaining += uncoloredPages.length;
@@ -22582,7 +22582,6 @@ function viewPublicArtwork(imageUrl) {
     
     document.body.appendChild(modal);
 }
-
 function openBookPageFromBestiary(category, bookName, page) {
     // Открываем модалку страниц раскраски
     openBookPagesModal(category, bookName);
