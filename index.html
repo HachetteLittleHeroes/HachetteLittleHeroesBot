@@ -10872,7 +10872,8 @@ async function addCustomBook(category) {
                 category: category,
                 book_name: bookName,
                 action: 'add',
-                total_pages: totalPages  // ✅ Отправляем количество страниц
+                total_pages: totalPages,
+                custom: true
             })
         });
         
@@ -10881,7 +10882,6 @@ async function addCustomBook(category) {
         if (result.status === 'ok') {
             if (!userColoringBooks[category]) userColoringBooks[category] = [];
             
-            // ✅ Проверяем, нет ли уже такой раскраски
             const existingIndex = userColoringBooks[category].findIndex(b => {
                 const name = typeof b === 'string' ? b : b.name;
                 return name === bookName;
@@ -10894,36 +10894,29 @@ async function addCustomBook(category) {
             };
             
             if (existingIndex !== -1) {
-                // Обновляем существующую
                 userColoringBooks[category][existingIndex] = bookEntry;
             } else {
-                // Добавляем новую
                 userColoringBooks[category].push(bookEntry);
             }
             
-            // ✅ Добавляем в конфигурацию (для быстрого доступа)
             BOOK_PAGES_CONFIG[bookName] = {
                 totalPages: totalPages,
                 spreads: []
             };
             
-            // ✅ Сохраняем в localStorage
             localStorage.setItem(`coloring_books_${userId}`, JSON.stringify(userColoringBooks));
             
-            // ✅ Обновляем всё
             updateCategoryCounters();
             updateColoringBooksStats();
             updateAllCategoriesProgress();
             renderColoringBooks();
             
-            // Очищаем поля
             input.value = '';
             if (pagesInput) pagesInput.value = '60';
             
             console.log(`✅ Кастомная раскраска добавлена: ${bookName}, ${totalPages} стр.`);
             
             if (tg) tg.showAlert(`✅ "${bookName}" добавлена (${totalPages} стр.)!`);
-            else alert(`✅ "${bookName}" добавлена (${totalPages} стр.)!`);
         } else {
             throw new Error(result.message || 'Ошибка сервера');
         }
@@ -10931,66 +10924,6 @@ async function addCustomBook(category) {
         console.error('Ошибка добавления кастомной раскраски:', error);
         if (tg) tg.showAlert('❌ Ошибка соединения');
     }
-}
-function addCoverToBook(category, bookName) {
-    alert('Открываем выбор обложки для: ' + bookName);
-    
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-    input.onchange = (e) => {
-        const file = e.target.files[0];
-        if (!file) {
-            alert('Файл не выбран');
-            return;
-        }
-        
-        alert('Файл выбран: ' + file.name);
-        
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-            alert('Файл прочитан, ищем раскраску...');
-            
-            const books = userColoringBooks[category];
-            if (!books) {
-                alert('Категория не найдена: ' + category);
-                return;
-            }
-            
-            alert('Всего книг в категории: ' + books.length);
-            
-            let found = false;
-            for (let i = 0; i < books.length; i++) {
-                const b = books[i];
-                const name = typeof b === 'string' ? b : b.name;
-                
-                alert('Проверяем: ' + name + ' === ' + bookName + ' ? ' + (name === bookName));
-                
-                if (name === bookName) {
-                    if (typeof b === 'string') {
-                        books[i] = { name: b, custom: true, cover: ev.target.result };
-                    } else {
-                        b.cover = ev.target.result;
-                    }
-                    found = true;
-                    alert('✅ Найдено и обновлено!');
-                    break;
-                }
-            }
-            
-            if (!found) {
-                alert('❌ Раскраска не найдена в коллекции!');
-                return;
-            }
-            
-            localStorage.setItem(`coloring_books_${userId}`, JSON.stringify(userColoringBooks));
-            renderColoringBooks();
-            
-            alert('✅ Обложка обновлена!');
-        };
-        reader.readAsDataURL(file);
-    };
-    input.click();
 }
         function renderColoringBooks() {
     const categories = ['paint_by_number', 'alcohol', 'pencil', 'custom'];
