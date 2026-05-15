@@ -5096,7 +5096,7 @@
             }
         }
         
-        async function loadUserProgress() {
+      async function loadUserProgress() {
     try {
         const savedProgress = localStorage.getItem(`coloring_progress_${userId}`);
         if (savedProgress) {
@@ -5111,12 +5111,24 @@
             // Объединяем данные с сервера с локальными
             userProgress = { ...userProgress, ...stats };
             
-            // ✅ Миграция старых ключей status_level_ → branch_pempudu_level_
+            // ✅ Миграция старых ключей → branch_pempudu_level_
             for (const [key, value] of Object.entries(stats)) {
-                if (key.startsWith('status_level_') && typeof value === 'number') {
+                if (typeof value !== 'number') continue;
+                
+                // friend_level_X_subtask_Y → branch_pempudu_level_X_subtask_Y
+                if (key.startsWith('friend_level_')) {
+                    const suffix = key.replace('friend_level_', '');
+                    const newKey = `branch_pempudu_level_${suffix}`;
+                    if (!userProgress[newKey] || userProgress[newKey] < value) {
+                        userProgress[newKey] = value;
+                    }
+                }
+                
+                // status_level_X_subtask_Y → branch_pempudu_level_X_subtask_Y
+                if (key.startsWith('status_level_')) {
                     const suffix = key.replace('status_level_', '');
                     const newKey = `branch_pempudu_level_${suffix}`;
-                    if (!userProgress[newKey]) {
+                    if (!userProgress[newKey] || userProgress[newKey] < value) {
                         userProgress[newKey] = value;
                     }
                 }
@@ -6206,8 +6218,13 @@ function saveFriendProgress() {
 }
 
 function getFriendSubtaskProgress(taskIdx, levelIdx, subtaskIdx) {
-    // Используем короткий ключ, который реально приходит с сервера
-    const key = `friend_level_${levelIdx}_subtask_${subtaskIdx}`;
+    const task = FRIEND_TASKS[taskIdx];
+    let key;
+    if (task && task.id === 'irina_task_1') {
+        key = `irina_level_${levelIdx}_subtask_${subtaskIdx}`;
+    } else {
+        key = `friend_level_${levelIdx}_subtask_${subtaskIdx}`;
+    }
     const value = friendProgress[key] || 0;
     console.log(`getFriendSubtaskProgress: ${key} = ${value}`);
     return value;
@@ -6254,25 +6271,20 @@ async function loadFriendProgressFromServer() {
         const response = await fetch(`${SERVER_URL}/api/stats?user_id=${userId}`);
         const stats = await response.json();
         
-        if (stats && stats.friend_progress) {
-            for (const [key, value] of Object.entries(stats.friend_progress)) {
-                friendProgress[key] = value;
-            }
-            // Также проверяем ключи напрямую
+        if (stats) {
             for (const [key, value] of Object.entries(stats)) {
-                if (key.startsWith('friend_') && typeof value === 'number') {
+                // Загружаем friend_, irina_, и status_ ключи
+                if ((key.startsWith('friend_') || key.startsWith('irina_')) && typeof value === 'number') {
                     friendProgress[key] = value;
                 }
             }
             saveFriendProgress();
             renderFriendTasks();
-            console.log('✅ Friend tasks rendered');
         }
     } catch (error) {
-        console.error('❌ Error loading friend progress:', error);
+        console.error('Error:', error);
     }
 }
-
 function toggleFriendTasks() {
     const content = document.getElementById('friendTasksContent');
     const arrow = document.getElementById('friendTasksArrow');
