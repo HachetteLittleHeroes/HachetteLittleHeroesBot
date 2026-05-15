@@ -22600,7 +22600,7 @@ function openBookPageFromBestiary(category, bookName, page) {
         modal.remove();
     }
 } 
-        function uploadCustomCover(category, bookName) {
+        async function uploadCustomCover(category, bookName) {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
@@ -22623,7 +22623,7 @@ function openBookPageFromBestiary(category, bookName, page) {
             const result = await response.json();
             
             if (result.status === 'ok') {
-                // Обновляем обложку в коллекции
+                // Обновляем обложку локально
                 const userBooks = userColoringBooks[category] || [];
                 const book = userBooks.find(b => (typeof b === 'string' ? b : b.name) === bookName);
                 if (book && typeof book === 'object') {
@@ -22634,6 +22634,20 @@ function openBookPageFromBestiary(category, bookName, page) {
                 }
                 
                 localStorage.setItem(`coloring_books_${userId}`, JSON.stringify(userColoringBooks));
+                
+                // ✅ Сохраняем обложку на сервере
+                await fetch(`${SERVER_URL}/api/coloring_books`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        user_id: userId,
+                        category: category,
+                        book_name: bookName,
+                        action: 'update_cover',
+                        cover_url: result.url
+                    })
+                });
+                
                 renderColoringBooks();
                 
                 if (tg) tg.showAlert('✅ Обложка загружена!');
