@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -21948,6 +21948,18 @@ function showBooksList(category, period) {
         html += '<div class="subblock-header" onclick="toggleStatsBook(this)" style="display:flex;justify-content:space-between;align-items:center;padding:12px 15px;cursor:pointer;">';
         
         var coverUrl = DEFAULT_COVERS[bookName] || '';
+        
+        // ✅ Ищем обложку в коллекции пользователя для кастомных раскрасок
+        if (!coverUrl) {
+            var userBooks = userColoringBooks[category] || [];
+            var savedBook = userBooks.find(function(b) {
+                return (typeof b === 'string' ? b : b.name) === bookName;
+            });
+            if (savedBook && typeof savedBook === 'object' && savedBook.cover) {
+                coverUrl = savedBook.cover;
+            }
+        }
+        
         if (coverUrl && !coverUrl.startsWith('http')) coverUrl = '';
         html += '<div style="display:flex;align-items:center;gap:10px;">';
         if (coverUrl) {
@@ -22258,6 +22270,8 @@ function renderPublicStatsBooks() {
     var container = document.getElementById('publicProfileContent');
     var booksStats = container._pubBooksStats || {};
     var period = container._pubPeriod || 'week';
+    var profile = JSON.parse(container.dataset.profile || '{}');
+    var profileBooks = profile.coloring_books || {};
     
     var now = new Date();
     var weekAgo = now.getTime() - 7 * 24 * 60 * 60 * 1000;
@@ -22270,7 +22284,6 @@ function renderPublicStatsBooks() {
     for (var bookName in booksStats) {
         var stat = booksStats[bookName];
         
-        // ✅ Фильтруем работы по периоду
         var filteredWorks = stat.works.filter(function(w) {
             if (period === 'week') return w.date >= weekAgo;
             if (period === 'month') return w.date >= monthAgo;
@@ -22282,7 +22295,18 @@ function renderPublicStatsBooks() {
         
         var coverUrl = DEFAULT_COVERS[bookName] || '';
         
-        // ✅ Разворачиваемый блок (как в личной статистике)
+        // ✅ Ищем обложку в коллекции пользователя для кастомных раскрасок
+        if (!coverUrl) {
+            var cat = stat.cat || 'paint_by_number';
+            var userBooks = profileBooks[cat] || [];
+            var savedBook = userBooks.find(function(b) {
+                return (typeof b === 'string' ? b : b.name) === bookName;
+            });
+            if (savedBook && typeof savedBook === 'object' && savedBook.cover) {
+                coverUrl = savedBook.cover;
+            }
+        }
+        
         html += '<div class="inventory-subblock" style="margin-bottom:10px;background:var(--bg);border-radius:12px;border:1px solid var(--border-color);overflow:hidden;">';
         html += '<div class="subblock-header" onclick="toggleStatsBook(this)" style="display:flex;justify-content:space-between;align-items:center;padding:12px 15px;cursor:pointer;">';
         html += '<div style="display:flex;align-items:center;gap:10px;">';
@@ -22292,7 +22316,6 @@ function renderPublicStatsBooks() {
         html += '<i class="fas fa-chevron-down" style="color:var(--text-gray);transition:transform 0.3s;"></i>';
         html += '</div>';
         
-        // ✅ Сетка с превью работ
         html += '<div class="subblock-content" style="display:none;padding:10px 15px;border-top:1px solid var(--border-color);">';
         html += '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">';
         
@@ -22322,123 +22345,6 @@ function renderPublicStatsBooks() {
     if (!hasBooks) html = '<div class="no-results" style="padding:20px;text-align:center;color:var(--text-gray);">Нет работ за этот период</div>';
     
     listContainer.innerHTML = html;
-}
-        function openPublicBookPages(userId, category, bookName) {
-    var container = document.getElementById('publicProfileContent');
-    var profile = JSON.parse(container.dataset.profile || '{}');
-    var completedPages = profile.completed_pages || {};
-    
-    var bookKey = category + '_' + bookName;
-    var bookCompleted = completedPages[bookKey] || {};
-    
-    // ✅ Проверяем, есть ли отмеченные страницы
-    var completedPagesList = Object.keys(bookCompleted);
-    if (completedPagesList.length === 0) {
-        if (tg) tg.showAlert('У пользователя нет отмеченных страниц в этой раскраске');
-        else alert('Нет отмеченных страниц');
-        return;
-    }
-    
-    window.isViewOnly = true;
-    currentBook = bookName;
-    currentCategory = category;
-    
-    // Сохраняем оригинал
-    var originalCompletedPages = userCompletedPages;
-    
-    // ✅ Показываем ТОЛЬКО отмеченные страницы этого тома
-    userCompletedPages = {};
-    userCompletedPages[bookKey] = bookCompleted;
-    
-    // ✅ ВАЖНОЕ ИСПРАВЛЕНИЕ: Создаем ВРЕМЕННЫЙ КОНФИГ только с отмеченными страницами
-    var originalConfig = BOOK_PAGES_CONFIG[bookName] || DEFAULT_PAGES_CONFIG;
-    var filteredConfig = {
-        totalPages: originalConfig.totalPages,
-        pagesPerRow: originalConfig.pagesPerRow || 4
-    };
-    
-    document.getElementById('bookPagesTitle').innerText = bookName;
-    
-    var completedCount = 0;
-    completedPagesList.forEach(function(page) {
-        completedCount += page.includes('-') ? 2 : 1;
-    });
-    document.getElementById('bookPagesCategory').innerText = 'Отмечено: ' + completedCount + ' / ' + originalConfig.totalPages + ' стр.';
-    
-    // ✅ ИСПОЛЬЗУЕМ МОДИФИЦИРОВАННЫЙ РЕНДЕР ДЛЯ ПУБЛИЧНОГО ПРОФИЛЯ
-    renderPublicBookPagesGrid(bookKey, bookCompleted, originalConfig);
-    
-    var bookModal = document.getElementById('bookPagesModal');
-    bookModal.style.display = 'flex';
-    bookModal.style.zIndex = '100002';
-    
-    var profileModal = document.getElementById('publicProfileModal');
-    if (profileModal) profileModal.style.opacity = '0.3';
-    
-    // ✅ Восстанавливаем оригинал при закрытии модалки
-    var oldClose = closeBookPagesModal;
-    closeBookPagesModal = function() {
-        userCompletedPages = originalCompletedPages;
-        BOOK_PAGES_CONFIG[bookName] = originalConfig; // Восстанавливаем конфиг
-        closeBookPagesModal = oldClose;
-        oldClose();
-    };
-}
-
-// ✅ НОВАЯ ФУНКЦИЯ: Рендер только отмеченных страниц для публичного просмотра
-function renderPublicBookPagesGrid(bookKey, completedPages, config) {
-    var grid = document.getElementById('bookPagesGrid');
-    if (!grid) return;
-    
-    var html = '';
-    var completedPageKeys = Object.keys(completedPages);
-    
-    // Сортируем страницы по номеру
-    completedPageKeys.sort(function(a, b) {
-        var numA = parseInt(a.replace(bookKey + '_', ''));
-        var numB = parseInt(b.replace(bookKey + '_', ''));
-        return numA - numB;
-    });
-    
-    completedPageKeys.forEach(function(pageKey) {
-        var pageNum = pageKey.replace(bookKey + '_', '');
-        var imageUrl = completedPages[pageKey];
-        var dateStr = '';
-        
-        // Получаем дату, если есть
-        if (window.completedPagesDates && window.completedPagesDates[bookKey + '|' + pageNum]) {
-            dateStr = new Date(window.completedPagesDates[bookKey + '|' + pageNum]).toLocaleDateString('ru-RU');
-        }
-        
-        html += '<div class="book-page-btn uploaded" style="aspect-ratio:1;overflow:hidden;border-radius:10px;cursor:pointer;position:relative;" onclick="viewPublicArtwork(\'' + imageUrl.replace(/'/g, "\\'") + '\')">';
-        html += '<img src="' + imageUrl + '" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.background=\'var(--border-color)\'">';
-        if (dateStr) {
-            html += '<span style="position:absolute;bottom:2px;right:4px;font-size:9px;background:rgba(0,0,0,0.6);color:white;padding:1px 4px;border-radius:4px;">' + dateStr + '</span>';
-        }
-        html += '<div style="position:absolute;top:2px;left:4px;font-size:9px;background:rgba(0,0,0,0.6);color:white;padding:1px 4px;border-radius:4px;">стр. ' + pageNum + '</div>';
-        html += '</div>';
-    });
-    
-    grid.innerHTML = html;
-}
-
-// ✅ Функция для просмотра отдельной работы в публичном профиле
-function viewPublicArtwork(imageUrl) {
-    var modal = document.getElementById('artworkViewModal');
-    var img = document.getElementById('artworkViewImage');
-    
-    if (!modal || !img) {
-        // Создаем простую модалку, если её нет
-        var modalHtml = '<div id="artworkViewModal" style="display:flex;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:100010;align-items:center;justify-content:center;" onclick="this.style.display=\'none\'">';
-        modalHtml += '<img id="artworkViewImage" src="' + imageUrl + '" style="max-width:90%;max-height:90%;object-fit:contain;border-radius:10px;">';
-        modalHtml += '</div>';
-        document.body.insertAdjacentHTML('beforeend', modalHtml);
-        return;
-    }
-    
-    img.src = imageUrl;
-    modal.style.display = 'flex';
-    modal.style.zIndex = '100010';
 }
      function openBestiaryStatsDetail(characterId) {
     const character = BESTIARY.find(c => c.id === characterId);
