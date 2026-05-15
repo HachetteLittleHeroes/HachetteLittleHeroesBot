@@ -22495,7 +22495,7 @@ function viewPublicArtwork(imageUrl) {
     modal.style.display = 'flex';
     modal.style.zIndex = '100010';
 }
-       function openBestiaryStatsDetail(characterId) {
+      function openBestiaryStatsDetail(characterId) {
     const character = BESTIARY.find(c => c.id === characterId);
     if (!character) return;
     
@@ -22512,6 +22512,9 @@ function viewPublicArtwork(imageUrl) {
         const bookKey = `${category}_${appearance.book}`;
         const completedPages = userCompletedPages[bookKey] || {};
         
+        // ✅ Получаем чистые ключи страниц (без префикса bookKey)
+        const completedPageKeys = Object.keys(completedPages).map(k => k.replace(bookKey + '_', ''));
+        
         // Проверяем, есть ли эта книга в коллекции пользователя
         const userBooks = userColoringBooks[category] || [];
         const isInCollection = userBooks.some(b => 
@@ -22520,10 +22523,10 @@ function viewPublicArtwork(imageUrl) {
         
         if (!isInCollection) return; // Пропускаем книги не в коллекции
         
-        // Фильтруем нераскрашенные страницы
+        // ✅ Фильтруем нераскрашенные страницы — проверяем по чистым ключам
         const uncoloredPages = appearance.pages.filter(p => {
             const pageStr = String(p);
-            return !completedPages.hasOwnProperty(pageStr);
+            return !completedPageKeys.includes(pageStr);
         });
         
         if (uncoloredPages.length > 0) {
