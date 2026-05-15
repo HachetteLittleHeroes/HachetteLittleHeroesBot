@@ -22253,39 +22253,7 @@ function switchBestiaryPeriod(period) {
     filterBestiaryStats();
 }
 
-function filterBestiaryStats() {
-    var query = document.getElementById('bestiaryStatsSearch')?.value.toLowerCase().trim() || '';
-    var listContainer = document.getElementById('bestiaryStatsList');
-    var filtered = bestiaryStatsData;
-    
-    if (query !== '') {
-        filtered = filtered.filter(function(cs) { return cs.name.toLowerCase().includes(query) || cs.film.toLowerCase().includes(query); });
-    }
-    
-    if (bestiaryStatsCurrentPeriod === 'week') filtered = filtered.filter(function(cs) { return cs.weekColored > 0; });
-    else if (bestiaryStatsCurrentPeriod === 'month') filtered = filtered.filter(function(cs) { return cs.monthColored > 0; });
-    
-    if (bestiaryStatsCurrentPeriod === 'week') filtered.sort(function(a, b) { return b.weekPercent - a.weekPercent; });
-    else if (bestiaryStatsCurrentPeriod === 'month') filtered.sort(function(a, b) { return b.monthPercent - a.monthPercent; });
-    else filtered.sort(function(a, b) { return b.totalPercent - a.totalPercent; });
-    
-    var html = '';
-    if (filtered.length === 0) {
-        html = '<div class="no-results" style="padding:20px;text-align:center;">Нет раскрашенных персонажей</div>';
-    } else {
-        filtered.forEach(function(cs) {
-            var colored = bestiaryStatsCurrentPeriod === 'week' ? cs.weekColored : bestiaryStatsCurrentPeriod === 'month' ? cs.monthColored : cs.totalColored;
-            var percent = bestiaryStatsCurrentPeriod === 'week' ? cs.weekPercent : bestiaryStatsCurrentPeriod === 'month' ? cs.monthPercent : cs.totalPercent;
-            
-           html += `<div class="stats-bestiary-card" onclick="openBestiaryStatsDetail('${cs.id}')">`;
-            html += '<img src="' + cs.image + '" alt="' + cs.name + '" onerror="this.src=\'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22%3E%3Crect width=%2240%22 height=%2240%22 fill=%22%23ff9500%22 rx=%228%22/%3E%3Ctext x=%2220%22 y=%2220%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2216%22%3E🦁%3C/text%3E%3C/svg%3E\'">';
-            html += '<div class="stats-bestiary-info"><div class="stats-bestiary-name">' + cs.name + '</div><div class="stats-bestiary-film">' + cs.film + '</div>';
-            html += '<div class="progress-bar-container" style="margin-top:5px;height:6px;"><div class="progress-bar-fill" style="width:' + percent + '%;height:100%;"></div></div></div>';
-            html += '<div class="stats-bestiary-progress">' + colored + '/' + cs.total + '</div></div>';
-        });
-    }
-    listContainer.innerHTML = html;
-}
+
 function filterBestiaryStats() {
     var query = document.getElementById('bestiaryStatsSearch')?.value.toLowerCase().trim() || '';
     var listContainer = document.getElementById('bestiaryStatsList');
@@ -22326,7 +22294,7 @@ function filterBestiaryStats() {
             else if (bestiaryStatsCurrentPeriod === 'month') { colored = cs.monthColored; percent = cs.monthPercent; }
             else { colored = cs.totalColored; percent = cs.totalPercent; }
             
-            html += '<div class="stats-bestiary-card">';
+            html += '<div class="stats-bestiary-card" onclick="openBestiaryStatsDetail(\'' + cs.id + '\')">';
             html += '<img src="' + cs.image + '" alt="' + cs.name + '" onerror="this.src=\'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22%3E%3Crect width=%2240%22 height=%2240%22 fill=%22%23ff9500%22 rx=%228%22/%3E%3Ctext x=%2220%22 y=%2220%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2216%22%3E🦁%3C/text%3E%3C/svg%3E\'">';
             html += '<div class="stats-bestiary-info">';
             html += '<div class="stats-bestiary-name">' + cs.name + '</div>';
@@ -22339,16 +22307,6 @@ function filterBestiaryStats() {
     }
     
     listContainer.innerHTML = html;
-}
-        function switchPublicStats(period) {
-    var container = document.getElementById('publicProfileContent');
-    container._pubPeriod = period;
-    
-    document.getElementById('pubCardWeek').classList.toggle('active', period === 'week');
-    document.getElementById('pubCardMonth').classList.toggle('active', period === 'month');
-    document.getElementById('pubCardTotal').classList.toggle('active', period === 'total');
-    
-    renderPublicStatsBooks();
 }
 
 function renderPublicStatsBooks() {
