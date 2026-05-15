@@ -20175,37 +20175,43 @@ function renderPublicProfile(profile) {
     var monthAgo = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
     var profileCompletedPages = profile.completed_pages || {};
     var profileCompletedDates = profile.completed_pages_dates || {};
+    var profileArtworks = profile.artworks || {}; // ✅ Добавлено
     var booksStats = {};
 
-   for (var bk in profileCompletedPages) {
-    for (var pg in profileCompletedPages[bk]) {
-        totalWorks++;
-        var dt = profileCompletedDates[bk + '|' + pg] || 0;
-        if (dt >= monthAgo) monthWorks++;
-        if (dt >= weekAgo) weekWorks++;
+    for (var bk in profileCompletedPages) {
+        for (var pg in profileCompletedPages[bk]) {
+            totalWorks++;
+            var dt = profileCompletedDates[bk + '|' + pg] || 0;
+            if (dt >= monthAgo) monthWorks++;
+            if (dt >= weekAgo) weekWorks++;
 
-        var cat;
-        if (bk.startsWith('paint_by_number_')) cat = 'paint_by_number';
-        else if (bk.startsWith('alcohol_')) cat = 'alcohol';
-        else if (bk.startsWith('pencil_')) cat = 'pencil';
-        else cat = 'custom';
+            var cat;
+            if (bk.startsWith('paint_by_number_')) cat = 'paint_by_number';
+            else if (bk.startsWith('alcohol_')) cat = 'alcohol';
+            else if (bk.startsWith('pencil_')) cat = 'pencil';
+            else cat = 'custom';
 
-        var bname = bk.substring(cat.length + 1);
-        if (!booksStats[bname]) booksStats[bname] = { week: 0, month: 0, total: 0, cat: cat, works: [] };
-        
-        booksStats[bname].total++;
-        if (dt >= monthAgo) booksStats[bname].month++;
-        if (dt >= weekAgo) booksStats[bname].week++;
-        
-        // ✅ Добавляем работу в массив works
-        booksStats[bname].works.push({
-            page: pg,
-            date: dt,
-            artwork: profileCompletedPages[bk][pg] || '',
-            bookKey: bk
-        });
+            var bname = bk.substring(cat.length + 1);
+            if (!booksStats[bname]) booksStats[bname] = { week: 0, month: 0, total: 0, cat: cat, works: [] };
+            
+            booksStats[bname].total++;
+            if (dt >= monthAgo) booksStats[bname].month++;
+            if (dt >= weekAgo) booksStats[bname].week++;
+            
+            // ✅ Берём URL картинки из artworks
+            var artworkUrl = '';
+            if (profileArtworks[bk] && profileArtworks[bk][pg]) {
+                artworkUrl = profileArtworks[bk][pg];
+            }
+            
+            booksStats[bname].works.push({
+                page: pg,
+                date: dt,
+                artwork: artworkUrl,
+                bookKey: bk
+            });
+        }
     }
-}
     
    let html = `
         <div class="profile-header-block" style="margin: 0; padding: 15px;">
