@@ -20265,7 +20265,6 @@ function renderPublicStatsBooks() {
     var container = document.getElementById('publicProfileContent');
     var booksStats = container._pubBooksStats || {};
     var period = container._pubPeriod || 'week';
-    var userId = container._pubUserId || '';
     
     var now = new Date();
     var weekAgo = now.getTime() - 7 * 24 * 60 * 60 * 1000;
@@ -20288,21 +20287,19 @@ function renderPublicStatsBooks() {
         if (filteredWorks.length === 0) continue;
         hasBooks = true;
         
-        var count = filteredWorks.length;
-        var cat = stat.cat || 'paint_by_number';
         var coverUrl = DEFAULT_COVERS[bookName] || '';
         
-        // ✅ Разворачиваемый блок как в личной статистике
+        // ✅ Разворачиваемый блок (как в личной статистике)
         html += '<div class="inventory-subblock" style="margin-bottom:10px;background:var(--bg);border-radius:12px;border:1px solid var(--border-color);overflow:hidden;">';
         html += '<div class="subblock-header" onclick="toggleStatsBook(this)" style="display:flex;justify-content:space-between;align-items:center;padding:12px 15px;cursor:pointer;">';
         html += '<div style="display:flex;align-items:center;gap:10px;">';
         if (coverUrl) html += '<img src="' + coverUrl + '" style="width:35px;height:47px;object-fit:cover;border-radius:5px;" onerror="this.style.display=\'none\'">';
-        html += '<div><strong>' + bookName + '</strong><span style="margin-left:8px;font-size:13px;color:var(--text-gray);">' + count + ' работ</span></div>';
+        html += '<div><strong>' + bookName + '</strong><span style="margin-left:8px;font-size:13px;color:var(--text-gray);">' + filteredWorks.length + ' работ</span></div>';
         html += '</div>';
         html += '<i class="fas fa-chevron-down" style="color:var(--text-gray);transition:transform 0.3s;"></i>';
         html += '</div>';
         
-        // ✅ Сетка с работами (превью загруженных фото)
+        // ✅ Сетка с превью работ
         html += '<div class="subblock-content" style="display:none;padding:10px 15px;border-top:1px solid var(--border-color);">';
         html += '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">';
         
