@@ -5687,194 +5687,197 @@
         // ОТОБРАЖЕНИЕ ЗАДАНИЙ (С ПОДПУНКТАМИ)
         // ==========================================
         
-        function renderBranchTasks() {
-            const container = document.getElementById('branchTasksList');
-            if (!container) {
-                console.error('Container branchTasksList not found');
-                return;
-            }
+     function renderBranchTasks() {
+    const container = document.getElementById('branchTasksList');
+    if (!container) {
+        console.error('Container branchTasksList not found');
+        return;
+    }
+    
+    container.innerHTML = '';
+    
+    for (const [branchKey, branch] of Object.entries(TASK_BRANCHES)) {
+        // ✅ Пропускаем Season Pass — он в отдельном блоке
+        if (branchKey === 'season_pass') continue;
+        
+        const isCompleted = isBranchCompleted(branchKey);
+        const currentLevelIndex = getCurrentLevelIndex(branchKey);
+        const levels = branch.levels;
+        
+        const branchCard = document.createElement('div');
+        branchCard.className = `branch-task-card ${isCompleted ? 'completed' : ''}`;
+        
+        branchCard.innerHTML = `
+            <div class="branch-header">
+                <h3>${branch.name}</h3>
+                <p>${branch.desc}</p>
+            </div>
+        `;
+        
+        if (isCompleted) {
+            const completedDiv = document.createElement('div');
+            completedDiv.className = 'level-card';
+            completedDiv.innerHTML = `
+                <div style="text-align: center; padding: 20px;">
+                    <div class="completed-badge" style="display: inline-block; margin-bottom: 10px;">✅ Задание выполнено</div>
+                    <div style="color: var(--status-green);">
+                        <i class="fas fa-trophy"></i> Получен статус: ${BRANCH_REWARDS[branchKey]}
+                    </div>
+                </div>
+            `;
+            branchCard.appendChild(completedDiv);
+        } else if (currentLevelIndex < levels.length) {
+            const level = levels[currentLevelIndex];
             
-            container.innerHTML = '';
-            
-            for (const [branchKey, branch] of Object.entries(TASK_BRANCHES)) {
-                const isCompleted = isBranchCompleted(branchKey);
-                const currentLevelIndex = getCurrentLevelIndex(branchKey);
-                const levels = branch.levels;
-                
-                const branchCard = document.createElement('div');
-                branchCard.className = `branch-task-card ${isCompleted ? 'completed' : ''}`;
-                
-                branchCard.innerHTML = `
-                    <div class="branch-header">
-                        <h3>${branch.name}</h3>
-                        <p>${branch.desc}</p>
+            if (branchKey === 'scrooge') {
+                const currentProgress = user.balance;
+                const percent = (currentProgress / level.maxProgress) * 100;
+                const levelCard = document.createElement('div');
+                levelCard.className = 'level-card';
+                levelCard.innerHTML = `
+                    <div class="level-header">
+                        <span class="level-title">${level.title}</span>
+                        <span class="level-progress">${currentProgress}/${level.maxProgress} ашетиков</span>
+                    </div>
+                    <div class="level-desc">${level.desc}</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" style="width: ${Math.min(percent, 100)}%"></div>
+                    </div>
+                    <div class="level-desc" style="color: var(--accent); margin-top: 10px;">
+                        <i class="fas fa-coins"></i> Текущий баланс: ${user.balance} ашетиков
                     </div>
                 `;
-                
-                if (isCompleted) {
-                    const completedDiv = document.createElement('div');
-                    completedDiv.className = 'level-card';
-                    completedDiv.innerHTML = `
-                        <div style="text-align: center; padding: 20px;">
-                            <div class="completed-badge" style="display: inline-block; margin-bottom: 10px;">✅ Задание выполнено</div>
-                            <div style="color: var(--status-green);">
-                                <i class="fas fa-trophy"></i> Получен статус: ${BRANCH_REWARDS[branchKey]}
-                            </div>
-                        </div>
-                    `;
-                    branchCard.appendChild(completedDiv);
-                } else if (currentLevelIndex < levels.length) {
-                    const level = levels[currentLevelIndex];
+                branchCard.appendChild(levelCard);
+            } else if (branchKey === 'benefactor') {
+                const levelCard = document.createElement('div');
+                levelCard.className = 'level-card';
+                levelCard.innerHTML = `
+                    <div class="level-header">
+                        <span class="level-title">${level.title}</span>
+                    </div>
+                    <div class="level-desc">${level.desc}</div>
+                    <button class="task-submit-btn" onclick="openSupportForStatus()">
+                        <i class="fas fa-heart"></i> Поддержать проект
+                    </button>
+                    <div class="level-desc" style="font-size: 12px; margin-top: 10px; color: var(--text-gray);">
+                        После подтверждения пожертвования статус будет разблокирован автоматически
+                    </div>
+                `;
+                branchCard.appendChild(levelCard);
+            } else if (level.subtasks && level.subtasks.length > 0) {
+                if (level.subtasks.length === 1) {
+                    const subtask = level.subtasks[0];
+                    const currentProgress = getSubtaskProgress(branchKey, currentLevelIndex, 0);
+                    const isSubtaskCompleted = currentProgress >= subtask.required;
+                    const percent = (currentProgress / subtask.required) * 100;
                     
-                    if (branchKey === 'scrooge') {
-                        const currentProgress = user.balance;
-                        const percent = (currentProgress / level.maxProgress) * 100;
-                        const levelCard = document.createElement('div');
-                        levelCard.className = 'level-card';
-                        levelCard.innerHTML = `
-                            <div class="level-header">
-                                <span class="level-title">${level.title}</span>
-                                <span class="level-progress">${currentProgress}/${level.maxProgress} ашетиков</span>
-                            </div>
-                            <div class="level-desc">${level.desc}</div>
-                            <div class="progress-bar-container">
-                                <div class="progress-bar-fill" style="width: ${Math.min(percent, 100)}%"></div>
-                            </div>
-                            <div class="level-desc" style="color: var(--accent); margin-top: 10px;">
-                                <i class="fas fa-coins"></i> Текущий баланс: ${user.balance} ашетиков
-                            </div>
-                        `;
-                        branchCard.appendChild(levelCard);
-                    } else if (branchKey === 'benefactor') {
-                        const levelCard = document.createElement('div');
-                        levelCard.className = 'level-card';
-                        levelCard.innerHTML = `
-                            <div class="level-header">
-                                <span class="level-title">${level.title}</span>
-                            </div>
-                            <div class="level-desc">${level.desc}</div>
-                            <button class="task-submit-btn" onclick="openSupportForStatus()">
-                                <i class="fas fa-heart"></i> Поддержать проект
-                            </button>
-                            <div class="level-desc" style="font-size: 12px; margin-top: 10px; color: var(--text-gray);">
-                                После подтверждения пожертвования статус будет разблокирован автоматически
-                            </div>
-                        `;
-                        branchCard.appendChild(levelCard);
-                    } else if (level.subtasks && level.subtasks.length > 0) {
-                        if (level.subtasks.length === 1) {
-                            const subtask = level.subtasks[0];
-                            const currentProgress = getSubtaskProgress(branchKey, currentLevelIndex, 0);
-                            const isCompleted = currentProgress >= subtask.required;
-                            const percent = (currentProgress / subtask.required) * 100;
-                            
-                            const levelCard = document.createElement('div');
-                            levelCard.className = 'level-card';
-                            levelCard.innerHTML = `
-                                <div class="level-header">
-                                    <span class="level-title">${level.title}</span>
-                                    <span class="level-progress">${currentProgress}/${subtask.required}</span>
-                                </div>
-                                <div class="level-desc">${level.desc}</div>
-                                <div class="progress-bar-container">
-                                    <div class="progress-bar-fill" style="width: ${percent}%"></div>
-                                </div>
-                                ${!isCompleted ? `
-                                    <button class="task-submit-btn" onclick="openSubtaskUpload('${branchKey}', ${currentLevelIndex}, 0, '${subtask.name}')">
-                                        <i class="fas fa-camera"></i> Отправить фото на проверку
-                                    </button>
-                                ` : `
-                                    <div style="text-align: center; padding: 12px; color: var(--status-green);">
-                                        <i class="fas fa-check-circle"></i> Задание выполнено!
-                                    </div>
-                                `}
-                            `;
-                            branchCard.appendChild(levelCard);
-                        } else {
-                            const levelCard = document.createElement('div');
-                            levelCard.className = 'level-card';
-                            
-                            let totalCompleted = 0;
-                            let totalRequired = 0;
-                            
-                            level.subtasks.forEach((subtask, idx) => {
-                                const prog = getSubtaskProgress(branchKey, currentLevelIndex, idx);
-                                totalCompleted += Math.min(prog, subtask.required);
-                                totalRequired += subtask.required;
-                            });
-                            
-                            const totalPercent = (totalCompleted / totalRequired) * 100;
-                            
-                            levelCard.innerHTML = `
-                                <div class="level-header">
-                                    <span class="level-title">Уровень ${currentLevelIndex + 1}: ${level.title}</span>
-                                    <span class="level-progress">${totalCompleted}/${totalRequired}</span>
-                                </div>
-                                <div class="level-desc">${level.desc}</div>
-                                <div class="progress-bar-container">
-                                    <div class="progress-bar-fill" style="width: ${totalPercent}%"></div>
-                                </div>
-                                <div style="margin-top: 15px;"></div>
-                            `;
-                            
-                            level.subtasks.forEach((subtask, idx) => {
-                                const currentProgress = getSubtaskProgress(branchKey, currentLevelIndex, idx);
-                                const isCompleted = currentProgress >= subtask.required;
-                                const subtaskPercent = (currentProgress / subtask.required) * 100;
-                                
-                                const subtaskDiv = document.createElement('div');
-                                subtaskDiv.style.cssText = 'margin-bottom: 15px; padding: 10px; background: var(--bg); border-radius: 12px;';
-                                
-                                subtaskDiv.innerHTML = `
-                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                                        <span style="font-weight: 600; font-size: 14px;">${subtask.name}</span>
-                                        <span style="font-size: 12px; color: var(--accent);">${currentProgress}/${subtask.required}</span>
-                                    </div>
-                                    <div class="progress-bar-container" style="height: 6px; margin: 0 0 8px 0;">
-                                        <div class="progress-bar-fill" style="width: ${subtaskPercent}%; height: 100%;"></div>
-                                    </div>
-                                    ${!isCompleted ? `
-                                        <button class="task-submit-btn" style="padding: 8px; font-size: 12px; margin-top: 5px;" onclick="openSubtaskUpload('${branchKey}', ${currentLevelIndex}, ${idx}, '${subtask.name}')">
-                                            <i class="fas fa-camera"></i> Отправить фото: ${subtask.name}
-                                        </button>
-                                    ` : `
-                                        <div style="text-align: center; color: var(--status-green); font-size: 12px; margin-top: 5px;">
-                                            <i class="fas fa-check-circle"></i> Выполнено!
-                                        </div>
-                                    `}
-                                `;
-                                levelCard.appendChild(subtaskDiv);
-                            });
-                            
-                            branchCard.appendChild(levelCard);
-                        }
-                    } else {
-                        const currentProgress = getLevelProgress(branchKey, currentLevelIndex);
-                        const percent = (currentProgress / level.maxProgress) * 100;
-                        const levelCard = document.createElement('div');
-                        levelCard.className = 'level-card';
-                        levelCard.innerHTML = `
-                            <div class="level-header">
-                                <span class="level-title">Уровень ${currentLevelIndex + 1}: ${level.title}</span>
-                                <span class="level-progress">${currentProgress}/${level.maxProgress}</span>
-                            </div>
-                            <div class="level-desc">${level.desc}</div>
-                            <div class="progress-bar-container">
-                                <div class="progress-bar-fill" style="width: ${percent}%"></div>
-                            </div>
-                            <button class="task-submit-btn" onclick="openTaskUpload('${branchKey}', ${currentLevelIndex})">
+                    const levelCard = document.createElement('div');
+                    levelCard.className = 'level-card';
+                    levelCard.innerHTML = `
+                        <div class="level-header">
+                            <span class="level-title">${level.title}</span>
+                            <span class="level-progress">${currentProgress}/${subtask.required}</span>
+                        </div>
+                        <div class="level-desc">${level.desc}</div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill" style="width: ${percent}%"></div>
+                        </div>
+                        ${!isSubtaskCompleted ? `
+                            <button class="task-submit-btn" onclick="openSubtaskUpload('${branchKey}', ${currentLevelIndex}, 0, '${subtask.name}')">
                                 <i class="fas fa-camera"></i> Отправить фото на проверку
                             </button>
+                        ` : `
+                            <div style="text-align: center; padding: 12px; color: var(--status-green);">
+                                <i class="fas fa-check-circle"></i> Задание выполнено!
+                            </div>
+                        `}
+                    `;
+                    branchCard.appendChild(levelCard);
+                } else {
+                    const levelCard = document.createElement('div');
+                    levelCard.className = 'level-card';
+                    
+                    let totalCompleted = 0;
+                    let totalRequired = 0;
+                    
+                    level.subtasks.forEach((subtask, idx) => {
+                        const prog = getSubtaskProgress(branchKey, currentLevelIndex, idx);
+                        totalCompleted += Math.min(prog, subtask.required);
+                        totalRequired += subtask.required;
+                    });
+                    
+                    const totalPercent = (totalCompleted / totalRequired) * 100;
+                    
+                    levelCard.innerHTML = `
+                        <div class="level-header">
+                            <span class="level-title">Уровень ${currentLevelIndex + 1}: ${level.title}</span>
+                            <span class="level-progress">${totalCompleted}/${totalRequired}</span>
+                        </div>
+                        <div class="level-desc">${level.desc}</div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill" style="width: ${totalPercent}%"></div>
+                        </div>
+                        <div style="margin-top: 15px;"></div>
+                    `;
+                    
+                    level.subtasks.forEach((subtask, idx) => {
+                        const currentProgress = getSubtaskProgress(branchKey, currentLevelIndex, idx);
+                        const isSubtaskCompleted = currentProgress >= subtask.required;
+                        const subtaskPercent = (currentProgress / subtask.required) * 100;
+                        
+                        const subtaskDiv = document.createElement('div');
+                        subtaskDiv.style.cssText = 'margin-bottom: 15px; padding: 10px; background: var(--bg); border-radius: 12px;';
+                        
+                        subtaskDiv.innerHTML = `
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                                <span style="font-weight: 600; font-size: 14px;">${subtask.name}</span>
+                                <span style="font-size: 12px; color: var(--accent);">${currentProgress}/${subtask.required}</span>
+                            </div>
+                            <div class="progress-bar-container" style="height: 6px; margin: 0 0 8px 0;">
+                                <div class="progress-bar-fill" style="width: ${subtaskPercent}%; height: 100%;"></div>
+                            </div>
+                            ${!isSubtaskCompleted ? `
+                                <button class="task-submit-btn" style="padding: 8px; font-size: 12px; margin-top: 5px;" onclick="openSubtaskUpload('${branchKey}', ${currentLevelIndex}, ${idx}, '${subtask.name}')">
+                                    <i class="fas fa-camera"></i> Отправить фото: ${subtask.name}
+                                </button>
+                            ` : `
+                                <div style="text-align: center; color: var(--status-green); font-size: 12px; margin-top: 5px;">
+                                    <i class="fas fa-check-circle"></i> Выполнено!
+                                </div>
+                            `}
                         `;
-                        branchCard.appendChild(levelCard);
-                    }
+                        levelCard.appendChild(subtaskDiv);
+                    });
+                    
+                    branchCard.appendChild(levelCard);
                 }
-                
-                container.appendChild(branchCard);
+            } else {
+                const currentProgress = getLevelProgress(branchKey, currentLevelIndex);
+                const percent = (currentProgress / level.maxProgress) * 100;
+                const levelCard = document.createElement('div');
+                levelCard.className = 'level-card';
+                levelCard.innerHTML = `
+                    <div class="level-header">
+                        <span class="level-title">Уровень ${currentLevelIndex + 1}: ${level.title}</span>
+                        <span class="level-progress">${currentProgress}/${level.maxProgress}</span>
+                    </div>
+                    <div class="level-desc">${level.desc}</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" style="width: ${percent}%"></div>
+                    </div>
+                    <button class="task-submit-btn" onclick="openTaskUpload('${branchKey}', ${currentLevelIndex})">
+                        <i class="fas fa-camera"></i> Отправить фото на проверку
+                    </button>
+                `;
+                branchCard.appendChild(levelCard);
             }
-            
-            console.log('✅ Задания отрисованы');
         }
+        
+        container.appendChild(branchCard);
+    }
+    
+    console.log('✅ Задания отрисованы');
+}
         // ==========================================
         // ОБНОВЛЕНИЕ ПРОГРЕССА
         // ==========================================
