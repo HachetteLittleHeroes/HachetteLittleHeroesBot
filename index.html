@@ -11645,7 +11645,7 @@ function openBookPagesModal(category, bookName) {
     document.getElementById('bookPagesModal').style.display = 'flex';
 }
 // Рендеринг сетки страниц
-function renderBookPagesGrid(bookKey, config) {
+function renderBookPagesGrid(bookKey, config, onlyCompleted = false) {
     const grid = document.getElementById('bookPagesGrid');
     const { totalPages, spreads } = config;
     
@@ -11660,6 +11660,12 @@ function renderBookPagesGrid(bookKey, config) {
         const pageLabel = isSpread ? `${page}-${page + 1}` : String(page);
         const completed = isPageCompleted(bookKey, pageLabel);
         const hasArtwork = getPageArtwork(bookKey, pageLabel);
+        
+        // ✅ Только для публичного профиля: пропускаем неотмеченные
+        if (onlyCompleted && !completed) {
+            page += isSpread ? 2 : 1;
+            continue;
+        }
         
         if (isOwnProfile) {
             html += `
@@ -11687,6 +11693,10 @@ function renderBookPagesGrid(bookKey, config) {
         }
         
         page += isSpread ? 2 : 1;
+    }
+    
+    if (onlyCompleted && html === '') {
+        html = '<div style="padding:20px;text-align:center;color:var(--text-gray);">Нет отмеченных страниц</div>';
     }
     
     grid.innerHTML = html;
@@ -20487,7 +20497,6 @@ function viewPublicBook(userId, category, bookName, hasArtworks) {
     const bookKey = `${category}_${bookName}`;
     const bookCompleted = completedPages[bookKey] || {};
     
-    // ✅ Считаем отмеченные страницы (разворот = 2 страницы)
     let completedPagesCount = 0;
     for (const page in bookCompleted) {
         if (page.includes('-')) {
@@ -20497,14 +20506,18 @@ function viewPublicBook(userId, category, bookName, hasArtworks) {
         }
     }
     
-    // ✅ Ищем книгу в коллекции пользователя
+    if (completedPagesCount === 0) {
+        if (tg) tg.showAlert('У пользователя нет отмеченных страниц в этой раскраске');
+        else alert('Нет отмеченных страниц');
+        return;
+    }
+    
     const userBooks = profile.coloring_books?.[category] || [];
     const savedBook = userBooks.find(b => {
         const name = typeof b === 'string' ? b : b.name;
         return name === bookName;
     });
     
-    // ✅ Получаем конфигурацию (totalPages)
     let config;
     if (savedBook && typeof savedBook === 'object') {
         config = {
@@ -20517,32 +20530,24 @@ function viewPublicBook(userId, category, bookName, hasArtworks) {
         config = DEFAULT_PAGES_CONFIG;
     }
     
-    // ✅ Проверяем, есть ли отмеченные страницы
-    if (completedPagesCount === 0) {
-        if (tg) tg.showAlert('У пользователя нет отмеченных страниц в этой раскраске');
-        else alert('Нет отмеченных страниц');
-        return;
-    }
-    
     window.isViewOnly = true;
-    
     currentBook = bookName;
     currentCategory = category;
-    userCompletedPages = completedPages;  // ✅ Используем completed_pages из профиля
+    
+    userCompletedPages = {};
+    userCompletedPages[bookKey] = bookCompleted;
     
     document.getElementById('bookPagesTitle').innerText = bookName;
     
-    // ✅ Отображаем количество отмеченных страниц
     let infoText = `Отмечено: ${completedPagesCount} / ${config.totalPages} стр.`;
-    
     const spreadsCount = config.spreads?.length || 0;
     if (spreadsCount > 0) {
         infoText += ` • ${spreadsCount} разв.`;
     }
-    
     document.getElementById('bookPagesCategory').innerText = infoText;
     
-    renderBookPagesGrid(bookKey, config);
+    // ✅ Вот здесь передаем true
+    renderBookPagesGrid(bookKey, config, true);
     
     const bookModal = document.getElementById('bookPagesModal');
     bookModal.style.display = 'flex';
