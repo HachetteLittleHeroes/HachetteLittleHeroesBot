@@ -22189,6 +22189,14 @@ function renderBestiaryStats() {
             if (DEFAULT_COLORING_BOOKS.alcohol && DEFAULT_COLORING_BOOKS.alcohol.indexOf(bookName) !== -1) cat = 'alcohol';
             bookKey = cat + '_' + bookName;
             
+            // ✅ Проверяем, есть ли книга в коллекции пользователя
+            var userBooks = userColoringBooks[cat] || [];
+            var isInCollection = userBooks.some(function(b) {
+                return (typeof b === 'string' ? b : b.name) === bookName;
+            });
+            
+            if (!isInCollection) return; // Пропускаем книги не в коллекции
+            
             var userPages = coloredPages[bookKey] || {};
             
             appearance.pages.forEach(function(p) {
