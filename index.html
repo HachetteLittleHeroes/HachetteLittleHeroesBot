@@ -10764,12 +10764,16 @@ async function loadColoringBooks() {
                             name: book,
                             custom: false,
                             totalPages: config.totalPages,
-                            spreads: config.spreads || []  // ✅ Восстанавливаем развороты
+                            spreads: config.spreads || []
                         };
                     }
                     // ✅ Если в объекте нет spreads — добавляем из конфига
                     if (!book.spreads && BOOK_PAGES_CONFIG[book.name]) {
                         book.spreads = BOOK_PAGES_CONFIG[book.name].spreads || [];
+                    }
+                    // ✅ Преобразуем старые пути /custom_covers/ в полный URL
+                    if (book.cover && book.cover.startsWith('/custom_covers')) {
+                        book.cover = SERVER_URL + book.cover;
                     }
                     return book;
                 });
