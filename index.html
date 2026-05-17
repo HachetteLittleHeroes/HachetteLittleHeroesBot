@@ -4183,41 +4183,22 @@
 <div id="profile" class="page active">
     <!-- Заголовок с кнопками -->
     <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 15px 0;">
-        <div class="header" style="padding: 0;">Профиль</div>
-        <div style="display: flex; gap: 10px;">
-            <!-- Кнопка поддержки -->
-            <button onclick="openSupportDialog()" style="background: var(--accent); color: white; border: none; padding: 8px 14px; border-radius: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 13px; font-weight: 600; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                <i class="fas fa-heart" style="margin-right: 5px;"></i>Поддержать
-            </button>
-            <!-- Кнопка друзей -->
-            <button onclick="openFriendsList()" style="background: var(--accent); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                <i class="fas fa-address-book"></i>
-            </button>
-            <!-- Кнопка поиска -->
-            <button onclick="openUserSearch()" style="background: var(--accent); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                <i class="fas fa-search"></i>
-            </button>
-        </div>
-    </div>
-
-    <!-- Блок с аватаркой, именем и статусом -->
-    <div class="profile-header-block">
-        <div class="avatar-wrapper" onclick="toggleAvatarEditor()">
-            <img id="user-avatar" src="https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av2.png">
-            <div class="avatar-edit-icon"><i class="fas fa-pencil-alt"></i></div>
-        </div>
-        <div class="profile-info">
-            <div class="name-row" onclick="changeNickname()">
-                <h2 id="displayUsername">Без имени</h2>
-                <i class="fas fa-pencil-alt" style="color: var(--text-gray); font-size: 14px;"></i>
-            </div>
-            <button id="currentStatus" class="status-badge" onclick="openStatusInfo()">Без статуса</button>
-        </div>
+    <div class="header" style="padding: 0;">Профиль</div>
+    <div style="display: flex; gap: 10px;">
+        <!-- Кнопка поддержки -->
+        <button onclick="openSupportDialog()" style="background: var(--accent); color: white; border: none; padding: 8px 14px; border-radius: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 13px; font-weight: 600; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <i class="fas fa-heart" style="margin-right: 5px;"></i>Поддержать
+        </button>
+        <!-- Кнопка друзья + поиск -->
+        <button onclick="openFriendsList()" style="background: var(--accent); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <i class="fas fa-address-book"></i>
+        </button>
         <!-- Кнопка выбора темы -->
-        <button onclick="openThemeModal()" style="background: var(--accent); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; flex-shrink: 0;">
+        <button onclick="openThemeModal()" style="background: var(--accent); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
             <i class="fas fa-palette"></i>
         </button>
     </div>
+</div>
 
     <div id="avatarEditor" class="avatar-editor">
         <p>Выберите аватарку:</p>
@@ -20271,47 +20252,119 @@ function viewPublicBook(userId, category, bookName, hasArtworks) {
     const profileModal = document.getElementById('publicProfileModal');
     if (profileModal) profileModal.style.opacity = '0.3';
 }
-// Открыть список друзей
+// Открыть список друзей (с поиском пользователей)
 async function openFriendsList() {
     const modal = document.getElementById('friendsListModal');
     const container = document.getElementById('friendsListContainer');
     
     modal.style.display = 'flex';
-    container.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Загрузка...</div>';
+    container.innerHTML = `
+        <div class="search-box" style="margin-bottom: 15px;">
+            <i class="fas fa-search"></i>
+            <input type="text" id="friendsSearchInput" placeholder="Поиск по username или никнейму..." oninput="searchUsersInFriends()">
+        </div>
+        <div id="friendsSearchResults"></div>
+        <hr style="margin: 15px 0;">
+        <div id="friendsListInner">
+            <div class="loading"><i class="fas fa-spinner fa-spin"></i> Загрузка...</div>
+        </div>
+    `;
     
     try {
-        await loadMyFriends(); // Загружаем актуальный список
-        
-        if (myFriends.length === 0) {
-            container.innerHTML = '<div class="no-results" style="padding: 20px;">😕 У вас пока нет друзей</div>';
-            return;
-        }
-        
-        let html = '';
-        myFriends.forEach(friend => {
-            html += `
-                <div class="friend-card">
-                    <img src="${friend.avatar}" class="friend-avatar" onerror="this.src='https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png'">
-                    <div class="friend-info">
-                        <div class="friend-name">${friend.name}</div>
-                        <div class="friend-username">${friend.username}</div>
-                    </div>
-                    <div style="display: flex; gap: 5px;">
-                        <button class="friend-view-btn" onclick="viewFriendProfile('${friend.user_id}')">
-                            <i class="fas fa-user"></i>
-                        </button>
-                        <button class="friend-remove-btn" onclick="confirmRemoveFriend('${friend.user_id}', '${friend.name.replace(/'/g, "\\'")}')">
-                            <i class="fas fa-user-minus"></i>
-                        </button>
-                    </div>
-                </div>
-            `;
-        });
-        
-        container.innerHTML = html;
+        await loadMyFriends();
+        renderFriendsListInner();
     } catch (error) {
-        container.innerHTML = '<div class="no-results">❌ Ошибка загрузки</div>';
+        document.getElementById('friendsListInner').innerHTML = '<div class="no-results">❌ Ошибка загрузки</div>';
     }
+}
+
+function renderFriendsListInner() {
+    const container = document.getElementById('friendsListInner');
+    if (!container) return;
+    
+    if (myFriends.length === 0) {
+        container.innerHTML = '<div class="no-results" style="padding: 20px;">😕 У вас пока нет друзей</div>';
+        return;
+    }
+    
+    let html = '<h4 style="margin-bottom: 10px;">Мои друзья</h4>';
+    myFriends.forEach(friend => {
+        html += `
+            <div class="friend-card">
+                <img src="${friend.avatar}" class="friend-avatar" onerror="this.src='https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png'">
+                <div class="friend-info">
+                    <div class="friend-name">${friend.name}</div>
+                    <div class="friend-username">${friend.username}</div>
+                </div>
+                <div style="display: flex; gap: 5px;">
+                    <button class="friend-view-btn" onclick="viewFriendProfile('${friend.user_id}')">
+                        <i class="fas fa-user"></i>
+                    </button>
+                    <button class="friend-remove-btn" onclick="confirmRemoveFriend('${friend.user_id}', '${friend.name.replace(/'/g, "\\'")}')">
+                        <i class="fas fa-user-minus"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+    });
+    
+    container.innerHTML = html;
+}
+
+let friendsSearchTimeout = null;
+
+function searchUsersInFriends() {
+    const input = document.getElementById('friendsSearchInput');
+    const query = input.value.trim();
+    const resultsDiv = document.getElementById('friendsSearchResults');
+    
+    if (friendsSearchTimeout) clearTimeout(friendsSearchTimeout);
+    
+    if (query.length < 2) {
+        resultsDiv.innerHTML = '';
+        return;
+    }
+    
+    resultsDiv.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Поиск...</div>';
+    
+    friendsSearchTimeout = setTimeout(async () => {
+        try {
+            const response = await fetch(`${SERVER_URL}/api/search_users?query=${encodeURIComponent(query)}`);
+            const users = await response.json();
+            
+            if (users.length === 0) {
+                resultsDiv.innerHTML = '<div class="no-results" style="padding: 10px;">😕 Ничего не найдено</div>';
+                return;
+            }
+            
+            let html = '';
+            users.forEach(user => {
+                const avatarUrl = user.avatar || 'https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png';
+                const isFriend = myFriends.some(f => String(f.user_id) === String(user.user_id));
+                const isMe = String(user.user_id) === String(userId);
+                
+                html += `
+                    <div class="friend-card" style="cursor: pointer;" onclick="${isMe ? '' : `viewFriendProfile('${user.user_id}')`}">
+                        <img src="${avatarUrl}" class="friend-avatar" onerror="this.src='https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png'">
+                        <div class="friend-info">
+                            <div class="friend-name">${user.name} ${isMe ? '(вы)' : ''}</div>
+                            <div class="friend-username">${user.username}</div>
+                            <div style="font-size: 11px; color: var(--accent);">${user.status || 'Без статуса'}</div>
+                        </div>
+                        ${!isMe && !isFriend ? `
+                            <button class="friend-view-btn" onclick="event.stopPropagation(); addFriend('${user.user_id}')" style="background: var(--accent);">
+                                <i class="fas fa-user-plus"></i>
+                            </button>
+                        ` : ''}
+                    </div>
+                `;
+            });
+            
+            resultsDiv.innerHTML = html;
+        } catch (error) {
+            resultsDiv.innerHTML = '<div class="no-results">❌ Ошибка поиска</div>';
+        }
+    }, 500);
 }
 
 function closeFriendsList() {
@@ -20323,7 +20376,6 @@ function viewFriendProfile(friendId) {
     openPublicProfile(friendId);
 }
 
-// ✅ Подтверждение удаления
 function confirmRemoveFriend(friendId, friendName) {
     if (tg) {
         tg.showConfirm(`Удалить «${friendName}» из друзей?`, (confirm) => {
@@ -20336,7 +20388,6 @@ function confirmRemoveFriend(friendId, friendName) {
     }
 }
 
-// ✅ Удаление из друзей
 async function removeFriend(friendId) {
     try {
         await fetch(`${SERVER_URL}/api/friends/remove`, {
@@ -20345,13 +20396,9 @@ async function removeFriend(friendId) {
             body: JSON.stringify({ user_id: userId, friend_id: friendId })
         });
         
-        // Обновляем глобальный список
         await loadMyFriends();
-        
-        // Обновляем модалку
         openFriendsList();
         
-        // Если открыт публичный профиль этого друга — обновляем кнопку
         if (currentPublicUserId === friendId) {
             const container = document.getElementById('publicProfileContent');
             if (container && container.dataset.profile) {
@@ -20366,7 +20413,6 @@ async function removeFriend(friendId) {
     }
 }
 
-// ✅ Добавление в друзья
 async function addFriend(friendId) {
     try {
         await fetch(`${SERVER_URL}/api/friends/add`, {
@@ -20375,10 +20421,8 @@ async function addFriend(friendId) {
             body: JSON.stringify({ user_id: userId, friend_id: friendId })
         });
         
-        // Обновляем глобальный список
         await loadMyFriends();
         
-        // Если открыт публичный профиль — обновляем кнопку
         if (currentPublicUserId === friendId) {
             const container = document.getElementById('publicProfileContent');
             if (container && container.dataset.profile) {
@@ -20393,7 +20437,6 @@ async function addFriend(friendId) {
     }
 }
 
-// ✅ Загрузка списка друзей
 async function loadMyFriends() {
     try {
         const response = await fetch(`${SERVER_URL}/api/friends?user_id=${userId}`);
@@ -20401,74 +20444,6 @@ async function loadMyFriends() {
     } catch (error) {
         console.error('Ошибка загрузки друзей:', error);
         myFriends = [];
-    }
-}
-// Проверка, раскрашена ли страница
-function isPageCompleted(bookKey, page) {
-    return userCompletedPages[bookKey]?.hasOwnProperty(String(page)) || false;
-}
-
-// Отметить/снять отметку страницы
-function togglePageCompletion(bookKey, page, totalPages) {
-    if (!userCompletedPages[bookKey]) {
-        userCompletedPages[bookKey] = {};
-    }
-    
-    const isCompleted = userCompletedPages[bookKey][String(page)];
-    
-    if (isCompleted) {
-        if (tg) {
-            tg.showConfirm(`Снять отметку со страницы ${page}?`, (confirm) => {
-                if (confirm) {
-                    delete userCompletedPages[bookKey][String(page)];
-                    // ✅ Удаляем дату
-                    if (window.completedPagesDates) {
-                        delete window.completedPagesDates[bookKey + '|' + page];
-                        localStorage.setItem('completed_pages_dates_' + userId, JSON.stringify(window.completedPagesDates));
-                    }
-                    saveCompletedPages();
-                    updateBookProgress(bookKey);
-                    updateAllCategoriesProgress();
-                    
-                    const config = BOOK_PAGES_CONFIG[currentBook] || DEFAULT_PAGES_CONFIG;
-                    renderBookPagesGrid(bookKey, config);
-                }
-            });
-        } else {
-            if (confirm(`Снять отметку со страницы ${page}?`)) {
-                delete userCompletedPages[bookKey][String(page)];
-                // ✅ Удаляем дату
-                if (window.completedPagesDates) {
-                    delete window.completedPagesDates[bookKey + '|' + page];
-                    localStorage.setItem('completed_pages_dates_' + userId, JSON.stringify(window.completedPagesDates));
-                }
-                saveCompletedPages();
-                updateBookProgress(bookKey);
-                updateAllCategoriesProgress();
-                
-                const config = BOOK_PAGES_CONFIG[currentBook] || DEFAULT_PAGES_CONFIG;
-                renderBookPagesGrid(bookKey, config);
-            }
-        }
-    } else {
-        userCompletedPages[bookKey][String(page)] = true;
-        // ✅ Сохраняем дату отметки
-        if (!window.completedPagesDates) window.completedPagesDates = {};
-        window.completedPagesDates[bookKey + '|' + page] = Date.now();
-        localStorage.setItem('completed_pages_dates_' + userId, JSON.stringify(window.completedPagesDates));
-        
-        saveCompletedPages();
-        updateBookProgress(bookKey);
-        updateAllCategoriesProgress();
-        
-        const config = BOOK_PAGES_CONFIG[currentBook] || DEFAULT_PAGES_CONFIG;
-        renderBookPagesGrid(bookKey, config);
-        
-        const completedCount = Object.keys(userCompletedPages[bookKey]).length;
-        if (completedCount === totalPages) {
-            if (tg) tg.showAlert(`🎉 Поздравляем! Вы раскрасили всю раскраску «${currentBook}»!`);
-            else alert(`🎉 Поздравляем! Вы раскрасили всю раскраску «${currentBook}»!`);
-        }
     }
 }
 
