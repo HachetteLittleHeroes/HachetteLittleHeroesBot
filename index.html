@@ -4316,8 +4316,8 @@
     <div class="header" style="padding: 0;">Профиль</div>
     <div style="display: flex; gap: 10px;">
         <!-- Кнопка поддержки -->
-        <button onclick="openSupportDialog()" style="background: var(--accent); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-            <i class="fas fa-heart"></i>
+        <button onclick="openSupportDialog()" style="background: var(--accent); color: white; border: none; padding: 8px 14px; border-radius: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 13px; font-weight: 600; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <i class="fas fa-heart" style="margin-right: 5px;"></i>Поддержать
         </button>
         <!-- Кнопка друзей -->
         <button onclick="openFriendsList()" style="background: var(--accent); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
@@ -4329,7 +4329,6 @@
         </button>
     </div>
 </div>
-
     <!-- Блок с аватаркой, именем и статусом -->
     <div class="profile-header-block">
         <div class="avatar-wrapper" onclick="toggleAvatarEditor()">
@@ -4461,15 +4460,6 @@
             </div>
             <div class="showcase-info" onclick="openAchievementsGallery()">Нажмите для просмотра всех достижений</div>
         </div>
-
-       <div class="support-section" onclick="openSupportDialog()">
-    <h3>Поддержать нас</h3>
-    <p>Помогите проекту развиваться</p>
-    <div class="support-button"><i class="fas fa-heart"></i><span>Поддержать</span></div>
-    <p style="font-size: 12px; color: var(--text-gray); margin-top: 10px;">
-        💬 Откроется диалог, чтобы узнать как поддержать проект
-    </p>
-</div>
 
         <div class="themes-section">
             <h3>Темы оформления</h3>
