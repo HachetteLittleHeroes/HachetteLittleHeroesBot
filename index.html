@@ -4200,6 +4200,21 @@
         </div>
     </div>
 
+    <!-- Блок с аватаркой, именем и статусом -->
+    <div class="profile-header-block">
+        <div class="avatar-wrapper" onclick="toggleAvatarEditor()">
+            <img id="user-avatar" src="https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av2.png">
+            <div class="avatar-edit-icon"><i class="fas fa-pencil-alt"></i></div>
+        </div>
+        <div class="profile-info">
+            <div class="name-row" onclick="changeNickname()">
+                <h2 id="displayUsername">Без имени</h2>
+                <i class="fas fa-pencil-alt" style="color: var(--text-gray); font-size: 14px;"></i>
+            </div>
+            <button id="currentStatus" class="status-badge" onclick="openStatusInfo()">Без статуса</button>
+        </div>
+    </div>
+
     <div id="avatarEditor" class="avatar-editor">
         <p>Выберите аватарку:</p>
         <div id="avatarPresets" class="preset-avatars-grid"></div>
@@ -4307,83 +4322,6 @@
         </div>
     </div>
 </div>
-    <!-- ========== МАРКЕРЫ ========== -->
-    <div id="markers" class="page">
-        <div class="header">
-            Маркеры
-            <button onclick="loadMarkers()" style="float: right; background: var(--accent); color: white; padding: 8px 16px; border-radius: 20px; font-size: 12px;">
-                <i class="fas fa-sync-alt"></i> Обновить
-            </button>
-        </div>
-        <div class="search-container">
-            <div class="search-box">
-                <i class="fas fa-search"></i>
-                <input type="text" id="markerSearch" placeholder="Поиск по номеру..." oninput="searchMarkers()">
-            </div>
-        </div>
-        <div class="markers-section">
-            <div id="markersList"></div>
-        </div>
-    </div>
-
-    <!-- ========== ОТВЕТЫ И ТОМА ========== -->
-    <div id="answers" class="page">
-        <div class="header">Ответы и Тома</div>
-        <div class="search-container">
-            <div class="search-box">
-                <i class="fas fa-search"></i>
-                <input type="text" id="volumeSearch" placeholder="Поиск по названию тома..." oninput="searchVolumes()">
-            </div>
-        </div>
-        <div class="books-section">
-            <div id="volumesContainer" class="books-grid"></div>
-        </div>
-    </div>
-
-    <!-- ========== СТАТИСТИКА ========== -->
-    <div id="stats" class="page">
-        <div class="header">Статистика</div>
-        <div class="inventory-main-block">
-            <div class="inventory-header" onclick="openStatsBlock('paint_by_number')">
-                <div class="inventory-header-left">
-                    <i class="fas fa-border-all"></i>
-                    <span>Раскраски по номерам</span>
-                </div>
-                <i class="fas fa-chevron-down" id="arrow-stats-paint_by_number"></i>
-            </div>
-            <div id="stats-content-paint_by_number" class="inventory-content" style="display: none;"></div>
-        </div>
-        <div class="inventory-main-block" style="margin-top: 10px;">
-            <div class="inventory-header" onclick="openStatsBlock('alcohol')">
-                <div class="inventory-header-left">
-                    <i class="fas fa-wine-bottle"></i>
-                    <span>Спиртовые раскраски</span>
-                </div>
-                <i class="fas fa-chevron-down" id="arrow-stats-alcohol"></i>
-            </div>
-            <div id="stats-content-alcohol" class="inventory-content" style="display: none;"></div>
-        </div>
-        <div class="inventory-main-block" style="margin-top: 10px;">
-    <div class="inventory-header" onclick="openStatsBlock('bestiary')">
-        <div class="inventory-header-left">
-            <i class="fas fa-dragon"></i>
-            <span>Персонажи</span>
-        </div>
-        <i class="fas fa-chevron-down" id="arrow-stats-bestiary"></i>
-    </div>
-    <div id="stats-content-bestiary" class="inventory-content" style="display: none;"></div>
-</div>
-        <div class="inventory-main-block" style="margin-top: 10px;">
-            <div class="inventory-header" onclick="openStatsBlock('chart')">
-                <div class="inventory-header-left">
-                    <i class="fas fa-chart-line"></i>
-                    <span>Прогресс по месяцам</span>
-                </div>
-                <i class="fas fa-chevron-down" id="arrow-stats-chart"></i>
-            </div>
-            <div id="stats-content-chart" class="inventory-content" style="display: none;"></div>
-        </div>
-    </div>
 
    
 <!-- ========== КОЛЛЕКЦИЯ ========== -->
