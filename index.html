@@ -4312,19 +4312,23 @@
   <!-- ========== ПРОФИЛЬ ========== -->
 <div id="profile" class="page active">
     <!-- Заголовок с кнопками -->
-    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 15px 0;">
-        <div class="header" style="padding: 0;">Профиль</div>
-        <div style="display: flex; gap: 10px;">
-            <!-- Кнопка друзей -->
-            <button onclick="openFriendsList()" style="background: var(--accent); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                <i class="fas fa-address-book"></i>
-            </button>
-            <!-- Кнопка поиска -->
-            <button onclick="openUserSearch()" style="background: var(--accent); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                <i class="fas fa-search"></i>
-            </button>
-        </div>
+  <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 15px 0;">
+    <div class="header" style="padding: 0;">Профиль</div>
+    <div style="display: flex; gap: 10px;">
+        <!-- Кнопка поддержки -->
+        <button onclick="openSupportDialog()" style="background: var(--accent); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <i class="fas fa-heart"></i>
+        </button>
+        <!-- Кнопка друзей -->
+        <button onclick="openFriendsList()" style="background: var(--accent); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <i class="fas fa-address-book"></i>
+        </button>
+        <!-- Кнопка поиска -->
+        <button onclick="openUserSearch()" style="background: var(--accent); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <i class="fas fa-search"></i>
+        </button>
     </div>
+</div>
 
     <!-- Блок с аватаркой, именем и статусом -->
     <div class="profile-header-block">
