@@ -20227,7 +20227,7 @@ function renderFriendsListInner() {
         return;
     }
     
-    let html = '<h4 style="margin-bottom: 10px;">Друзья</h4>';
+    let html = '<h4 style="margin-bottom: 10px;">Мои друзья</h4>';
     myFriends.forEach(friend => {
         html += `
             <div class="friend-card">
@@ -22176,7 +22176,7 @@ function openBookPageFromBestiary(category, bookName, page) {
 <!-- Модалка списка друзей -->
 <div id="friendsListModal" class="modal-overlay">
     <div class="modal-content" style="max-width: 400px;">
-        <h3>Мои друзья</h3>
+        <h3>Друзья</h3>
         <div id="friendsListContainer" style="max-height: 400px; overflow-y: auto;"></div>
         <button class="modal-close-btn" onclick="closeFriendsList()">Закрыть</button>
     </div>
