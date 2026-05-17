@@ -9098,7 +9098,10 @@ function openFigureModal(figure, isUnlocked) {
     molniya: "Молния",
     nezhnost: "Нежность",
     pempudu: "Абрикосик",
-    collection_master: "Хранитель"
+    collection_master: "Хранитель",
+            'tsvetochek': 'Цветочек',
+    'bembi': 'Бемби',
+    'topotun': 'Топотун'
 };
         
         const TASK_BRANCHES = {
@@ -9891,12 +9894,11 @@ function checkAndFixSeasonPassProgress() {
     return anyLevelUnlocked;
 }
 
-   function claimSeasonReward(levelNum, type) {
+  function claimSeasonReward(levelNum, type) {
     const branch = TASK_BRANCHES.season_pass;
     const levelData = branch.levels[levelNum - 1];
     if (!levelData) return;
     
-    // Проверяем, выполнены ли все подзадания уровня
     let allSubtasksCompleted = true;
     levelData.subtasks.forEach((subtask, idx) => {
         const progress = getSubtaskProgress('season_pass', levelNum - 1, idx);
@@ -9918,9 +9920,7 @@ function checkAndFixSeasonPassProgress() {
         
         const reward = levelData.freeReward;
         
-        // Обработка разных типов наград
         if (reward.type === 'achetiki') {
-            // Отправляем запрос на сервер для начисления ашетиков
             fetch(`${SERVER_URL}/api/add_balance`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -9939,43 +9939,40 @@ function checkAndFixSeasonPassProgress() {
                     }
                     saveUserData();
                     updateUI();
-                    
                     if (tg) tg.showAlert(`✅ Получено ${reward.amount} ашетиков!`);
                 } else {
                     user.balance += reward.amount;
                     saveUserData();
                     updateUI();
-                    if (tg) tg.showAlert(`⚠️ Начислено локально: ${reward.amount} ашетиков. Синхронизация может отсутствовать.`);
                 }
             }).catch(error => {
-                console.error('Ошибка запроса:', error);
                 user.balance += reward.amount;
                 saveUserData();
                 updateUI();
-                if (tg) tg.showAlert(`⚠️ Начислено локально: ${reward.amount} ашетиков. Проверьте подключение к интернету.`);
             });
         }
         else if (reward.type === 'achievement') {
-            if (!user.achievements.includes(reward.reward)) {
-                user.achievements.push(reward.reward);
+            // ✅ Выдаём как статус
+            if (!user.unlockedStatuses.includes(reward.reward)) {
+                user.unlockedStatuses.push(reward.reward);
                 saveUserData();
-                fetch(`${SERVER_URL}/api/add_achievement`, {
+                fetch(`${SERVER_URL}/api/sync_status`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ user_id: userId, achievement: reward.reward })
+                    body: JSON.stringify({ user_id: userId, status: reward.reward, action: 'unlock' })
                 });
-                if (tg) tg.showAlert(`✅ Получено достижение "${reward.reward}"!`);
+                if (tg) tg.showAlert(`✅ Получен статус "${reward.reward}"!`);
             }
         }
         else if (reward.type === 'achievement_with_achetiki') {
-            // Достижение + ашетики
-            if (!user.achievements.includes(reward.achievement)) {
-                user.achievements.push(reward.achievement);
+            // ✅ Выдаём статус + ашетики
+            if (!user.unlockedStatuses.includes(reward.achievement)) {
+                user.unlockedStatuses.push(reward.achievement);
                 saveUserData();
-                fetch(`${SERVER_URL}/api/add_achievement`, {
+                fetch(`${SERVER_URL}/api/sync_status`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ user_id: userId, achievement: reward.achievement })
+                    body: JSON.stringify({ user_id: userId, status: reward.achievement, action: 'unlock' })
                 });
             }
             fetch(`${SERVER_URL}/api/add_balance`, {
@@ -9992,14 +9989,13 @@ function checkAndFixSeasonPassProgress() {
                     user.balance = result.new_balance;
                     saveUserData();
                     updateUI();
-                    if (tg) tg.showAlert(`✅ Получено достижение "${reward.achievement}" и ${reward.amount} ашетиков!`);
                 }
             }).catch(error => {
                 user.balance += reward.amount;
                 saveUserData();
                 updateUI();
-                if (tg) tg.showAlert(`⚠️ Начислено локально: ${reward.amount} ашетиков.`);
             });
+            if (tg) tg.showAlert(`✅ Получен статус "${reward.achievement}" и ${reward.amount} ашетиков!`);
         }
         else if (reward.type === 'status') {
             if (!user.unlockedStatuses.includes(reward.reward)) {
@@ -10014,7 +10010,6 @@ function checkAndFixSeasonPassProgress() {
             }
         }
         else if (reward.type === 'status_with_lottery') {
-            // Статус + билет на розыгрыш
             if (!user.unlockedStatuses.includes(reward.status)) {
                 user.unlockedStatuses.push(reward.status);
                 saveUserData();
@@ -10024,7 +10019,6 @@ function checkAndFixSeasonPassProgress() {
                     body: JSON.stringify({ user_id: userId, status: reward.status, action: 'unlock' })
                 });
             }
-            // Сохраняем билет на розыгрыш
             const lotteryTickets = JSON.parse(localStorage.getItem(`lottery_tickets_${userId}`) || '[]');
             lotteryTickets.push({
                 level: levelNum,
@@ -10033,23 +10027,14 @@ function checkAndFixSeasonPassProgress() {
                 date: new Date().toISOString()
             });
             localStorage.setItem(`lottery_tickets_${userId}`, JSON.stringify(lotteryTickets));
-            
-            // Отправляем на сервер
             fetch(`${SERVER_URL}/api/add_lottery_ticket`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    user_id: userId,
-                    level: levelNum,
-                    type: type,
-                    reward: reward.lottery
-                })
+                body: JSON.stringify({ user_id: userId, level: levelNum, type: type, reward: reward.lottery })
             });
-            
             if (tg) tg.showAlert(`✅ ${reward.name}!\n\nРезультаты розыгрыша будут объявлены после окончания сезона.`);
         }
         else if (reward.type === 'lottery') {
-            // Билет на розыгрыш
             const lotteryTickets = JSON.parse(localStorage.getItem(`lottery_tickets_${userId}`) || '[]');
             lotteryTickets.push({
                 level: levelNum,
@@ -10058,30 +10043,18 @@ function checkAndFixSeasonPassProgress() {
                 date: new Date().toISOString()
             });
             localStorage.setItem(`lottery_tickets_${userId}`, JSON.stringify(lotteryTickets));
-            
             fetch(`${SERVER_URL}/api/add_lottery_ticket`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    user_id: userId,
-                    level: levelNum,
-                    type: type,
-                    reward: reward.reward
-                })
+                body: JSON.stringify({ user_id: userId, level: levelNum, type: type, reward: reward.reward })
             });
-            
             if (tg) tg.showAlert(`✅ ${reward.name}!\n\nРезультаты розыгрыша будут объявлены после окончания сезона.`);
         }
         else if (reward.type === 'lottery_with_achetiki') {
-            // Билет на розыгрыш + ашетики
             fetch(`${SERVER_URL}/api/add_balance`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    user_id: userId,
-                    amount: reward.amount,
-                    reason: `Season Pass уровень ${levelNum} награда`
-                })
+                body: JSON.stringify({ user_id: userId, amount: reward.amount, reason: `Season Pass уровень ${levelNum} награда` })
             }).then(async response => {
                 const result = await response.json();
                 if (result && result.status === 'ok') {
@@ -10094,27 +10067,14 @@ function checkAndFixSeasonPassProgress() {
                 saveUserData();
                 updateUI();
             });
-            
             const lotteryTickets = JSON.parse(localStorage.getItem(`lottery_tickets_${userId}`) || '[]');
-            lotteryTickets.push({
-                level: levelNum,
-                type: type,
-                reward: reward.lottery,
-                date: new Date().toISOString()
-            });
+            lotteryTickets.push({ level: levelNum, type: type, reward: reward.lottery, date: new Date().toISOString() });
             localStorage.setItem(`lottery_tickets_${userId}`, JSON.stringify(lotteryTickets));
-            
             fetch(`${SERVER_URL}/api/add_lottery_ticket`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    user_id: userId,
-                    level: levelNum,
-                    type: type,
-                    reward: reward.lottery
-                })
+                body: JSON.stringify({ user_id: userId, level: levelNum, type: type, reward: reward.lottery })
             });
-            
             if (tg) tg.showAlert(`✅ ${reward.name}!\n\nРезультаты розыгрыша будут объявлены после окончания сезона.`);
         }
         
@@ -10122,35 +10082,23 @@ function checkAndFixSeasonPassProgress() {
         saveClaimedRewards();
         renderSeasonPassTasks();
         
-        // ========== РАЗБЛОКИРОВКА СЛЕДУЮЩЕГО УРОВНЯ ==========
-if (levelNum < 5) {
-    // Проверяем, что текущий уровень полностью пройден
-    const currentLevel = levelNum - 1;
-    const allCurrentSubtasksDone = levelData.subtasks.every((subtask, idx) => {
-        const prog = getSubtaskProgress('season_pass', currentLevel, idx);
-        return prog >= subtask.required;
-    });
-    
-    if (allCurrentSubtasksDone) {
-        console.log(`✅ Уровень ${levelNum} пройден, разблокируем следующий уровень ${levelNum + 1}`);
-        
-        // Принудительно обновляем userProgress
-        saveUserData();
-        
-        // Обновляем отображение
-        renderSeasonPassTasks();
-        
-        if (tg) tg.showAlert(`🎉 Уровень ${levelNum} пройден! Открыт уровень ${levelNum + 1}!`);
-    }
-}
-// ======================================================
+        if (levelNum < 5) {
+            const currentLevel = levelNum - 1;
+            const allCurrentSubtasksDone = levelData.subtasks.every((subtask, idx) => {
+                return getSubtaskProgress('season_pass', currentLevel, idx) >= subtask.required;
+            });
+            if (allCurrentSubtasksDone) {
+                saveUserData();
+                renderSeasonPassTasks();
+                if (tg) tg.showAlert(`🎉 Уровень ${levelNum} пройден! Открыт уровень ${levelNum + 1}!`);
+            }
+        }
         
     } else if (type === 'premium') {
         if (!userSeasonPremium) {
             if (tg) tg.showAlert('❌ Премиум пропуск не активен');
             return;
         }
-        
         if (claimedSeasonRewards.premium.includes(levelNum)) {
             if (tg) tg.showAlert('❌ Награда уже получена');
             return;
@@ -10158,16 +10106,11 @@ if (levelNum < 5) {
         
         const reward = levelData.premiumReward;
         
-        // Обработка премиум наград
         if (reward.type === 'achetiki') {
             fetch(`${SERVER_URL}/api/add_balance`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    user_id: userId,
-                    amount: reward.amount,
-                    reason: `Season Pass уровень ${levelNum} премиум награда`
-                })
+                body: JSON.stringify({ user_id: userId, amount: reward.amount, reason: `Season Pass уровень ${levelNum} премиум награда` })
             }).then(async response => {
                 const result = await response.json();
                 if (result && result.status === 'ok') {
@@ -10179,59 +10122,54 @@ if (levelNum < 5) {
                     user.balance += reward.amount;
                     saveUserData();
                     updateUI();
-                    if (tg) tg.showAlert(`⚠️ Начислено локально: ${reward.amount} ашетиков.`);
                 }
             }).catch(error => {
                 user.balance += reward.amount;
                 saveUserData();
                 updateUI();
-                if (tg) tg.showAlert(`⚠️ Начислено локально: ${reward.amount} ашетиков.`);
             });
         }
         else if (reward.type === 'achievement') {
-            if (!user.achievements.includes(reward.reward)) {
-                user.achievements.push(reward.reward);
+            // ✅ Выдаём как статус
+            if (!user.unlockedStatuses.includes(reward.reward)) {
+                user.unlockedStatuses.push(reward.reward);
                 saveUserData();
-                fetch(`${SERVER_URL}/api/add_achievement`, {
+                fetch(`${SERVER_URL}/api/sync_status`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ user_id: userId, achievement: reward.reward })
+                    body: JSON.stringify({ user_id: userId, status: reward.reward, action: 'unlock' })
                 });
-                if (tg) tg.showAlert(`✅ Получено достижение "${reward.reward}"!`);
+                if (tg) tg.showAlert(`✅ Получен статус "${reward.reward}"!`);
             }
         }
         else if (reward.type === 'achievement_with_achetiki') {
-            if (!user.achievements.includes(reward.achievement)) {
-                user.achievements.push(reward.achievement);
+            // ✅ Выдаём статус + ашетики
+            if (!user.unlockedStatuses.includes(reward.achievement)) {
+                user.unlockedStatuses.push(reward.achievement);
                 saveUserData();
-                fetch(`${SERVER_URL}/api/add_achievement`, {
+                fetch(`${SERVER_URL}/api/sync_status`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ user_id: userId, achievement: reward.achievement })
+                    body: JSON.stringify({ user_id: userId, status: reward.achievement, action: 'unlock' })
                 });
             }
             fetch(`${SERVER_URL}/api/add_balance`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    user_id: userId,
-                    amount: reward.amount,
-                    reason: `Season Pass уровень ${levelNum} премиум награда`
-                })
+                body: JSON.stringify({ user_id: userId, amount: reward.amount, reason: `Season Pass уровень ${levelNum} премиум награда` })
             }).then(async response => {
                 const result = await response.json();
                 if (result && result.status === 'ok') {
                     user.balance = result.new_balance;
                     saveUserData();
                     updateUI();
-                    if (tg) tg.showAlert(`✅ Получено достижение "${reward.achievement}" и ${reward.amount} ашетиков!`);
                 }
             }).catch(error => {
                 user.balance += reward.amount;
                 saveUserData();
                 updateUI();
-                if (tg) tg.showAlert(`⚠️ Начислено локально: ${reward.amount} ашетиков.`);
             });
+            if (tg) tg.showAlert(`✅ Получен статус "${reward.achievement}" и ${reward.amount} ашетиков!`);
         }
         else if (reward.type === 'status') {
             if (!user.unlockedStatuses.includes(reward.reward)) {
@@ -10256,68 +10194,41 @@ if (levelNum < 5) {
                 });
             }
             const lotteryTickets = JSON.parse(localStorage.getItem(`lottery_tickets_${userId}`) || '[]');
-            lotteryTickets.push({
-                level: levelNum,
-                type: type,
-                reward: reward.lottery,
-                date: new Date().toISOString()
-            });
+            lotteryTickets.push({ level: levelNum, type: type, reward: reward.lottery, date: new Date().toISOString() });
             localStorage.setItem(`lottery_tickets_${userId}`, JSON.stringify(lotteryTickets));
             fetch(`${SERVER_URL}/api/add_lottery_ticket`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    user_id: userId,
-                    level: levelNum,
-                    type: type,
-                    reward: reward.lottery
-                })
+                body: JSON.stringify({ user_id: userId, level: levelNum, type: type, reward: reward.lottery })
             });
-            if (tg) tg.showAlert(`✅ ${reward.name}!\n\nРезультаты розыгрыша будут объявлены после окончания сезона.`);
+            if (tg) tg.showAlert(`✅ ${reward.name}!`);
         }
         else if (reward.type === 'lottery') {
             const lotteryTickets = JSON.parse(localStorage.getItem(`lottery_tickets_${userId}`) || '[]');
-            lotteryTickets.push({
-                level: levelNum,
-                type: type,
-                reward: reward.reward,
-                date: new Date().toISOString()
-            });
+            lotteryTickets.push({ level: levelNum, type: type, reward: reward.reward, date: new Date().toISOString() });
             localStorage.setItem(`lottery_tickets_${userId}`, JSON.stringify(lotteryTickets));
             fetch(`${SERVER_URL}/api/add_lottery_ticket`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    user_id: userId,
-                    level: levelNum,
-                    type: type,
-                    reward: reward.reward
-                })
+                body: JSON.stringify({ user_id: userId, level: levelNum, type: type, reward: reward.reward })
             });
-            if (tg) tg.showAlert(`✅ ${reward.name}!\n\nРезультаты розыгрыша будут объявлены после окончания сезона.`);
+            if (tg) tg.showAlert(`✅ ${reward.name}!`);
         }
         
         claimedSeasonRewards.premium.push(levelNum);
         saveClaimedRewards();
         renderSeasonPassTasks();
         
-        // ========== РАЗБЛОКИРОВКА СЛЕДУЮЩЕГО УРОВНЯ ==========
         if (levelNum < 5) {
-            // Проверяем, что текущий уровень полностью пройден
             const currentLevel = levelNum - 1;
             const allCurrentSubtasksDone = levelData.subtasks.every((subtask, idx) => {
-                const prog = getSubtaskProgress('season_pass', currentLevel, idx);
-                return prog >= subtask.required;
+                return getSubtaskProgress('season_pass', currentLevel, idx) >= subtask.required;
             });
-            
             if (allCurrentSubtasksDone) {
-                console.log(`✅ Уровень ${levelNum} пройден, разблокируем следующий уровень ${levelNum + 1}`);
-                // Принудительно обновляем отображение
                 renderSeasonPassTasks();
                 if (tg) tg.showAlert(`🎉 Уровень ${levelNum} пройден! Открыт уровень ${levelNum + 1}!`);
             }
         }
-        // ======================================================
     }
 }
 function unlockNextLevel(currentLevel) {
