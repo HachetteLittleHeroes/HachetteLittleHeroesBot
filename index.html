@@ -22209,7 +22209,7 @@ function openBookPageFromBestiary(category, bookName, page) {
     });
     document.getElementById('themeModal').style.display = 'flex';
 }
-       function setTheme(themeName) {
+    function setTheme(themeName) {
     const oldStyle = document.getElementById('custom-theme-style');
     if (oldStyle) oldStyle.remove();
     if (themeName === 'custom') {
@@ -22224,8 +22224,16 @@ function openBookPageFromBestiary(category, bookName, page) {
         if (el.dataset.theme === themeName) el.classList.add('active');
     });
     // Закрываем модалку
-    document.getElementById('themeModal').style.display = 'none';
-} 
+    var themeModal = document.getElementById('themeModal');
+    if (themeModal) themeModal.style.display = 'none';
+}
+        function openThemeModal() {
+    const currentTheme = localStorage.getItem('app_theme') || user.theme || 'light';
+    document.querySelectorAll('#themeModal .theme-option').forEach(el => {
+        el.classList.toggle('active', el.dataset.theme === currentTheme);
+    });
+    document.getElementById('themeModal').style.display = 'flex';
+}
     </script>
     
     <!-- Модалка поиска пользователей -->
@@ -22257,6 +22265,29 @@ function openBookPageFromBestiary(category, bookName, page) {
         <h3>Мои друзья</h3>
         <div id="friendsListContainer" style="max-height: 400px; overflow-y: auto;"></div>
         <button class="modal-close-btn" onclick="closeFriendsList()">Закрыть</button>
+    </div>
+</div>
+    <!-- Модалка выбора темы -->
+<div id="themeModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 400px;">
+        <h3>Темы оформления</h3>
+        <div class="themes-grid">
+            <div class="theme-option active" data-theme="light" onclick="setTheme('light')"><div class="color-preview" style="background: #ffffff; border: 2px solid #000;"></div><span>Светлая</span></div>
+            <div class="theme-option" data-theme="dark" onclick="setTheme('dark')"><div class="color-preview" style="background: #1c1c1e; border: 2px solid #fff;"></div><span>Темная</span></div>
+            <div class="theme-option" data-theme="blue" onclick="setTheme('blue')"><div class="color-preview" style="background: #3b82f6;"></div><span>Голубая</span></div>
+            <div class="theme-option" data-theme="green" onclick="setTheme('green')"><div class="color-preview" style="background: #22c55e;"></div><span>Зеленая</span></div>
+            <div class="theme-option" data-theme="purple" onclick="setTheme('purple')"><div class="color-preview" style="background: #a855f7;"></div><span>Фиолетовая</span></div>
+            <div class="theme-option" data-theme="pink" onclick="setTheme('pink')"><div class="color-preview" style="background: #ec4899;"></div><span>Розовая</span></div>
+        </div>
+        <div class="custom-theme">
+            <h4>Своя тема</h4>
+            <div class="theme-controls">
+                <div class="theme-row"><label>Фон:</label><select id="themeBgMode"><option value="light">Светлый</option><option value="dark">Темный</option></select></div>
+                <div class="theme-row"><label>Цвет акцента:</label><input type="color" id="themeAccentColor" value="#ff9500"></div>
+                <button class="apply-theme-btn" onclick="applyCustomTheme()">Применить</button>
+            </div>
+        </div>
+        <button class="modal-close-btn" onclick="document.getElementById('themeModal').style.display='none'">Закрыть</button>
     </div>
 </div>
 </body>
