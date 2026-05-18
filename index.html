@@ -9224,12 +9224,13 @@ function openFigureModal(figure, isUnlocked) {
                 ]
             },
             { 
-                title: "Любимый цвет красный", 
+                title: "Искра", 
                 maxProgress: 5, 
-                desc: "Раскрась 2 картинки со злодеями и огнем, 3 картинки злодеек в красных платьях",
+                desc: "Раскрась 1 картинку, где изображены Адам (в образе чудовища) и Белль, 1 картинку, где изображена Белль с книгой, 1 картинку, где изображена Белль с Адамом (в образе чудовища) в зимнее время года",
                 subtasks: [
-                    { id: 'villains_with_fire', name: 'Злодеи с огнем', required: 2 },
-                    { id: 'villainess_red_dress', name: 'Злодейки в красных платьях', required: 3 }
+                    { id: 'adamandbell', name: 'Адам (в образе чудовища) и Белль', required: 1 },
+                    { id: 'bellwithbook', name: 'Белль с книгой', required: 1 },
+                    { id: 'bellandchudovishezimoi', name: 'Белль и Адам (в образе чудовища) в зимнее время года', required: 1 }
                 ]
             },
             { 
@@ -20178,6 +20179,56 @@ function toggleFiguresCollectionBlock() {
     } else {
         content.style.display = 'none';
         arrow.style.transform = 'rotate(0deg)';
+    }
+}
+        function togglePageCompletion(bookKey, page, totalPages) {
+    if (!userCompletedPages[bookKey]) {
+        userCompletedPages[bookKey] = {};
+    }
+    
+    const isCompleted = userCompletedPages[bookKey][String(page)];
+    
+    if (isCompleted) {
+        if (tg) {
+            tg.showConfirm(`Снять отметку со страницы ${page}?`, (confirm) => {
+                if (confirm) {
+                    delete userCompletedPages[bookKey][String(page)];
+                    if (window.completedPagesDates) {
+                        delete window.completedPagesDates[bookKey + '|' + page];
+                        localStorage.setItem('completed_pages_dates_' + userId, JSON.stringify(window.completedPagesDates));
+                    }
+                    saveCompletedPages();
+                    updateAllCategoriesProgress();
+                    renderBookPagesGrid(bookKey, BOOK_PAGES_CONFIG[currentBook] || DEFAULT_PAGES_CONFIG);
+                }
+            });
+        } else {
+            if (confirm(`Снять отметку со страницы ${page}?`)) {
+                delete userCompletedPages[bookKey][String(page)];
+                if (window.completedPagesDates) {
+                    delete window.completedPagesDates[bookKey + '|' + page];
+                    localStorage.setItem('completed_pages_dates_' + userId, JSON.stringify(window.completedPagesDates));
+                }
+                saveCompletedPages();
+                updateAllCategoriesProgress();
+                renderBookPagesGrid(bookKey, BOOK_PAGES_CONFIG[currentBook] || DEFAULT_PAGES_CONFIG);
+            }
+        }
+    } else {
+        userCompletedPages[bookKey][String(page)] = true;
+        if (!window.completedPagesDates) window.completedPagesDates = {};
+        window.completedPagesDates[bookKey + '|' + page] = Date.now();
+        localStorage.setItem('completed_pages_dates_' + userId, JSON.stringify(window.completedPagesDates));
+        
+        saveCompletedPages();
+        updateAllCategoriesProgress();
+        renderBookPagesGrid(bookKey, BOOK_PAGES_CONFIG[currentBook] || DEFAULT_PAGES_CONFIG);
+        
+        const completedCount = Object.keys(userCompletedPages[bookKey]).length;
+        if (completedCount === totalPages) {
+            if (tg) tg.showAlert(`🎉 Поздравляем! Вы раскрасили всю раскраску «${currentBook}»!`);
+            else alert(`🎉 Поздравляем! Вы раскрасили всю раскраску «${currentBook}»!`);
+        }
     }
 }
         function isPageCompleted(bookKey, page) {
