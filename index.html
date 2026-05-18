@@ -11642,68 +11642,35 @@ function renderCommunityEvent() {
     const leagueNames = { 'bronze': 'Бронзовая', 'silver': 'Серебряная', 'gold': 'Золотая', 'platinum': 'Платиновая' };
     const leaguePrizes = { 'bronze': '🎁 Набор маркеров Flysea', 'silver': '🎁 Квадратная раскраска Hachette', 'gold': '🎁 Том А4 Hachette', 'platinum': '🎁 Том А4 Hachette' };
     
-    // ✅ Задания — показываем только открытые
-    let tasksHtml = '';
-    for (const lvl of levelKeys) {
-        const lvlNum = parseInt(lvl);
-        const level = levels[lvl];
-        const isCompleted = lvlNum <= currentLevel;
-        const isCurrent = lvlNum === currentLevel + 1;
-        const isLocked = lvlNum > currentLevel + 1;
-        
-        if (isLocked) {
-            tasksHtml += `
-                <div style="display: flex; align-items: center; gap: 10px; padding: 8px 0; opacity: 0.4;">
-                    <span style="font-size: 18px;">🔒</span>
-                    <div style="flex: 1;">
-                        <div style="font-weight: 600; font-size: 13px; color: var(--text-gray);">Уровень ${lvl}</div>
-                        <div style="font-size: 11px; color: var(--text-gray);">Заблокирован</div>
-                    </div>
-                </div>
-            `;
-        } else if (isCompleted) {
-            tasksHtml += `
-                <div style="display: flex; align-items: center; gap: 10px; padding: 8px 0;">
-                    <span style="font-size: 18px;">✅</span>
-                    <div style="flex: 1;">
-                        <div style="font-weight: 600; font-size: 13px;">Уровень ${lvl}: ${level.task || 'Задание'}</div>
-                        <div style="font-size: 11px; color: var(--text-gray);">Цель: ${level.points} очков • ${level.reward || ''}</div>
-                    </div>
-                    <span style="color: var(--status-green); font-size: 12px;">Пройден</span>
-                </div>
-            `;
-        } else if (isCurrent) {
-            tasksHtml += `
-                <div style="display: flex; align-items: center; gap: 10px; padding: 8px 0;">
-                    <span style="font-size: 18px;">🔓</span>
-                    <div style="flex: 1;">
-                        <div style="font-weight: 600; font-size: 13px;">Уровень ${lvl}: ${level.task || 'Задание'}</div>
-                        <div style="font-size: 11px; color: var(--text-gray);">Цель: ${level.points} очков • ${level.reward || ''}</div>
-                    </div>
-                </div>
-            `;
-        }
+    // Текущее задание
+    let currentTask = '';
+    const currentLvl = currentLevel + 1;
+    if (levels[currentLvl]) {
+        currentTask = levels[currentLvl].task || 'Задание';
+    } else if (currentLevel >= levelKeys.length) {
+        currentTask = 'Все уровни пройдены!';
     }
     
     let html = `
-        <div style="background: var(--accent); border-radius: 20px; padding: 20px; margin-bottom: 15px; color: white; text-align: center; opacity: 0.9;">
-            <div style="font-size: 14px;">🌍 Общий прогресс сообщества</div>
-            <div style="font-size: 42px; font-weight: 900; margin: 10px 0;">${totalPoints}</div>
-            <div style="font-size: 14px;">очков</div>
-            <div class="progress-bar-container" style="background: rgba(255,255,255,0.3); margin-top: 15px;">
+        <div style="background: var(--accent); border-radius: 16px; padding: 12px 16px; margin-bottom: 12px; color: white; opacity: 0.9;">
+            <div style="font-size: 13px; margin-bottom: 4px;">📋 Задание уровня ${currentLvl}</div>
+            <div style="font-size: 15px; font-weight: 600;">${currentTask}</div>
+            ${nextLevelPoints > 0 ? `<div style="font-size: 11px; margin-top: 4px; opacity: 0.8;">Цель: ${nextLevelPoints} очков</div>` : ''}
+        </div>
+        
+        <div style="background: var(--accent); border-radius: 16px; padding: 15px; margin-bottom: 12px; color: white; text-align: center; opacity: 0.9;">
+            <div style="font-size: 15px; font-weight: 600;">Общий прогресс сообщества</div>
+            <div style="font-size: 36px; font-weight: 900; margin: 8px 0;">${totalPoints}</div>
+            <div style="font-size: 15px;">очков</div>
+            <div class="progress-bar-container" style="background: rgba(255,255,255,0.3); margin-top: 12px;">
                 <div class="progress-bar-fill" style="width: ${levelProgress}%; background: white;"></div>
             </div>
-            <div style="font-size: 12px; margin-top: 5px;">
+            <div style="font-size: 13px; margin-top: 6px;">
                 Уровень ${currentLevel + 1} • ${nextLevelPoints > 0 ? `До уровня ${currentLevel + 2}: ${nextLevelPoints - totalPoints} очков` : 'Максимальный уровень!'}
             </div>
         </div>
         
-        <div style="background: var(--card-bg); border-radius: 16px; padding: 15px; margin-bottom: 15px; border: 1px solid var(--border-color);">
-            <div style="font-weight: 600; font-size: 14px; margin-bottom: 8px;">📋 Задания</div>
-            ${tasksHtml}
-        </div>
-        
-        <div style="background: var(--card-bg); border-radius: 16px; padding: 15px; margin-bottom: 15px; border: 1px solid var(--border-color);">
+        <div style="background: var(--card-bg); border-radius: 16px; padding: 15px; margin-bottom: 12px; border: 1px solid var(--border-color);">
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <div>
                     <div style="font-weight: 600; font-size: 16px;">Мой вклад</div>
