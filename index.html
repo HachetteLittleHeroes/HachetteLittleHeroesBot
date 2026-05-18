@@ -11738,7 +11738,7 @@ function showLeagueLeaderboard(league) {
         const placeIcon = user.place <= 3 ? ['🥇','🥈','🥉'][user.place - 1] : `#${user.place}`;
         
         html += `
-            <div style="display: flex; align-items: center; gap: 12px; padding: 12px; margin-bottom: 8px; background: ${isMe ? 'rgba(255,149,0,0.1)' : 'var(--card-bg)'}; border-radius: 12px; border: 1px solid var(--border-color); cursor: ${isMe ? 'default' : 'pointer'};" onclick="${isMe ? '' : `openPublicProfile('${user.user_id}')`}">
+            <div style="display: flex; align-items: center; gap: 12px; padding: 12px; margin-bottom: 8px; background: ${isMe ? 'rgba(255,149,0,0.1)' : 'var(--card-bg)'}; border-radius: 12px; border: 1px solid var(--border-color); cursor: pointer;" onclick="openPublicProfile('${user.user_id}')">
                 <div style="font-size: 18px; font-weight: 800; color: var(--accent); min-width: 35px;">
                     ${placeIcon}
                 </div>
@@ -11757,7 +11757,6 @@ function showLeagueLeaderboard(league) {
     
     container.innerHTML = html;
 }
-
 function openCommunityTaskUpload() {
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
