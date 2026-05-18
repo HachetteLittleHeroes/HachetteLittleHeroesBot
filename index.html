@@ -4321,6 +4321,18 @@
             <div id="seasonPassTasksList"></div>
         </div>
     </div>
+    <!-- ========== ИСПЫТАНИЕ СООБЩЕСТВА ========== -->
+<div class="tasks-section" style="margin-top: 15px; border: 2px solid #ffd700; background: linear-gradient(135deg, rgba(255,215,0,0.08) 0%, rgba(255,149,0,0.05) 100%);">
+    <button class="tasks-header" onclick="toggleCommunityEvent()">
+        <span>🏆 Испытание сообщества</span>
+        <i class="fas fa-chevron-down" id="communityEventArrow"></i>
+    </button>
+    <div id="communityEventContent" class="tasks-content" style="display: none;">
+        <div id="communityEventContainer">
+            <div class="loading"><i class="fas fa-spinner fa-spin"></i> Загрузка...</div>
+        </div>
+    </div>
+</div>
 </div>
 
    
@@ -9225,7 +9237,7 @@ function openFigureModal(figure, isUnlocked) {
             },
             { 
                 title: "Искра", 
-                maxProgress: 5, 
+                maxProgress: 3, 
                 desc: "Раскрась 1 картинку, где изображены Адам (в образе чудовища) и Белль, 1 картинку, где изображена Белль с книгой, 1 картинку, где изображена Белль с Адамом (в образе чудовища) в зимнее время года",
                 subtasks: [
                     { id: 'adamandbell', name: 'Адам (в образе чудовища) и Белль', required: 1 },
@@ -9234,18 +9246,15 @@ function openFigureModal(figure, isUnlocked) {
                 ]
             },
             { 
-                title: "Злая королева", 
-                maxProgress: 8, 
-                desc: "Раскрась 1 картинку с Намаари, 1 картинку со злой королевой из Белоснежки, 1 картинку с мадам Мим, 1 картинку с Круэлой, 1 картинку с Малифесентной, 1 картинку с Измой, 1 картинку с Красной королевой, 1 картинку с Морганой",
+                title: "Снятие заклятия", 
+                maxProgress: 6, 
+                desc: "Раскрась 1 картинку с заколдованной розой, 1 картинку, где изображена Белль в желтом платье, 1 картинку с Адамом (в образе человека), 1 картинку с Бельь с Адамом (в образе человека), 2 картинки с раскалдованными слугами",
                 subtasks: [
-                    { id: 'namaari', name: 'Намаари', required: 1 },
-                    { id: 'evil_queen', name: 'Злая королева (Белоснежка)', required: 1 },
-                    { id: 'madame_mim', name: 'Мадам Мим', required: 1 },
-                    { id: 'cruella', name: 'Круэлла', required: 1 },
-                    { id: 'maleficent', name: 'Малифесента', required: 1 },
-                    { id: 'yzma', name: 'Изма', required: 1 },
-                    { id: 'red_queen', name: 'Красная королева', required: 1 },
-                    { id: 'morgana', name: 'Моргана', required: 1 }
+                    { id: 'z1', name: 'Заколдованная роза', required: 1 },
+                    { id: 'z2', name: 'Белль в желтом платье', required: 1 },
+                    { id: 'z3', name: 'Адам (в образе человека)', required: 1 },
+                    { id: 'z4', name: 'Белль с Адамом (в образе человека)', required: 1 },
+                    { id: 'z5', name: 'Расколдованные слуги', required: 2 }
                 ]
             }
         ]
@@ -11513,7 +11522,257 @@ function openPhotoEditor(file, callback) {
     reader.readAsDataURL(file);
 }
 
+// ==========================================
+// ИСПЫТАНИЕ СООБЩЕСТВА
+// ==========================================
 
+let communityEventData = null;
+
+async function loadCommunityEvent() {
+    try {
+        const response = await fetch(`${SERVER_URL}/api/community_event?user_id=${userId}`);
+        communityEventData = await response.json();
+        renderCommunityEvent();
+    } catch (error) {
+        console.error('Error loading community event:', error);
+    }
+}
+
+function toggleCommunityEvent() {
+    const content = document.getElementById('communityEventContent');
+    const arrow = document.getElementById('communityEventArrow');
+    if (!content) return;
+    if (content.style.display === 'none' || content.style.display === '') {
+        content.style.display = 'block';
+        if (arrow) arrow.style.transform = 'rotate(180deg)';
+        loadCommunityEvent();
+    } else {
+        content.style.display = 'none';
+        if (arrow) arrow.style.transform = 'rotate(0deg)';
+    }
+}
+
+function renderCommunityEvent() {
+    const container = document.getElementById('communityEventContainer');
+    if (!container || !communityEventData) return;
+    
+    const data = communityEventData;
+    const totalPoints = data.total_points || 0;
+    const userPoints = data.user_points || 0;
+    const currentLevel = data.current_level || 0;
+    const userLeague = data.user_league;
+    const isDonater = data.is_donater;
+    const levels = data.levels;
+    
+    let nextLevelPoints = 0;
+    let levelProgress = 100;
+    const levelKeys = Object.keys(levels).sort((a,b) => a-b);
+    for (const lvl of levelKeys) {
+        if (parseInt(lvl) > currentLevel) {
+            nextLevelPoints = levels[lvl].points;
+            levelProgress = Math.min(100, Math.round((totalPoints / nextLevelPoints) * 100));
+            break;
+        }
+    }
+    
+    const leagueNames = { 'bronze': '🥉 Бронзовая', 'silver': '🥈 Серебряная', 'gold': '🥇 Золотая', 'platinum': '💎 Платиновая' };
+    const leaguePrizes = { 'bronze': 'Набор маркеров Flysea', 'silver': 'Квадратная раскраска Hachette', 'gold': 'Том А4 Hachette', 'platinum': 'Том А4 Hachette' };
+    
+    let html = `
+        <div style="background: var(--accent-gradient); border-radius: 20px; padding: 20px; margin-bottom: 15px; color: white; text-align: center;">
+            <div style="font-size: 14px; opacity: 0.9;">🌍 Общий прогресс сообщества</div>
+            <div style="font-size: 42px; font-weight: 900; margin: 10px 0;">${totalPoints}</div>
+            <div style="font-size: 14px; opacity: 0.9;">очков</div>
+            <div class="progress-bar-container" style="background: rgba(255,255,255,0.3); margin-top: 15px;">
+                <div class="progress-bar-fill" style="width: ${levelProgress}%; background: white;"></div>
+            </div>
+            <div style="font-size: 12px; margin-top: 5px;">
+                Уровень ${currentLevel + 1} • ${nextLevelPoints > 0 ? `До уровня ${currentLevel + 2}: ${nextLevelPoints - totalPoints} очков` : 'Максимальный уровень!'}
+            </div>
+        </div>
+        
+        <div style="background: var(--card-bg); border-radius: 16px; padding: 15px; margin-bottom: 15px; border: 1px solid var(--border-color);">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <div style="font-weight: 600; font-size: 16px;">Мой вклад</div>
+                    <div style="font-size: 28px; font-weight: 800; color: var(--accent);">${userPoints} очков</div>
+                    ${userPoints < 5 ? '<div style="font-size: 12px; color: var(--text-gray);">Минимум 5 очков для участия</div>' : ''}
+                </div>
+                <div style="text-align: right;">
+                    ${userLeague ? `
+                        <div style="font-size: 16px; font-weight: 700;">${leagueNames[userLeague]}</div>
+                        <div style="font-size: 12px; color: var(--text-gray); margin-top: 4px;">🎁 ${leaguePrizes[userLeague]}</div>
+                    ` : '<div style="font-size: 14px; color: var(--text-gray);">Нет лиги</div>'}
+                    ${isDonater ? '<div style="font-size: 12px; color: #ffd700; margin-top: 4px;">💎 Донатер</div>' : ''}
+                </div>
+            </div>
+            <button class="task-submit-btn" style="margin-top: 15px;" onclick="openCommunityTaskUpload()">
+                <i class="fas fa-camera"></i> Отправить работу (+1-5 очков)
+            </button>
+        </div>
+        
+        <div style="display: flex; gap: 10px; margin-bottom: 10px; overflow-x: auto;">
+            ${['bronze', 'silver', 'gold', ...(isDonater ? ['platinum'] : [])].map(league => {
+                const lb = data.leagues && data.leagues[league];
+                const count = lb ? lb.leaderboard.length : 0;
+                return `
+                    <button class="filter-btn ${userLeague === league ? 'active' : ''}" onclick="showLeagueLeaderboard('${league}')" style="white-space: nowrap; flex-shrink: 0;">
+                        ${league === 'platinum' ? '💎' : league === 'gold' ? '🥇' : league === 'silver' ? '🥈' : '🥉'} ${leagueNames[league]} (${count})
+                    </button>
+                `;
+            }).join('')}
+        </div>
+        
+        <div id="communityLeaderboard"></div>
+    `;
+    
+    container.innerHTML = html;
+    
+    if (userLeague) {
+        showLeagueLeaderboard(userLeague);
+    } else {
+        showLeagueLeaderboard('bronze');
+    }
+}
+
+function showLeagueLeaderboard(league) {
+    const container = document.getElementById('communityLeaderboard');
+    if (!container || !communityEventData) return;
+    
+    const lb = communityEventData.leagues && communityEventData.leagues[league];
+    if (!lb) {
+        container.innerHTML = '<div class="no-results">Нет данных</div>';
+        return;
+    }
+    
+    document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+    const activeBtn = document.querySelector(`.filter-btn[onclick*="'${league}'"]`);
+    if (activeBtn) activeBtn.classList.add('active');
+    
+    if (!lb.leaderboard || lb.leaderboard.length === 0) {
+        container.innerHTML = '<div class="no-results" style="padding: 20px;">Пока нет участников</div>';
+        return;
+    }
+    
+    const leaguePrizes = { 'bronze': '🎁 Набор маркеров Flysea', 'silver': '🎁 Квадратная раскраска Hachette', 'gold': '🎁 Том А4 Hachette', 'platinum': '🎁 Том А4 Hachette' };
+    
+    let html = `<div style="font-size: 13px; color: var(--text-gray); margin-bottom: 10px;">${leaguePrizes[league]}</div>`;
+    
+    lb.leaderboard.forEach((user, index) => {
+        const isMe = String(user.user_id) === String(userId);
+        const avatarUrl = user.avatar || 'https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png';
+        
+        html += `
+            <div style="display: flex; align-items: center; gap: 12px; padding: 12px; margin-bottom: 8px; background: ${isMe ? 'rgba(255,149,0,0.1)' : 'var(--card-bg)'}; border-radius: 12px; border: 1px solid var(--border-color);">
+                <div style="font-size: 18px; font-weight: 800; color: var(--accent); min-width: 35px;">
+                    ${user.place <= 3 ? ['🥇','🥈','🥉'][user.place - 1] : `#${user.place}`}
+                </div>
+                <img src="${avatarUrl}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" onerror="this.src='https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png'">
+                <div style="flex: 1; min-width: 0;">
+                    <div style="font-weight: 600; font-size: 14px;">${user.name || user.username}</div>
+                    <div style="font-size: 12px; color: var(--text-gray);">${user.status || 'Без статуса'}</div>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-weight: 700; color: var(--accent); font-size: 16px;">${user.points}</div>
+                    <div style="font-size: 11px; color: var(--text-gray);">очков</div>
+                </div>
+            </div>
+        `;
+    });
+    
+    container.innerHTML = html;
+}
+
+function openCommunityTaskUpload() {
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/*';
+    fileInput.multiple = true;
+    
+    fileInput.onchange = function(event) {
+        const files = Array.from(event.target.files);
+        if (files.length === 0) return;
+        tempPhotos = files;
+        
+        const previewContainer = document.getElementById('taskPhotoPreviewContainer');
+        if (previewContainer) {
+            previewContainer.innerHTML = '';
+            files.forEach((file) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.style.cssText = 'width: 70px; height: 70px; object-fit: cover; border-radius: 12px; margin: 5px; border: 2px solid var(--accent);';
+                    previewContainer.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+        
+        const modal = document.getElementById('taskUploadModal');
+        if (modal) {
+            modal.style.display = 'flex';
+            const titleEl = modal.querySelector('h3');
+            if (titleEl) titleEl.innerText = 'Отправка работы (Испытание сообщества)';
+            
+            const submitBtn = modal.querySelector('.modal-action-btn');
+            if (submitBtn) {
+                const newBtn = submitBtn.cloneNode(true);
+                submitBtn.parentNode.replaceChild(newBtn, submitBtn);
+                newBtn.onclick = (e) => {
+                    e.preventDefault();
+                    submitCommunityTaskPhoto();
+                };
+            }
+        }
+    };
+    
+    fileInput.click();
+}
+
+async function submitCommunityTaskPhoto() {
+    if (!tempPhotos || tempPhotos.length === 0) {
+        if (tg) tg.showAlert('❌ Выберите хотя бы одно фото');
+        return;
+    }
+    
+    if (isUploading) return;
+    isUploading = true;
+    
+    try {
+        const formData = new FormData();
+        formData.append('user', userId.toString());
+        
+        for (let i = 0; i < tempPhotos.length; i++) {
+            formData.append('photos', tempPhotos[i]);
+        }
+        
+        const response = await fetch(`${SERVER_URL}/api/check_community_task`, {
+            method: 'POST',
+            body: formData
+        });
+        
+        if (!response.ok) throw new Error(`Ошибка сервера: ${response.status}`);
+        
+        const result = await response.json();
+        
+        if (result && result.status === 'ok') {
+            if (tg) {
+                tg.showAlert('✅ Фото отправлено на проверку!');
+                if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+            }
+            closeTaskUploadModal();
+        } else {
+            throw new Error(result?.message || 'Ошибка отправки');
+        }
+    } catch (error) {
+        console.error('❌ Ошибка:', error);
+        if (tg) tg.showAlert(`❌ Ошибка: ${error.message}`);
+    } finally {
+        isUploading = false;
+        tempPhotos = [];
+    }
+}
        // ==========================================
 // ИНИЦИАЛИЗАЦИЯ
 // ==========================================
