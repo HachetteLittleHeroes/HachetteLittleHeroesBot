@@ -9259,6 +9259,68 @@ function openFigureModal(figure, isUnlocked) {
             }
         ]
     },
+             sirena: {
+        name: "Сирена",
+        desc: "Готова ли ты отдать свой голос ради исполнения заветной мечты? (фото ДО/ПОСЛЕ)",
+        levels: [
+            { 
+                title: "Знакомство с подводным миром", 
+                maxProgress: 5, 
+                desc: "Раскрась 1 картинку, где изображен дворец царя Тритона, 1 картинку с Флаундером и Себастьяном, 1 картинку со Скаттлом, 1 картинку с царем Тритоном, 1 картинку, где изображена хотябы 1 из сестер Ариэль",
+                subtasks: [
+                    { id: 'qw1', name: 'Дворец царя Тритона', required: 1 },
+                     { id: 'qw2', name: 'Флаундер и Себастьян', required: 1 },
+                     { id: 'qw3', name: 'Скаттл', required: 1 },
+                     { id: 'qw4', name: 'Царь Тритон', required: 1 },
+                     { id: 'lefuraskrasstatus', name: 'Сестра Ариэль', required: 1 }
+                ]
+            },
+            { 
+                title: "Основные антагонисты", 
+                maxProgress: 5, 
+                desc: "Раскрась 1 картинку с муренами, 1 картинку с Громилой, 1 картинка с Морганой, 1 картинка с Урсулой, 1 картинка с Урсулой (в образе Ванессы)",
+                subtasks: [
+                     { id: 'qwe1', name: 'Мурены', required: 1 },
+                    { id: 'qwe2', name: 'Громила', required: 1 },
+                    { id: 'qwe3', name: 'Моргана', required: 1 },
+                     { id: 'qwe4', name: 'Урсула', required: 1 },
+                     { id: 'qwe5', name: 'Урсула (в образе Ванессы)', required: 1 }
+                ]
+            },
+            { 
+                title: "Прекрасный принц", 
+                maxProgress: 3, 
+                desc: "Раскрась 1 картинку с замком из мф Русалочка, 1 картинку с Эриком, 1 картинку с Максом (собакой)",
+                subtasks: [
+                    { id: 'qwer1', name: 'Замок', required: 1 },
+                    { id: 'qwer2', name: 'Эрик', required: 1 },
+                    { id: 'qwer3', name: 'Макс', required: 1 }
+                ]
+            },
+            { 
+                title: "Магия", 
+                maxProgress: 3, 
+                desc: "Раскрась 1 картинку, где присутствует магия из мф Русалочка, 1 картинка с трезубцем, 1 картинку, где изображена Ариэль с ногами",
+                subtasks: [
+                    { id: 'qwert1', name: 'Магия', required: 1 },
+                    { id: 'qwert2', name: 'Трезубец', required: 1 },
+                    { id: 'qwert3', name: 'Ариэль с ногами', required: 1 }
+                ]
+            },
+            { 
+                title: "Снятие заклятия", 
+                maxProgress: 6, 
+                desc: "Раскрась 1 картинку с заколдованной розой, 1 картинку, где изображена Белль в желтом платье, 1 картинку с Адамом (в образе человека), 1 картинку с Бельь с Адамом (в образе человека), 2 картинки с раскалдованными слугами",
+                subtasks: [
+                    { id: 'z1', name: 'Заколдованная роза', required: 1 },
+                    { id: 'z2', name: 'Белль в желтом платье', required: 1 },
+                    { id: 'z3', name: 'Адам (в образе человека)', required: 1 },
+                    { id: 'z4', name: 'Белль с Адамом (в образе человека)', required: 1 },
+                    { id: 'z5', name: 'Расколдованные слуги', required: 2 }
+                ]
+            }
+        ]
+    },
      pempudu: {
         name: 'Абрикосик',
         desc: 'Выполни все уровни и получи статус «Абрикосик»! При отправке фото прикрепи фото ДО/ПОСЛЕ',
@@ -11578,6 +11640,27 @@ function renderCommunityEvent() {
     const leagueNames = { 'bronze': '🥉 Бронзовая', 'silver': '🥈 Серебряная', 'gold': '🥇 Золотая', 'platinum': '💎 Платиновая' };
     const leaguePrizes = { 'bronze': 'Набор маркеров Flysea', 'silver': 'Квадратная раскраска Hachette', 'gold': 'Том А4 Hachette', 'platinum': 'Том А4 Hachette' };
     
+    // ✅ Список заданий
+    let tasksHtml = '';
+    for (const lvl of levelKeys) {
+        const level = levels[lvl];
+        const isUnlocked = parseInt(lvl) <= currentLevel + 1;
+        const isCompleted = parseInt(lvl) <= currentLevel;
+        const icon = isCompleted ? '✅' : isUnlocked ? '🔓' : '🔒';
+        const opacity = isUnlocked ? '1' : '0.5';
+        
+        tasksHtml += `
+            <div style="display: flex; align-items: center; gap: 10px; padding: 8px 0; opacity: ${opacity};">
+                <span style="font-size: 18px;">${icon}</span>
+                <div style="flex: 1;">
+                    <div style="font-weight: 600; font-size: 13px;">Уровень ${lvl}: ${level.task || 'Задание'}</div>
+                    <div style="font-size: 11px; color: var(--text-gray);">Цель: ${level.points} очков • ${level.reward || ''}</div>
+                </div>
+                ${isCompleted ? '<span style="color: var(--status-green); font-size: 12px;">Пройден</span>' : ''}
+            </div>
+        `;
+    }
+    
     let html = `
         <div style="background: var(--accent-gradient); border-radius: 20px; padding: 20px; margin-bottom: 15px; color: white; text-align: center;">
             <div style="font-size: 14px; opacity: 0.9;">🌍 Общий прогресс сообщества</div>
@@ -11589,6 +11672,12 @@ function renderCommunityEvent() {
             <div style="font-size: 12px; margin-top: 5px;">
                 Уровень ${currentLevel + 1} • ${nextLevelPoints > 0 ? `До уровня ${currentLevel + 2}: ${nextLevelPoints - totalPoints} очков` : 'Максимальный уровень!'}
             </div>
+        </div>
+        
+        <!-- Задания -->
+        <div style="background: var(--card-bg); border-radius: 16px; padding: 15px; margin-bottom: 15px; border: 1px solid var(--border-color);">
+            <div style="font-weight: 600; font-size: 14px; margin-bottom: 8px;">📋 Задания</div>
+            ${tasksHtml}
         </div>
         
         <div style="background: var(--card-bg); border-radius: 16px; padding: 15px; margin-bottom: 15px; border: 1px solid var(--border-color);">
