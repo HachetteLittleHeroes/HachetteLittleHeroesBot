@@ -9299,24 +9299,26 @@ function openFigureModal(figure, isUnlocked) {
             },
             { 
                 title: "Магия", 
-                maxProgress: 3, 
-                desc: "Раскрась 1 картинку, где присутствует магия из мф Русалочка, 1 картинка с трезубцем, 1 картинку, где изображена Ариэль с ногами",
+                maxProgress: 4, 
+                desc: "Раскрась 1 картинку, где присутствует магия из мф Русалочка, 1 картинка с трезубцем, 1 картинку, где изображена Ариэль с ногами, 1 картинку с Урсулой и Ариэль",
                 subtasks: [
                     { id: 'qwert1', name: 'Магия', required: 1 },
                     { id: 'qwert2', name: 'Трезубец', required: 1 },
-                    { id: 'qwert3', name: 'Ариэль с ногами', required: 1 }
+                    { id: 'qwert3', name: 'Ариэль с ногами', required: 1 },
+                     { id: 'qwert4', name: 'Урсула и Ариэль', required: 1 }
                 ]
             },
             { 
-                title: "Снятие заклятия", 
+                title: "Хеппи Энд", 
                 maxProgress: 6, 
-                desc: "Раскрась 1 картинку с заколдованной розой, 1 картинку, где изображена Белль в желтом платье, 1 картинку с Адамом (в образе человека), 1 картинку с Бельь с Адамом (в образе человека), 2 картинки с раскалдованными слугами",
+                desc: "Раскрась 1 картинку, где изображены Тритон и Ариэль, раскрась 1 картинку, где Ариэль танцует, 1 картинку со свадьбой Ариэль и Эрика, 1 картинку с Мелоди, 1 картинку, где изображены Мелоди, Ариэль и Эрик, 1 картинку, где изображены Тритон, Ариэль, Эрик и Мелоди",
                 subtasks: [
-                    { id: 'z1', name: 'Заколдованная роза', required: 1 },
-                    { id: 'z2', name: 'Белль в желтом платье', required: 1 },
-                    { id: 'z3', name: 'Адам (в образе человека)', required: 1 },
-                    { id: 'z4', name: 'Белль с Адамом (в образе человека)', required: 1 },
-                    { id: 'z5', name: 'Расколдованные слуги', required: 2 }
+                    { id: 'qwerty1', name: 'Тритон и Ариэль', required: 1 },
+                    { id: 'qwerty2', name: 'Ариэль танцует', required: 1 },
+                    { id: 'qwerty3', name: 'Свадьба Ариэль и Эрика', required: 1 },
+                    { id: 'qwerty4', name: 'Мелоди', required: 1 },
+                    { id: 'qwerty5', name: 'Мелоди, Ариэль, Эрик', required: 1 },
+                    { id: 'qwerty6', name: 'Мелоди, Ариэль, Эрик, Тритон', required: 1 }
                 ]
             }
         ]
@@ -11637,35 +11639,57 @@ function renderCommunityEvent() {
         }
     }
     
-    const leagueNames = { 'bronze': '🥉 Бронзовая', 'silver': '🥈 Серебряная', 'gold': '🥇 Золотая', 'platinum': '💎 Платиновая' };
-    const leaguePrizes = { 'bronze': 'Набор маркеров Flysea', 'silver': 'Квадратная раскраска Hachette', 'gold': 'Том А4 Hachette', 'platinum': 'Том А4 Hachette' };
+    const leagueNames = { 'bronze': 'Бронзовая', 'silver': 'Серебряная', 'gold': 'Золотая', 'platinum': 'Платиновая' };
+    const leaguePrizes = { 'bronze': '🎁 Набор маркеров Flysea', 'silver': '🎁 Квадратная раскраска Hachette', 'gold': '🎁 Том А4 Hachette', 'platinum': '🎁 Том А4 Hachette' };
     
-    // ✅ Список заданий
+    // ✅ Задания — показываем только открытые
     let tasksHtml = '';
     for (const lvl of levelKeys) {
+        const lvlNum = parseInt(lvl);
         const level = levels[lvl];
-        const isUnlocked = parseInt(lvl) <= currentLevel + 1;
-        const isCompleted = parseInt(lvl) <= currentLevel;
-        const icon = isCompleted ? '✅' : isUnlocked ? '🔓' : '🔒';
-        const opacity = isUnlocked ? '1' : '0.5';
+        const isCompleted = lvlNum <= currentLevel;
+        const isCurrent = lvlNum === currentLevel + 1;
+        const isLocked = lvlNum > currentLevel + 1;
         
-        tasksHtml += `
-            <div style="display: flex; align-items: center; gap: 10px; padding: 8px 0; opacity: ${opacity};">
-                <span style="font-size: 18px;">${icon}</span>
-                <div style="flex: 1;">
-                    <div style="font-weight: 600; font-size: 13px;">Уровень ${lvl}: ${level.task || 'Задание'}</div>
-                    <div style="font-size: 11px; color: var(--text-gray);">Цель: ${level.points} очков • ${level.reward || ''}</div>
+        if (isLocked) {
+            tasksHtml += `
+                <div style="display: flex; align-items: center; gap: 10px; padding: 8px 0; opacity: 0.4;">
+                    <span style="font-size: 18px;">🔒</span>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600; font-size: 13px; color: var(--text-gray);">Уровень ${lvl}</div>
+                        <div style="font-size: 11px; color: var(--text-gray);">Заблокирован</div>
+                    </div>
                 </div>
-                ${isCompleted ? '<span style="color: var(--status-green); font-size: 12px;">Пройден</span>' : ''}
-            </div>
-        `;
+            `;
+        } else if (isCompleted) {
+            tasksHtml += `
+                <div style="display: flex; align-items: center; gap: 10px; padding: 8px 0;">
+                    <span style="font-size: 18px;">✅</span>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600; font-size: 13px;">Уровень ${lvl}: ${level.task || 'Задание'}</div>
+                        <div style="font-size: 11px; color: var(--text-gray);">Цель: ${level.points} очков • ${level.reward || ''}</div>
+                    </div>
+                    <span style="color: var(--status-green); font-size: 12px;">Пройден</span>
+                </div>
+            `;
+        } else if (isCurrent) {
+            tasksHtml += `
+                <div style="display: flex; align-items: center; gap: 10px; padding: 8px 0;">
+                    <span style="font-size: 18px;">🔓</span>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600; font-size: 13px;">Уровень ${lvl}: ${level.task || 'Задание'}</div>
+                        <div style="font-size: 11px; color: var(--text-gray);">Цель: ${level.points} очков • ${level.reward || ''}</div>
+                    </div>
+                </div>
+            `;
+        }
     }
     
     let html = `
-        <div style="background: var(--accent-gradient); border-radius: 20px; padding: 20px; margin-bottom: 15px; color: white; text-align: center;">
-            <div style="font-size: 14px; opacity: 0.9;">🌍 Общий прогресс сообщества</div>
+        <div style="background: var(--accent); border-radius: 20px; padding: 20px; margin-bottom: 15px; color: white; text-align: center; opacity: 0.9;">
+            <div style="font-size: 14px;">🌍 Общий прогресс сообщества</div>
             <div style="font-size: 42px; font-weight: 900; margin: 10px 0;">${totalPoints}</div>
-            <div style="font-size: 14px; opacity: 0.9;">очков</div>
+            <div style="font-size: 14px;">очков</div>
             <div class="progress-bar-container" style="background: rgba(255,255,255,0.3); margin-top: 15px;">
                 <div class="progress-bar-fill" style="width: ${levelProgress}%; background: white;"></div>
             </div>
@@ -11674,7 +11698,6 @@ function renderCommunityEvent() {
             </div>
         </div>
         
-        <!-- Задания -->
         <div style="background: var(--card-bg); border-radius: 16px; padding: 15px; margin-bottom: 15px; border: 1px solid var(--border-color);">
             <div style="font-weight: 600; font-size: 14px; margin-bottom: 8px;">📋 Задания</div>
             ${tasksHtml}
@@ -11689,8 +11712,8 @@ function renderCommunityEvent() {
                 </div>
                 <div style="text-align: right;">
                     ${userLeague ? `
-                        <div style="font-size: 16px; font-weight: 700;">${leagueNames[userLeague]}</div>
-                        <div style="font-size: 12px; color: var(--text-gray); margin-top: 4px;">🎁 ${leaguePrizes[userLeague]}</div>
+                        <div style="font-size: 16px; font-weight: 700;">${userLeague === 'gold' ? '🥇' : userLeague === 'silver' ? '🥈' : '🥉'} ${leagueNames[userLeague]}</div>
+                        <div style="font-size: 12px; color: var(--text-gray); margin-top: 4px;">${leaguePrizes[userLeague]}</div>
                     ` : '<div style="font-size: 14px; color: var(--text-gray);">Нет лиги</div>'}
                     ${isDonater ? '<div style="font-size: 12px; color: #ffd700; margin-top: 4px;">💎 Донатер</div>' : ''}
                 </div>
@@ -11704,9 +11727,10 @@ function renderCommunityEvent() {
             ${['bronze', 'silver', 'gold', ...(isDonater ? ['platinum'] : [])].map(league => {
                 const lb = data.leagues && data.leagues[league];
                 const count = lb ? lb.leaderboard.length : 0;
+                const icon = league === 'platinum' ? '💎' : league === 'gold' ? '🥇' : league === 'silver' ? '🥈' : '🥉';
                 return `
                     <button class="filter-btn ${userLeague === league ? 'active' : ''}" onclick="showLeagueLeaderboard('${league}')" style="white-space: nowrap; flex-shrink: 0;">
-                        ${league === 'platinum' ? '💎' : league === 'gold' ? '🥇' : league === 'silver' ? '🥈' : '🥉'} ${leagueNames[league]} (${count})
+                        ${icon} ${leagueNames[league]} (${count})
                     </button>
                 `;
             }).join('')}
@@ -11723,7 +11747,6 @@ function renderCommunityEvent() {
         showLeagueLeaderboard('bronze');
     }
 }
-
 function showLeagueLeaderboard(league) {
     const container = document.getElementById('communityLeaderboard');
     if (!container || !communityEventData) return;
@@ -11750,11 +11773,12 @@ function showLeagueLeaderboard(league) {
     lb.leaderboard.forEach((user, index) => {
         const isMe = String(user.user_id) === String(userId);
         const avatarUrl = user.avatar || 'https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png';
+        const placeIcon = user.place <= 3 ? ['🥇','🥈','🥉'][user.place - 1] : `#${user.place}`;
         
         html += `
-            <div style="display: flex; align-items: center; gap: 12px; padding: 12px; margin-bottom: 8px; background: ${isMe ? 'rgba(255,149,0,0.1)' : 'var(--card-bg)'}; border-radius: 12px; border: 1px solid var(--border-color);">
+            <div style="display: flex; align-items: center; gap: 12px; padding: 12px; margin-bottom: 8px; background: ${isMe ? 'rgba(255,149,0,0.1)' : 'var(--card-bg)'}; border-radius: 12px; border: 1px solid var(--border-color); cursor: ${isMe ? 'default' : 'pointer'};" onclick="${isMe ? '' : `openPublicProfile('${user.user_id}')`}">
                 <div style="font-size: 18px; font-weight: 800; color: var(--accent); min-width: 35px;">
-                    ${user.place <= 3 ? ['🥇','🥈','🥉'][user.place - 1] : `#${user.place}`}
+                    ${placeIcon}
                 </div>
                 <img src="${avatarUrl}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" onerror="this.src='https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png'">
                 <div style="flex: 1; min-width: 0;">
