@@ -10118,7 +10118,7 @@ function checkAndFixSeasonPassProgress() {
         if (claimedSeasonRewards.premium.includes(levelNum)) { if (tg) tg.showAlert('❌ Награда уже получена'); return; }
         
         const reward = levelData.premiumReward;
-        
+        console.log('PREMIUM reward type:', reward.type, 'level:', levelNum);
         if (reward.type === 'achetiki') {
             fetch(`${SERVER_URL}/api/add_balance`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user_id: userId, amount: reward.amount, reason: `Season Pass уровень ${levelNum} премиум награда` }) })
             .then(async response => {
