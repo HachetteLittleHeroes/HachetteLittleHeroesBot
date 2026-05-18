@@ -10087,6 +10087,34 @@ function checkAndFixSeasonPassProgress() {
                 if (tg) tg.showAlert(`✅ Получен статус "${reward.reward}"!`);
             }
         }
+            else if (reward.type === 'status_with_achetiki') {
+    if (!user.unlockedStatuses.includes(reward.status)) {
+        user.unlockedStatuses.push(reward.status);
+        saveUserData();
+        fetch(`${SERVER_URL}/api/sync_status`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId, status: reward.status, action: 'unlock' })
+        });
+    }
+    fetch(`${SERVER_URL}/api/add_balance`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: userId, amount: reward.amount, reason: `Season Pass уровень ${levelNum} премиум награда` })
+    }).then(async response => {
+        const result = await response.json();
+        if (result && result.status === 'ok') {
+            user.balance = result.new_balance;
+            saveUserData();
+            updateUI();
+        }
+    }).catch(error => {
+        user.balance += reward.amount;
+        saveUserData();
+        updateUI();
+    });
+    if (tg) tg.showAlert(`✅ Получен статус "${reward.status}" и ${reward.amount} ашетиков!`);
+}
         else if (reward.type === 'status_with_lottery') {
             if (!user.unlockedStatuses.includes(reward.status)) {
                 user.unlockedStatuses.push(reward.status);
