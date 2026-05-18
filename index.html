@@ -10167,7 +10167,7 @@ function checkAndFixSeasonPassProgress() {
                 const result = await response.json();
                 if (result && result.status === 'ok') { user.balance = result.new_balance; saveUserData(); updateUI(); }
             }).catch(error => { user.balance += reward.amount; saveUserData(); updateUI(); });
-            if (tg) tg.showAlert(`✅ Получен статус "${reward.status}" и ${reward.amount} ашетиков!`);
+            console.log('✅ Получен статус:', reward.status, 'и', reward.amount, 'ашетиков!');
         }
         else if (reward.type === 'status_with_lottery') {
             if (!user.unlockedStatuses.includes(reward.status)) {
