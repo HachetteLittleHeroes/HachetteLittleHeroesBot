@@ -11639,18 +11639,20 @@ function renderCommunityEvent() {
         }
     }
     
-    const leagueNames = { 'bronze': 'Бронзовая', 'silver': 'Серебряная', 'gold': 'Золотая', 'platinum': 'Платиновая' };
-    const leaguePrizes = { 'bronze': '🎁 Набор маркеров Flysea', 'silver': '🎁 Квадратная раскраска Hachette', 'gold': '🎁 Том А4 Hachette', 'platinum': '🎁 Том А4 Hachette' };
+    const leagueNames = { 'bronze': 'Бронзовая', 'silver': 'Серебряная', 'gold': 'Золотая', 'platinum': 'Алмазная' };
+    const leagueIcons = { 'bronze': '🥉', 'silver': '🥈', 'gold': '🥇', 'platinum': '💠' };
     
     // Текущее задание
     const currentLvl = currentLevel + 1;
     const taskText = levels[currentLvl] ? levels[currentLvl].task || 'Задание' : 'Все уровни пройдены!';
+    const currentRewards = levels[currentLvl] ? levels[currentLvl].rewards || {} : {};
     
     let html = `
         <div class="branch-task-card">
             <div class="branch-header">
                 <h3>Испытание сообщества</h3>
                 <p>${taskText} • Уровень ${currentLvl}</p>
+                ${currentRewards[userLeague] ? `<div class="friend-reward">🎁 Награда уровня: ${currentRewards[userLeague]}</div>` : ''}
             </div>
             <div class="level-card">
                 <div style="font-size: 32px; font-weight: 900; color: var(--accent); text-align: center;">${totalPoints}</div>
@@ -11668,14 +11670,14 @@ function renderCommunityEvent() {
                     </div>
                     ${userLeague ? `
                         <div style="text-align: center;">
-                            <div style="font-weight: 700; color: var(--accent); font-size: 18px;">${userLeague === 'gold' ? '🥇' : userLeague === 'silver' ? '🥈' : '🥉'} ${leagueNames[userLeague]}</div>
+                            <div style="font-weight: 700; color: var(--accent); font-size: 18px;">${leagueIcons[userLeague] || ''} ${leagueNames[userLeague]}</div>
                             <div style="font-size: 11px; color: var(--text-gray);">Моя лига</div>
                         </div>
                     ` : ''}
                     ${isDonater ? `
                         <div style="text-align: center;">
-                            <div style="font-weight: 700; color: #ffd700; font-size: 18px;">💎</div>
-                            <div style="font-size: 11px; color: var(--text-gray);">Донатер</div>
+                            <div style="font-weight: 700; color: #ffd700; font-size: 18px;">💠</div>
+                            <div style="font-size: 11px; color: #ffd700;">Лучик</div>
                         </div>
                     ` : ''}
                 </div>
@@ -11689,10 +11691,9 @@ function renderCommunityEvent() {
             ${['bronze', 'silver', 'gold', ...(isDonater ? ['platinum'] : [])].map(league => {
                 const lb = data.leagues && data.leagues[league];
                 const count = lb ? lb.leaderboard.length : 0;
-                const icon = league === 'platinum' ? '💎' : league === 'gold' ? '🥇' : league === 'silver' ? '🥈' : '🥉';
                 return `
                     <button class="filter-btn ${userLeague === league ? 'active' : ''}" onclick="showLeagueLeaderboard('${league}')" style="white-space: nowrap; flex-shrink: 0;">
-                        ${icon} ${leagueNames[league]} (${count})
+                        ${leagueIcons[league] || ''} ${leagueNames[league]} (${count})
                     </button>
                 `;
             }).join('')}
@@ -11728,9 +11729,20 @@ function showLeagueLeaderboard(league) {
         return;
     }
     
-    const leaguePrizes = { 'bronze': '🎁 Набор маркеров Flysea', 'silver': '🎁 Квадратная раскраска Hachette', 'gold': '🎁 Том А4 Hachette', 'platinum': '🎁 Том А4 Hachette' };
+    const leagueIcons = { 'bronze': '🥉', 'silver': '🥈', 'gold': '🥇', 'platinum': '💠' };
+    const leagueNames = { 'bronze': 'Бронзовая', 'silver': 'Серебряная', 'gold': 'Золотая', 'platinum': 'Алмазная' };
     
-    let html = `<div style="font-size: 13px; color: var(--text-gray); margin-bottom: 10px;">${leaguePrizes[league]}</div>`;
+    // Награда для текущего уровня
+    const currentLevel = communityEventData.current_level || 0;
+    const currentLvl = currentLevel + 1;
+    const levels = communityEventData.levels || {};
+    const currentRewards = levels[currentLvl] ? levels[currentLvl].rewards || {} : {};
+    const leaguePrize = currentRewards[league] || '';
+    
+    let html = '';
+    if (leaguePrize) {
+        html += `<div style="font-size: 13px; color: var(--text-gray); margin-bottom: 10px;">🎁 ${leaguePrize}</div>`;
+    }
     
     lb.leaderboard.forEach((user, index) => {
         const isMe = String(user.user_id) === String(userId);
