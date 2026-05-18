@@ -9183,6 +9183,123 @@ function openFigureModal(figure, isUnlocked) {
 };
         
         const TASK_BRANCHES = {
+             krasavica: {
+        name: "Красавица",
+        desc: "Пройди всю историю от страха, ненависти к уважению и любви (фото ДО/ПОСЛЕ)",
+        levels: [
+            { 
+                title: "Знакомство с главными персонажами", 
+                maxProgress: 5, 
+                desc: "Раскрась 1 картинку с Белль, 1 картинку с Адамом (в образе чудовища), 1 картинку с Морисом, 1 картинку с Гастоном, 1 картинку с Лефу",
+                subtasks: [
+                    { id: 'bellraskrasstatus', name: 'Белль', required: 1 },
+                     { id: 'chudovisheraskrasstatus', name: 'Адам', required: 1 },
+                     { id: 'morisraskrasstatus', name: 'Морис', required: 1 },
+                     { id: 'gastonraskrasstatus', name: 'Гастон', required: 1 },
+                     { id: 'lefuraskrasstatus', name: 'Лефу', required: 1 }
+                ]
+            },
+            { 
+                title: "Начало пути", 
+                maxProgress: 5, 
+                desc: "Раскрась 1 картинку с витражом из мф Красавица и чудовище, 1 картинку с тройняшками, 1 картинку с Филиппом, 1 картинку с дождем",
+                subtasks: [
+                     { id: 'vitraxhnastatus', name: 'Витраж', required: 1 }
+                    { id: 'troinyashki', name: 'Тройняшки', required: 1 },
+                    { id: 'filippnastatus', name: 'Филипп', required: 1 },
+                     { id: 'zamok', name: 'Замок', required: 1 },
+                     { id: 'dozhdikkapkapkap', name: 'Дождь', required: 1 }
+                ]
+            },
+            { 
+                title: "Таинственный замок", 
+                maxProgress: 5, 
+                desc: "Раскрась 1 картинку с Люмьером, 1 каринку с Когсвортом, 1 картинку с Миссис Поттс, 1 картинку с Фифи, 1 картинку с Султаном (собака)",
+                subtasks: [
+                    { id: 'lumiernastatus', name: 'Люмьер', required: 1 },
+                    { id: 'kogswortnastatus', name: 'Когсворт', required: 1 },
+                    { id: 'missispottsnastatus', name: 'Миссис Поттс', required: 1 },
+                    { id: 'fifinastatus', name: 'Фифи', required: 1 },
+                     { id: 'sultannastatus', name: 'Султан', required: 1 }
+                ]
+            },
+            { 
+                title: "Любимый цвет красный", 
+                maxProgress: 5, 
+                desc: "Раскрась 2 картинки со злодеями и огнем, 3 картинки злодеек в красных платьях",
+                subtasks: [
+                    { id: 'villains_with_fire', name: 'Злодеи с огнем', required: 2 },
+                    { id: 'villainess_red_dress', name: 'Злодейки в красных платьях', required: 3 }
+                ]
+            },
+            { 
+                title: "Злая королева", 
+                maxProgress: 8, 
+                desc: "Раскрась 1 картинку с Намаари, 1 картинку со злой королевой из Белоснежки, 1 картинку с мадам Мим, 1 картинку с Круэлой, 1 картинку с Малифесентной, 1 картинку с Измой, 1 картинку с Красной королевой, 1 картинку с Морганой",
+                subtasks: [
+                    { id: 'namaari', name: 'Намаари', required: 1 },
+                    { id: 'evil_queen', name: 'Злая королева (Белоснежка)', required: 1 },
+                    { id: 'madame_mim', name: 'Мадам Мим', required: 1 },
+                    { id: 'cruella', name: 'Круэлла', required: 1 },
+                    { id: 'maleficent', name: 'Малифесента', required: 1 },
+                    { id: 'yzma', name: 'Изма', required: 1 },
+                    { id: 'red_queen', name: 'Красная королева', required: 1 },
+                    { id: 'morgana', name: 'Моргана', required: 1 }
+                ]
+            }
+        ]
+    },
+     pempudu: {
+        name: 'Абрикосик',
+        desc: 'Выполни все уровни и получи статус «Абрикосик»! При отправке фото прикрепи фото ДО/ПОСЛЕ',
+        levels: [
+            {
+                title: 'Уровень 1 - Заготовка шашлыка',
+                maxProgress: 9,
+                desc: 'Раскрась 3 картинки с баранами/свиньями, 3 с петухом/курицей, 3 с едой',
+                subtasks: [
+                    { id: 'abr1_1', name: 'Бараны/свиньи', required: 3 },
+                    { id: 'abr1_2', name: 'Петух/курица', required: 3 },
+                    { id: 'abr1_3', name: 'Еда', required: 3 }
+                ]
+            },
+            {
+                title: 'Уровень 2 - Базовый минимум',
+                maxProgress: 10,
+                desc: 'Раскрась 1 разворот с танцующими, 2 картинки с короной, 2 со свадьбой, 2 разворота с застольем, 3 с козлами',
+                subtasks: [
+                    { id: 'abr2_1', name: 'Персонажи танцуют (разворот)', required: 1 },
+                    { id: 'abr2_2', name: 'Корона', required: 2 },
+                    { id: 'abr2_3', name: 'Свадьба', required: 2 },
+                    { id: 'abr2_4', name: 'Застолье (развороты)', required: 2 },
+                    { id: 'abr2_5', name: 'Козлы', required: 3 }
+                ]
+            },
+            {
+                title: 'Уровень 3 - Тысяча и 1 родственник',
+                maxProgress: 8,
+                desc: 'Раскрась 2 картинки с отцом и дочерью, 2 разворота с 5+ персонажами, 2 с пожилыми людьми, 2 с принцессой и мамой',
+                subtasks: [
+                    { id: 'abr3_1', name: 'Отец и дочь', required: 2 },
+                    { id: 'abr3_2', name: '5+ персонажей (разворот)', required: 2 },
+                    { id: 'abr3_3', name: 'Пожилые люди', required: 2 },
+                    { id: 'abr3_4', name: 'Принцесса с мамой', required: 2 }
+                ]
+            },
+            {
+                title: 'Уровень 4 - Роскошный максимум',
+                maxProgress: 7,
+                desc: 'Раскрась 1 разворот со зданием, 3 картинки с хищными кошками, 1 разворот с принцессой, 1 с машиной, 1 с принцем',
+                subtasks: [
+                    { id: 'abr4_1', name: 'Здание (разворот)', required: 1 },
+                    { id: 'abr4_2', name: 'Хищные кошки', required: 3 },
+                    { id: 'abr4_3', name: 'Принцесса (разворот)', required: 1 },
+                    { id: 'abr4_4', name: 'Машина', required: 1 },
+                    { id: 'abr4_5', name: 'Только принц', required: 1 }
+                ]
+            }
+        ]
+    },
     trainer: {
         name: "Великий тренер",
         desc: "Пройди основные покемон-лиги и стань Великим тренером (фото ДО/ПОСЛЕ)",
@@ -9279,50 +9396,7 @@ function openFigureModal(figure, isUnlocked) {
             }
         ]
     },
-    shock: {
-        name: "Шок контент",
-        desc: "Только самые КРЕЙЗИ смогут пройти всё, но награда того стоит (фото ДО/ПОСЛЕ)",
-        levels: [
-            { title: "Первые шаги", maxProgress: 5, desc: "Раскрась 5 разворотов" },
-            {
-                title: "Что происходит?",
-                maxProgress: 5,
-                desc: "Раскрась 1 разворот с Ариэль, 1 картинку с измененным фоном, 1 разворот с полным отсутствием черного цвета (допускается замена цветов), 1 разворот, где присутствует 7 или больше персонажей (у персонажа есть какая-то роль в м/ф), 1 картинку, где преобладает желтый цвет (более 50%)",
-                subtasks: [
-                    { id: 'ariel_spread', name: 'Разворот с Ариэль', required: 1 },
-                    { id: 'changed_background', name: 'Измененный фон', required: 1 },
-                    { id: 'no_black', name: 'Без черного цвета', required: 1 },
-                    { id: 'seven_characters', name: '7+ персонажей', required: 1 },
-                    { id: 'yellow_dominant', name: 'Преобладает желтый', required: 1 }
-                ]
-            },
-            {
-                title: "Крейзи",
-                maxProgress: 5,
-                desc: "Раскрась 1 Радость из м/ф Головоломка, 1 разворот в сине-фиолетовых оттенках (можно заменять цвета), 1 разворот в ч/б (можно зменять цвета), объедени 2 соседние картинки в единый разворот, раскрась 1 картинку из нашего стикерпака",
-                subtasks: [
-                    { id: 'joy_inside_out', name: 'Радость (Головоломка)', required: 1 },
-                    { id: 'negative_spread', name: 'Разворот в сине-фиолетовых оттенках', required: 1 },
-                    { id: 'bw_spread', name: 'Черно-белый разворот', required: 1 },
-                    { id: 'combined_spread', name: 'Объединенный разворот', required: 1 },
-                    { id: 'sticker_pack', name: 'Картинка из стикерпака', required: 1 }
-                ]
-            },
-            {
-                title: "Имба",
-                maxProgress: 5,
-                desc: "Раскрась 1 разворот карандашами, 1 разворот фломастерами, 2 картинки не из мультфильмов, 1 разворот акриловыми маркерами, 1 разворот с Рапунцель",
-                subtasks: [
-                    { id: 'pencils', name: 'Карандаши (разворот)', required: 1 },
-                    { id: 'felt_tips', name: 'Фломастеры (разворот)', required: 1 },
-                    { id: 'paints', name: '2 картинки не из мультфильмов', required: 2 },
-                    { id: 'acrylic_markers', name: 'Акриловые маркеры (разворот)', required: 1 },
-                    { id: 'pens_only', name: 'Разворот с Рапунцель', required: 1 }
-                ]
-            },
-            { title: "Шок контент", maxProgress: 20, desc: "Раскрась 20 страниц (фото ДО/ПОСЛЕ обязательны) 50-ти страничного тома и закончи его (по завершению уровня, с Вами свяжется администратор: необходимо будет заснять листалку со стикером Шок контент)" }
-        ]
-    },
+    
     lion: {
         name: "Королева прайда",
         desc: "Пройди путь от почитателя Симбы до Королевы прайда (фото ДО/ПОСЛЕ)",
@@ -9547,20 +9621,7 @@ function openFigureModal(figure, isUnlocked) {
             }
         ]
     },
-    scrooge: {
-        name: "Скрудж",
-        desc: "Соберите 2500 ашетиков на счету",
-        levels: [
-            { title: "Скрудж", maxProgress: 2500, desc: "Накопите 2500 ашетиков", isBalance: true }
-        ]
-    },
-    benefactor: {
-        name: "Благодетель",
-        desc: "Поддержите развитие проекта",
-        levels: [
-            { title: "Благодетель", maxProgress: 1, desc: "Поддержите нас", isDonation: true }
-        ]
-    },
+   
     mystery: {
         name: "Загадка",
         desc: "Раскрасить картинки из м/ф Скуби-Ду (фото ДО/ПОСЛЕ)",
@@ -9583,123 +9644,67 @@ function openFigureModal(figure, isUnlocked) {
             { title: "Анаконда", maxProgress: 8, desc: "Раскрась 8 картинок со змеей" }
         ]
     },
-             krasavica: {
-        name: "Красавица",
-        desc: "Пройди всю историю от страха, ненависти к уважению и любви (фото ДО/ПОСЛЕ)",
+   
+   
+            shock: {
+        name: "Шок контент",
+        desc: "Только самые КРЕЙЗИ смогут пройти всё, но награда того стоит (фото ДО/ПОСЛЕ)",
         levels: [
-            { 
-                title: "Знакомство с главными персонажами", 
-                maxProgress: 5, 
-                desc: "Раскрась 1 картинку с Белль, 1 картинку с Адамом (в образе чудовища), 1 картинку с Морисом, 1 картинку с Гастоном, 1 картинку с Лефу",
+            { title: "Первые шаги", maxProgress: 5, desc: "Раскрась 5 разворотов" },
+            {
+                title: "Что происходит?",
+                maxProgress: 5,
+                desc: "Раскрась 1 разворот с Ариэль, 1 картинку с измененным фоном, 1 разворот с полным отсутствием черного цвета (допускается замена цветов), 1 разворот, где присутствует 7 или больше персонажей (у персонажа есть какая-то роль в м/ф), 1 картинку, где преобладает желтый цвет (более 50%)",
                 subtasks: [
-                    { id: 'bellraskrasstatus', name: 'Белль', required: 1 },
-                     { id: 'chudovisheraskrasstatus', name: 'Адам', required: 1 },
-                     { id: 'morisraskrasstatus', name: 'Морис', required: 1 },
-                     { id: 'gastonraskrasstatus', name: 'Гастон', required: 1 },
-                     { id: 'lefuraskrasstatus', name: 'Лефу', required: 1 }
+                    { id: 'ariel_spread', name: 'Разворот с Ариэль', required: 1 },
+                    { id: 'changed_background', name: 'Измененный фон', required: 1 },
+                    { id: 'no_black', name: 'Без черного цвета', required: 1 },
+                    { id: 'seven_characters', name: '7+ персонажей', required: 1 },
+                    { id: 'yellow_dominant', name: 'Преобладает желтый', required: 1 }
                 ]
             },
-            { 
-                title: "Начало пути", 
-                maxProgress: 5, 
-                desc: "Раскрась 1 картинку с витражом из мф Красавица и чудовище, 1 картинку с тройняшками, 1 картинку с Филиппом, 1 картинку с дождем",
+            {
+                title: "Крейзи",
+                maxProgress: 5,
+                desc: "Раскрась 1 Радость из м/ф Головоломка, 1 разворот в сине-фиолетовых оттенках (можно заменять цвета), 1 разворот в ч/б (можно зменять цвета), объедени 2 соседние картинки в единый разворот, раскрась 1 картинку из нашего стикерпака",
                 subtasks: [
-                     { id: 'vitraxhnastatus', name: 'Витраж', required: 1 }
-                    { id: 'troinyashki', name: 'Тройняшки', required: 1 },
-                    { id: 'filippnastatus', name: 'Филипп', required: 1 },
-                     { id: 'zamok', name: 'Замок', required: 1 },
-                     { id: 'dozhdikkapkapkap', name: 'Дождь', required: 1 }
+                    { id: 'joy_inside_out', name: 'Радость (Головоломка)', required: 1 },
+                    { id: 'negative_spread', name: 'Разворот в сине-фиолетовых оттенках', required: 1 },
+                    { id: 'bw_spread', name: 'Черно-белый разворот', required: 1 },
+                    { id: 'combined_spread', name: 'Объединенный разворот', required: 1 },
+                    { id: 'sticker_pack', name: 'Картинка из стикерпака', required: 1 }
                 ]
             },
-            { 
-                title: "Таинственный замок", 
-                maxProgress: 5, 
-                desc: "Раскрась 1 картинку с Люмьером, 1 каринку с Когсвортом, 1 картинку с Миссис Поттс, 1 картинку с Фифи, 1 картинку с Султаном (собака)",
+            {
+                title: "Имба",
+                maxProgress: 5,
+                desc: "Раскрась 1 разворот карандашами, 1 разворот фломастерами, 2 картинки не из мультфильмов, 1 разворот акриловыми маркерами, 1 разворот с Рапунцель",
                 subtasks: [
-                    { id: 'lumiernastatus', name: 'Люмьер', required: 1 },
-                    { id: 'kogswortnastatus', name: 'Когсворт', required: 1 },
-                    { id: 'missispottsnastatus', name: 'Миссис Поттс', required: 1 },
-                    { id: 'fifinastatus', name: 'Фифи', required: 1 },
-                     { id: 'sultannastatus', name: 'Султан', required: 1 }
+                    { id: 'pencils', name: 'Карандаши (разворот)', required: 1 },
+                    { id: 'felt_tips', name: 'Фломастеры (разворот)', required: 1 },
+                    { id: 'paints', name: '2 картинки не из мультфильмов', required: 2 },
+                    { id: 'acrylic_markers', name: 'Акриловые маркеры (разворот)', required: 1 },
+                    { id: 'pens_only', name: 'Разворот с Рапунцель', required: 1 }
                 ]
             },
-            { 
-                title: "Любимый цвет красный", 
-                maxProgress: 5, 
-                desc: "Раскрась 2 картинки со злодеями и огнем, 3 картинки злодеек в красных платьях",
-                subtasks: [
-                    { id: 'villains_with_fire', name: 'Злодеи с огнем', required: 2 },
-                    { id: 'villainess_red_dress', name: 'Злодейки в красных платьях', required: 3 }
-                ]
-            },
-            { 
-                title: "Злая королева", 
-                maxProgress: 8, 
-                desc: "Раскрась 1 картинку с Намаари, 1 картинку со злой королевой из Белоснежки, 1 картинку с мадам Мим, 1 картинку с Круэлой, 1 картинку с Малифесентной, 1 картинку с Измой, 1 картинку с Красной королевой, 1 картинку с Морганой",
-                subtasks: [
-                    { id: 'namaari', name: 'Намаари', required: 1 },
-                    { id: 'evil_queen', name: 'Злая королева (Белоснежка)', required: 1 },
-                    { id: 'madame_mim', name: 'Мадам Мим', required: 1 },
-                    { id: 'cruella', name: 'Круэлла', required: 1 },
-                    { id: 'maleficent', name: 'Малифесента', required: 1 },
-                    { id: 'yzma', name: 'Изма', required: 1 },
-                    { id: 'red_queen', name: 'Красная королева', required: 1 },
-                    { id: 'morgana', name: 'Моргана', required: 1 }
-                ]
-            }
+            { title: "Шок контент", maxProgress: 20, desc: "Раскрась 20 страниц (фото ДО/ПОСЛЕ обязательны) 50-ти страничного тома и закончи его (по завершению уровня, с Вами свяжется администратор: необходимо будет заснять листалку со стикером Шок контент)" }
         ]
     },
-    pempudu: {
-        name: 'Абрикосик',
-        desc: 'Выполни все уровни и получи статус «Абрикосик»! При отправке фото прикрепи фото ДО/ПОСЛЕ',
+             scrooge: {
+        name: "Скрудж",
+        desc: "Соберите 2500 ашетиков на счету",
         levels: [
-            {
-                title: 'Уровень 1 - Заготовка шашлыка',
-                maxProgress: 9,
-                desc: 'Раскрась 3 картинки с баранами/свиньями, 3 с петухом/курицей, 3 с едой',
-                subtasks: [
-                    { id: 'abr1_1', name: 'Бараны/свиньи', required: 3 },
-                    { id: 'abr1_2', name: 'Петух/курица', required: 3 },
-                    { id: 'abr1_3', name: 'Еда', required: 3 }
-                ]
-            },
-            {
-                title: 'Уровень 2 - Базовый минимум',
-                maxProgress: 10,
-                desc: 'Раскрась 1 разворот с танцующими, 2 картинки с короной, 2 со свадьбой, 2 разворота с застольем, 3 с козлами',
-                subtasks: [
-                    { id: 'abr2_1', name: 'Персонажи танцуют (разворот)', required: 1 },
-                    { id: 'abr2_2', name: 'Корона', required: 2 },
-                    { id: 'abr2_3', name: 'Свадьба', required: 2 },
-                    { id: 'abr2_4', name: 'Застолье (развороты)', required: 2 },
-                    { id: 'abr2_5', name: 'Козлы', required: 3 }
-                ]
-            },
-            {
-                title: 'Уровень 3 - Тысяча и 1 родственник',
-                maxProgress: 8,
-                desc: 'Раскрась 2 картинки с отцом и дочерью, 2 разворота с 5+ персонажами, 2 с пожилыми людьми, 2 с принцессой и мамой',
-                subtasks: [
-                    { id: 'abr3_1', name: 'Отец и дочь', required: 2 },
-                    { id: 'abr3_2', name: '5+ персонажей (разворот)', required: 2 },
-                    { id: 'abr3_3', name: 'Пожилые люди', required: 2 },
-                    { id: 'abr3_4', name: 'Принцесса с мамой', required: 2 }
-                ]
-            },
-            {
-                title: 'Уровень 4 - Роскошный максимум',
-                maxProgress: 7,
-                desc: 'Раскрась 1 разворот со зданием, 3 картинки с хищными кошками, 1 разворот с принцессой, 1 с машиной, 1 с принцем',
-                subtasks: [
-                    { id: 'abr4_1', name: 'Здание (разворот)', required: 1 },
-                    { id: 'abr4_2', name: 'Хищные кошки', required: 3 },
-                    { id: 'abr4_3', name: 'Принцесса (разворот)', required: 1 },
-                    { id: 'abr4_4', name: 'Машина', required: 1 },
-                    { id: 'abr4_5', name: 'Только принц', required: 1 }
-                ]
-            }
+            { title: "Скрудж", maxProgress: 2500, desc: "Накопите 2500 ашетиков", isBalance: true }
         ]
     },
+    benefactor: {
+        name: "Благодетель",
+        desc: "Поддержите развитие проекта",
+        levels: [
+            { title: "Благодетель", maxProgress: 1, desc: "Поддержите нас", isDonation: true }
+        ]
+    },
+            
             
     season_pass: {
         name: "🌸 Сезонный пропуск",
@@ -20174,6 +20179,9 @@ function toggleFiguresCollectionBlock() {
         content.style.display = 'none';
         arrow.style.transform = 'rotate(0deg)';
     }
+}
+        function isPageCompleted(bookKey, page) {
+    return userCompletedPages[bookKey]?.hasOwnProperty(String(page)) || false;
 }
 function getPageArtwork(bookKey, page) {
     const url = userArtworks[bookKey]?.[String(page)];
