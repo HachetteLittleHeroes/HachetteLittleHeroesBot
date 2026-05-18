@@ -9583,6 +9583,72 @@ function openFigureModal(figure, isUnlocked) {
             { title: "Анаконда", maxProgress: 8, desc: "Раскрась 8 картинок со змеей" }
         ]
     },
+             krasavica: {
+        name: "Красавица",
+        desc: "Пройди всю историю от страха, ненависти к уважению и любви (фото ДО/ПОСЛЕ)",
+        levels: [
+            { 
+                title: "Знакомство с главными персонажами", 
+                maxProgress: 5, 
+                desc: "Раскрась 1 картинку с Белль, 1 картинку с Адамом (в образе чудовища), 1 картинку с Морисом, 1 картинку с Гастоном, 1 картинку с Лефу",
+                subtasks: [
+                    { id: 'bellraskrasstatus', name: 'Белль', required: 1 },
+                     { id: 'chudovisheraskrasstatus', name: 'Адам', required: 1 },
+                     { id: 'morisraskrasstatus', name: 'Морис', required: 1 },
+                     { id: 'gastonraskrasstatus', name: 'Гастон', required: 1 },
+                     { id: 'lefuraskrasstatus', name: 'Лефу', required: 1 }
+                ]
+            },
+            { 
+                title: "Начало пути", 
+                maxProgress: 5, 
+                desc: "Раскрась 1 картинку с витражом из мф Красавица и чудовище, 1 картинку с тройняшками, 1 картинку с Филиппом, 1 картинку с дождем",
+                subtasks: [
+                     { id: 'vitraxhnastatus', name: 'Витраж', required: 1 }
+                    { id: 'troinyashki', name: 'Тройняшки', required: 1 },
+                    { id: 'filippnastatus', name: 'Филипп', required: 1 },
+                     { id: 'zamok', name: 'Замок', required: 1 },
+                     { id: 'dozhdikkapkapkap', name: 'Дождь', required: 1 }
+                ]
+            },
+            { 
+                title: "Таинственный замок", 
+                maxProgress: 5, 
+                desc: "Раскрась 1 картинку с Люмьером, 1 каринку с Когсвортом, 1 картинку с Миссис Поттс, 1 картинку с Фифи, 1 картинку с Султаном (собака)",
+                subtasks: [
+                    { id: 'lumiernastatus', name: 'Люмьер', required: 1 },
+                    { id: 'kogswortnastatus', name: 'Когсворт', required: 1 },
+                    { id: 'missispottsnastatus', name: 'Миссис Поттс', required: 1 },
+                    { id: 'fifinastatus', name: 'Фифи', required: 1 },
+                     { id: 'sultannastatus', name: 'Султан', required: 1 }
+                ]
+            },
+            { 
+                title: "Любимый цвет красный", 
+                maxProgress: 5, 
+                desc: "Раскрась 2 картинки со злодеями и огнем, 3 картинки злодеек в красных платьях",
+                subtasks: [
+                    { id: 'villains_with_fire', name: 'Злодеи с огнем', required: 2 },
+                    { id: 'villainess_red_dress', name: 'Злодейки в красных платьях', required: 3 }
+                ]
+            },
+            { 
+                title: "Злая королева", 
+                maxProgress: 8, 
+                desc: "Раскрась 1 картинку с Намаари, 1 картинку со злой королевой из Белоснежки, 1 картинку с мадам Мим, 1 картинку с Круэлой, 1 картинку с Малифесентной, 1 картинку с Измой, 1 картинку с Красной королевой, 1 картинку с Морганой",
+                subtasks: [
+                    { id: 'namaari', name: 'Намаари', required: 1 },
+                    { id: 'evil_queen', name: 'Злая королева (Белоснежка)', required: 1 },
+                    { id: 'madame_mim', name: 'Мадам Мим', required: 1 },
+                    { id: 'cruella', name: 'Круэлла', required: 1 },
+                    { id: 'maleficent', name: 'Малифесента', required: 1 },
+                    { id: 'yzma', name: 'Изма', required: 1 },
+                    { id: 'red_queen', name: 'Красная королева', required: 1 },
+                    { id: 'morgana', name: 'Моргана', required: 1 }
+                ]
+            }
+        ]
+    },
     pempudu: {
         name: 'Абрикосик',
         desc: 'Выполни все уровни и получи статус «Абрикосик»! При отправке фото прикрепи фото ДО/ПОСЛЕ',
@@ -12665,7 +12731,7 @@ window.onload = async () => {
              { book: "Les Grands Classiques tome 5", pages: [66] },
             { book: "Les Grands Classiques tome 8", pages: [9] },
              { book: "Famille", pages: [24] },
-              { book: "Princesses tomr 2", pages: [7]},
+              { book: "Princesses tome 2", pages: [7]},
              { book: "Portraits de famille", pages: [5] }
         ]
     }, 
@@ -19520,6 +19586,15 @@ window.onload = async () => {
         name: "Прыск",
         film: "В поисках Немо",
        image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/bestiary/p693.png",
+        appearances: [
+            { book: "Babies", pages: [97]}
+        ]
+            },
+             {
+        id: "sultansobaka",
+        name: "Собака Султан",
+        film: "Красавица и чудовище",
+       image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/bestiary/p694.png",
         appearances: [
             { book: "Babies", pages: [97]}
         ]
