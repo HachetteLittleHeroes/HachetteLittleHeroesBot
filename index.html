@@ -5630,9 +5630,10 @@ function applyAllFilters() {
         
         let showByStatus = true;
         if (currentStatusFilter === 'started') {
-            showByStatus = !isCompleted;
+            const progressBar = card.querySelector('.progress-bar-fill');
+            const hasProgress = progressBar && progressBar.style.width && progressBar.style.width !== '0%';
+            showByStatus = !isCompleted && hasProgress;
         } else if (currentStatusFilter === 'notStarted') {
-            // Не начатые = нет прогресса И не завершённые
             const progressBar = card.querySelector('.progress-bar-fill');
             const hasProgress = progressBar && progressBar.style.width && progressBar.style.width !== '0%';
             showByStatus = !isCompleted && !hasProgress;
