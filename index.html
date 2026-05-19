@@ -23341,7 +23341,8 @@ function openBookPageFromBestiary(category, bookName, page) {
         renderStatusFilters();  // ← добавить
     }
 }
-
+let currentStatusFilter = 'all';
+        
 function renderStatusFilters() {
     let container = document.getElementById('statusFilters');
     if (!container) {
@@ -23367,7 +23368,7 @@ function renderStatusFilters() {
     `;
 }
 
-let currentStatusFilter = 'all';
+
 
 function filterBranchTasks(filter) {
     currentStatusFilter = filter;
