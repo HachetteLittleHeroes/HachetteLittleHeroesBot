@@ -5632,7 +5632,10 @@ function applyAllFilters() {
         if (currentStatusFilter === 'started') {
             showByStatus = !isCompleted;
         } else if (currentStatusFilter === 'notStarted') {
-            showByStatus = !isCompleted;
+            // Не начатые = нет прогресса И не завершённые
+            const progressBar = card.querySelector('.progress-bar-fill');
+            const hasProgress = progressBar && progressBar.style.width && progressBar.style.width !== '0%';
+            showByStatus = !isCompleted && !hasProgress;
         }
         
         card.style.display = showByCategory && showByStatus ? '' : 'none';
