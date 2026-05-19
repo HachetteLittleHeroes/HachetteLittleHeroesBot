@@ -5594,10 +5594,10 @@ function renderStatusFilters() {
 function filterBranchTasks(filter) {
     currentStatusFilter = filter;
     
-    // Подсветка кнопки статуса
+    const filterMap = { 'all': 'All', 'started': 'Started', 'notStarted': 'NotStarted' };
+    
     document.querySelectorAll('#statusFilters .filter-btn').forEach(btn => btn.classList.remove('active'));
-    document.getElementById('filter' + filter.charAt(0).toUpperCase() + filter.slice(1))?.classList.add('active');
-    // Подсветка кнопки категории
+    document.getElementById('filter' + filterMap[filter])?.classList.add('active');
     document.getElementById('filterCat' + currentCategoryFilter)?.classList.add('active');
     
     applyAllFilters();
