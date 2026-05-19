@@ -23432,34 +23432,6 @@ function openBookPageFromBestiary(category, bookName, page) {
     }
 }
 
-        
-function renderStatusFilters() {
-    let container = document.getElementById('statusFilters');
-    if (!container) {
-        container = document.createElement('div');
-        container.id = 'statusFilters';
-        container.style.cssText = 'display: flex; gap: 10px; margin-bottom: 15px; overflow-x: auto;';
-        const tasksContent = document.getElementById('tasksContent');
-        if (tasksContent) {
-            tasksContent.insertBefore(container, tasksContent.firstChild);
-        }
-    }
-    
-    container.innerHTML = `
-        <button class="filter-btn active" onclick="filterBranchTasks('all')" id="filterAllStatuses">
-            <i class="fas fa-list"></i> Все
-        </button>
-        <button class="filter-btn" onclick="filterBranchTasks('started')" id="filterStartedStatuses">
-            <i class="fas fa-play"></i> Начатые
-        </button>
-        <button class="filter-btn" onclick="filterBranchTasks('notStarted')" id="filterNotStartedStatuses">
-            <i class="fas fa-circle"></i> Не начатые
-        </button>
-    `;
-}
-
-
-
 function filterBranchTasks(filter) {
     currentStatusFilter = filter;
     
