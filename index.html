@@ -7389,7 +7389,7 @@ function openSupportDialog() {
                 }
             }
         }
-        
+        let currentStatusFilter = 'all';
         function toggleTasks() {
             const content = document.getElementById('tasksContent');
             const arrow = document.getElementById('tasksArrow');
@@ -23341,7 +23341,7 @@ function openBookPageFromBestiary(category, bookName, page) {
         renderStatusFilters();  // ← добавить
     }
 }
-let currentStatusFilter = 'all';
+
         
 function renderStatusFilters() {
     let container = document.getElementById('statusFilters');
