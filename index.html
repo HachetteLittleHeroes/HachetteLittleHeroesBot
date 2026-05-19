@@ -5591,15 +5591,6 @@ function renderStatusFilters() {
     `;
 }
 
-function filterBranchCategory(category) {
-    currentCategoryFilter = category;
-    
-    document.querySelectorAll('#statusFilters .filter-btn').forEach(btn => btn.classList.remove('active'));
-    document.getElementById('filterCat' + category)?.classList.add('active');
-    
-    applyAllFilters();
-}
-
 function filterBranchTasks(filter) {
     currentStatusFilter = filter;
     
