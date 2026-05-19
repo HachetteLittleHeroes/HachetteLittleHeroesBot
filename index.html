@@ -5629,13 +5629,17 @@ function applyAllFilters() {
         
         let showByStatus = true;
         if (currentStatusFilter === 'started') {
+            // Ветка начата: не завершена И (есть прогресс ИЛИ пройден хотя бы первый уровень)
             const progressBar = card.querySelector('.progress-bar-fill');
             const hasProgress = progressBar && progressBar.style.width && progressBar.style.width !== '0%';
-            showByStatus = !isCompleted && hasProgress;
+            const currentLevel = getCurrentLevelIndex(branchKey);
+            showByStatus = !isCompleted && (hasProgress || currentLevel > 0);
         } else if (currentStatusFilter === 'notStarted') {
+            // Ветка не начата: не завершена И нет прогресса И не пройден первый уровень
             const progressBar = card.querySelector('.progress-bar-fill');
             const hasProgress = progressBar && progressBar.style.width && progressBar.style.width !== '0%';
-            showByStatus = !isCompleted && !hasProgress;
+            const currentLevel = getCurrentLevelIndex(branchKey);
+            showByStatus = !isCompleted && !hasProgress && currentLevel === 0;
         }
         
         card.style.display = showByCategory && showByStatus ? '' : 'none';
