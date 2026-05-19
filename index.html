@@ -23327,6 +23327,69 @@ function openBookPageFromBestiary(category, bookName, page) {
     });
     document.getElementById('themeModal').style.display = 'flex';
 }
+        function toggleTasks() {
+    const content = document.getElementById('tasksContent');
+    const arrow = document.getElementById('tasksArrow');
+    if (!content) return;
+    if (content.style.display === 'block') {
+        content.style.display = 'none';
+        if (arrow) arrow.style.transform = 'rotate(0deg)';
+    } else {
+        content.style.display = 'block';
+        if (arrow) arrow.style.transform = 'rotate(180deg)';
+        renderBranchTasks();
+        renderStatusFilters();  // ← добавить
+    }
+}
+
+function renderStatusFilters() {
+    let container = document.getElementById('statusFilters');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'statusFilters';
+        container.style.cssText = 'display: flex; gap: 10px; margin-bottom: 15px; overflow-x: auto;';
+        const tasksContent = document.getElementById('tasksContent');
+        if (tasksContent) {
+            tasksContent.insertBefore(container, tasksContent.firstChild);
+        }
+    }
+    
+    container.innerHTML = `
+        <button class="filter-btn active" onclick="filterBranchTasks('all')" id="filterAllStatuses">
+            <i class="fas fa-list"></i> Все
+        </button>
+        <button class="filter-btn" onclick="filterBranchTasks('started')" id="filterStartedStatuses">
+            <i class="fas fa-play"></i> Начатые
+        </button>
+        <button class="filter-btn" onclick="filterBranchTasks('notStarted')" id="filterNotStartedStatuses">
+            <i class="fas fa-circle"></i> Не начатые
+        </button>
+    `;
+}
+
+let currentStatusFilter = 'all';
+
+function filterBranchTasks(filter) {
+    currentStatusFilter = filter;
+    
+    document.querySelectorAll('#statusFilters .filter-btn').forEach(btn => btn.classList.remove('active'));
+    document.getElementById('filter' + filter.charAt(0).toUpperCase() + filter.slice(1) + 'Statuses')?.classList.add('active');
+    
+    const cards = document.querySelectorAll('#branchTasksList .branch-task-card');
+    
+    cards.forEach(card => {
+        const isCompleted = card.classList.contains('completed');
+        const hasProgress = card.querySelector('.progress-bar-fill')?.style.width !== '0%' && card.querySelector('.progress-bar-fill')?.style.width !== '';
+        
+        if (filter === 'all') {
+            card.style.display = '';
+        } else if (filter === 'started') {
+            card.style.display = (!isCompleted && hasProgress) ? '' : 'none';
+        } else if (filter === 'notStarted') {
+            card.style.display = (!isCompleted && !hasProgress) ? '' : 'none';
+        }
+    });
+}
     </script>
     
     <!-- Модалка поиска пользователей -->
