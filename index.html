@@ -5536,7 +5536,100 @@
         // ОТОБРАЖЕНИЕ ЗАДАНИЙ (С ПОДПУНКТАМИ)
         // ==========================================
         
-     function renderBranchTasks() {
+   // Категории статусов
+const STATUS_CATEGORIES = {
+    'princess': { name: '👑 Принцессы', keys: ['krasavica', 'sirena', 'rapuncelprincessa'] },
+    'animals': { name: '🐾 Животные', keys: ['lion', 'fauna', 'bear', 'sea', 'anaconda', 'dragons'] },
+    'villains': { name: '👿 Злодеи', keys: ['queen'] },
+    'special': { name: '⭐ Особые', keys: ['shock', 'pempudu', 'alcohol'] },
+    'stories': { name: '📖 Истории', keys: ['trainer', 'mystery', 'lubitelfentesi'] }
+};
+
+let currentStatusFilter = 'all';
+let currentCategoryFilter = 'all';
+
+function getStatusCategory(branchKey) {
+    for (const [catKey, cat] of Object.entries(STATUS_CATEGORIES)) {
+        if (cat.keys.includes(branchKey)) return cat;
+    }
+    return null;
+}
+
+function renderStatusFilters() {
+    let container = document.getElementById('statusFilters');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'statusFilters';
+        const tasksContent = document.getElementById('tasksContent');
+        if (tasksContent) {
+            tasksContent.insertBefore(container, tasksContent.firstChild);
+        }
+    }
+    
+    container.innerHTML = `
+        <div style="display: flex; gap: 10px; margin-bottom: 10px; overflow-x: auto;">
+            <button class="filter-btn active" onclick="filterBranchTasks('all')" id="filterAll">
+                <i class="fas fa-list"></i> Все
+            </button>
+            <button class="filter-btn" onclick="filterBranchTasks('started')" id="filterStarted">
+                <i class="fas fa-play"></i> Начатые
+            </button>
+            <button class="filter-btn" onclick="filterBranchTasks('notStarted')" id="filterNotStarted">
+                <i class="fas fa-circle"></i> Не начатые
+            </button>
+        </div>
+        <div style="display: flex; gap: 10px; overflow-x: auto;">
+            <button class="filter-btn active" onclick="filterBranchCategory('all')" id="filterCatAll">
+                Все
+            </button>
+            ${Object.entries(STATUS_CATEGORIES).map(([key, cat]) => `
+                <button class="filter-btn" onclick="filterBranchCategory('${key}')" id="filterCat${key}">
+                    ${cat.name}
+                </button>
+            `).join('')}
+        </div>
+    `;
+}
+
+function filterBranchCategory(category) {
+    currentCategoryFilter = category;
+    
+    document.querySelectorAll('#statusFilters .filter-btn').forEach(btn => btn.classList.remove('active'));
+    document.getElementById('filterCat' + category)?.classList.add('active');
+    
+    applyAllFilters();
+}
+
+function filterBranchTasks(filter) {
+    currentStatusFilter = filter;
+    
+    applyAllFilters();
+}
+
+function applyAllFilters() {
+    const cards = document.querySelectorAll('#branchTasksList .branch-task-card');
+    
+    cards.forEach(card => {
+        const branchKey = card.getAttribute('data-branch-key');
+        const isCompleted = card.classList.contains('completed');
+        
+        let showByCategory = currentCategoryFilter === 'all';
+        if (!showByCategory && STATUS_CATEGORIES[currentCategoryFilter]) {
+            showByCategory = STATUS_CATEGORIES[currentCategoryFilter].keys.includes(branchKey);
+        }
+        
+        let showByStatus = true;
+        if (currentStatusFilter === 'started') {
+            showByStatus = !isCompleted;
+        } else if (currentStatusFilter === 'notStarted') {
+            showByStatus = !isCompleted;
+        }
+        
+        card.style.display = showByCategory && showByStatus ? '' : 'none';
+    });
+}
+
+function renderBranchTasks() {
     const container = document.getElementById('branchTasksList');
     if (!container) {
         console.error('Container branchTasksList not found');
@@ -5546,7 +5639,6 @@
     container.innerHTML = '';
     
     for (const [branchKey, branch] of Object.entries(TASK_BRANCHES)) {
-        // ✅ Пропускаем Season Pass — он в отдельном блоке
         if (branchKey === 'season_pass') continue;
         
         const isCompleted = isBranchCompleted(branchKey);
@@ -5555,6 +5647,7 @@
         
         const branchCard = document.createElement('div');
         branchCard.className = `branch-task-card ${isCompleted ? 'completed' : ''}`;
+        branchCard.setAttribute('data-branch-key', branchKey);
         
         branchCard.innerHTML = `
             <div class="branch-header">
@@ -5725,6 +5818,8 @@
         container.appendChild(branchCard);
     }
     
+    renderStatusFilters();
+    applyAllFilters();
     console.log('✅ Задания отрисованы');
 }
         // ==========================================
