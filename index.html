@@ -5598,7 +5598,7 @@ function filterBranchTasks(filter) {
     
     document.querySelectorAll('#statusFilters .filter-btn').forEach(btn => btn.classList.remove('active'));
     document.getElementById('filter' + filterMap[filter])?.classList.add('active');
-    document.getElementById('filterCat' + currentCategoryFilter)?.classList.add('active');
+    document.getElementById(currentCategoryFilter === 'all' ? 'filterCatAll' : 'filterCat' + currentCategoryFilter)?.classList.add('active');
     
     applyAllFilters();
 }
@@ -5606,10 +5606,9 @@ function filterBranchTasks(filter) {
 function filterBranchCategory(category) {
     currentCategoryFilter = category;
     
-    // Подсветка кнопки категории
     document.querySelectorAll('#statusFilters .filter-btn').forEach(btn => btn.classList.remove('active'));
-    document.getElementById('filterCat' + category)?.classList.add('active');
-    // Подсветка кнопки статуса
+    document.getElementById(category === 'all' ? 'filterCatAll' : 'filterCat' + category)?.classList.add('active');
+    
     const filterMap = { 'all': 'All', 'started': 'Started', 'notStarted': 'NotStarted' };
     document.getElementById('filter' + filterMap[currentStatusFilter])?.classList.add('active');
     
