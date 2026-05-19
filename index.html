@@ -5603,6 +5603,25 @@ function filterBranchCategory(category) {
 function filterBranchTasks(filter) {
     currentStatusFilter = filter;
     
+    // Подсветка кнопки статуса
+    document.querySelectorAll('#statusFilters .filter-btn').forEach(btn => btn.classList.remove('active'));
+    document.getElementById('filter' + filter.charAt(0).toUpperCase() + filter.slice(1))?.classList.add('active');
+    // Подсветка кнопки категории
+    document.getElementById('filterCat' + currentCategoryFilter)?.classList.add('active');
+    
+    applyAllFilters();
+}
+
+function filterBranchCategory(category) {
+    currentCategoryFilter = category;
+    
+    // Подсветка кнопки категории
+    document.querySelectorAll('#statusFilters .filter-btn').forEach(btn => btn.classList.remove('active'));
+    document.getElementById('filterCat' + category)?.classList.add('active');
+    // Подсветка кнопки статуса
+    const filterMap = { 'all': 'All', 'started': 'Started', 'notStarted': 'NotStarted' };
+    document.getElementById('filter' + filterMap[currentStatusFilter])?.classList.add('active');
+    
     applyAllFilters();
 }
 
@@ -23432,27 +23451,7 @@ function openBookPageFromBestiary(category, bookName, page) {
     }
 }
 
-function filterBranchTasks(filter) {
-    currentStatusFilter = filter;
-    
-    document.querySelectorAll('#statusFilters .filter-btn').forEach(btn => btn.classList.remove('active'));
-    document.getElementById('filter' + filter.charAt(0).toUpperCase() + filter.slice(1) + 'Statuses')?.classList.add('active');
-    
-    const cards = document.querySelectorAll('#branchTasksList .branch-task-card');
-    
-    cards.forEach(card => {
-        const isCompleted = card.classList.contains('completed');
-        const hasProgress = card.querySelector('.progress-bar-fill')?.style.width !== '0%' && card.querySelector('.progress-bar-fill')?.style.width !== '';
-        
-        if (filter === 'all') {
-            card.style.display = '';
-        } else if (filter === 'started') {
-            card.style.display = (!isCompleted && hasProgress) ? '' : 'none';
-        } else if (filter === 'notStarted') {
-            card.style.display = (!isCompleted && !hasProgress) ? '' : 'none';
-        }
-    });
-}
+
     </script>
     
     <!-- Модалка поиска пользователей -->
