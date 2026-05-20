@@ -11977,6 +11977,7 @@ function showLeagueLeaderboard(league) {
                 <div style="flex: 1; min-width: 0;">
                     <div style="font-weight: 600; font-size: 14px;">${user.name || user.username}</div>
                     <div style="font-size: 12px; color: var(--text-gray);">${user.status || 'Без статуса'}</div>
+                    <div style="font-size: 11px; color: var(--accent);">${getUserLevelInfo(user.points).name}</div>
                 </div>
                 <div style="text-align: right;">
                     <div style="font-weight: 700; color: var(--accent); font-size: 16px;">${user.points}</div>
@@ -12129,6 +12130,20 @@ function renderUserLevel() {
         </div>
         <div style="font-size: 10px; color: var(--text-gray); margin-top: 2px;">${levelInfo.xp} / ${levelInfo.nextXP} XP</div>
     `;
+}
+        function calculatePublicXP(profile) {
+    let xp = 0;
+    
+    for (const [key, value] of Object.entries(profile)) {
+        if (key.startsWith('branch_') && typeof value === 'number') {
+            xp += value * 5;
+        }
+        if (key.startsWith('irina_level_') && typeof value === 'number') {
+            xp += value * 3;
+        }
+    }
+    
+    return xp;
 }
        // ==========================================
 // ИНИЦИАЛИЗАЦИЯ
@@ -21139,6 +21154,7 @@ function renderPublicProfile(profile) {
             <div class="profile-info">
                 <div class="name-row"><h2>${userName}</h2></div>
                 <div class="status-badge">${userStatus}</div>
+                <div id="publicUserLevel" style="margin-top: 8px;"></div>
                 ${!isOwnProfile ? (isFriend ? `<button class="already-friend-btn" disabled><i class="fas fa-check"></i> В друзьях</button>` : `<button class="add-friend-btn" onclick="addFriend('${pubUserId}')"><i class="fas fa-user-plus"></i> Добавить в друзья</button>`) : ''}
             </div>
         </div>
@@ -21181,6 +21197,22 @@ function renderPublicProfile(profile) {
     container._pubUserId = profile.user_id;
     container.dataset.profile = JSON.stringify(profile);
     renderPublicStatsBooks();
+    
+    // ✅ Отображение уровня в публичном профиле
+    setTimeout(() => {
+        const xp = calculatePublicXP(profile);
+        const levelInfo = getUserLevelInfo(xp);
+        const el = document.getElementById('publicUserLevel');
+        if (el) {
+            el.innerHTML = `
+                <div style="font-size: 12px; color: var(--text-gray); margin-bottom: 4px;">${levelInfo.name}</div>
+                <div class="progress-bar-container" style="height: 4px;">
+                    <div class="progress-bar-fill" style="width: ${levelInfo.progress}%;"></div>
+                </div>
+                <div style="font-size: 10px; color: var(--text-gray); margin-top: 2px;">${levelInfo.xp} / ${levelInfo.nextXP} XP</div>
+            `;
+        }
+    }, 100);
 }
 function switchPublicStats(period) {
     var container = document.getElementById('publicProfileContent');
