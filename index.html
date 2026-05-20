@@ -4201,20 +4201,22 @@
     </div>
 
     <!-- Блок с аватаркой, именем и статусом -->
-    <div class="profile-header-block">
-        <div class="avatar-wrapper" onclick="toggleAvatarEditor()">
-            <img id="user-avatar" src="https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av2.png">
-            <div class="avatar-edit-icon"><i class="fas fa-pencil-alt"></i></div>
-        </div>
-        <div class="profile-info">
+<div class="profile-header-block">
+    <div class="avatar-wrapper" onclick="toggleAvatarEditor()">
+        <img id="user-avatar" src="https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av2.png">
+        <div class="avatar-edit-icon"><i class="fas fa-pencil-alt"></i></div>
+    </div>
+    <div class="profile-info" style="display: flex; align-items: flex-start; justify-content: space-between; width: 100%;">
+        <div>
             <div class="name-row" onclick="changeNickname()">
                 <h2 id="displayUsername">Без имени</h2>
                 <i class="fas fa-pencil-alt" style="color: var(--text-gray); font-size: 14px;"></i>
             </div>
-            <button id="currentStatus" class="status-badge" onclick="openStatusInfo()">Без статуса</button>
-            <div id="userLevelDisplay" style="margin-top: 8px;"></div>
+            <button id="currentStatus" class="status-badge" style="text-align: left; padding: 6px 16px; font-size: 14px; margin-top: 4px;" onclick="openStatusInfo()">Без статуса</button>
         </div>
+        <div id="userLevelDisplay" style="text-align: right; min-width: 100px;"></div>
     </div>
+</div>
 
     <div id="avatarEditor" class="avatar-editor">
         <p>Выберите аватарку:</p>
@@ -11976,11 +11978,11 @@ function showLeagueLeaderboard(league) {
                 <div style="flex: 1; min-width: 0;">
                     <div style="font-weight: 600; font-size: 14px;">${user.name || user.username}</div>
                     <div style="font-size: 12px; color: var(--text-gray);">${user.status || 'Без статуса'}</div>
-                    <div style="font-size: 11px; color: var(--accent);">${getUserLevelInfo(user.xp || 0).name}</div>
                 </div>
                 <div style="text-align: right;">
                     <div style="font-weight: 700; color: var(--accent); font-size: 16px;">${user.points}</div>
                     <div style="font-size: 11px; color: var(--text-gray);">очков</div>
+                    <div style="font-size: 11px; color: var(--accent); margin-top: 2px;">${getUserLevelInfo(user.xp || 0).name}</div>
                 </div>
             </div>
         `;
@@ -21135,10 +21137,12 @@ function renderPublicProfile(profile) {
    let html = `
         <div class="profile-header-block" style="margin: 0; padding: 15px;">
             <div class="avatar-wrapper"><img src="${avatarUrl}" onerror="this.src='https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png'"></div>
-            <div class="profile-info">
-                <div class="name-row"><h2>${userName}</h2></div>
-                <div class="status-badge">${userStatus}</div>
-                <div id="publicUserLevel" style="margin-top: 8px;"></div>
+            <div class="profile-info" style="display: flex; align-items: flex-start; justify-content: space-between; width: 100%;">
+                <div>
+                    <div class="name-row"><h2>${userName}</h2></div>
+                    <div class="status-badge" style="text-align: left; padding: 6px 16px; font-size: 14px; margin-top: 4px;">${userStatus}</div>
+                </div>
+                <div id="publicUserLevel" style="text-align: right; min-width: 100px;"></div>
                 ${!isOwnProfile ? (isFriend ? `<button class="already-friend-btn" disabled><i class="fas fa-check"></i> В друзьях</button>` : `<button class="add-friend-btn" onclick="addFriend('${pubUserId}')"><i class="fas fa-user-plus"></i> Добавить в друзья</button>`) : ''}
             </div>
         </div>
