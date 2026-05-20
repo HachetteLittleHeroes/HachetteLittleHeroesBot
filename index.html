@@ -4206,16 +4206,16 @@
         <img id="user-avatar" src="https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av2.png">
         <div class="avatar-edit-icon"><i class="fas fa-pencil-alt"></i></div>
     </div>
-    <div class="profile-info" style="display: flex; align-items: flex-start; justify-content: space-between; width: 100%;">
-        <div>
-            <div class="name-row" onclick="changeNickname()">
-                <h2 id="displayUsername">Без имени</h2>
-                <i class="fas fa-pencil-alt" style="color: var(--text-gray); font-size: 14px;"></i>
-            </div>
-            <button id="currentStatus" class="status-badge" style="text-align: left; padding: 6px 16px; font-size: 14px; margin-top: 4px;" onclick="openStatusInfo()">Без статуса</button>
+  <div class="profile-info" style="display: flex; align-items: flex-start; justify-content: space-between; width: 100%;">
+    <div>
+        <div class="name-row" onclick="changeNickname()">
+            <h2 id="displayUsername">Без имени</h2>
+            <i class="fas fa-pencil-alt" style="color: var(--text-gray); font-size: 14px;"></i>
         </div>
-        <div id="userLevelDisplay" style="text-align: right; min-width: 100px;"></div>
+        <button id="currentStatus" class="status-badge" style="display: inline-block; text-align: left; padding: 6px 16px; font-size: 14px; margin-top: 4px;" onclick="openStatusInfo()">Без статуса</button>
     </div>
+    <div id="userLevelDisplay" style="text-align: right; padding-right: 10px;"></div>
+</div>
 </div>
 
     <div id="avatarEditor" class="avatar-editor">
@@ -21137,14 +21137,14 @@ function renderPublicProfile(profile) {
    let html = `
         <div class="profile-header-block" style="margin: 0; padding: 15px;">
             <div class="avatar-wrapper"><img src="${avatarUrl}" onerror="this.src='https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png'"></div>
-            <div class="profile-info" style="display: flex; align-items: flex-start; justify-content: space-between; width: 100%;">
-                <div>
-                    <div class="name-row"><h2>${userName}</h2></div>
-                    <div class="status-badge" style="text-align: left; padding: 6px 16px; font-size: 14px; margin-top: 4px;">${userStatus}</div>
-                </div>
-                <div id="publicUserLevel" style="text-align: right; min-width: 100px;"></div>
-                ${!isOwnProfile ? (isFriend ? `<button class="already-friend-btn" disabled><i class="fas fa-check"></i> В друзьях</button>` : `<button class="add-friend-btn" onclick="addFriend('${pubUserId}')"><i class="fas fa-user-plus"></i> Добавить в друзья</button>`) : ''}
-            </div>
+           <div class="profile-info" style="display: flex; align-items: flex-start; justify-content: space-between; width: 100%;">
+    <div>
+        <div class="name-row"><h2>${userName}</h2></div>
+        <div class="status-badge" style="display: inline-block; text-align: left; padding: 6px 16px; font-size: 14px; margin-top: 4px;">${userStatus}</div>
+    </div>
+    <div id="publicUserLevel" style="text-align: right; padding-right: 10px;"></div>
+    ${!isOwnProfile ? (isFriend ? `<button class="already-friend-btn" disabled><i class="fas fa-check"></i> В друзьях</button>` : `<button class="add-friend-btn" onclick="addFriend('${pubUserId}')"><i class="fas fa-user-plus"></i> Добавить в друзья</button>`) : ''}
+</div>
         </div>
         
         <!-- БЛОК СТАТИСТИКА -->
