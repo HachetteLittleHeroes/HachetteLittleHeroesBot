@@ -12078,9 +12078,22 @@ async function submitCommunityTaskPhoto() {
         tempPhotos = [];
     }
 }
-      function calculateUserXP() {
-    // XP теперь приходит с сервера в userProgress.xp
-    return userProgress.xp || 0;
+     function calculateUserXP() {
+    let xp = 0;
+    
+    for (const [key, value] of Object.entries(userProgress)) {
+        if (key.startsWith('branch_') && typeof value === 'number') {
+            if (!key.startsWith('branch_alcohol_') && !key.startsWith('branch_season_pass_')) {
+                xp += value * 5;
+            }
+        }
+    }
+    
+    if (communityEventData && communityEventData.user_points) {
+        xp += communityEventData.user_points * 1;
+    }
+    
+    return xp;
 }
 
 function getUserLevelInfo(xp) {
