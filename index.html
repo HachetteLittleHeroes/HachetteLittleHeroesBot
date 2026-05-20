@@ -10848,13 +10848,24 @@ async function addCustomBook(category) {
         
         let html = '';
         
+        // ✅ Форма добавления — вверху над томами
+        html += `
+            <div style="grid-column: span 2; margin-bottom: 10px;">
+                <div class="add-book-form">
+                    <input type="text" id="custom-book-${category}" placeholder="Название новой раскраски...">
+                    <div style="display: flex; gap: 8px; margin-top: 8px;">
+                        <input type="number" id="custom-book-pages-${category}" placeholder="Страниц" value="60" min="1" max="500" style="flex: 1; padding: 10px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text); font-size: 14px;">
+                        <button class="add-custom-btn" onclick="addCustomBook('${category}')" style="flex: 1;">Добавить</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
         allBooks.forEach(book => {
             const bookName = book.name;
             const collected = userBooks.some(b => (typeof b === 'string' ? b : b.name) === bookName);
             
-            // ✅ Получаем totalPages
             let totalPages = DEFAULT_PAGES_CONFIG.totalPages;
-            
             const userBook = userBooks.find(b => (typeof b === 'string' ? b : b.name) === bookName);
             
             if (userBook && typeof userBook === 'object' && userBook.totalPages) {
@@ -10863,29 +10874,26 @@ async function addCustomBook(category) {
                 totalPages = BOOK_PAGES_CONFIG[bookName].totalPages;
             }
             
-            // ✅ Считаем отмеченные страницы (разворот = 2 страницы)
             const bookKey = `${category}_${bookName}`;
             const completedPages = userCompletedPages[bookKey] || {};
             let completedCount = 0;
             
             for (const page in completedPages) {
                 if (page.includes('-')) {
-                    completedCount += 2; // разворот = 2 страницы
+                    completedCount += 2;
                 } else {
-                    completedCount += 1; // обычная страница
+                    completedCount += 1;
                 }
             }
             
             const progressPercent = totalPages > 0 ? Math.round((completedCount / totalPages) * 100) : 0;
             
-            // ✅ Правильно формируем URL обложки с параметром для кеширования
             let coverUrl = book.cover || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23ff9500' rx='12'/%3E%3Ctext x='50' y='50' text-anchor='middle' dy='.3em' fill='white' font-size='40' font-family='Arial'%3E📚%3C/text%3E%3C/svg%3E";
             
             if (coverUrl && coverUrl.startsWith('/custom_covers')) {
                 coverUrl = SERVER_URL + coverUrl;
             }
             
-            // ✅ Добавляем параметр версии для кеширования (если это GitHub)
             if (coverUrl && !coverUrl.startsWith('data:') && !coverUrl.includes('/custom_covers')) {
                 coverUrl = coverUrl + '?v=2';
             }
@@ -10922,27 +10930,12 @@ async function addCustomBook(category) {
             `;
         });
         
-        // Форма добавления с полем для страниц
-        html += `
-            <div style="grid-column: span 2; margin-top: 10px;">
-                <div class="add-book-form">
-                    <input type="text" id="custom-book-${category}" placeholder="Название новой раскраски...">
-                    <div style="display: flex; gap: 8px; margin-top: 8px;">
-                        <input type="number" id="custom-book-pages-${category}" placeholder="Страниц" value="60" min="1" max="500" style="flex: 1; padding: 10px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text); font-size: 14px;">
-                        <button class="add-custom-btn" onclick="addCustomBook('${category}')" style="flex: 1;">Добавить</button>
-                    </div>
-                </div>
-            </div>
-        `;
-        
         container.innerHTML = html;
     });
     
-    // Обновляем общий счётчик и прогресс
     updateColoringBooksStats();
     updateAllCategoriesProgress();
     
-    // Добавляем сердечки вишлиста
     setTimeout(() => {
         document.querySelectorAll('.coloring-book-item').forEach(card => {
             const nameEl = card.querySelector('.book-name');
