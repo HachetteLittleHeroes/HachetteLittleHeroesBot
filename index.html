@@ -10662,6 +10662,11 @@ async function loadColoringBooks() {
                             spreads: config.spreads || []
                         };
                     }
+                    // ✅ Обновляем totalPages из конфига для не-кастомных книг
+                    if (!book.custom && BOOK_PAGES_CONFIG[book.name]) {
+                        book.totalPages = BOOK_PAGES_CONFIG[book.name].totalPages;
+                        book.spreads = BOOK_PAGES_CONFIG[book.name].spreads || [];
+                    }
                     // ✅ Если в объекте нет spreads — добавляем из конфига
                     if (!book.spreads && BOOK_PAGES_CONFIG[book.name]) {
                         book.spreads = BOOK_PAGES_CONFIG[book.name].spreads || [];
@@ -11463,8 +11468,13 @@ function openBookPagesModal(category, bookName) {
     });
     
     let config;
-    if (savedBook && typeof savedBook === 'object') {
-        // ✅ Используем сохранённые данные (totalPages и spreads)
+    // ✅ Для не-кастомных книг всегда берём свежий конфиг
+    if (savedBook && typeof savedBook === 'object' && !savedBook.custom) {
+        config = BOOK_PAGES_CONFIG[bookName] || {
+            totalPages: savedBook.totalPages || DEFAULT_PAGES_CONFIG.totalPages,
+            spreads: savedBook.spreads || []
+        };
+    } else if (savedBook && typeof savedBook === 'object') {
         config = {
             totalPages: savedBook.totalPages || DEFAULT_PAGES_CONFIG.totalPages,
             spreads: savedBook.spreads || []
@@ -11475,7 +11485,6 @@ function openBookPagesModal(category, bookName) {
         config = DEFAULT_PAGES_CONFIG;
     }
     
-    // ✅ Правильное количество ячеек для отображения
     const spreadsCount = config.spreads?.length || 0;
     const totalCells = config.totalPages - spreadsCount;
     
@@ -11488,7 +11497,6 @@ function openBookPagesModal(category, bookName) {
         custom: 'Моя раскраска'
     };
     
-    // ✅ Показываем страницы, ячейки и развороты
     let infoText = `${categoryNames[category] || ''} • ${config.totalPages} стр.`;
     if (spreadsCount > 0) {
         infoText += ` • ${spreadsCount} разв. • ${totalCells} ячеек`;
@@ -11496,7 +11504,6 @@ function openBookPagesModal(category, bookName) {
     
     document.getElementById('bookPagesCategory').innerText = infoText;
     
-    // ✅ Экранируем bookKey для безопасной передачи в renderBookPagesGrid
     renderBookPagesGrid(bookKey, config);
     
     document.getElementById('bookPagesModal').style.display = 'flex';
