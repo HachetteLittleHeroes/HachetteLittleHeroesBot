@@ -10948,13 +10948,11 @@ async function addCustomBook(category) {
 async function toggleColoringBook(category, bookName) {
     if (!userColoringBooks[category]) userColoringBooks[category] = [];
     
-    // Проверяем, есть ли уже
     const collected = userColoringBooks[category].some(b => 
         (typeof b === 'string' ? b : b.name) === bookName
     );
     
     if (collected) {
-        // УДАЛЕНИЕ (без изменений)
         const doDelete = async () => {
             userColoringBooks[category] = userColoringBooks[category].filter(b => 
                 (typeof b === 'string' ? b : b.name) !== bookName
@@ -10983,7 +10981,6 @@ async function toggleColoringBook(category, bookName) {
             renderColoringBooks();
             
             if (tg) tg.showAlert(`❌ "${bookName}" удалена`);
-            else alert(`❌ "${bookName}" удалена`);
         };
         
         if (tg) {
@@ -10996,14 +10993,13 @@ async function toggleColoringBook(category, bookName) {
             }
         }
     } else {
-        // ✅ ДОБАВЛЕНИЕ — сохраняем как объект с totalPages И spreads из BOOK_PAGES_CONFIG
         const config = BOOK_PAGES_CONFIG[bookName] || DEFAULT_PAGES_CONFIG;
         
         const bookEntry = {
             name: bookName,
             custom: false,
             totalPages: config.totalPages,
-            spreads: config.spreads || []  // ✅ Сохраняем развороты
+            spreads: config.spreads || []
         };
         
         userColoringBooks[category].push(bookEntry);
@@ -11019,12 +11015,15 @@ async function toggleColoringBook(category, bookName) {
                     book_name: bookName,
                     action: 'add',
                     total_pages: config.totalPages,
-                    spreads: config.spreads || []  // ✅ Отправляем развороты
+                    spreads: config.spreads || []
                 })
             });
         } catch (error) {
             console.error('Ошибка сервера:', error);
         }
+        
+        // ✅ Авто-удаление из вишлиста
+        Wishlist.remove(bookName);
         
         updateCategoryCounters();
         updateColoringBooksStats();
@@ -11032,7 +11031,6 @@ async function toggleColoringBook(category, bookName) {
         renderColoringBooks();
         
         if (tg) tg.showAlert(`✅ "${bookName}" добавлена!`);
-        else alert(`✅ "${bookName}" добавлена!`);
     }
 }
 
