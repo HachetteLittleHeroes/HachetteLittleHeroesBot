@@ -21828,14 +21828,13 @@ function filterPublicBooks() {
         if (arrow) arrow.style.transform = 'rotate(0deg)';
     }
 }
-        // ==========================================
+       // ==========================================
 // ВИШЛИСТ - УПРАВЛЕНИЕ
 // ==========================================
 
 const Wishlist = {
     currentUserId: userId,
     
-    // Загрузка вишлиста
     async load() {
         const grid = document.getElementById('wishlistGrid');
         const emptyEl = document.getElementById('wishlistEmpty');
@@ -21848,10 +21847,8 @@ const Wishlist = {
             const data = await response.json();
             const wishlist = data.wishlist || [];
             
-            // Обновляем счётчик
             if (countEl) countEl.textContent = wishlist.length;
             
-            // Показываем пустое состояние или грид
             if (wishlist.length === 0) {
                 grid.style.display = 'none';
                 if (emptyEl) emptyEl.style.display = 'block';
@@ -21861,7 +21858,6 @@ const Wishlist = {
             grid.style.display = 'grid';
             if (emptyEl) emptyEl.style.display = 'none';
             
-            // Очищаем и заполняем
             grid.innerHTML = '';
             
             for (const bookId of wishlist) {
@@ -21875,12 +21871,9 @@ const Wishlist = {
         }
     },
     
-    // Получить информацию о книге
     getBookInfo(bookId) {
-        // Пытаемся найти обложку в DEFAULT_COVERS
         let coverUrl = DEFAULT_COVERS[bookId] || 'assets/coloriages/default.jpg';
         
-        // Определяем категорию
         let category = 'paint_by_number';
         if (DEFAULT_COLORING_BOOKS.alcohol?.includes(bookId)) category = 'alcohol';
         else if (DEFAULT_COLORING_BOOKS.pencil?.includes(bookId)) category = 'pencil';
@@ -21892,7 +21885,6 @@ const Wishlist = {
         };
     },
     
-    // Создать элемент вишлиста
     createWishlistItem(bookId, bookInfo) {
         const div = document.createElement('div');
         div.className = 'coloring-book-item';
@@ -21905,27 +21897,22 @@ const Wishlist = {
             </div>
         `;
         
-        // Кнопка удаления
-        const removeBtn = document.createElement('button');
-        removeBtn.className = 'remove-btn';
-        removeBtn.innerHTML = '<i class="fas fa-times"></i>';
-        removeBtn.style.cssText = 'background: var(--accent); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-top: 8px; cursor: pointer; border: none;';
-        removeBtn.onclick = (e) => {
+        const addBtn = document.createElement('button');
+        addBtn.className = 'remove-btn';
+        addBtn.innerHTML = '<i class="fas fa-plus"></i>';
+        addBtn.style.cssText = 'background: var(--accent); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-top: 8px; cursor: pointer; border: none;';
+        addBtn.title = 'Добавить в коллекцию';
+        addBtn.onclick = async (e) => {
             e.stopPropagation();
-            this.remove(bookId);
+            const category = bookInfo.category || 'paint_by_number';
+            await toggleColoringBook(category, bookId);
+            await this.remove(bookId);
         };
-        div.appendChild(removeBtn);
-        
-        // Клик по карточке
-        div.onclick = () => {
-            // Можно открыть страницу раскраски
-            console.log('Открыть раскраску:', bookId);
-        };
+        div.appendChild(addBtn);
         
         return div;
     },
     
-    // Добавить в вишлист
     async add(bookId) {
         if (!this.currentUserId) return false;
         
@@ -21933,30 +21920,22 @@ const Wishlist = {
             const response = await fetch(`${SERVER_URL}/api/wishlist/add`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    user_id: this.currentUserId, 
-                    book_id: bookId 
-                })
+                body: JSON.stringify({ user_id: this.currentUserId, book_id: bookId })
             });
             
             const data = await response.json();
             
             if (data.status === 'ok') {
-                this.showNotification('✅ Добавлено в список желаний!');
                 this.updateHeartButton(bookId, true);
-                
-                // Обновляем отображение
                 await this.load();
                 return true;
             }
         } catch (error) {
             console.error('Ошибка добавления:', error);
-            this.showNotification('❌ Ошибка', 'error');
         }
         return false;
     },
     
-    // Удалить из вишлиста
     async remove(bookId) {
         if (!this.currentUserId) return;
         
@@ -21964,16 +21943,12 @@ const Wishlist = {
             const response = await fetch(`${SERVER_URL}/api/wishlist/remove`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    user_id: this.currentUserId, 
-                    book_id: bookId 
-                })
+                body: JSON.stringify({ user_id: this.currentUserId, book_id: bookId })
             });
             
             const data = await response.json();
             
             if (data.status === 'ok') {
-                this.showNotification('🗑️ Удалено из списка желаний');
                 this.updateHeartButton(bookId, false);
                 await this.load();
             }
@@ -21982,7 +21957,6 @@ const Wishlist = {
         }
     },
     
-    // Проверить, в вишлисте ли книга
     async check(bookId) {
         if (!this.currentUserId) return false;
         
@@ -21995,7 +21969,6 @@ const Wishlist = {
         }
     },
     
-    // Обновить кнопку-сердечко
     updateHeartButton(bookId, isInWishlist) {
         const btn = document.querySelector(`.wishlist-heart-btn[data-book-id="${bookId}"]`);
         if (!btn) return;
@@ -22013,14 +21986,13 @@ const Wishlist = {
         }
     },
     
-    // Показать уведомление
     showNotification(message, type = 'success') {
-        if (typeof tg !== 'undefined' && tg.showPopup) {
-            tg.showPopup({ message: message });
-        } else {
-            alert(message);
-        }
-    }
+        try {
+            if (typeof tg !== 'undefined' && tg.showAlert) {
+                tg.showAlert(message);
+            }
+        } catch(e) {}
+    },
 };
 
 // Функция переключения блока вишлиста
@@ -22042,10 +22014,8 @@ function toggleWishlistBlock() {
 
 // Функция для добавления кнопки-сердечка на карточку раскраски
 function addWishlistHeartToBookCard(cardElement, bookId) {
-    // Проверяем, нет ли уже кнопки
     if (cardElement.querySelector('.wishlist-heart-btn')) return;
     
-    // Создаём кнопку
     const heartBtn = document.createElement('button');
     heartBtn.className = 'wishlist-heart-btn';
     heartBtn.setAttribute('data-book-id', bookId);
@@ -22064,7 +22034,6 @@ function addWishlistHeartToBookCard(cardElement, bookId) {
         }
     };
     
-    // Проверяем начальное состояние
     Wishlist.check(bookId).then(inWishlist => {
         if (inWishlist) {
             heartBtn.classList.add('active');
@@ -22082,7 +22051,6 @@ const originalRenderColoringBooks = renderColoringBooks;
 renderColoringBooks = function() {
     originalRenderColoringBooks.call(this);
     
-    // Добавляем сердечки на все карточки
     setTimeout(() => {
         document.querySelectorAll('.coloring-book-item').forEach(card => {
             const nameEl = card.querySelector('.book-name');
@@ -22093,7 +22061,8 @@ renderColoringBooks = function() {
         });
     }, 100);
 };
-        // Рендеринг публичного вишлиста
+
+// Рендеринг публичного вишлиста
 function renderPublicWishlist(wishlist) {
     const container = document.getElementById('modalWishlistGrid');
     if (!container) return;
@@ -22120,22 +22089,17 @@ function renderPublicWishlist(wishlist) {
     
     container.innerHTML = html;
 }
-        // Текущий фильтр для раскрасок
-let currentBooksFilter = 'all'; // 'all' или 'collected'
 
-// Функция установки фильтра
+// Текущий фильтр для раскрасок
+let currentBooksFilter = 'all';
+
 function setBooksFilter(filter) {
     currentBooksFilter = filter;
-    
-    // Обновляем активную кнопку
     document.getElementById('filterAllBooks')?.classList.toggle('active', filter === 'all');
     document.getElementById('filterCollectedBooks')?.classList.toggle('active', filter === 'collected');
-    
-    // Применяем фильтр
     applyBooksFilter();
 }
 
-// Применение фильтра (объединяет поиск и фильтр коллекции)
 function applyBooksFilter() {
     const searchQuery = document.getElementById('coloringBooksSearch')?.value.toLowerCase() || '';
     
@@ -22147,31 +22111,21 @@ function applyBooksFilter() {
         
         const userBooks = userColoringBooks[category] || [];
         const cards = container.querySelectorAll('.coloring-book-item');
-        let visibleCount = 0;
         
         cards.forEach(card => {
             const nameEl = card.querySelector('.book-name');
             const bookName = nameEl ? nameEl.innerText : '';
             const matchesSearch = searchQuery === '' || bookName.toLowerCase().includes(searchQuery);
-            
-            // Проверяем, в коллекции ли раскраска
-            const isCollected = userBooks.some(b => 
-                (typeof b === 'string' ? b : b.name) === bookName
-            );
-            
-            // Применяем фильтр коллекции
-            const matchesFilter = currentBooksFilter === 'all' || 
-                                  (currentBooksFilter === 'collected' && isCollected);
+            const isCollected = userBooks.some(b => (typeof b === 'string' ? b : b.name) === bookName);
+            const matchesFilter = currentBooksFilter === 'all' || (currentBooksFilter === 'collected' && isCollected);
             
             if (matchesSearch && matchesFilter) {
                 card.style.display = 'flex';
-                visibleCount++;
             } else {
                 card.style.display = 'none';
             }
         });
         
-        // Скрываем форму добавления при активном фильтре "В коллекции"
         const addForm = container.querySelector('.add-book-form')?.parentElement;
         if (addForm) {
             addForm.style.display = (searchQuery === '' && currentBooksFilter === 'all') ? 'block' : 'none';
@@ -22179,23 +22133,19 @@ function applyBooksFilter() {
     });
 }
 
-// Обновляем существующую функцию filterColoringBooks
 const originalFilterColoringBooks = filterColoringBooks;
 filterColoringBooks = function() {
     applyBooksFilter();
 };
 
-// Модифицируем renderColoringBooks для сброса фильтра при перерисовке
 const originalRenderColoringBooks2 = renderColoringBooks;
 renderColoringBooks = function() {
     originalRenderColoringBooks2.call(this);
     
-    // Сбрасываем фильтр на "Все"
     currentBooksFilter = 'all';
     document.getElementById('filterAllBooks')?.classList.add('active');
     document.getElementById('filterCollectedBooks')?.classList.remove('active');
     
-    // Добавляем сердечки
     setTimeout(() => {
         document.querySelectorAll('.coloring-book-item').forEach(card => {
             const nameEl = card.querySelector('.book-name');
