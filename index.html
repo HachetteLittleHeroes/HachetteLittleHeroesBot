@@ -4212,6 +4212,7 @@
                 <i class="fas fa-pencil-alt" style="color: var(--text-gray); font-size: 14px;"></i>
             </div>
             <button id="currentStatus" class="status-badge" onclick="openStatusInfo()">Без статуса</button>
+            <div id="userLevelDisplay" style="margin-top: 8px;"></div>
         </div>
     </div>
 
@@ -6493,22 +6494,24 @@ async function submitFriendSubtaskPhoto() {
         // ПРОФИЛЬ И UI
         // ==========================================
         
-        function updateUI() {
-            const nameEl = document.getElementById('displayUsername');
-            const avatarEl = document.getElementById('user-avatar');
-            const balanceEl = document.getElementById('userBalance');
-            const statusBadge = document.getElementById('currentStatus');
-            
-            if (nameEl) nameEl.innerText = user.name;
-            if (avatarEl) avatarEl.src = user.avatar;
-            if (balanceEl) balanceEl.innerText = user.balance;
-            if (statusBadge) statusBadge.innerText = user.status || 'Без статуса';
-            
-            console.log('UI Updated - Current status:', user.status);
-            console.log('UI Updated - Balance:', user.balance);
-            
-            updateCartBadge();
-        }
+       function updateUI() {
+    const nameEl = document.getElementById('displayUsername');
+    const avatarEl = document.getElementById('user-avatar');
+    const balanceEl = document.getElementById('userBalance');
+    const statusBadge = document.getElementById('currentStatus');
+    
+    if (nameEl) nameEl.innerText = user.name;
+    if (avatarEl) avatarEl.src = user.avatar;
+    if (balanceEl) balanceEl.innerText = user.balance;
+    if (statusBadge) statusBadge.innerText = user.status || 'Без статуса';
+    
+    renderUserLevel();
+    
+    console.log('UI Updated - Current status:', user.status);
+    console.log('UI Updated - Balance:', user.balance);
+    
+    updateCartBadge();
+}
         
         function updateCartBadge() {
             let totalItems = 0;
@@ -12074,6 +12077,58 @@ async function submitCommunityTaskPhoto() {
         isUploading = false;
         tempPhotos = [];
     }
+}
+        function calculateUserXP() {
+    let xp = 0;
+    
+    for (const [key, value] of Object.entries(userProgress)) {
+        if (key.startsWith('branch_') && typeof value === 'number') {
+            xp += value * 5;
+        }
+        if (key.startsWith('irina_level_') && typeof value === 'number') {
+            xp += value * 3;
+        }
+    }
+    
+    if (communityEventData && communityEventData.user_points) {
+        xp += communityEventData.user_points * 1;
+    }
+    
+    return xp;
+}
+
+function getUserLevelInfo(xp) {
+    const levels = [
+        { level: 1, name: '🌱 Просто тыкаю', min: 0, max: 50 },
+        { level: 2, name: '🎨 Вхожу в кураж', min: 50, max: 150 },
+        { level: 3, name: '⭐ Творец', min: 150, max: 300 },
+        { level: 4, name: '💫 Маэстро', min: 300, max: 500 },
+        { level: 5, name: '👑 Легенда', min: 500, max: 999999 }
+    ];
+    
+    for (const lvl of levels) {
+        if (xp >= lvl.min && xp < lvl.max) {
+            const progress = Math.round(((xp - lvl.min) / (lvl.max - lvl.min)) * 100);
+            return { ...lvl, progress, xp, nextXP: lvl.max };
+        }
+    }
+    return levels[0];
+}
+
+function renderUserLevel() {
+    const xp = calculateUserXP();
+    const levelInfo = getUserLevelInfo(xp);
+    
+    const container = document.getElementById('userLevelDisplay');
+    if (!container) return;
+    
+    container.innerHTML = `
+        <div style="font-size: 12px; color: var(--text-gray); margin-bottom: 4px;">${levelInfo.name}</div>
+        <div class="progress-bar-container" style="height: 4px;">
+            <div class="progress-bar-fill" style="width: ${levelInfo.progress}%;"></div>
+        </div>
+        <div style="font-size: 10px; color: var(--text-gray); margin-top: 2px;">${levelInfo.xp} / ${levelInfo.nextXP} XP</div>
+    `;
 }
        // ==========================================
 // ИНИЦИАЛИЗАЦИЯ
