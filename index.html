@@ -11877,15 +11877,36 @@ function renderCommunityEvent() {
     const leagueIcons = { 'bronze': '🥉', 'silver': '🥈', 'gold': '🥇', 'platinum': '💠' };
     
     const currentLvl = currentLevel + 1;
-    const taskText = levels[currentLvl] ? levels[currentLvl].task || 'Задание' : 'Все уровни пройдены!';
+    const currentLevelData = levels[currentLvl];
+    const tasks = currentLevelData ? currentLevelData.tasks || [] : [];
     
     let html = `
         <div class="branch-task-card">
             <div class="branch-header">
                 <h3>Испытание сообщества</h3>
-                <p>${taskText} • Уровень ${currentLvl}</p>
+                <p>Уровень ${currentLvl}</p>
             </div>
             <div class="level-card">
+    `;
+    
+    // Подзадания текущего уровня
+    if (tasks.length > 0) {
+        html += `<div style="margin-bottom: 15px;">`;
+        tasks.forEach((task, idx) => {
+            const taskPoints = task.points || 50;
+            const isTaskDone = totalPoints >= (currentLevel > 1 ? levels[currentLevel-1]?.points || 0 : 0) + taskPoints * (idx + 1);
+            html += `
+                <div style="display: flex; align-items: center; gap: 10px; padding: 8px 0; ${isTaskDone ? 'opacity: 0.7;' : ''}">
+                    <span style="font-size: 16px;">${isTaskDone ? '✅' : '⬜'}</span>
+                    <div style="flex: 1; font-size: 13px; font-weight: 500;">${task.name}</div>
+                    <div style="font-size: 12px; color: var(--text-gray);">${taskPoints} очков</div>
+                </div>
+            `;
+        });
+        html += `</div>`;
+    }
+    
+    html += `
                 <div style="font-size: 32px; font-weight: 900; color: var(--accent); text-align: center;">${totalPoints}</div>
                 <div style="text-align: center; font-size: 14px; color: var(--text-gray); margin-bottom: 10px;">очков сообщества</div>
                 <div class="progress-bar-container">
@@ -11905,7 +11926,6 @@ function renderCommunityEvent() {
                             <div style="font-size: 11px; color: var(--text-gray);">Моя лига</div>
                         </div>
                     ` : ''}
-                  
                 </div>
                 <button class="task-submit-btn" onclick="openCommunityTaskUpload()">
                     <i class="fas fa-camera"></i> Отправить работу
