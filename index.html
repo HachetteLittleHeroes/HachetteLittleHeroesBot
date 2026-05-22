@@ -11889,7 +11889,7 @@ function renderCommunityEvent() {
             <div class="level-card">
     `;
     
-    // Подзадания с прогресс-барами
+    // Подзадания с прогресс-барами и кнопками
     if (tasks.length > 0) {
         html += `<div style="margin-bottom: 15px;">`;
         tasks.forEach((task, idx) => {
@@ -11913,7 +11913,11 @@ function renderCommunityEvent() {
                         <div style="text-align: center; color: var(--status-green); font-size: 12px; margin-top: 5px;">
                             <i class="fas fa-check-circle"></i> Выполнено!
                         </div>
-                    ` : ''}
+                    ` : `
+                        <button class="task-submit-btn" style="padding: 8px; font-size: 12px; margin-top: 5px;" onclick="openCommunityTaskUpload(${idx})">
+                            <i class="fas fa-camera"></i> Отправить фото
+                        </button>
+                    `}
                 </div>
             `;
         });
@@ -11941,9 +11945,6 @@ function renderCommunityEvent() {
                         </div>
                     ` : ''}
                 </div>
-                <button class="task-submit-btn" onclick="openCommunityTaskUpload()">
-                    <i class="fas fa-camera"></i> Отправить работу
-                </button>
             </div>
         </div>
         
@@ -12029,7 +12030,11 @@ function showLeagueLeaderboard(league) {
     
     container.innerHTML = html;
 }
-function openCommunityTaskUpload() {
+let currentCommunitySubtask = null;
+
+function openCommunityTaskUpload(subtaskIdx) {
+    currentCommunitySubtask = subtaskIdx;
+    
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
     fileInput.accept = 'image/*';
@@ -12088,6 +12093,7 @@ async function submitCommunityTaskPhoto() {
     try {
         const formData = new FormData();
         formData.append('user', userId.toString());
+        formData.append('subtask', currentCommunitySubtask?.toString() || '0');
         
         for (let i = 0; i < tempPhotos.length; i++) {
             formData.append('photos', tempPhotos[i]);
