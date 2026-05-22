@@ -20879,13 +20879,15 @@ function viewArtwork(bookKey, page) {
     modal.innerHTML = `
         <div style="max-width:90%;max-height:90%;position:relative;">
             <img src="${artwork}" style="max-width:100%;max-height:80vh;object-fit:contain;border-radius:16px;">
-            <p style="color:white;text-align:center;margin-top:15px;">Страница ${page}</p>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">
+                <p style="color:white;margin:0;">Страница ${page}</p>
+                ${isOwnProfile ? `
+                    <button onclick="deleteArtwork('${bookKey.replace(/'/g, "\\'")}', '${page}')" style="background:var(--status-red);color:white;border:none;padding:8px 16px;border-radius:20px;font-size:14px;cursor:pointer;">
+                        <i class="fas fa-trash"></i> Удалить
+                    </button>
+                ` : ''}
+            </div>
             <button onclick="this.closest('.artwork-viewer-modal').remove()" style="position:absolute;top:-40px;right:0;background:none;border:none;color:white;font-size:30px;cursor:pointer;">&times;</button>
-            ${isOwnProfile ? `
-                <button onclick="deleteArtwork('${bookKey.replace(/'/g, "\\'")}', '${page}')" style="position:absolute;bottom:10px;right:10px;background:var(--status-red);color:white;border:none;padding:8px 16px;border-radius:20px;font-size:14px;cursor:pointer;">
-                    <i class="fas fa-trash"></i> Удалить
-                </button>
-            ` : ''}
         </div>
     `;
     
