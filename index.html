@@ -20870,8 +20870,10 @@ function viewArtwork(bookKey, page) {
     const artwork = getPageArtwork(bookKey, page);
     if (!artwork) return;
     
+    const isOwnProfile = !window.isViewOnly;
+    
     const modal = document.createElement('div');
-    modal.className = 'artwork-viewer-modal';  // ✅ ДОБАВЛЯЕМ КЛАСС
+    modal.className = 'artwork-viewer-modal';
     modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.9);z-index:100003;display:flex;align-items:center;justify-content:center;padding:20px;';
     
     modal.innerHTML = `
@@ -20879,6 +20881,11 @@ function viewArtwork(bookKey, page) {
             <img src="${artwork}" style="max-width:100%;max-height:80vh;object-fit:contain;border-radius:16px;">
             <p style="color:white;text-align:center;margin-top:15px;">Страница ${page}</p>
             <button onclick="this.closest('.artwork-viewer-modal').remove()" style="position:absolute;top:-40px;right:0;background:none;border:none;color:white;font-size:30px;cursor:pointer;">&times;</button>
+            ${isOwnProfile ? `
+                <button onclick="deleteArtwork('${bookKey.replace(/'/g, "\\'")}', '${page}')" style="position:absolute;bottom:10px;right:10px;background:var(--status-red);color:white;border:none;padding:8px 16px;border-radius:20px;font-size:14px;cursor:pointer;">
+                    <i class="fas fa-trash"></i> Удалить
+                </button>
+            ` : ''}
         </div>
     `;
     
@@ -20887,6 +20894,55 @@ function viewArtwork(bookKey, page) {
     };
     
     document.body.appendChild(modal);
+}
+
+async function deleteArtwork(bookKey, page) {
+    if (!confirm('Удалить загруженное фото? Отметка страницы тоже будет снята.')) return;
+    
+    try {
+        // Удаляем фото
+        if (userArtworks[bookKey] && userArtworks[bookKey][page]) {
+            delete userArtworks[bookKey][page];
+        }
+        
+        // Снимаем отметку страницы
+        if (userCompletedPages[bookKey] && userCompletedPages[bookKey][page]) {
+            delete userCompletedPages[bookKey][page];
+        }
+        
+        // Удаляем дату
+        if (window.completedPagesDates && window.completedPagesDates[bookKey + '|' + page]) {
+            delete window.completedPagesDates[bookKey + '|' + page];
+            localStorage.setItem('completed_pages_dates_' + userId, JSON.stringify(window.completedPagesDates));
+        }
+        
+        // Сохраняем изменения
+        saveCompletedPages();
+        updateAllCategoriesProgress();
+        
+        // Отправляем на сервер
+        await fetch(`${SERVER_URL}/api/artworks/delete`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                user_id: userId,
+                book_key: bookKey,
+                page: page
+            })
+        });
+        
+        // Обновляем модалку
+        const config = BOOK_PAGES_CONFIG[currentBook] || DEFAULT_PAGES_CONFIG;
+        renderBookPagesGrid(bookKey, config);
+        
+        // Закрываем просмотр
+        document.querySelector('.artwork-viewer-modal')?.remove();
+        
+        if (tg) tg.showAlert('✅ Фото и отметка удалены');
+    } catch (error) {
+        console.error('Ошибка удаления:', error);
+        if (tg) tg.showAlert('❌ Ошибка удаления');
+    }
 }
         function closeBookPagesModal() {
     document.getElementById('bookPagesModal').style.display = 'none';
