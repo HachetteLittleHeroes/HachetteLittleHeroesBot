@@ -11889,17 +11889,31 @@ function renderCommunityEvent() {
             <div class="level-card">
     `;
     
-    // Подзадания текущего уровня
+    // Подзадания с прогресс-барами
     if (tasks.length > 0) {
         html += `<div style="margin-bottom: 15px;">`;
         tasks.forEach((task, idx) => {
             const taskPoints = task.points || 50;
-            const isTaskDone = totalPoints >= (currentLevel > 1 ? levels[currentLevel-1]?.points || 0 : 0) + taskPoints * (idx + 1);
+            const tasksProgress = data.tasks_progress || {};
+            const levelProgressData = tasksProgress[currentLvl] || {};
+            const currentTaskPoints = levelProgressData[idx] || 0;
+            const isTaskDone = currentTaskPoints >= taskPoints;
+            const taskPercent = Math.min(100, Math.round((currentTaskPoints / taskPoints) * 100));
+            
             html += `
-                <div style="display: flex; align-items: center; gap: 10px; padding: 8px 0; ${isTaskDone ? 'opacity: 0.7;' : ''}">
-                    <span style="font-size: 16px;">${isTaskDone ? '✅' : '⬜'}</span>
-                    <div style="flex: 1; font-size: 13px; font-weight: 500;">${task.name}</div>
-                    <div style="font-size: 12px; color: var(--text-gray);">${taskPoints} очков</div>
+                <div style="margin-bottom: 12px; padding: 10px; background: var(--bg); border-radius: 12px; border: 1px solid var(--border-color);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <span style="font-weight: 600; font-size: 14px;">${task.name}</span>
+                        <span style="font-size: 12px; color: var(--accent);">${currentTaskPoints}/${taskPoints}</span>
+                    </div>
+                    <div class="progress-bar-container" style="height: 6px;">
+                        <div class="progress-bar-fill" style="width: ${taskPercent}%;"></div>
+                    </div>
+                    ${isTaskDone ? `
+                        <div style="text-align: center; color: var(--status-green); font-size: 12px; margin-top: 5px;">
+                            <i class="fas fa-check-circle"></i> Выполнено!
+                        </div>
+                    ` : ''}
                 </div>
             `;
         });
