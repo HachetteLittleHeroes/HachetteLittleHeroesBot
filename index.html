@@ -11862,16 +11862,20 @@ function renderCommunityEvent() {
     const isDonater = data.is_donater;
     const levels = data.levels;
     
-    let nextLevelPoints = 0;
-    let levelProgress = 100;
+    // Очки предыдущих уровней
+    let prevLevelsPoints = 0;
     const levelKeys = Object.keys(levels).sort((a,b) => a-b);
     for (const lvl of levelKeys) {
-        if (parseInt(lvl) > currentLevel) {
-            nextLevelPoints = levels[lvl].points;
-            levelProgress = Math.min(100, Math.round((totalPoints / nextLevelPoints) * 100));
-            break;
+        if (parseInt(lvl) <= currentLevel) {
+            prevLevelsPoints += levels[lvl].points || 0;
         }
     }
+    
+    // Очки текущего уровня
+    const currentLevelPoints = totalPoints - prevLevelsPoints;
+    const currentLevelMax = levels[currentLevel + 1] ? levels[currentLevel + 1].points : 0;
+    let levelProgress = currentLevelMax > 0 ? Math.min(100, Math.round((currentLevelPoints / currentLevelMax) * 100)) : 100;
+    let nextLevelPoints = currentLevelMax > 0 ? currentLevelMax - currentLevelPoints : 0;
     
     const leagueNames = { 'bronze': 'Бронзовая', 'silver': 'Серебряная', 'gold': 'Золотая', 'platinum': 'Алмазная' };
     const leagueIcons = { 'bronze': '🥉', 'silver': '🥈', 'gold': '🥇', 'platinum': '💠' };
@@ -11925,13 +11929,13 @@ function renderCommunityEvent() {
     }
     
     html += `
-                <div style="font-size: 32px; font-weight: 900; color: var(--accent); text-align: center;">${totalPoints}</div>
-                <div style="text-align: center; font-size: 14px; color: var(--text-gray); margin-bottom: 10px;">очков сообщества</div>
+                <div style="font-size: 32px; font-weight: 900; color: var(--accent); text-align: center;">${currentLevelPoints}</div>
+                <div style="text-align: center; font-size: 14px; color: var(--text-gray); margin-bottom: 10px;">очков в уровне</div>
                 <div class="progress-bar-container">
                     <div class="progress-bar-fill" style="width: ${levelProgress}%;"></div>
                 </div>
                 <div style="text-align: center; font-size: 13px; color: var(--text-gray); margin-top: 8px;">
-                    ${nextLevelPoints > 0 ? `До уровня ${currentLvl + 1}: ${nextLevelPoints - totalPoints} очков` : 'Максимальный уровень!'}
+                    ${nextLevelPoints > 0 ? `До уровня ${currentLvl + 1}: ${nextLevelPoints} очков` : 'Максимальный уровень!'}
                 </div>
                 <div style="display: flex; justify-content: center; gap: 20px; margin-top: 15px;">
                     <div style="text-align: center;">
@@ -12244,8 +12248,9 @@ window.onload = async () => {
     
     await loadCollection();
     
-    setInterval(async () => { await checkCollectionUpdates(); }, 120000);
-    setInterval(async () => { await loadFriendProgressFromServer(); }, 300000);
+    // Периодическая проверка обновлений (каждые 30 секунд)
+    setInterval(async () => { await checkCollectionUpdates(); }, 30000);
+    setInterval(async () => { await loadFriendProgressFromServer(); }, 30000);
     
     updateUI();
     startProgressRefresh();
