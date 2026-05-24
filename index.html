@@ -11980,11 +11980,9 @@ function showLeagueLeaderboard(league) {
     const leagueIcons = { 'bronze': '🥉', 'silver': '🥈', 'gold': '🥇', 'platinum': '💠' };
     const leagueNames = { 'bronze': 'Бронзовая', 'silver': 'Серебряная', 'gold': 'Золотая', 'platinum': 'Алмазная' };
     
-    const currentLevel = communityEventData.current_level || 0;
-    const currentLvl = currentLevel + 1;
-    const levels = communityEventData.levels || {};
-    const currentRewards = levels[currentLvl] ? levels[currentLvl].rewards || {} : {};
-    const leaguePrize = currentRewards[league] || '';
+    // Приз для лиги из rewards
+    const rewards = communityEventData.rewards || {};
+    const leaguePrize = rewards[league] || '';
     
     let html = '';
     if (leaguePrize) {
