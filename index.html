@@ -12189,14 +12189,10 @@ window.onload = async () => {
     const savedCart = localStorage.getItem('coloring_cart');
     if (savedCart) cart = JSON.parse(savedCart);
     
-    // ✅ Загружаем даты отметок страниц
     var savedDates = localStorage.getItem('completed_pages_dates_' + userId);
     if (savedDates) {
-        try {
-            window.completedPagesDates = JSON.parse(savedDates);
-        } catch(e) {
-            window.completedPagesDates = {};
-        }
+        try { window.completedPagesDates = JSON.parse(savedDates); }
+        catch(e) { window.completedPagesDates = {}; }
     } else {
         window.completedPagesDates = {};
     }
@@ -12215,20 +12211,6 @@ window.onload = async () => {
     await loadMyFriends();
     await loadCompletedPages();
     
-    // ✅ ЗАГРУЖАЕМ АВАТАР С СЕРВЕРА
-    try {
-        const response = await fetch(`${SERVER_URL}/api/stats?user_id=${userId}`);
-        const stats = await response.json();
-        if (stats && stats.avatar) {
-            user.avatar = stats.avatar;
-            document.getElementById('user-avatar').src = user.avatar;
-            localStorage.setItem('coloring_user', JSON.stringify(user));
-            console.log('✅ Аватар загружен с сервера');
-        }
-    } catch (error) {
-        console.error('❌ Ошибка загрузки аватара:', error);
-    }
-    
     if (user.status && !user.unlockedStatuses.includes(user.status)) {
         user.status = 'Без статуса';
     }
@@ -12237,7 +12219,7 @@ window.onload = async () => {
     loadFriendTasksStatus();
     await loadFriendProgressFromServer();
     
-    // Загрузка темы
+    // Загрузка темы (как раньше)
     const savedTheme = localStorage.getItem('app_theme');
     if (savedTheme === 'custom') {
         applyCustomTheme(true);
@@ -12253,31 +12235,17 @@ window.onload = async () => {
     renderFriendTasks();
     renderSeasonPassTasks();
     
-    // Загружаем маркеры, корзину, тома, инвентарь, работы пользователей
-    loadMarkers();
     renderCart();
     renderVolumes();
-    loadInventory();
-    loadUserArtworks();
     loadWishlistCount();
     
-    // Season Pass
     loadSeasonPremiumStatus();
     loadClaimedRewards();
-    loadCommunityEvent();
     
-    // ========== КОЛЛЕКЦИЯ ==========
     await loadCollection();
     
-    // Периодическая проверка обновлений коллекции (каждые 15 секунд)
-    setInterval(async () => {
-        await checkCollectionUpdates();
-    }, 15000);
-    
-    // Периодическая проверка прогресса заданий от друзей (каждые 30 секунд)
-    setInterval(async () => {
-        await loadFriendProgressFromServer();
-    }, 30000);
+    setInterval(async () => { await checkCollectionUpdates(); }, 120000);
+    setInterval(async () => { await loadFriendProgressFromServer(); }, 300000);
     
     updateUI();
     startProgressRefresh();
@@ -12295,11 +12263,6 @@ window.onload = async () => {
     };
     
     console.log('✅ APP READY');
-    console.log('User ID:', userId);
-    console.log('User status:', user.status);
-    console.log('Unlocked statuses:', user.unlockedStatuses);
-    console.log('Balance:', user.balance);
-    console.log('Collection loaded:', userCollection.length, 'figures');
 };
         //БЕСТИАРИЙ
         const BESTIARY = [
