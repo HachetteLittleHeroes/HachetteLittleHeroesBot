@@ -5539,7 +5539,7 @@
         
    // Категории статусов
 const STATUS_CATEGORIES = {
-    'princess': { name: '👑 Принцессы', keys: ['krasavica', 'sirena', 'rapuncelprincessa'] },
+    'princess': { name: '👑 Принцессы', keys: ['krasavica', 'sirena', 'rapuncelprincessa', 'agraba'] },
     'animals': { name: '🐾 Животные', keys: ['lion', 'fauna', 'bear', 'sea', 'anaconda', 'dragons'] },
     'villains': { name: '👿 Злодеи', keys: ['queen'] },
     'special': { name: '⭐ Особые', keys: ['shock', 'pempudu', 'alcohol'] },
@@ -9490,6 +9490,58 @@ function openFigureModal(figure, isUnlocked) {
                     { id: 'asdfg2', name: 'Рапунцель и Флинн', required: 1 },
                     { id: 'asdfg3', name: 'Рапунцель и родители', required: 1 },
                      { id: 'asdfg4', name: 'Здание', required: 1 }
+                ]
+            },
+        ]
+    },
+              agraba: {
+        name: "Принцесса Аграбы",
+        desc: "Исследуй все уголки Аграбы (фото ДО/ПОСЛЕ)",
+        levels: [
+                   { 
+                title: "Чары и месть", 
+                maxProgress: 7, 
+                desc: "Раскрась 2 картинку с Джафаром, 1 картинку с Султаном, 2 картинку с Яго, 1 картинку с Ковром-самолетом, 1 картинку с Джафаром в образе джина",
+                subtasks: [
+                     { id: 'agr6', name: 'Джафар', required: 2 },
+                    { id: 'agr7', name: 'Султан', required: 1 },
+                    { id: 'agr8', name: 'Яго', required: 2 },
+                     { id: 'agr9', name: 'Ковер-самолет', required: 1 },
+                     { id: 'agr10', name: 'Джафар в образе джина', required: 1 }
+                ]
+            },
+            { 
+                title: "Отвага и честь", 
+                maxProgress: 6, 
+                desc: "Раскрась 2 картинки с Раджой, 1 картинку, где изображен Аладдин в одежде принца, 1 картинку, где изображен Аладдин с Абу, 2 картинки с Джинни",
+                subtasks: [
+                    { id: 'agr11', name: 'Раджа', required: 2 },
+                    { id: 'agr12', name: 'Аладдин в одежде принца', required: 1 },
+                    { id: 'agr13', name: 'Аладдин с Абу', required: 1 },
+                    { id: 'agr14', name: 'Джинни', required: 2 }
+            },
+            { 
+                title: "Дворцы и песок", 
+                maxProgress: 5, 
+                desc: "Раскрась 1 картинку, где изображен дворец Султана, 1 картинку, где изображена пустыня, 1 картинку, где изображена Жасмин в детстве, 1 картинку, где изображен Аладдин в одежде простолюдина, 1 картинку с Абу",
+                subtasks: [
+                    { id: 'agr1', name: 'Дворец Султана', required: 1 },
+                     { id: 'agr2', name: 'Пустыня', required: 1 },
+                     { id: 'agr3', name: 'Жасмин в детстве', required: 1 },
+                     { id: 'agr4', name: 'Аладдин в одежде простолюдина', required: 1 },
+                     { id: 'agr5', name: 'Абу', required: 1 }
+                ]
+            },
+            
+            { 
+                title: "О дивный восток", 
+                maxProgress: 5, 
+                desc: "Раскрась 1 разворот с Жасмин, 2 картинки, где изображены Жасмин и Аладдин, 1 картинку, где изображены Жасмин и Султан, 1 картинку, где изображена Аграба",
+                subtasks: [
+                    { id: 'agr16', name: 'Разворот с Жасмин', required: 1 },
+                    { id: 'agr17', name: 'Жасмин и Аладдин', required: 2 },
+                    { id: 'agr18', name: 'Жасмин и Слтан', required: 1 },
+                    { id: 'agr19', name: 'Аграба', required: 1 }
                 ]
             },
         ]
