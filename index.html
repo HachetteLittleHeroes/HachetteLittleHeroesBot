@@ -10164,7 +10164,6 @@ function toggleSeasonPass() {
 }
 
 function renderSeasonPassTasks() {
-    // Получаем текущий уровень
     const currentLevelIndex = getCurrentLevelIndex('season_pass');
     
     const container = document.getElementById('seasonPassTasksList');
@@ -10176,14 +10175,12 @@ function renderSeasonPassTasks() {
     container.innerHTML = '';
     const levels = branch.levels;
     
-    console.log('Season Pass - currentLevelIndex:', currentLevelIndex);
-    console.log('Season Pass - levels count:', levels.length);
+    const rewardsLoaded = window._seasonRewardsLoaded;
     
     for (let i = 0; i < levels.length; i++) {
         const level = levels[i];
         const levelNum = i + 1;
         
-        // Сначала вычисляем прогресс
         let totalCompleted = 0;
         let totalRequired = 0;
         
@@ -10197,33 +10194,19 @@ function renderSeasonPassTasks() {
         
         const totalPercent = (totalCompleted / totalRequired) * 100;
         const allSubtasksDone = totalCompleted >= totalRequired;
-        
-        // Теперь определяем статус уровня (ПОСЛЕ объявления allSubtasksDone)
         const isCompleted = allSubtasksDone;
-        // Первый уровень (1) никогда не блокируем
-// Текущий уровень — это индекс (0-based), поэтому:
-// уровень 2 (levelNum=2) блокируется, если currentLevelIndex < 1
-// уровень 3 (levelNum=3) блокируется, если currentLevelIndex < 2
-const isLocked = levelNum > 1 && currentLevelIndex < (levelNum - 1);
+        const isLocked = levelNum > 1 && currentLevelIndex < (levelNum - 1);
         const isCurrent = levelNum === currentLevelIndex;
         
-        console.log(`Уровень ${levelNum}: isCurrent=${isCurrent}, isCompleted=${isCompleted}, isLocked=${isLocked}, progress=${totalCompleted}/${totalRequired}`);
-        
-        // Если уровень пройден, добавляем достижение
         if (allSubtasksDone && !user.achievements.includes(`season_pass_${levelNum}`)) {
             user.achievements.push(`season_pass_${levelNum}`);
             saveUserData();
-            
             if (typeof fetchAPI === 'function') {
-                fetchAPI('/api/add_achievement', {
-                    user_id: userId,
-                    achievement: `season_pass_${levelNum}`
-                });
+                fetchAPI('/api/add_achievement', { user_id: userId, achievement: `season_pass_${levelNum}` });
             }
         }
         
         const levelCard = document.createElement('div');
-        // Применяем класс locked ТОЛЬКО для заблокированных уровней (isLocked)
         levelCard.className = `sp-level-card ${isLocked ? 'locked' : ''} ${isCompleted ? 'completed' : ''}`;
         
         let levelHtml = `
@@ -10238,15 +10221,12 @@ const isLocked = levelNum > 1 && currentLevelIndex < (levelNum - 1);
             <div style="margin-top: 15px;"></div>
         `;
         
-        // Показываем подзадания только для текущего или пройденного уровня (не заблокированного)
         if (!isLocked) {
             level.subtasks.forEach((subtask, idx) => {
                 const currentProgress = getSubtaskProgress('season_pass', i, idx);
                 const isSubtaskCompleted = currentProgress >= subtask.required;
                 const subtaskPercent = (currentProgress / subtask.required) * 100;
-                
-                // Кнопка показывается, если задание не выполнено И уровень не заблокирован
-const showSubmitButton = !isSubtaskCompleted && !isLocked;
+                const showSubmitButton = !isSubtaskCompleted && !isLocked;
                 
                 levelHtml += `
                     <div class="subtask-card">
@@ -10274,7 +10254,6 @@ const showSubmitButton = !isSubtaskCompleted && !isLocked;
                 `;
             });
         } else {
-            // Для заблокированных уровней показываем плейсхолдер
             levelHtml += `
                 <div class="subtask-card" style="text-align: center; opacity: 0.5;">
                     <div style="padding: 15px;">
@@ -10289,16 +10268,17 @@ const showSubmitButton = !isSubtaskCompleted && !isLocked;
         const freeClaimed = claimedSeasonRewards ? claimedSeasonRewards.free.includes(levelNum) : false;
         const premiumClaimed = claimedSeasonRewards ? claimedSeasonRewards.premium.includes(levelNum) : false;
         
-        const canClaimFree = allSubtasksDone && !freeClaimed && !isLocked;
-        const canClaimPremium = userSeasonPremium && allSubtasksDone && !premiumClaimed && !isLocked;
+        // ✅ Блокировка до загрузки с сервера
+        const canClaimFree = rewardsLoaded && allSubtasksDone && !freeClaimed && !isLocked;
+        const canClaimPremium = rewardsLoaded && userSeasonPremium && allSubtasksDone && !premiumClaimed && !isLocked;
         
         levelHtml += `
             <div class="sp-level-rewards">
                 <div class="sp-reward-item free">
                     <div>🎁 Награда</div>
                     <div><strong>${level.freeReward.name}</strong></div>
-                    ${canClaimFree ? 
-                        `<button class="sp-reward-btn" onclick="claimSeasonReward(${levelNum}, 'free')">Получить</button>` : 
+                    ${!rewardsLoaded ? '<div class="sp-reward-claimed">⏳ Загрузка...</div>' :
+                        canClaimFree ? `<button class="sp-reward-btn" onclick="claimSeasonReward(${levelNum}, 'free')">Получить</button>` : 
                         (freeClaimed ? '<div class="sp-reward-claimed">✅ Получено</div>' : 
                             (isLocked ? '<div class="sp-reward-claimed">🔒 Уровень заблокирован</div>' : '<div class="sp-reward-claimed">🔒 Завершите уровень</div>'))
                     }
@@ -10306,8 +10286,8 @@ const showSubmitButton = !isSubtaskCompleted && !isLocked;
                 <div class="sp-reward-item premium ${userSeasonPremium && allSubtasksDone && !isLocked ? 'unlocked' : ''}">
                     <div>🎁 Награда для благодетелей</div>
                     <div><strong>${level.premiumReward.name}</strong></div>
-                    ${canClaimPremium ? 
-                        `<button class="sp-reward-btn" onclick="claimSeasonReward(${levelNum}, 'premium')">Получить</button>` : 
+                    ${!rewardsLoaded ? '<div class="sp-reward-claimed">⏳ Загрузка...</div>' :
+                        canClaimPremium ? `<button class="sp-reward-btn" onclick="claimSeasonReward(${levelNum}, 'premium')">Получить</button>` : 
                         (premiumClaimed ? '<div class="sp-reward-claimed">✅ Получено</div>' : 
                             (!userSeasonPremium ? '<div class="sp-reward-claimed">🔒 Только для благодетелей</div>' : 
                                 (isLocked ? '<div class="sp-reward-claimed">🔒 Уровень заблокирован</div>' : '<div class="sp-reward-claimed">🔒 Завершите уровень</div>')))
@@ -12182,7 +12162,9 @@ window.onload = async () => {
         window.completedPagesDates = {};
     }
     
-    // Загружаем баланс с сервера
+    // ✅ Загружаем коллекцию маркеров из localStorage ДО всего
+    loadMarkersCollection();
+    
     await loadUserBalance();
     updateUI();
     
@@ -12191,10 +12173,21 @@ window.onload = async () => {
     await loadUserAchievements();
     await checkBalanceStatus();
     await checkAndUnlockStatuses();
-    await loadMarkersCollection();
     await loadColoringBooks();
     await loadMyFriends();
     await loadCompletedPages();
+    
+    try {
+        const response = await fetch(`${SERVER_URL}/api/stats?user_id=${userId}`);
+        const stats = await response.json();
+        if (stats && stats.avatar) {
+            user.avatar = stats.avatar;
+            document.getElementById('user-avatar').src = user.avatar;
+            localStorage.setItem('coloring_user', JSON.stringify(user));
+        }
+    } catch (error) {
+        console.error('❌ Ошибка загрузки аватара:', error);
+    }
     
     if (user.status && !user.unlockedStatuses.includes(user.status)) {
         user.status = 'Без статуса';
@@ -12204,7 +12197,6 @@ window.onload = async () => {
     loadFriendTasksStatus();
     await loadFriendProgressFromServer();
     
-    // Загрузка темы (как раньше)
     const savedTheme = localStorage.getItem('app_theme');
     if (savedTheme === 'custom') {
         applyCustomTheme(true);
@@ -12214,14 +12206,16 @@ window.onload = async () => {
         setTheme(user.theme || 'light');
     }
     
-    // Рендерим задания
     renderBranchTasks();
     renderTimeTasks();
     renderFriendTasks();
     renderSeasonPassTasks();
     
+    loadMarkers();
     renderCart();
     renderVolumes();
+    loadInventory();
+    loadUserArtworks();
     loadWishlistCount();
     
     loadSeasonPremiumStatus();
@@ -12229,7 +12223,6 @@ window.onload = async () => {
     
     await loadCollection();
     
-    // Периодическая проверка обновлений (каждые 30 секунд)
     setInterval(async () => { await checkCollectionUpdates(); }, 30000);
     setInterval(async () => { await loadFriendProgressFromServer(); }, 30000);
     
@@ -20976,29 +20969,25 @@ const MARKER_SETS = [
 let userMarkersCollection = {};
 
 async function loadMarkersCollection() {
+    // Сначала из localStorage
+    const saved = localStorage.getItem(`markers_${userId}`);
+    if (saved) {
+        try { userMarkersCollection = JSON.parse(saved); }
+        catch(e) { userMarkersCollection = {}; }
+    } else {
+        userMarkersCollection = {};
+    }
+    
+    // Потом с сервера (объединяем)
     try {
         const response = await fetch(`${SERVER_URL}/api/markers_collection?user_id=${userId}`);
         const data = await response.json();
-        
         if (data && typeof data === 'object') {
-            userMarkersCollection = data;
-        } else {
-            userMarkersCollection = {};
+            userMarkersCollection = { ...userMarkersCollection, ...data };
         }
-    } catch (error) {
-        console.error('Error loading markers collection:', error);
-        // Пробуем загрузить из localStorage
-        const saved = localStorage.getItem(`markers_${userId}`);
-        if (saved) {
-            try {
-                userMarkersCollection = JSON.parse(saved);
-            } catch(e) {
-                userMarkersCollection = {};
-            }
-        } else {
-            userMarkersCollection = {};
-        }
-    }
+    } catch(e) {}
+    
+    localStorage.setItem(`markers_${userId}`, JSON.stringify(userMarkersCollection));
     updateMarkersCollectionStats();
 }
 
@@ -21014,7 +21003,6 @@ async function updateMarkerInCollection(brand, number, action, subcategory = '')
         action = userMarkersCollection[key] ? 'remove' : 'add';
     }
     
-    // Обновляем локально
     if (action === 'add') {
         userMarkersCollection[key] = true;
     } else {
@@ -21025,40 +21013,18 @@ async function updateMarkerInCollection(brand, number, action, subcategory = '')
     updateMarkersCollectionStats();
     renderMarkersCollection();
     
-    // ✅ ОТПРАВЛЯЕМ НА СЕРВЕР (только для Tooli-Art с подкатегорией)
-    if (brand === 'Tooli-Art' && subcategory) {
-        try {
-            await fetch(`${SERVER_URL}/api/markers_collection`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    user_id: userId,
-                    brand: brand,
-                    number: number,
-                    subcategory: subcategory,
-                    action: action
-                })
-            });
-        } catch (error) {
-            console.error('Error syncing Tooli-Art to server:', error);
-        }
-    } else {
-        // Для остальных брендов — старая логика
-        try {
-            await fetch(`${SERVER_URL}/api/markers_collection`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    user_id: userId,
-                    brand: brand,
-                    number: number,
-                    action: action
-                })
-            });
-        } catch (error) {
-            console.error('Error syncing to server:', error);
-        }
-    }
+    // ✅ Синхронизация с сервером
+    fetch(`${SERVER_URL}/api/markers_collection`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            user_id: userId,
+            brand: brand,
+            number: number,
+            subcategory: subcategory || '',
+            action: action
+        })
+    }).catch(e => console.error('Sync error:', e));
 }
 async function addAllBrand(brand, subcategory, numbers) {
     console.log('📦 addAllBrand вызвана:', brand, subcategory, numbers.length);
@@ -24016,7 +23982,31 @@ function openBookPageFromBestiary(category, bookName, page) {
         renderStatusFilters();  // ← добавить
     }
 }
+function loadClaimedRewards() {
+    fetch(`${SERVER_URL}/api/season_rewards?user_id=${userId}`)
+        .then(r => r.json())
+        .then(data => {
+            claimedSeasonRewards = data || { free: [], premium: [] };
+            window._seasonRewardsLoaded = true;
+            saveClaimedRewards();
+            renderSeasonPassTasks();
+        })
+        .catch(e => {
+            const saved = localStorage.getItem(`season_rewards_${userId}`);
+            claimedSeasonRewards = saved ? JSON.parse(saved) : { free: [], premium: [] };
+            window._seasonRewardsLoaded = true;
+            renderSeasonPassTasks();
+        });
+}
 
+function saveClaimedRewards() {
+    localStorage.setItem(`season_rewards_${userId}`, JSON.stringify(claimedSeasonRewards));
+    fetch(`${SERVER_URL}/api/season_rewards`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: userId, rewards: claimedSeasonRewards })
+    }).catch(e => console.error('Save rewards error:', e));
+}
 
     </script>
     
