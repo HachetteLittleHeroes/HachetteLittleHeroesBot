@@ -4209,16 +4209,55 @@
 .dice-face {
     position: absolute;
     width: 100px; height: 100px;
-    background: var(--accent);
-    border: 3px solid #fff;
+    background: white;
+    border: 3px solid var(--accent);
     border-radius: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 40px;
-    font-weight: 900;
-    color: white;
+    font-size: 0;
 }
+
+.dot {
+    position: absolute;
+    width: 16px; height: 16px;
+    background: var(--accent);
+    border-radius: 50%;
+}
+
+/* 1 */
+.front .dot1 { top: 50%; left: 50%; transform: translate(-50%, -50%); }
+
+/* 2 */
+.back .dot1 { top: 20%; right: 20%; }
+.back .dot2 { bottom: 20%; left: 20%; }
+
+/* 3 */
+.right .dot1 { top: 20%; right: 20%; }
+.right .dot2 { top: 50%; left: 50%; transform: translate(-50%, -50%); }
+.right .dot3 { bottom: 20%; left: 20%; }
+
+/* 4 */
+.left .dot1 { top: 20%; left: 20%; }
+.left .dot2 { top: 20%; right: 20%; }
+.left .dot3 { bottom: 20%; left: 20%; }
+.left .dot4 { bottom: 20%; right: 20%; }
+
+/* 5 */
+.top .dot1 { top: 20%; left: 20%; }
+.top .dot2 { top: 20%; right: 20%; }
+.top .dot3 { top: 50%; left: 50%; transform: translate(-50%, -50%); }
+.top .dot4 { bottom: 20%; left: 20%; }
+.top .dot5 { bottom: 20%; right: 20%; }
+
+/* 6 */
+.bottom .dot1 { top: 20%; left: 20%; }
+.bottom .dot2 { top: 20%; right: 20%; }
+.bottom .dot3 { bottom: 20%; left: 20%; }
+.bottom .dot4 { bottom: 20%; right: 20%; }
+.bottom .dot5 { top: 50%; left: 20%; transform: translateY(-50%); }
+.bottom .dot6 { top: 50%; right: 20%; transform: translateY(-50%); }
+
 .front  { transform: translateZ(50px); }
 .back   { transform: rotateY(180deg) translateZ(50px); }
 .right  { transform: rotateY(90deg) translateZ(50px); }
@@ -4434,12 +4473,12 @@
             <div class="header" id="dndGameTitle">Твоё приключение</div>
             <div id="dndDiceContainer" style="margin: 30px 0;">
                 <div id="dndDice" class="dnd-dice" onclick="rollDnDDice()">
-                    <div class="dice-face front">1</div>
-                    <div class="dice-face back">2</div>
-                    <div class="dice-face right">3</div>
-                    <div class="dice-face left">4</div>
-                    <div class="dice-face top">5</div>
-                    <div class="dice-face bottom">6</div>
+                    <div class="dice-face front"><span class="dot dot1"></span></div>
+                    <div class="dice-face back"><span class="dot dot1"></span><span class="dot dot2"></span></div>
+                    <div class="dice-face right"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span></div>
+                    <div class="dice-face left"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span></div>
+                    <div class="dice-face top"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span><span class="dot dot5"></span></div>
+                    <div class="dice-face bottom"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span><span class="dot dot5"></span><span class="dot dot6"></span></div>
                 </div>
             </div>
             <p style="color: var(--text-gray);">Нажми на кубик чтобы бросить</p>
