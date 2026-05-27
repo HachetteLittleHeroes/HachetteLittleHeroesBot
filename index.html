@@ -24183,10 +24183,11 @@ function saveClaimedRewards() {
         body: JSON.stringify({ user_id: userId, rewards: claimedSeasonRewards })
     }).catch(e => console.error('Save rewards error:', e));
 }
-        let dndCharacter = null;
+       
+ let dndCharacter = null;
 let dndLevel = 1;
 let dndIsRolling = false;
-
+        
 function selectDnDCharacter(char) {
     dndCharacter = char;
     document.querySelectorAll('.dnd-character-card').forEach(c => c.classList.remove('selected'));
