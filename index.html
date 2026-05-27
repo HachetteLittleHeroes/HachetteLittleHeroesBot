@@ -4175,6 +4175,56 @@
     font-weight: 600;
     color: var(--accent);
 }
+        .dnd-character-card {
+    background: var(--card-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.dnd-character-card:active { transform: scale(0.95); }
+.dnd-character-card.selected { border-color: var(--accent); background: rgba(255,149,0,0.1); }
+.dnd-char-img { font-size: 48px; margin-bottom: 10px; }
+.dnd-char-name { font-weight: 700; font-size: 16px; color: var(--text); }
+.dnd-char-desc { font-size: 12px; color: var(--text-gray); margin-top: 4px; }
+
+/* 3D Кубик */
+.dnd-dice {
+    width: 100px; height: 100px;
+    margin: 0 auto;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.6s;
+    cursor: pointer;
+}
+.dnd-dice.rolling {
+    animation: diceRoll 1s ease-out;
+}
+@keyframes diceRoll {
+    0% { transform: rotateX(0) rotateY(0) rotateZ(0); }
+    100% { transform: rotateX(720deg) rotateY(720deg) rotateZ(720deg); }
+}
+.dice-face {
+    position: absolute;
+    width: 100px; height: 100px;
+    background: var(--accent);
+    border: 3px solid #fff;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    font-weight: 900;
+    color: white;
+}
+.front  { transform: translateZ(50px); }
+.back   { transform: rotateY(180deg) translateZ(50px); }
+.right  { transform: rotateY(90deg) translateZ(50px); }
+.left   { transform: rotateY(-90deg) translateZ(50px); }
+.top    { transform: rotateX(90deg) translateZ(50px); }
+.bottom { transform: rotateX(-90deg) translateZ(50px); }
     </style>
 </head>
 <body>
@@ -4334,6 +4384,59 @@
             <div class="loading"><i class="fas fa-spinner fa-spin"></i> Загрузка...</div>
         </div>
     </div>
+</div>
+    <!-- D&D СОБЫТИЕ -->
+<div id="dndEvent" style="display:none; padding: 15px;">
+    <div class="header">Выбери персонажа</div>
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 15px;">
+        <div class="dnd-character-card" onclick="selectDnDCharacter('knight')" data-char="knight">
+            <div class="dnd-char-img">🛡️</div>
+            <div class="dnd-char-name">Рыцарь</div>
+            <div class="dnd-char-desc">Сила и честь</div>
+        </div>
+        <div class="dnd-character-card" onclick="selectDnDCharacter('mage')" data-char="mage">
+            <div class="dnd-char-img">🔮</div>
+            <div class="dnd-char-name">Маг</div>
+            <div class="dnd-char-desc">Магия и знания</div>
+        </div>
+        <div class="dnd-character-card" onclick="selectDnDCharacter('archer')" data-char="archer">
+            <div class="dnd-char-img">🏹</div>
+            <div class="dnd-char-name">Лучник</div>
+            <div class="dnd-char-desc">Меткость и ловкость</div>
+        </div>
+        <div class="dnd-character-card" onclick="selectDnDCharacter('druid')" data-char="druid">
+            <div class="dnd-char-img">🌿</div>
+            <div class="dnd-char-name">Друид</div>
+            <div class="dnd-char-desc">Природа и сила</div>
+        </div>
+        <div class="dnd-character-card" onclick="selectDnDCharacter('assassin')" data-char="assassin">
+            <div class="dnd-char-img">🗡️</div>
+            <div class="dnd-char-name">Ассасин</div>
+            <div class="dnd-char-desc">Тень и яд</div>
+        </div>
+        <div class="dnd-character-card" onclick="selectDnDCharacter('bard')" data-char="bard">
+            <div class="dnd-char-img">🎵</div>
+            <div class="dnd-char-name">Бард</div>
+            <div class="dnd-char-desc">Музыка и обаяние</div>
+        </div>
+    </div>
+</div>
+
+<!-- Экран игры -->
+<div id="dndGame" style="display:none; padding: 15px; text-align: center;">
+    <div class="header" id="dndGameTitle">Твоё приключение</div>
+    <div id="dndDiceContainer" style="margin: 30px 0;">
+        <div id="dndDice" class="dnd-dice" onclick="rollDnDDice()">
+            <div class="dice-face front">1</div>
+            <div class="dice-face back">2</div>
+            <div class="dice-face right">3</div>
+            <div class="dice-face left">4</div>
+            <div class="dice-face top">5</div>
+            <div class="dice-face bottom">6</div>
+        </div>
+    </div>
+    <p style="color: var(--text-gray);">Нажми на кубик чтобы бросить</p>
+    <div id="dndCard" style="display:none; margin-top: 20px;"></div>
 </div>
 </div>
 
@@ -24072,6 +24175,92 @@ function saveClaimedRewards() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_id: userId, rewards: claimedSeasonRewards })
     }).catch(e => console.error('Save rewards error:', e));
+}
+        let dndCharacter = null;
+let dndLevel = 1;
+let dndIsRolling = false;
+
+function selectDnDCharacter(char) {
+    dndCharacter = char;
+    document.querySelectorAll('.dnd-character-card').forEach(c => c.classList.remove('selected'));
+    document.querySelector(`[data-char="${char}"]`).classList.add('selected');
+    
+    // Сохраняем на сервер
+    fetch(`${SERVER_URL}/api/dnd/select_character`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: userId, character: char })
+    });
+    
+    // Показываем игру
+    setTimeout(() => {
+        document.getElementById('dndEvent').style.display = 'none';
+        document.getElementById('dndGame').style.display = 'block';
+        document.getElementById('dndGameTitle').innerText = 
+            `Твоё приключение • Уровень ${dndLevel}`;
+    }, 500);
+}
+
+function rollDnDDice() {
+    if (dndIsRolling) return;
+    dndIsRolling = true;
+    
+    const dice = document.getElementById('dndDice');
+    const result = Math.floor(Math.random() * 6) + 1;
+    
+    dice.classList.add('rolling');
+    
+    // Устанавливаем финальную позицию для нужного числа
+    const rotations = {
+        1: 'rotateX(0deg) rotateY(0deg)',
+        2: 'rotateX(0deg) rotateY(180deg)',
+        3: 'rotateX(0deg) rotateY(-90deg)',
+        4: 'rotateX(0deg) rotateY(90deg)',
+        5: 'rotateX(-90deg) rotateY(0deg)',
+        6: 'rotateX(90deg) rotateY(0deg)'
+    };
+    
+    setTimeout(() => {
+        dice.classList.remove('rolling');
+        dice.style.transform = rotations[result];
+        dndIsRolling = false;
+        
+        // Загружаем карту
+        loadDnDCard(result);
+    }, 1000);
+}
+
+async function loadDnDCard(cardNumber) {
+    try {
+        const response = await fetch(`${SERVER_URL}/api/dnd/get_card?user_id=${userId}&level=${dndLevel}&card=${cardNumber}`);
+        const card = await response.json();
+        
+        const container = document.getElementById('dndCard');
+        container.style.display = 'block';
+        container.innerHTML = `
+            <div class="branch-task-card">
+                <div class="branch-header">
+                    <h3>Карта ${cardNumber}</h3>
+                    <p>${card.story}</p>
+                </div>
+                <div class="level-card">
+                    <p style="font-weight: 600; margin-bottom: 15px;">${card.question}</p>
+                    ${card.options.map((opt, idx) => `
+                        <button class="task-submit-btn" style="margin-bottom: 10px;" onclick="submitDnDAnswer(${idx}, '${opt.replace(/'/g, "\\'")}')">
+                            ${opt}
+                        </button>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    } catch(e) {
+        console.error('Card load error:', e);
+    }
+}
+
+function submitDnDAnswer(optionIdx, answer) {
+    // Открываем загрузку фото
+    openCommunityTaskUpload(); // или специальная функция с привязкой к ответу
 }
 
     </script>
