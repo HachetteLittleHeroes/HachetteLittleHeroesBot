@@ -4471,17 +4471,6 @@
         <!-- Экран игры -->
         <div id="dndGame" style="display:none; padding: 15px; text-align: center;">
             <div class="header" id="dndGameTitle">Твоё приключение</div>
-            <div id="dndDiceContainer" style="margin: 30px 0;">
-                <div id="dndDice" class="dnd-dice" onclick="rollDnDDice()">
-                    <div class="dice-face front"><span class="dot dot1"></span></div>
-                    <div class="dice-face back"><span class="dot dot1"></span><span class="dot dot2"></span></div>
-                    <div class="dice-face right"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span></div>
-                    <div class="dice-face left"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span></div>
-                    <div class="dice-face top"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span><span class="dot dot5"></span></div>
-                    <div class="dice-face bottom"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span><span class="dot dot5"></span><span class="dot dot6"></span></div>
-                </div>
-            </div>
-            <p style="color: var(--text-gray);">Нажми на кубик чтобы бросить</p>
             <div id="dndCard" style="display:none; margin-top: 20px;"></div>
         </div>
     </div>
@@ -12394,7 +12383,7 @@ var DND_TRANSITIONS = {
 var dndCharacter = null;
 var dndCardHistory = [];
 var dndIsRolling = false;
-    function showDnDCard(cardNumber) {
+   function showDnDCard(cardNumber) {
     const card = DND_CARDS[dndCharacter] ? DND_CARDS[dndCharacter][cardNumber] : null;
     
     if (!card) {
@@ -12403,13 +12392,12 @@ var dndIsRolling = false;
         return;
     }
     
-    const level = dndCardHistory.length - 1; // уровень 0 для стартовой карты
+    const level = dndCardHistory.length - 1;
     document.getElementById('dndGameTitle').innerText = card.isStart ? 'Начало приключения' : `Твоё приключение • Уровень ${level}`;
     
     document.getElementById('dndCard').style.display = 'block';
     
     if (card.isStart) {
-        // Стартовая карта — только история и кнопка бросить кубик
         document.getElementById('dndCard').innerHTML = `
             <div class="branch-task-card">
                 <div class="branch-header">
@@ -12417,13 +12405,22 @@ var dndIsRolling = false;
                 </div>
                 <div class="level-card">
                     ${card.image ? `<img src="${card.image}" style="width:100%;border-radius:12px;margin-bottom:15px;">` : ''}
-                    <p style="text-align:center;font-weight:600;">Брось кубик, чтобы начать приключение!</p>
+                    <p style="text-align:center;font-weight:600;margin-bottom:15px;">Брось кубик, чтобы начать приключение!</p>
+                    <div style="margin: 10px 0;">
+                        <div id="dndDice" class="dnd-dice" onclick="rollDnDDice()">
+                            <div class="dice-face front"><span class="dot dot1"></span></div>
+                            <div class="dice-face back"><span class="dot dot1"></span><span class="dot dot2"></span></div>
+                            <div class="dice-face right"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span></div>
+                            <div class="dice-face left"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span></div>
+                            <div class="dice-face top"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span><span class="dot dot5"></span></div>
+                            <div class="dice-face bottom"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span><span class="dot dot5"></span><span class="dot dot6"></span></div>
+                        </div>
+                    </div>
+                    <p style="color: var(--text-gray); font-size: 13px;">Нажми на кубик</p>
                 </div>
             </div>
         `;
-        document.getElementById('dndDiceContainer').style.display = 'block';
     } else {
-        // Обычная карта с заданием
         document.getElementById('dndCard').innerHTML = `
             <div class="branch-task-card">
                 <div class="branch-header">
@@ -12438,7 +12435,6 @@ var dndIsRolling = false;
                 </div>
             </div>
         `;
-        document.getElementById('dndDiceContainer').style.display = 'none';
     }
 }
 
