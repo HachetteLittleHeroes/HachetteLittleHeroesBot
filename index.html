@@ -24644,18 +24644,18 @@ function rollDnDDice() {
     if (dndIsRolling) return;
     if (!dndCharacter) { alert('Сначала выбери персонажа!'); return; }
     
-    // Проверяем, одобрено ли предыдущее задание (кроме первого броска)
     if (dndCardHistory.length > 0 && !dndApproved) {
         alert('Сначала дождись одобрения задания!');
         return;
     }
     
     dndIsRolling = true;
-    dndApproved = false; // сбрасываем для следующего задания
+    dndApproved = false;
     
     const dice = document.getElementById('dndDice');
     const result = Math.floor(Math.random() * 6) + 1;
     
+    // Запускаем анимацию
     dice.classList.add('rolling');
     
     const rotations = {
@@ -24667,22 +24667,35 @@ function rollDnDDice() {
         6: 'rotateX(90deg) rotateY(0deg)'
     };
     
+    // Первый этап: анимация + показываем результат
     setTimeout(() => {
         dice.classList.remove('rolling');
         dice.style.transform = rotations[result];
-        dndIsRolling = false;
         
-        let cardNumber;
-        if (dndCardHistory.length === 0) {
-            cardNumber = result <= 2 ? 1 : result <= 4 ? 2 : 3;
-        } else {
-            const prevCard = dndCardHistory[dndCardHistory.length - 1];
-            cardNumber = DND_TRANSITIONS[prevCard] ? DND_TRANSITIONS[prevCard][result] : 1;
-        }
+        // Показываем число на 1.5 секунды
+        const resultDiv = document.createElement('div');
+        resultDiv.style.cssText = 'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:60px;font-weight:900;color:var(--accent);text-shadow:0 0 20px rgba(255,149,0,0.5);z-index:10;';
+        resultDiv.textContent = result;
+        dice.parentElement.appendChild(resultDiv);
         
-        dndCardHistory.push(cardNumber);
-        showDnDCard(cardNumber);
-    }, 1000);
+        setTimeout(() => {
+            resultDiv.remove();
+            dndIsRolling = false;
+            
+            // Определяем карту
+            let cardNumber;
+            if (dndCardHistory.length === 0) {
+                cardNumber = result <= 2 ? 1 : result <= 4 ? 2 : 3;
+            } else {
+                const prevCard = dndCardHistory[dndCardHistory.length - 1];
+                cardNumber = DND_TRANSITIONS[prevCard] ? DND_TRANSITIONS[prevCard][result] : 1;
+            }
+            
+            dndCardHistory.push(cardNumber);
+            showDnDCard(cardNumber);
+        }, 1500);
+        
+    }, 800);
 }
 
 async function loadDnDCard(cardNumber) {
