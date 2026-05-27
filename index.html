@@ -12388,6 +12388,42 @@ var DND_TRANSITIONS = {
 var dndCharacter = null;
 var dndCardHistory = [];
 var dndIsRolling = false;
+        function showDnDCard(cardNumber) {
+    const card = DND_CARDS[dndCharacter] ? DND_CARDS[dndCharacter][cardNumber] : null;
+    
+    if (!card) {
+        document.getElementById('dndCard').innerHTML = '<p style="padding:20px;text-align:center;color:var(--text-gray);">Карта в разработке...</p>';
+        document.getElementById('dndCard').style.display = 'block';
+        return;
+    }
+    
+    const level = dndCardHistory.length;
+    document.getElementById('dndGameTitle').innerText = `Твоё приключение • Уровень ${level}`;
+    
+    document.getElementById('dndCard').style.display = 'block';
+    document.getElementById('dndCard').innerHTML = `
+        <div class="branch-task-card">
+            <div class="branch-header">
+                <h3>${card.title}</h3>
+                <p>${card.story}</p>
+            </div>
+            <div class="level-card">
+                <p style="font-weight: 600; margin-bottom: 15px;">📋 Задание: ${card.task}</p>
+                <p style="font-size: 13px; color: var(--text-gray); margin-bottom: 10px;">Выбери, что делать:</p>
+                ${card.options.map((opt, idx) => `
+                    <button class="task-submit-btn" style="margin-bottom: 10px;" onclick="submitDnDChoice(${cardNumber}, ${idx})">
+                        ${opt}
+                    </button>
+                `).join('')}
+            </div>
+        </div>
+    `;
+}
+
+function submitDnDChoice(cardNumber, choiceIdx) {
+    // Открываем загрузку фото
+    openCommunityTaskUpload();
+}
        // ==========================================
 // ИНИЦИАЛИЗАЦИЯ
 // ==========================================
