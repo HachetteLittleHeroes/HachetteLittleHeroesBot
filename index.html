@@ -12664,7 +12664,9 @@ for (var i = 134; i <= 160; i++) {
 var dndCharacter = null;
 var dndCardHistory = [];
 var dndIsRolling = false;
-  function showDnDCard(cardNumber) {
+ function showDnDCard(cardNumber) {
+    console.log('DND CARD:', 'Character:', dndCharacter, 'Card:', cardNumber, 'Exists:', DND_CARDS[dndCharacter] ? !!DND_CARDS[dndCharacter][cardNumber] : 'NO_CHAR');
+    
     const card = DND_CARDS[dndCharacter] ? DND_CARDS[dndCharacter][cardNumber] : null;
     
     if (!card) {
@@ -12678,7 +12680,6 @@ var dndIsRolling = false;
     
     document.getElementById('dndCard').style.display = 'block';
     
-    // Кубик (общий для всех карт)
     const diceHtml = `
         <div id="dndDiceWrapper" style="margin: 15px 0; display: ${card.isStart || dndApproved ? 'block' : 'none'};">
             <div id="dndDice" class="dnd-dice" onclick="rollDnDDice()">
@@ -12700,7 +12701,7 @@ var dndIsRolling = false;
                     <h3>${card.title}</h3>
                 </div>
                 <div class="level-card">
-                    ${card.image ? `<img src="${card.image}" style="width:100%;border-radius:12px;margin-bottom:15px;">` : ''}
+                    ${card.image ? `<img src="${card.image}" style="width:100%;border-radius:12px;margin-bottom:15px;" onerror="this.style.display='none'">` : ''}
                     <p style="text-align:center;font-weight:600;">Брось кубик, чтобы начать приключение!</p>
                     ${diceHtml}
                 </div>
@@ -12713,7 +12714,7 @@ var dndIsRolling = false;
                     <h3>${card.title}</h3>
                 </div>
                 <div class="level-card">
-                    ${card.image ? `<img src="${card.image}" style="width:100%;border-radius:12px;margin-bottom:15px;">` : ''}
+                    ${card.image ? `<img src="${card.image}" style="width:100%;border-radius:12px;margin-bottom:15px;" onerror="this.style.display='none'">` : ''}
                     <p style="font-weight: 600; margin-bottom: 15px;">📋 Задание: ${card.task}</p>
                     ${!dndApproved ? `
                         <button class="task-submit-btn" onclick="openDnDTaskUpload(${cardNumber})">
@@ -12730,7 +12731,6 @@ var dndIsRolling = false;
         `;
     }
 }
-
 function submitDnDChoice(cardNumber, choiceIdx) {
     // Открываем загрузку фото
     openCommunityTaskUpload();
