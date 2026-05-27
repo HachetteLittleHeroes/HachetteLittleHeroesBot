@@ -12388,7 +12388,7 @@ var DND_TRANSITIONS = {
 var dndCharacter = null;
 var dndCardHistory = [];
 var dndIsRolling = false;
-        function showDnDCard(cardNumber) {
+      function showDnDCard(cardNumber) {
     const card = DND_CARDS[dndCharacter] ? DND_CARDS[dndCharacter][cardNumber] : null;
     
     if (!card) {
@@ -12409,20 +12409,32 @@ var dndIsRolling = false;
             </div>
             <div class="level-card">
                 <p style="font-weight: 600; margin-bottom: 15px;">📋 Задание: ${card.task}</p>
-                <p style="font-size: 13px; color: var(--text-gray); margin-bottom: 10px;">Выбери, что делать:</p>
-                ${card.options.map((opt, idx) => `
-                    <button class="task-submit-btn" style="margin-bottom: 10px;" onclick="submitDnDChoice(${cardNumber}, ${idx})">
-                        ${opt}
-                    </button>
-                `).join('')}
+                <button class="task-submit-btn" onclick="openDnDTaskUpload(${cardNumber})">
+                    <i class="fas fa-camera"></i> Отправить фото ДО/ПОСЛЕ
+                </button>
             </div>
         </div>
     `;
+    
+    // Прячем кубик до одобрения
+    document.getElementById('dndDiceContainer').style.display = 'none';
 }
 
 function submitDnDChoice(cardNumber, choiceIdx) {
     // Открываем загрузку фото
     openCommunityTaskUpload();
+}
+     function openDnDTaskUpload(cardNumber) {
+    // Отправляем фото как задание D&D
+    currentDnDCard = cardNumber;
+    openCommunityTaskUpload(); // или специальная функция
+}
+        function approveDnDTask() {
+    dndApproved = true;
+    document.getElementById('dndDiceContainer').style.display = 'block';
+    document.getElementById('dndCard').style.display = 'none';
+    // Можно показать сообщение "Задание одобрено! Бросай кубик!"
+    alert('✅ Задание одобрено! Бросай кубик для продолжения!');
 }
        // ==========================================
 // ИНИЦИАЛИЗАЦИЯ
@@ -24316,11 +24328,20 @@ function selectDnDCharacter(char) {
     }, 500);
 }
 
+var dndApproved = false; // одобрено ли текущее задание
+
 function rollDnDDice() {
     if (dndIsRolling) return;
     if (!dndCharacter) { alert('Сначала выбери персонажа!'); return; }
     
+    // Проверяем, одобрено ли предыдущее задание (кроме первого броска)
+    if (dndCardHistory.length > 0 && !dndApproved) {
+        alert('Сначала дождись одобрения задания!');
+        return;
+    }
+    
     dndIsRolling = true;
+    dndApproved = false; // сбрасываем для следующего задания
     
     const dice = document.getElementById('dndDice');
     const result = Math.floor(Math.random() * 6) + 1;
@@ -24341,10 +24362,8 @@ function rollDnDDice() {
         dice.style.transform = rotations[result];
         dndIsRolling = false;
         
-        // Определяем карту
         let cardNumber;
         if (dndCardHistory.length === 0) {
-            // Первый бросок — карты 1-3
             cardNumber = result <= 2 ? 1 : result <= 4 ? 2 : 3;
         } else {
             const prevCard = dndCardHistory[dndCardHistory.length - 1];
