@@ -12356,6 +12356,38 @@ function renderUserLevel() {
     
     return xp;
 }
+        var DND_CARDS = {
+    knight: {
+        1: {
+            title: "Королевский указ",
+            story: "Король собирает рыцарей в тронном зале. Тёмные силы пробудились на востоке. Ты — новобранец ордена, и это твой шанс проявить себя. Герольд зачитывает указ: «Всем рыцарям немедленно отправиться к Восточным землям!»",
+            task: "Раскрась картинку с рыцарем в доспехах или королевский замок",
+            options: ["Принять вызов с честью!", "Собрать снаряжение", "Выступить немедленно"]
+        },
+        2: {
+            title: "Кузница старого Ганса",
+            story: "Перед дорогой ты зашёл к старому кузнецу Гансу. Он куёт тебе новый меч. «Этот меч передавался в моей семье три поколения. Он принесёт тебе удачу», — говорит старик.",
+            task: "Раскрась картинку с мечом или оружием",
+            options: ["Принять меч с благодарностью", "Попросить ещё и щит", "Выковать свой меч"]
+        },
+        3: {
+            title: "Благословение жрицы",
+            story: "В храме тебя встречает жрица Элира. Она возлагает на тебя благословение Света. «Пусть Свет хранит тебя в тёмных подземельях», — шепчет она, и ты чувствуешь прилив сил.",
+            task: "Раскрась картинку с магическим светом или храмом",
+            options: ["Принять благословение", "Попросить амулет", "Пожертвовать храму"]
+        }
+    }
+};
+
+var DND_TRANSITIONS = {
+    1: {1: 4, 2: 4, 3: 5, 4: 5, 5: 6, 6: 6},
+    2: {1: 7, 2: 7, 3: 8, 4: 8, 5: 9, 6: 9},
+    3: {1: 10, 2: 10, 3: 11, 4: 11, 5: 12, 6: 12}
+};
+
+var dndCharacter = null;
+var dndCardHistory = [];
+var dndIsRolling = false;
        // ==========================================
 // ИНИЦИАЛИЗАЦИЯ
 // ==========================================
@@ -24250,6 +24282,8 @@ function selectDnDCharacter(char) {
 
 function rollDnDDice() {
     if (dndIsRolling) return;
+    if (!dndCharacter) { alert('Сначала выбери персонажа!'); return; }
+    
     dndIsRolling = true;
     
     const dice = document.getElementById('dndDice');
@@ -24257,7 +24291,6 @@ function rollDnDDice() {
     
     dice.classList.add('rolling');
     
-    // Устанавливаем финальную позицию для нужного числа
     const rotations = {
         1: 'rotateX(0deg) rotateY(0deg)',
         2: 'rotateX(0deg) rotateY(180deg)',
@@ -24272,8 +24305,18 @@ function rollDnDDice() {
         dice.style.transform = rotations[result];
         dndIsRolling = false;
         
-        // Загружаем карту
-        loadDnDCard(result);
+        // Определяем карту
+        let cardNumber;
+        if (dndCardHistory.length === 0) {
+            // Первый бросок — карты 1-3
+            cardNumber = result <= 2 ? 1 : result <= 4 ? 2 : 3;
+        } else {
+            const prevCard = dndCardHistory[dndCardHistory.length - 1];
+            cardNumber = DND_TRANSITIONS[prevCard] ? DND_TRANSITIONS[prevCard][result] : 1;
+        }
+        
+        dndCardHistory.push(cardNumber);
+        showDnDCard(cardNumber);
     }, 1000);
 }
 
