@@ -12599,7 +12599,13 @@ DND_CARDS.knight[158] = { title: "Двойная звезда", image: "https://
 DND_CARDS.knight[159] = { title: "Нейтронная звезда", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k159.jpeg", task: "Раскрась картинку со звездой или пульсаром" };
 DND_CARDS.knight[160] = { title: "Сверхновая", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k160.jpeg", task: "Раскрась картинку со сверхновой или взрывом" };
 DND_CARDS.knight[161] = { title: "Демон Бездны", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k161.jpeg", task: "Раскрась самую эпичную картинку с демоном или финальной битвой!" };   
-        
+ for (var i = 162; i <= 188; i++) {
+    DND_CARDS.knight[i] = {
+        title: "Преддверие финала " + (i - 161),
+        image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k" + i + ".jpeg",
+        task: "Раскрась картинку перед финальной битвой"
+    };
+}       
 // Переходы обновим: карта 0 → 1,2,3
 var DND_TRANSITIONS = {};
 
@@ -12657,8 +12663,17 @@ for (var i = 125; i <= 133; i++) {
     card += 3;
 }
 
-// Уровень 8 → 9 (карты 134-160 → 161, финальный босс)
+// Уровень 8 → 9 (карты 134-160 → 162-188)
 for (var i = 134; i <= 160; i++) {
+    DND_TRANSITIONS[i] = {};
+    DND_TRANSITIONS[i][1] = card; DND_TRANSITIONS[i][2] = card;
+    DND_TRANSITIONS[i][3] = card + 1; DND_TRANSITIONS[i][4] = card + 1;
+    DND_TRANSITIONS[i][5] = card + 2; DND_TRANSITIONS[i][6] = card + 2;
+    card += 3;
+}
+
+// Уровень 9 → 10 (карты 162-188 → 161, финальный босс)
+for (var i = 162; i <= 188; i++) {
     DND_TRANSITIONS[i] = {1: 161, 2: 161, 3: 161, 4: 161, 5: 161, 6: 161};
 }
 
@@ -24655,7 +24670,6 @@ function rollDnDDice() {
     const dice = document.getElementById('dndDice');
     const result = Math.floor(Math.random() * 6) + 1;
     
-    // Запускаем анимацию
     dice.classList.add('rolling');
     
     const rotations = {
@@ -24667,22 +24681,14 @@ function rollDnDDice() {
         6: 'rotateX(90deg) rotateY(0deg)'
     };
     
-    // Первый этап: анимация + показываем результат
     setTimeout(() => {
         dice.classList.remove('rolling');
         dice.style.transform = rotations[result];
         
-        // Показываем число на 1.5 секунды
-        const resultDiv = document.createElement('div');
-        resultDiv.style.cssText = 'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:60px;font-weight:900;color:var(--accent);text-shadow:0 0 20px rgba(255,149,0,0.5);z-index:10;';
-        resultDiv.textContent = result;
-        dice.parentElement.appendChild(resultDiv);
-        
+        // Пауза чтобы пользователь увидел результат
         setTimeout(() => {
-            resultDiv.remove();
             dndIsRolling = false;
             
-            // Определяем карту
             let cardNumber;
             if (dndCardHistory.length === 0) {
                 cardNumber = result <= 2 ? 1 : result <= 4 ? 2 : 3;
@@ -24693,7 +24699,7 @@ function rollDnDDice() {
             
             dndCardHistory.push(cardNumber);
             showDnDCard(cardNumber);
-        }, 1500);
+        }, 1200);
         
     }, 800);
 }
