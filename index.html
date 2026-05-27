@@ -4385,61 +4385,68 @@
         </div>
     </div>
 </div>
-    <!-- D&D СОБЫТИЕ -->
-<div id="dndEvent" style="display:none; padding: 15px;">
-    <div class="header">Выбери персонажа</div>
-    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 15px;">
-        <div class="dnd-character-card" onclick="selectDnDCharacter('knight')" data-char="knight">
-            <div class="dnd-char-img">🛡️</div>
-            <div class="dnd-char-name">Рыцарь</div>
-            <div class="dnd-char-desc">Сила и честь</div>
+
+<!-- D&D СОБЫТИЕ -->
+<div class="tasks-section" style="margin-top: 15px;">
+    <button class="tasks-header" onclick="toggleDnDEvent()">
+        <span>🎲 D&D Приключение</span>
+        <i class="fas fa-chevron-down" id="dndEventArrow"></i>
+    </button>
+    <div id="dndEventContent" class="tasks-content" style="display: none;">
+        <div id="dndEvent" style="padding: 15px;">
+            <div class="header">Выбери персонажа</div>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 15px;">
+                <div class="dnd-character-card" onclick="selectDnDCharacter('knight')" data-char="knight">
+                    <div class="dnd-char-img">🛡️</div>
+                    <div class="dnd-char-name">Рыцарь</div>
+                    <div class="dnd-char-desc">Сила и честь</div>
+                </div>
+                <div class="dnd-character-card" onclick="selectDnDCharacter('mage')" data-char="mage">
+                    <div class="dnd-char-img">🔮</div>
+                    <div class="dnd-char-name">Маг</div>
+                    <div class="dnd-char-desc">Магия и знания</div>
+                </div>
+                <div class="dnd-character-card" onclick="selectDnDCharacter('archer')" data-char="archer">
+                    <div class="dnd-char-img">🏹</div>
+                    <div class="dnd-char-name">Лучник</div>
+                    <div class="dnd-char-desc">Меткость и ловкость</div>
+                </div>
+                <div class="dnd-character-card" onclick="selectDnDCharacter('druid')" data-char="druid">
+                    <div class="dnd-char-img">🌿</div>
+                    <div class="dnd-char-name">Друид</div>
+                    <div class="dnd-char-desc">Природа и сила</div>
+                </div>
+                <div class="dnd-character-card" onclick="selectDnDCharacter('assassin')" data-char="assassin">
+                    <div class="dnd-char-img">🗡️</div>
+                    <div class="dnd-char-name">Ассасин</div>
+                    <div class="dnd-char-desc">Тень и яд</div>
+                </div>
+                <div class="dnd-character-card" onclick="selectDnDCharacter('bard')" data-char="bard">
+                    <div class="dnd-char-img">🎵</div>
+                    <div class="dnd-char-name">Бард</div>
+                    <div class="dnd-char-desc">Музыка и обаяние</div>
+                </div>
+            </div>
         </div>
-        <div class="dnd-character-card" onclick="selectDnDCharacter('mage')" data-char="mage">
-            <div class="dnd-char-img">🔮</div>
-            <div class="dnd-char-name">Маг</div>
-            <div class="dnd-char-desc">Магия и знания</div>
-        </div>
-        <div class="dnd-character-card" onclick="selectDnDCharacter('archer')" data-char="archer">
-            <div class="dnd-char-img">🏹</div>
-            <div class="dnd-char-name">Лучник</div>
-            <div class="dnd-char-desc">Меткость и ловкость</div>
-        </div>
-        <div class="dnd-character-card" onclick="selectDnDCharacter('druid')" data-char="druid">
-            <div class="dnd-char-img">🌿</div>
-            <div class="dnd-char-name">Друид</div>
-            <div class="dnd-char-desc">Природа и сила</div>
-        </div>
-        <div class="dnd-character-card" onclick="selectDnDCharacter('assassin')" data-char="assassin">
-            <div class="dnd-char-img">🗡️</div>
-            <div class="dnd-char-name">Ассасин</div>
-            <div class="dnd-char-desc">Тень и яд</div>
-        </div>
-        <div class="dnd-character-card" onclick="selectDnDCharacter('bard')" data-char="bard">
-            <div class="dnd-char-img">🎵</div>
-            <div class="dnd-char-name">Бард</div>
-            <div class="dnd-char-desc">Музыка и обаяние</div>
+        
+        <!-- Экран игры -->
+        <div id="dndGame" style="display:none; padding: 15px; text-align: center;">
+            <div class="header" id="dndGameTitle">Твоё приключение</div>
+            <div id="dndDiceContainer" style="margin: 30px 0;">
+                <div id="dndDice" class="dnd-dice" onclick="rollDnDDice()">
+                    <div class="dice-face front">1</div>
+                    <div class="dice-face back">2</div>
+                    <div class="dice-face right">3</div>
+                    <div class="dice-face left">4</div>
+                    <div class="dice-face top">5</div>
+                    <div class="dice-face bottom">6</div>
+                </div>
+            </div>
+            <p style="color: var(--text-gray);">Нажми на кубик чтобы бросить</p>
+            <div id="dndCard" style="display:none; margin-top: 20px;"></div>
         </div>
     </div>
 </div>
-
-<!-- Экран игры -->
-<div id="dndGame" style="display:none; padding: 15px; text-align: center;">
-    <div class="header" id="dndGameTitle">Твоё приключение</div>
-    <div id="dndDiceContainer" style="margin: 30px 0;">
-        <div id="dndDice" class="dnd-dice" onclick="rollDnDDice()">
-            <div class="dice-face front">1</div>
-            <div class="dice-face back">2</div>
-            <div class="dice-face right">3</div>
-            <div class="dice-face left">4</div>
-            <div class="dice-face top">5</div>
-            <div class="dice-face bottom">6</div>
-        </div>
-    </div>
-    <p style="color: var(--text-gray);">Нажми на кубик чтобы бросить</p>
-    <div id="dndCard" style="display:none; margin-top: 20px;"></div>
-</div>
-</div>
-
    
 <!-- ========== КОЛЛЕКЦИЯ ========== -->
 <div id="collection" class="page">
@@ -24262,7 +24269,18 @@ function submitDnDAnswer(optionIdx, answer) {
     // Открываем загрузку фото
     openCommunityTaskUpload(); // или специальная функция с привязкой к ответу
 }
-
+function toggleDnDEvent() {
+    const content = document.getElementById('dndEventContent');
+    const arrow = document.getElementById('dndEventArrow');
+    if (!content) return;
+    if (content.style.display === 'block') {
+        content.style.display = 'none';
+        if (arrow) arrow.style.transform = 'rotate(0deg)';
+    } else {
+        content.style.display = 'block';
+        if (arrow) arrow.style.transform = 'rotate(180deg)';
+    }
+}
     </script>
     
     <!-- Модалка поиска пользователей -->
