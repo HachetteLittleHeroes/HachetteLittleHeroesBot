@@ -12356,27 +12356,36 @@ function renderUserLevel() {
     
     return xp;
 }
-      var DND_CARDS = {
+        var DND_CARDS = {
     knight: {
-        1: {
+        0: {
             title: "Королевский указ",
-            image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k1.jpeg",
-            task: "Раскрась картинку с рыцарем в доспехах или королевский замок"
+            image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k0.jpeg",
+            task: null, // нет задания, просто история
+            isStart: true
         },
-        2: {
+        1: {
             title: "Кузница старого Ганса",
-            image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k2.jpeg",
+            image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k1.jpeg",
             task: "Раскрась картинку с мечом или оружием"
         },
-        3: {
+        2: {
             title: "Благословение жрицы",
-            image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k3.jpeg",
+            image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k2.jpeg",
             task: "Раскрась картинку с магическим светом или храмом"
+        },
+        3: {
+            title: "Дорога на восток",
+            image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k3.jpeg",
+            task: "Раскрась картинку с дорогой или пейзажем"
         }
     }
 };
 
+// Переходы обновим: карта 0 → 1,2,3
 var DND_TRANSITIONS = {
+    0: {1: 1, 2: 1, 3: 2, 4: 2, 5: 3, 6: 3},
+    // Уровень 1 → 2
     1: {1: 4, 2: 4, 3: 5, 4: 5, 5: 6, 6: 6},
     2: {1: 7, 2: 7, 3: 8, 4: 8, 5: 9, 6: 9},
     3: {1: 10, 2: 10, 3: 11, 4: 11, 5: 12, 6: 12}
@@ -12385,7 +12394,7 @@ var DND_TRANSITIONS = {
 var dndCharacter = null;
 var dndCardHistory = [];
 var dndIsRolling = false;
-     function showDnDCard(cardNumber) {
+    function showDnDCard(cardNumber) {
     const card = DND_CARDS[dndCharacter] ? DND_CARDS[dndCharacter][cardNumber] : null;
     
     if (!card) {
@@ -12394,26 +12403,43 @@ var dndIsRolling = false;
         return;
     }
     
-    const level = dndCardHistory.length;
-    document.getElementById('dndGameTitle').innerText = `Твоё приключение • Уровень ${level}`;
+    const level = dndCardHistory.length - 1; // уровень 0 для стартовой карты
+    document.getElementById('dndGameTitle').innerText = card.isStart ? 'Начало приключения' : `Твоё приключение • Уровень ${level}`;
     
     document.getElementById('dndCard').style.display = 'block';
-    document.getElementById('dndCard').innerHTML = `
-        <div class="branch-task-card">
-            <div class="branch-header">
-                <h3>${card.title}</h3>
-            </div>
-            <div class="level-card">
-                ${card.image ? `<img src="${card.image}" style="width:100%;border-radius:12px;margin-bottom:15px;" onerror="this.style.display='none'">` : ''}
-                <p style="font-weight: 600; margin-bottom: 15px;">📋 Задание: ${card.task}</p>
-                <button class="task-submit-btn" onclick="openDnDTaskUpload(${cardNumber})">
-                    <i class="fas fa-camera"></i> Отправить фото ДО/ПОСЛЕ
-                </button>
-            </div>
-        </div>
-    `;
     
-    document.getElementById('dndDiceContainer').style.display = 'none';
+    if (card.isStart) {
+        // Стартовая карта — только история и кнопка бросить кубик
+        document.getElementById('dndCard').innerHTML = `
+            <div class="branch-task-card">
+                <div class="branch-header">
+                    <h3>${card.title}</h3>
+                </div>
+                <div class="level-card">
+                    ${card.image ? `<img src="${card.image}" style="width:100%;border-radius:12px;margin-bottom:15px;">` : ''}
+                    <p style="text-align:center;font-weight:600;">Брось кубик, чтобы начать приключение!</p>
+                </div>
+            </div>
+        `;
+        document.getElementById('dndDiceContainer').style.display = 'block';
+    } else {
+        // Обычная карта с заданием
+        document.getElementById('dndCard').innerHTML = `
+            <div class="branch-task-card">
+                <div class="branch-header">
+                    <h3>${card.title}</h3>
+                </div>
+                <div class="level-card">
+                    ${card.image ? `<img src="${card.image}" style="width:100%;border-radius:12px;margin-bottom:15px;">` : ''}
+                    <p style="font-weight: 600; margin-bottom: 15px;">📋 Задание: ${card.task}</p>
+                    <button class="task-submit-btn" onclick="openDnDTaskUpload(${cardNumber})">
+                        <i class="fas fa-camera"></i> Отправить фото ДО/ПОСЛЕ
+                    </button>
+                </div>
+            </div>
+        `;
+        document.getElementById('dndDiceContainer').style.display = 'none';
+    }
 }
 
 function submitDnDChoice(cardNumber, choiceIdx) {
@@ -24305,6 +24331,9 @@ var dndIsRolling = false;
         
 function selectDnDCharacter(char) {
     dndCharacter = char;
+    dndCardHistory = [0]; // начинаем с карты 0
+    dndApproved = true; // для первого броска разрешаем
+    
     document.querySelectorAll('.dnd-character-card').forEach(c => c.classList.remove('selected'));
     document.querySelector(`[data-char="${char}"]`).classList.add('selected');
     
@@ -24315,13 +24344,10 @@ function selectDnDCharacter(char) {
         body: JSON.stringify({ user_id: userId, character: char })
     });
     
-    // Показываем игру
-    setTimeout(() => {
-        document.getElementById('dndEvent').style.display = 'none';
-        document.getElementById('dndGame').style.display = 'block';
-        document.getElementById('dndGameTitle').innerText = 
-            `Твоё приключение • Уровень ${dndLevel}`;
-    }, 500);
+    // Показываем игру со стартовой картой
+    document.getElementById('dndEvent').style.display = 'none';
+    document.getElementById('dndGame').style.display = 'block';
+    showDnDCard(0);
 }
 
 var dndApproved = false; // одобрено ли текущее задание
