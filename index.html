@@ -17243,45 +17243,32 @@ function checkTeamStatus() {
         });
 }
 
-function loadDndProgress() {
+async function loadDndProgress() {
     console.log('📥 Загрузка прогресса для персонажа:', dndCharacter);
     
-    if (!dndCharacter) {
-        console.log('⚠️ Персонаж не выбран, показываем выбор');
-        showTeamCharacterModal();
-        return;
-    }
+    if (!dndCharacter) return false;
     
-    fetch(SERVER_URL + '/api/dnd/get_progress?user_id=' + userId + '&character=' + dndCharacter)
-        .then(r => r.json())
-        .then(data => {
-            console.log('📡 Прогресс с сервера:', data);
+    try {
+        const response = await fetch(SERVER_URL + '/api/dnd/get_progress?user_id=' + userId + '&character=' + dndCharacter);
+        const data = await response.json();
+        
+        if (data.status === 'ok' && data.progress) {
+            // Загружаем пройденные карты
+            dndCardHistory = data.progress.card_history || [0];
+            dndApproved = data.progress.completed_cards?.includes(dndCardHistory[dndCardHistory.length - 1]) || false;
             
-            if (data.status === 'ok' && data.progress) {
-                dndCardHistory = data.progress.completed_cards || [0];
-                dndApproved = true;
-                
-                var lastCard = dndCardHistory[dndCardHistory.length - 1];
-                console.log('✅ Загружен прогресс, текущая карта:', lastCard);
-                
-                if (lastCard && lastCard > 0) {
-                    showDnDCard(lastCard, true);
-                } else {
-                    showDnDCard(0, true);
-                }
-            } else {
-                console.log('⚠️ Прогресс не найден, начинаем с 0');
-                dndCardHistory = [0];
-                dndApproved = true;
-                showDnDCard(0, true);
-            }
-        })
-        .catch(err => {
-            console.error('❌ Ошибка загрузки прогресса:', err);
-            dndCardHistory = [0];
-            dndApproved = true;
-            showDnDCard(0, true);
-        });
+            console.log('✅ Загружен прогресс:');
+            console.log('   📜 История карт:', dndCardHistory);
+            console.log('   ✅ Пройдено:', data.progress.completed_cards);
+            console.log('   🎯 Текущая карта:', dndCardHistory[dndCardHistory.length - 1]);
+            console.log('   ✔️ Одобрено:', dndApproved);
+            
+            return true;
+        }
+    } catch (err) {
+        console.error('Ошибка:', err);
+    }
+    return false;
 }
 // ==========================================
 // D&D ИГРОВЫЕ ФУНКЦИИ
@@ -17519,9 +17506,13 @@ function renderDnDCardContent(cardNumber) {
 }
 function rollDnDDice() {
     if (dndIsRolling) return;
-    if (!dndCharacter) { alert('Сначала выбери персонажа!'); return; }
+    if (!dndCharacter) { 
+        alert('Сначала выбери персонажа!'); 
+        return; 
+    }
     
     var prevCard = dndCardHistory[dndCardHistory.length - 1];
+    
     var prevCardData = null;
     if (dndCharacter === 'knight') prevCardData = window.DND_CARDS?.knight?.[prevCard];
     else if (dndCharacter === 'mage') prevCardData = window.DND_CARDS_MAGE?.mage?.[prevCard];
@@ -17530,12 +17521,23 @@ function rollDnDDice() {
     else if (dndCharacter === 'assassin') prevCardData = window.DND_CARDS_ASSASSIN?.assassin?.[prevCard];
     else if (dndCharacter === 'bard') prevCardData = window.DND_CARDS_BARD?.bard?.[prevCard];
     
-    if (prevCardData && !prevCardData.isStart && !dndApproved) { alert('Сначала дождись одобрения задания!'); return; }
-    if (prevCardData && prevCardData.isFinal && dndApproved) { alert('🎉 Приключение завершено!'); return; }
+    if (prevCardData && !prevCardData.isStart && !dndApproved) {
+        alert('Сначала дождись одобрения задания!');
+        return;
+    }
+    
+    if (prevCardData && prevCardData.isFinal && dndApproved) {
+        alert('🎉 Приключение завершено!');
+        return;
+    }
     
     dndIsRolling = true;
+    
     var dice = document.getElementById('dndDice');
-    if (!dice) { dndIsRolling = false; return; }
+    if (!dice) {
+        dndIsRolling = false;
+        return;
+    }
     
     var diceRoll = rollDice();
     var mappedValue = getMappedDiceValue(prevCard, diceRoll);
@@ -17546,19 +17548,45 @@ function rollDnDDice() {
     setTimeout(function() {
         dice.classList.remove('rolling');
         dice.style.transform = rotation;
+        
         setTimeout(function() {
             dndIsRolling = false;
+            
             var nextCardId = getTransition(prevCard, mappedValue);
-            if (nextCardId === null || nextCardId === undefined) { alert('Ошибка: нет перехода!'); return; }
+            if (nextCardId === null || nextCardId === undefined) { 
+                alert('Ошибка: нет перехода!'); 
+                return; 
+            }
+            
             dndCardHistory.push(nextCardId);
             dndApproved = false;
+            
+            // ✅ СОХРАНЯЕМ ТЕКУЩУЮ КАРТУ (активную, не пройденную)
+            saveCurrentCard(nextCardId);
+            
             showDnDCard(nextCardId, false);
-            // Сохраняем состояние игры
-saveGameState();
         }, 1200);
     }, 800);
 }
-
+function saveCurrentCard(cardId) {
+    fetch(SERVER_URL + '/api/dnd/save_current_card', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+            user_id: userId, 
+            character: dndCharacter, 
+            current_card: cardId,
+            card_history: dndCardHistory
+        })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.status === 'ok') {
+            console.log('💾 Текущая карта сохранена:', cardId);
+        }
+    })
+    .catch(err => console.error('Ошибка сохранения:', err));
+}
 function openDnDTaskUpload(cardNumber) {
     currentDnDCard = cardNumber;
     var fileInput = document.createElement('input');
@@ -17608,9 +17636,32 @@ function submitDnDTaskPhoto() {
 }
 
 function approveDnDTask() {
-    dndApproved = true;
-    var currentCard = dndCardHistory[dndCardHistory.length - 1];
-    showDnDCard(currentCard, false);
+    var approvedCard = currentDnDCard;
+    
+    fetch(SERVER_URL + '/api/dnd/approve_card', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+            user_id: userId, 
+            character: dndCharacter, 
+            card_id: approvedCard 
+        })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.status === 'ok') {
+            // Обновляем локальный прогресс
+            dndApproved = true;
+            alert('✅ Задание одобрено! Можете бросать кубик дальше.');
+            showDnDCard(approvedCard, false);
+        } else {
+            alert('❌ ' + (data.message || 'Ошибка'));
+        }
+    })
+    .catch(err => {
+        console.error('Ошибка:', err);
+        alert('❌ Ошибка при одобрении');
+    });
 }
 
 function selectDnDCharacter(char) {
