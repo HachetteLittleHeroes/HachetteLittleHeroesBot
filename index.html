@@ -14645,39 +14645,20 @@ for (var i = 203; i <= 208; i++) {
 // ==========================================
 
 function checkDndPaymentStatus() {
-    console.log('🔍 Проверка статуса оплаты D&D...');
-    
     fetch(SERVER_URL + '/api/dnd/payment_status?user_id=' + userId)
         .then(r => r.json())
         .then(data => {
-            console.log('📡 Ответ сервера:', data);
-            
-            var paySection = document.getElementById('dndPaySection');
-            var lobbySection = document.getElementById('dndLobby');
-            
-            if (!paySection || !lobbySection) {
-                console.log('⚠️ Элементы не найдены');
-                return;
-            }
-            
             if (data.status === 'ok' && data.is_paid === true) {
-                paySection.style.display = 'none';
-                lobbySection.style.display = 'block';
-                console.log('✅ Лобби открыто автоматически!');
+                document.getElementById('dndPaySection').style.display = 'none';
                 
-                if (typeof refreshTeamList === 'function') refreshTeamList();
-                if (typeof loadMyTeam === 'function') loadMyTeam();
+                // ✅ Проверяем статус игры
+                checkDndGameStatus();
             } else {
-                paySection.style.display = 'block';
-                lobbySection.style.display = 'none';
-                console.log('❌ Доступа нет, показана оплата');
+                document.getElementById('dndPaySection').style.display = 'block';
+                document.getElementById('dndLobby').style.display = 'none';
             }
-        })
-        .catch(err => {
-            console.error('❌ Ошибка:', err);
         });
 }
-
 function refreshTeamList() {
     console.log('Загрузка списка команд...');
     
@@ -14960,7 +14941,49 @@ function checkTeamStatus() {
             }
         });
 }
-
+        function checkDndGameStatus() {
+    fetch(SERVER_URL + '/api/dnd/team/status?user_id=' + userId)
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'ok') {
+                if (data.game_started) {
+                    // Игра уже идёт - показываем игру
+                    document.getElementById('dndLobby').style.display = 'none';
+                    document.getElementById('dndGame').style.display = 'block';
+                    
+                    // Загружаем прогресс игрока
+                    loadDndProgress();
+                } else if (data.team) {
+                    // В команде, но игра не началась - показываем лобби
+                    document.getElementById('dndLobby').style.display = 'block';
+                    document.getElementById('dndGame').style.display = 'none';
+                } else {
+                    // Не в команде - показываем лобби
+                    document.getElementById('dndLobby').style.display = 'block';
+                    document.getElementById('dndGame').style.display = 'none';
+                }
+            }
+        });
+}
+// Добавьте эту функцию
+function loadDndProgress() {
+    fetch(SERVER_URL + '/api/dnd/get_progress?user_id=' + userId + '&character=' + dndCharacter)
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'ok' && data.progress) {
+                // Восстанавливаем прогресс
+                dndCardHistory = data.progress.completed_cards || [0];
+                dndApproved = true;
+                
+                // Если была незавершённая карта
+                if (data.progress.current_card && data.progress.current_card > 0) {
+                    showDnDCard(data.progress.current_card, true);
+                } else {
+                    showDnDCard(0, true);
+                }
+            }
+        });
+}
 // ==========================================
 // D&D ИГРОВЫЕ ФУНКЦИИ
 // ==========================================
