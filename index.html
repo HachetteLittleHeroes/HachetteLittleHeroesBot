@@ -27399,5 +27399,34 @@ function toggleDnDEvent() {
         <button class="modal-close-btn" onclick="document.getElementById('themeModal').style.display='none'">Закрыть</button>
     </div>
 </div>
+    <script>
+// ==========================================
+// АВТОМАТИЧЕСКОЕ ОТКРЫТИЕ D&D ДОСТУПА
+// ==========================================
+(function autoOpenDndAccess() {
+    var pay = document.getElementById('dndPaySection');
+    var lobby = document.getElementById('dndLobby');
+    
+    if (pay && lobby) {
+        fetch('https://bot-hachettelittleheroes.amvera.io/api/dnd/payment_status?user_id=' + userId)
+            .then(r => r.json())
+            .then(data => {
+                if (data.is_paid === true) {
+                    pay.style.display = 'none';
+                    lobby.style.display = 'block';
+                    console.log('✅ D&D ДОСТУП ОТКРЫТ АВТОМАТИЧЕСКИ!');
+                    if (typeof refreshTeamList === 'function') refreshTeamList();
+                    if (typeof loadMyTeam === 'function') loadMyTeam();
+                } else {
+                    console.log('⏳ D&D доступ не открыт, ждём...');
+                }
+            })
+            .catch(err => console.error('Ошибка:', err));
+    } else {
+        // Если элементы ещё не загружены, повторяем через 500ms
+        setTimeout(autoOpenDndAccess, 500);
+    }
+})();
+</script>
 </body>
 </html>
