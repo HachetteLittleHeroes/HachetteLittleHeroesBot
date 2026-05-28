@@ -17507,26 +17507,105 @@ function renderDnDCardContent(cardNumber) {
     cardContainer.style.transform = '';
     
     if (!card) {
-        console.error('❌ renderDnDCardContent: карта не найдена', cardNumber, dndCharacter);
         cardContainer.innerHTML = `
             <div class="branch-task-card">
-                <div class="branch-header">
-                    <h3>❌ Ошибка</h3>
-                </div>
+                <div class="branch-header"><h3>❌ Ошибка</h3></div>
                 <div class="level-card">
-                    <p style="text-align:center; padding: 20px;">
-                        Карта #${cardNumber} не найдена.<br>
-                        Попробуйте перезагрузить страницу.
-                    </p>
-                    <button class="task-submit-btn" onclick="location.reload()">
-                        🔄 Перезагрузить
-                    </button>
+                    <p style="text-align:center; padding: 20px;">Карта #${cardNumber} не найдена.</p>
+                    <button class="task-submit-btn" onclick="location.reload()">🔄 Перезагрузить</button>
                 </div>
             </div>
         `;
         cardContainer.style.display = 'block';
         return;
     }
+    
+    // Для стартовой карты сразу показываем
+    if (card.isStart) {
+        cardContainer.innerHTML = `
+            <div class="branch-task-card start-card">
+                <div class="branch-header"><h3>${card.title}</h3></div>
+                <div class="level-card">
+                    ${card.image ? '<img src="' + card.image + '" class="card-image" style="width:100%;border-radius:12px;margin-bottom:15px;" onerror="this.style.display=\'none\'">' : ''}
+                    <p style="text-align:center;font-weight:600;">Брось кубик, чтобы начать!</p>
+                    <div id="dndDiceWrapper" style="margin: 15px 0;">
+                        <div id="dndDice" class="dnd-dice" onclick="rollDnDDice()">
+                            <div class="dice-face front"><span class="dot dot1"></span></div>
+                            <div class="dice-face back"><span class="dot dot1"></span><span class="dot dot2"></span></div>
+                            <div class="dice-face right"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span></div>
+                            <div class="dice-face left"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span></div>
+                            <div class="dice-face top"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span><span class="dot dot5"></span></div>
+                            <div class="dice-face bottom"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span><span class="dot dot5"></span><span class="dot dot6"></span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        cardContainer.style.display = 'block';
+        return;
+    }
+    
+    // Для не стартовых карт — сначала скрываем кубик, показываем кнопку отправки
+    // и проверяем статус на сервере
+    cardContainer.innerHTML = `
+        <div class="branch-task-card">
+            <div class="branch-header"><h3>${card.title}</h3></div>
+            <div class="level-card">
+                ${card.image ? '<img src="' + card.image + '" class="card-image" style="width:100%;border-radius:12px;margin-bottom:15px;" onerror="this.style.display=\'none\'">' : ''}
+                <p style="font-weight: 600; margin-bottom: 15px;">📋 ${card.task}</p>
+                <button class="task-submit-btn" onclick="openDnDTaskUpload(${cardNumber})"><i class="fas fa-camera"></i> Отправить фото</button>
+                <div id="dndDiceWrapper" style="margin: 15px 0; display: none;">
+                    <div id="dndDice" class="dnd-dice" onclick="rollDnDDice()">
+                        <div class="dice-face front"><span class="dot dot1"></span></div>
+                        <div class="dice-face back"><span class="dot dot1"></span><span class="dot dot2"></span></div>
+                        <div class="dice-face right"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span></div>
+                        <div class="dice-face left"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span></div>
+                        <div class="dice-face top"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span><span class="dot dot5"></span></div>
+                        <div class="dice-face bottom"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span><span class="dot dot5"></span><span class="dot dot6"></span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    cardContainer.style.display = 'block';
+    
+    // Проверяем на сервере, одобрена ли карта
+    fetch(SERVER_URL + '/api/dnd/get_progress?user_id=' + userId + '&character=' + dndCharacter)
+        .then(r => r.json())
+        .then(data => {
+            var isApproved = false;
+            if (data.status === 'ok' && data.progress) {
+                var completedCards = data.progress.completed_cards || [];
+                isApproved = completedCards.includes(cardNumber);
+            }
+            
+            var levelCard = cardContainer.querySelector('.level-card');
+            if (!levelCard) return;
+            
+            var existingBtn = levelCard.querySelector('.task-submit-btn');
+            var existingDiceWrapper = document.getElementById('dndDiceWrapper');
+            
+            if (isApproved) {
+                // Задание одобрено — убираем кнопку, показываем кубик
+                if (existingBtn) existingBtn.remove();
+                if (existingDiceWrapper) existingDiceWrapper.style.display = 'block';
+                
+                // Добавляем сообщение об одобрении, если его нет
+                var approvedDiv = levelCard.querySelector('.approved-status');
+                if (!approvedDiv) {
+                    var div = document.createElement('div');
+                    div.className = 'approved-status';
+                    div.style.cssText = 'text-align:center;color:var(--status-green);margin-bottom:10px;';
+                    div.innerHTML = '<i class="fas fa-check-circle"></i> Задание одобрено!';
+                    levelCard.insertBefore(div, levelCard.firstChild);
+                }
+                dndApproved = true;
+            } else {
+                dndApproved = false;
+            }
+        })
+        .catch(err => console.error('Ошибка проверки прогресса:', err));
+}
     
     // Функция для отрисовки с учётом статуса одобрения
     function renderWithApprovalStatus(isApproved) {
@@ -17819,7 +17898,7 @@ function submitDnDTaskPhoto() {
 function approveDnDTask() {
     var approvedCard = currentDnDCard;
     
-    console.log('✅ Одобрение карты:', approvedCard);
+    console.log('✅ Одобрение карты:', approvedCard, 'для персонажа:', dndCharacter);
     
     fetch(SERVER_URL + '/api/dnd/approve_card', {
         method: 'POST',
@@ -17833,14 +17912,20 @@ function approveDnDTask() {
     .then(r => r.json())
     .then(data => {
         if (data.status === 'ok') {
-            // ✅ Устанавливаем dndApproved = true только после одобрения
             dndApproved = true;
             
-            // Сохраняем обновлённый прогресс
+            // Обновляем локальную историю
+            if (!dndCardHistory.includes(approvedCard)) {
+                dndCardHistory.push(approvedCard);
+            }
+            
+            // Сохраняем прогресс
             saveGameState();
             
             alert('✅ Задание одобрено! Можете бросать кубик дальше.');
-            showDnDCard(approvedCard, false);
+            
+            // Перезагружаем карту, чтобы показать кубик
+            renderDnDCardContent(approvedCard);
         } else {
             alert('❌ ' + (data.message || 'Ошибка'));
         }
@@ -17850,7 +17935,6 @@ function approveDnDTask() {
         alert('❌ Ошибка при одобрении');
     });
 }
-
 function selectDnDCharacter(char) {
     dndCharacter = char;
     dndCardHistory = [0];
