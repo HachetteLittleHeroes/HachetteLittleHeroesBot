@@ -4264,6 +4264,55 @@
 .left   { transform: rotateY(-90deg) translateZ(50px); }
 .top    { transform: rotateX(90deg) translateZ(50px); }
 .bottom { transform: rotateX(-90deg) translateZ(50px); }
+
+        /* Анимация появления карточки */
+@keyframes cardAppear {
+    0% {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes cardDisappear {
+    0% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+}
+
+.card-appear {
+    animation: cardAppear 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
+}
+
+.card-disappear {
+    animation: cardDisappear 0.2s ease-out forwards;
+}
+
+/* Дополнительные стили */
+.card-image {
+    transition: transform 0.3s ease;
+}
+
+.card-image:hover {
+    transform: scale(1.02);
+}
+
+.start-card {
+    background: linear-gradient(135deg, var(--card-bg) 0%, rgba(var(--accent-rgb), 0.1) 100%);
+}
+
+.final-card {
+    background: linear-gradient(135deg, var(--card-bg) 0%, rgba(255, 215, 0, 0.1) 100%);
+    border: 1px solid gold;
+}
     </style>
 </head>
 <body>
