@@ -12806,7 +12806,7 @@ window.fetch = function() {
 };
 
 // ==========================================
-// D&D ПЕРЕМЕННЫЕ И ФУНКЦИИ (БЫСТРАЯ АНИМАЦИЯ)
+// D&D ПЕРЕМЕННЫЕ И ФУНКЦИИ
 // ==========================================
 
 var dndCharacter = null;
@@ -12826,7 +12826,6 @@ function animateCardAppear(callback) {
         return;
     }
     
-    // Быстрое появление (0.15 сек)
     cardContainer.style.transition = 'opacity 0.15s ease-out, transform 0.15s ease-out';
     cardContainer.style.opacity = '1';
     cardContainer.style.transform = 'translateY(0) scale(1)';
@@ -12845,7 +12844,6 @@ function animateCardDisappear(callback) {
         return;
     }
     
-    // Быстрое исчезновение (0.1 сек)
     cardContainer.style.transition = 'opacity 0.1s ease-in, transform 0.1s ease-in';
     cardContainer.style.opacity = '0';
     cardContainer.style.transform = 'translateY(-10px) scale(0.98)';
@@ -12917,7 +12915,6 @@ function showDnDCard(cardNumber, skipAnimation) {
     
     animateCardDisappear(function() {
         renderDnDCardContent(cardNumber);
-        // Небольшая задержка перед появлением
         setTimeout(function() {
             animateCardAppear();
         }, 50);
@@ -12938,7 +12935,6 @@ function renderDnDCardContent(cardNumber) {
     var cardContainer = document.getElementById('dndCard');
     if (!cardContainer) return;
     
-    // Сбрасываем стили анимации
     cardContainer.style.transition = '';
     cardContainer.style.opacity = '';
     cardContainer.style.transform = '';
@@ -12949,7 +12945,6 @@ function renderDnDCardContent(cardNumber) {
         return;
     }
     
-    // Финальный босс пройден
     if (card.isFinal && dndApproved) {
         var titleEl = document.getElementById('dndGameTitle');
         if (titleEl) titleEl.innerText = '🎉 Приключение завершено!';
@@ -12971,7 +12966,6 @@ function renderDnDCardContent(cardNumber) {
         return;
     }
     
-    // Определяем текст уровня
     var levelText = '';
     if (card.isStart) levelText = 'Начало приключения';
     else if (card.level === 1) levelText = 'Уровень 1';
@@ -13109,8 +13103,8 @@ function rollDnDDice() {
             dndCardHistory.push(nextCardId);
             dndApproved = false;
             showDnDCard(nextCardId, false);
-        }, 500);
-    }, 400);
+        }, 1200);
+    }, 800);
 }
 
 function openDnDTaskUpload(cardNumber) {
@@ -13176,7 +13170,7 @@ function submitDnDTaskPhoto() {
         alert('✅ Фото отправлено!');
         closeTaskUploadModal();
         approveDnDTask();
-    }, 300);
+    }, 500);
 }
 
 function approveDnDTask() {
