@@ -16290,35 +16290,54 @@ function renderTeamsList(teams) {
     container.innerHTML = html;
 }
 function loadMyTeam() {
-    console.log('Загрузка моей команды...');
+    console.log('🔄 Загрузка моей команды...');
     
     fetch(SERVER_URL + '/api/dnd/teams/my?user_id=' + userId)
         .then(r => r.json())
         .then(data => {
+            console.log('📡 Ответ /teams/my:', data);
+            
             if (data.status === 'ok' && data.team) {
-                var myTeamSection = document.getElementById('myTeamSection');
-                if (myTeamSection) myTeamSection.style.display = 'block';
+                document.getElementById('myTeamSection').style.display = 'block';
                 renderMyTeam(data.team);
             } else {
-                var myTeamSection = document.getElementById('myTeamSection');
-                if (myTeamSection) myTeamSection.style.display = 'none';
+                document.getElementById('myTeamSection').style.display = 'none';
+                // Если нет команды, очищаем карточку
+                var myTeamCard = document.getElementById('myTeamCard');
+                if (myTeamCard) myTeamCard.innerHTML = '';
             }
         })
-        .catch(err => console.error('Ошибка:', err));
+        .catch(err => {
+            console.error('❌ Ошибка загрузки команды:', err);
+            // При ошибке показываем пустое состояние
+            document.getElementById('myTeamSection').style.display = 'none';
+        });
 }
 
 function renderMyTeam(team) {
-    var isLeader = team.leader_id == userId;
-    var canStart = team.current_members >= 1;
+    console.log('🎨 Рендер команды:', team);
     
+    var isLeader = team.leader_id == userId;
+    
+    // Показываем индикатор загрузки для каждого участника
     var membersHtml = '';
     
     for (var i = 0; i < team.members.length; i++) {
         var m = team.members[i];
         var memberDivId = 'member_' + m.id + '_' + Date.now() + '_' + i;
         
-        membersHtml += '<div id="' + memberDivId + '" class="team-member-item">Загрузка...</div>';
+        // Показываем скелетон загрузки
+        membersHtml += `
+            <div id="${memberDivId}" class="team-member-item">
+                <div class="team-member-avatar" style="background: var(--border-color);"></div>
+                <div class="team-member-info">
+                    <div style="height: 16px; width: 100px; background: var(--border-color); border-radius: 8px; margin-bottom: 8px;"></div>
+                    <div style="height: 12px; width: 80px; background: var(--border-color); border-radius: 6px;"></div>
+                </div>
+            </div>
+        `;
         
+        // Загружаем данные
         fetch(SERVER_URL + '/api/public_profile?user_id=' + m.id)
             .then(r => r.json())
             .then(userData => {
@@ -16339,7 +16358,6 @@ function renderMyTeam(team) {
                     }
                 }
                 
-                // Бейджи в одной строке справа от имени
                 var badgesHtml = '';
                 if (m.id == team.leader_id) {
                     badgesHtml += '<span class="team-leader-badge"><i class="fas fa-crown"></i> Лидер</span>';
@@ -16352,9 +16370,11 @@ function renderMyTeam(team) {
                     <img class="team-member-avatar" src="${avatarUrl}" onclick="event.stopPropagation(); openPublicProfile('${m.id}')" onerror="this.src='https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png'">
                     <div class="team-member-info" onclick="openPublicProfile('${m.id}')">
                         <div class="team-member-name-row">
-                            <div class="team-member-name">${escapeHtml(m.name)}</div>
-                            <div class="team-member-badges">
-                                ${badgesHtml}
+                            <div class="team-member-name-with-badges">
+                                <span class="team-member-name" title="${escapeHtml(m.name)}">${escapeHtml(m.name)}</span>
+                                <div class="team-member-badges">
+                                    ${badgesHtml}
+                                </div>
                             </div>
                         </div>
                         <div class="team-member-status">${escapeHtml(status)}</div>
@@ -16364,9 +16384,18 @@ function renderMyTeam(team) {
                 var element = document.getElementById(memberDivId);
                 if (element) element.innerHTML = memberHtml;
             })
-            .catch(() => {
+            .catch(err => {
+                console.error('Ошибка загрузки профиля:', err);
                 var element = document.getElementById(memberDivId);
-                if (element) element.innerHTML = '<div style="padding:12px;">❌ Ошибка загрузки</div>';
+                if (element) {
+                    element.innerHTML = `
+                        <img class="team-member-avatar" src="https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png">
+                        <div class="team-member-info">
+                            <div class="team-member-name">${escapeHtml(m.name)}</div>
+                            <div class="team-member-status">Ошибка загрузки</div>
+                        </div>
+                    `;
+                }
             });
     }
     
@@ -16393,7 +16422,7 @@ function renderMyTeam(team) {
         myTeamCard.innerHTML = `
             <div class="my-team-card">
                 <div class="team-header-row">
-                    <h4>${escapeHtml(team.team_name)}</h4>
+                    <h4 title="${escapeHtml(team.team_name)}">${escapeHtml(team.team_name)}</h4>
                     <div class="team-header-count">
                         <i class="fas fa-users"></i>
                         <span>${team.current_members}/6</span>
@@ -16407,7 +16436,6 @@ function renderMyTeam(team) {
         `;
     }
 }
-
 function joinTeam(teamId) {
     fetch(SERVER_URL + '/api/dnd/teams/join', {
         method: 'POST',
@@ -16418,12 +16446,16 @@ function joinTeam(teamId) {
     .then(data => {
         if (data.status === 'ok') {
             alert('✅ Вы вступили в команду!');
-            refreshTeamList();
-            loadMyTeam();
+            // Небольшая задержка перед обновлением (даём серверу время)
+            setTimeout(() => {
+                refreshTeamList();
+                loadMyTeam();
+            }, 500);
         } else {
             alert('❌ ' + (data.message || 'Ошибка'));
         }
-    });
+    })
+    .catch(err => console.error('Ошибка:', err));
 }
 
 function leaveTeam() {
