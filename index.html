@@ -12836,21 +12836,23 @@ function animateCardDisappear(callback) {
 // ЛОГИКА КУБИКА (только d6)
 // ==========================================
 
-function getDiceRange(cardId) {
-    // Всегда d6, но разные уровни могут использовать разные диапазоны значений
-    if (cardId === 0) return { min: 1, max: 3 };      // Старт: только 1-3
-    if (cardId >= 1 && cardId <= 39) return { min: 1, max: 3 };  // Уровни 1-3: 1-3
-    if (cardId >= 107 && cardId <= 136) return { min: 1, max: 8 }; // 8 значений для 4 карт
-    return { min: 1, max: 6 };  // Обычный d6
+function getMappedDiceValue(cardId, diceRoll) {
+    // Старт и уровни 1-3: 1-2→1, 3-4→2, 5-6→3
+    if (cardId === 0 || (cardId >= 1 && cardId <= 39)) {
+        if (diceRoll === 1 || diceRoll === 2) return 1;
+        if (diceRoll === 3 || diceRoll === 4) return 2;
+        if (diceRoll === 5 || diceRoll === 6) return 3;
+    }
+    
+    // Остальные уровни: прямое значение кубика 1-6
+    return diceRoll;
 }
 
-function rollDiceForCard(cardId) {
-    var range = getDiceRange(cardId);
-    return Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+function rollDice() {
+    return Math.floor(Math.random() * 6) + 1;
 }
 
 function getDiceFaceRotation(result) {
-    // Вращение для обычного шестигранного кубика
     var rotations = {
         1: 'rotateX(0deg) rotateY(0deg)',
         2: 'rotateX(0deg) rotateY(180deg)',
@@ -12863,10 +12865,10 @@ function getDiceFaceRotation(result) {
 }
 
 // ==========================================
-// ПОЛУЧЕНИЕ ПЕРЕХОДОВ ДЛЯ ТЕКУЩЕЙ КАРТЫ
+// ПОЛУЧЕНИЕ ПЕРЕХОДОВ
 // ==========================================
 
-function getTransition(cardId, diceRoll) {
+function getTransition(cardId, mappedValue) {
     var transitions = null;
     
     if (dndCharacter === 'knight') {
@@ -12879,16 +12881,8 @@ function getTransition(cardId, diceRoll) {
     
     if (!transitions) return null;
     
-    // Прямое попадание
-    if (transitions[diceRoll] !== undefined) {
-        return transitions[diceRoll];
-    }
-    
-    // Ищем ближайшее меньшее значение (для группировки)
-    for (var i = diceRoll; i >= 1; i--) {
-        if (transitions[i] !== undefined) {
-            return transitions[i];
-        }
+    if (transitions[mappedValue] !== undefined) {
+        return transitions[mappedValue];
     }
     
     return null;
@@ -12930,7 +12924,6 @@ function renderDnDCardContent(cardNumber) {
         return;
     }
     
-    // Финальный босс пройден
     if (card.isFinal && dndApproved) {
         var titleEl = document.getElementById('dndGameTitle');
         if (titleEl) titleEl.innerText = '🎉 Приключение завершено!';
@@ -12974,11 +12967,12 @@ function renderDnDCardContent(cardNumber) {
     var titleEl = document.getElementById('dndGameTitle');
     if (titleEl) titleEl.innerText = levelText;
     
-    var range = getDiceRange(cardNumber);
     var diceInfoText = '';
-    if (range.max === 3) diceInfoText = '(выпадает 1-3)';
-    else if (range.max === 8) diceInfoText = '(группировка: 1-2→1, 3-4→2, 5-6→3, 7-8→4)';
-    else diceInfoText = '(выпадает 1-6)';
+    if (cardNumber === 0 || (cardNumber >= 1 && cardNumber <= 39)) {
+        diceInfoText = '(1-2 → карта 1, 3-4 → карта 2, 5-6 → карта 3)';
+    } else {
+        diceInfoText = '(1-6 → разные карты)';
+    }
     
     var diceHtml = `
         <div id="dndDiceWrapper" style="margin: 15px 0; display: ${card.isStart || dndApproved ? 'block' : 'none'};">
@@ -13073,10 +13067,11 @@ function rollDnDDice() {
         return;
     }
     
-    var result = rollDiceForCard(prevCard);
+    var diceRoll = rollDice();
+    var mappedValue = getMappedDiceValue(prevCard, diceRoll);
     
     dice.classList.add('rolling');
-    var rotation = getDiceFaceRotation(result);
+    var rotation = getDiceFaceRotation(diceRoll);
     
     setTimeout(function() {
         dice.classList.remove('rolling');
@@ -13084,7 +13079,7 @@ function rollDnDDice() {
         
         setTimeout(function() {
             dndIsRolling = false;
-            var nextCardId = getTransition(prevCard, result);
+            var nextCardId = getTransition(prevCard, mappedValue);
             
             if (nextCardId === null) {
                 alert('Ошибка: нет перехода для этого значения кубика!');
@@ -13150,24 +13145,16 @@ function openDnDTaskUpload(cardNumber) {
 
 function submitDnDTaskPhoto() {
     if (!window.tempPhotos || window.tempPhotos.length === 0) {
-        if (window.Telegram && window.Telegram.WebApp) {
-            window.Telegram.WebApp.showAlert('❌ Выберите хотя бы одно фото');
-        } else {
-            alert('❌ Выберите хотя бы одно фото');
-        }
+        alert('❌ Выберите хотя бы одно фото');
         return;
     }
     if (window.isUploading) return;
     window.isUploading = true;
     
-    // Имитация отправки
+    // Просто имитируем отправку (без fetch)
     setTimeout(function() {
         window.isUploading = false;
-        if (window.Telegram && window.Telegram.WebApp) {
-            window.Telegram.WebApp.showAlert('✅ Фото отправлено на проверку!');
-        } else {
-            alert('✅ Фото отправлено на проверку!');
-        }
+        alert('✅ Фото отправлено на проверку!');
         closeTaskUploadModal();
         approveDnDTask();
     }, 500);
