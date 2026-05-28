@@ -5316,6 +5316,323 @@
 .team-leader-badge i {
     font-size: 10px;
 }
+        /* ===== D&D МОЯ КОМАНДА ===== */
+
+.my-team-card {
+    background: var(--bg-secondary);
+    border-radius: 24px;
+    padding: 16px;
+    margin-bottom: 16px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.team-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.team-header-row h4 {
+    margin: 0;
+    font-size: 18px;
+    color: var(--accent);
+}
+
+.team-header-count {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--accent);
+    background: rgba(var(--accent-rgb, 255, 149, 0), 0.15);
+    padding: 4px 12px;
+    border-radius: 30px;
+}
+
+.team-header-count i {
+    font-size: 14px;
+}
+
+.team-members-list {
+    margin-bottom: 8px;
+}
+
+/* Участник команды — более прозрачный фон */
+.team-member-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    background: rgba(var(--bg-rgb, 255, 255, 255), 0.03);
+    border-radius: 16px;
+    margin-bottom: 8px;
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.team-member-item:hover {
+    background: rgba(var(--accent-rgb, 255, 149, 0), 0.08);
+    border-color: var(--accent);
+}
+
+.team-member-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--accent);
+    flex-shrink: 0;
+    background: var(--bg-secondary);
+}
+
+.team-member-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.team-member-name-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.team-member-name {
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--text);
+}
+
+.team-member-badges {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+/* Бейдж лидера */
+.team-leader-badge {
+    background: #ffd700;
+    color: #333;
+    font-size: 10px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.team-leader-badge i {
+    font-size: 10px;
+}
+
+/* Бейдж персонажа */
+.team-character-badge {
+    background: rgba(var(--accent-rgb, 255, 149, 0), 0.2);
+    color: var(--accent);
+    font-size: 10px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.team-member-status {
+    font-size: 11px;
+    color: var(--accent);
+    background: rgba(var(--accent-rgb, 255, 149, 0), 0.1);
+    padding: 2px 8px;
+    border-radius: 12px;
+    display: inline-block;
+}
+
+/* Кнопки действий */
+.team-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+}
+
+.team-action-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.team-action-btn:active {
+    transform: scale(0.96);
+}
+
+.team-action-btn.danger {
+    background: #f44336;
+}
+
+.team-action-btn.danger:hover {
+    background: #d32f2f;
+}
+        /* ===== D&D МОЯ КОМАНДА ===== */
+
+.my-team-card {
+    background: var(--bg-secondary);
+    border-radius: 24px;
+    padding: 16px;
+    margin-bottom: 16px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.team-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.team-header-row h4 {
+    margin: 0;
+    font-size: 18px;
+    color: var(--accent);
+}
+
+.team-header-count {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--accent);
+    background: rgba(var(--accent-rgb, 255, 149, 0), 0.15);
+    padding: 4px 12px;
+    border-radius: 30px;
+}
+
+/* Участник команды */
+.team-member-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    background: rgba(var(--accent-rgb, 255, 149, 0), 0.04);
+    border-radius: 16px;
+    margin-bottom: 8px;
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.team-member-item:hover {
+    background: rgba(var(--accent-rgb, 255, 149, 0), 0.1);
+    border-color: var(--accent);
+}
+
+.team-member-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--accent);
+    flex-shrink: 0;
+}
+
+.team-member-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.team-member-name-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.team-member-name {
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--text);
+}
+
+.team-member-badges {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.team-leader-badge {
+    background: #ffd700;
+    color: #333;
+    font-size: 10px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.team-character-badge {
+    background: rgba(var(--accent-rgb, 255, 149, 0), 0.2);
+    color: var(--accent);
+    font-size: 10px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-weight: 500;
+}
+
+.team-member-status {
+    font-size: 11px;
+    color: var(--accent);
+    background: rgba(var(--accent-rgb, 255, 149, 0), 0.1);
+    padding: 2px 8px;
+    border-radius: 12px;
+    display: inline-block;
+}
+
+/* Кнопки действий */
+.team-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+}
+
+.team-action-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.team-action-btn.danger {
+    background: #f44336;
+}
     </style>
 </head>
 <body>
@@ -15738,8 +16055,6 @@ function renderMyTeam(team) {
             .then(userData => {
                 var avatarUrl = userData.avatar || 'https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png';
                 var status = userData.status || 'Без статуса';
-                var xp = userData.xp || 0;
-                var level = Math.floor(xp / 100) + 1;
                 
                 var characterIcon = '';
                 var characterName = '';
@@ -15755,22 +16070,25 @@ function renderMyTeam(team) {
                     }
                 }
                 
-                var isLeaderBadge = m.id == team.leader_id ? '<span class="team-leader-badge"><i class="fas fa-crown"></i> Лидер</span>' : '';
+                // Бейджи в одной строке справа от имени
+                var badgesHtml = '';
+                if (m.id == team.leader_id) {
+                    badgesHtml += '<span class="team-leader-badge"><i class="fas fa-crown"></i> Лидер</span>';
+                }
+                if (characterIcon) {
+                    badgesHtml += `<span class="team-character-badge">${characterIcon} ${characterName}</span>`;
+                }
                 
                 var memberHtml = `
                     <img class="team-member-avatar" src="${avatarUrl}" onclick="event.stopPropagation(); openPublicProfile('${m.id}')" onerror="this.src='https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png'">
                     <div class="team-member-info" onclick="openPublicProfile('${m.id}')">
                         <div class="team-member-name-row">
-                            <div class="team-member-name">
-                                ${escapeHtml(m.name)}
-                                ${isLeaderBadge}
+                            <div class="team-member-name">${escapeHtml(m.name)}</div>
+                            <div class="team-member-badges">
+                                ${badgesHtml}
                             </div>
-                            ${characterIcon ? `<div class="team-member-character">${characterIcon} ${characterName}</div>` : '<div class="team-member-character" style="background: none; color: #888;">⚡ Не выбран</div>'}
                         </div>
-                        <div class="team-member-status-row">
-                            <span class="team-member-status">${escapeHtml(status)}</span>
-                            <span class="team-member-level">🎨 Уровень ${level} (${xp} XP)</span>
-                        </div>
+                        <div class="team-member-status">${escapeHtml(status)}</div>
                     </div>
                 `;
                 
