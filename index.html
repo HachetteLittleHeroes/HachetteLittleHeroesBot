@@ -15414,35 +15414,28 @@ window.onload = async () => {
         });
     };
     
-      // ==========================================
-    // ✅ D&D АВТОМАТИЧЕСКАЯ ПРОВЕРКА С ОЖИДАНИЕМ ЭЛЕМЕНТОВ
+        // ==========================================
+    // ✅ ПРОСТАЯ ПРОВЕРКА D&D (БЕЗ ОЖИДАНИЯ)
     // ==========================================
-    function waitForDndElementsAndCheck() {
-        var paySection = document.getElementById('dndPaySection');
-        var lobbySection = document.getElementById('dndLobby');
-        
-        if (paySection && lobbySection) {
-            console.log('🎲 D&D: Элементы найдены, проверяем статус...');
-            if (typeof checkDndPaymentStatus === 'function') {
-                checkDndPaymentStatus();
-            }
-        } else {
-            console.log('🎲 D&D: Элементы не найдены, повтор через 500ms...');
-            setTimeout(waitForDndElementsAndCheck, 500);
-        }
-    }
-    
-    waitForDndElementsAndCheck();
-    
     setTimeout(function() {
-        console.log('🎲 D&D: Дополнительная проверка...');
-        if (typeof checkDndPaymentStatus === 'function') {
-            checkDndPaymentStatus();
+        var pay = document.getElementById('dndPaySection');
+        var lobby = document.getElementById('dndLobby');
+        
+        if (pay && lobby) {
+            fetch(SERVER_URL + '/api/dnd/payment_status?user_id=' + userId)
+                .then(r => r.json())
+                .then(data => {
+                    if (data.status === 'ok' && data.is_paid === true) {
+                        pay.style.display = 'none';
+                        lobby.style.display = 'block';
+                        console.log('✅ D&D лобби открыто!');
+                        if (typeof refreshTeamList === 'function') refreshTeamList();
+                        if (typeof loadMyTeam === 'function') loadMyTeam();
+                    }
+                })
+                .catch(err => console.error('Ошибка:', err));
         }
-    }, 3000);
-    
-    console.log('✅ APP READY');
-};
+    }, 800);
        //БЕСТИАРИЙ
         const BESTIARY = [
     {
