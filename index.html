@@ -13204,25 +13204,43 @@ function approveDnDTask() {
 }
 
 function selectDnDCharacter(char) {
+    // Сохраняем выбор персонажа
     dndCharacter = char;
     dndCardHistory = [0];
     dndApproved = true;
     
-    document.querySelectorAll('.dnd-character-card').forEach(function(c) { c.classList.remove('selected'); });
+    // Визуальное выделение
+    var cards = document.querySelectorAll('.dnd-character-card');
+    if (cards) {
+        for (var i = 0; i < cards.length; i++) {
+            cards[i].classList.remove('selected');
+        }
+    }
+    
     var cardEl = document.querySelector('[data-char="' + char + '"]');
     if (cardEl) cardEl.classList.add('selected');
     
-    fetch(SERVER_URL + '/api/dnd/select_character', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: userId, character: char })
-    });
+    // Отправка на сервер (если доступен)
+    if (typeof SERVER_URL !== 'undefined' && SERVER_URL && SERVER_URL.length > 0 && typeof userId !== 'undefined') {
+        fetch(SERVER_URL + '/api/dnd/select_character', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId, character: char })
+        }).catch(function(e) {
+            console.log('Сервер недоступен, продолжаем игру');
+        });
+    }
     
-    document.getElementById('dndEvent').style.display = 'none';
-    document.getElementById('dndGame').style.display = 'block';
-    showDnDCard(0, true); // true = без анимации при первом показе
+    // Переключение панелей
+    var dndEvent = document.getElementById('dndEvent');
+    var dndGame = document.getElementById('dndGame');
+    
+    if (dndEvent) dndEvent.style.display = 'none';
+    if (dndGame) dndGame.style.display = 'block';
+    
+    // Старт игры
+    showDnDCard(0, true);
 }
-
 function toggleDnDEvent() {
     var content = document.getElementById('dndEventContent');
     var arrow = document.getElementById('dndEventArrow');
