@@ -12814,7 +12814,6 @@ var dndCardHistory = [];
 var dndIsRolling = false;
 var dndApproved = false;
 var currentDnDCard = null;
-var dndAnimationTimeout = null;
 
 // ==========================================
 // АНИМАЦИЯ ПОЯВЛЕНИЯ КАРТОЧКИ
@@ -12827,8 +12826,8 @@ function animateCardAppear(callback) {
         return;
     }
     
-    cardContainer.classList.remove('card-appear', 'card-disappear');
-    void cardContainer.offsetWidth;
+    // Убираем класс исчезновения, добавляем появление
+    cardContainer.classList.remove('card-disappear');
     cardContainer.classList.add('card-appear');
     
     if (callback) {
@@ -12847,6 +12846,7 @@ function animateCardDisappear(callback) {
         return;
     }
     
+    // Убираем класс появления, добавляем исчезновение
     cardContainer.classList.remove('card-appear');
     cardContainer.classList.add('card-disappear');
     
@@ -12888,20 +12888,23 @@ function getDiceFaceRotation(result) {
     return rotations[result] || rotations[1];
 }
 
+// ==========================================
+// ПОЛУЧЕНИЕ ПЕРЕХОДОВ
+// ==========================================
+
 function getTransition(cardId, mappedValue) {
     var transitions = null;
     
     if (dndCharacter === 'knight') {
-        transitions = window.DND_TRANSITIONS ? window.DND_TRANSITIONS[cardId] : null;
+        transitions = window.DND_TRANSITIONS;
     } else if (dndCharacter === 'mage') {
-        transitions = window.DND_TRANSITIONS_MAGE ? window.DND_TRANSITIONS_MAGE[cardId] : null;
+        transitions = window.DND_TRANSITIONS_MAGE;
     } else if (dndCharacter === 'archer') {
-        transitions = window.DND_TRANSITIONS_ARCHER ? window.DND_TRANSITIONS_ARCHER[cardId] : null;
+        transitions = window.DND_TRANSITIONS_ARCHER;
     }
     
-    if (!transitions) return null;
-    if (transitions[mappedValue] !== undefined) return transitions[mappedValue];
-    return null;
+    if (!transitions || !transitions[cardId]) return null;
+    return transitions[cardId][mappedValue];
 }
 
 // ==========================================
@@ -12909,6 +12912,8 @@ function getTransition(cardId, mappedValue) {
 // ==========================================
 
 function showDnDCard(cardNumber, skipAnimation) {
+    console.log('showDnDCard:', cardNumber, 'skipAnimation:', skipAnimation);
+    
     if (skipAnimation) {
         renderDnDCardContent(cardNumber);
         return;
@@ -12921,51 +12926,53 @@ function showDnDCard(cardNumber, skipAnimation) {
 }
 
 function renderDnDCardContent(cardNumber) {
+    console.log('renderDnDCardContent:', cardNumber);
+    
     var card = null;
     
     if (dndCharacter === 'knight') {
-        card = window.DND_CARDS && window.DND_CARDS.knight ? window.DND_CARDS.knight[cardNumber] : null;
+        card = window.DND_CARDS?.knight?.[cardNumber];
     } else if (dndCharacter === 'mage') {
-        card = window.DND_CARDS_MAGE && window.DND_CARDS_MAGE.mage ? window.DND_CARDS_MAGE.mage[cardNumber] : null;
+        card = window.DND_CARDS_MAGE?.mage?.[cardNumber];
     } else if (dndCharacter === 'archer') {
-        card = window.DND_CARDS_ARCHER && window.DND_CARDS_ARCHER.archer ? window.DND_CARDS_ARCHER.archer[cardNumber] : null;
+        card = window.DND_CARDS_ARCHER?.archer?.[cardNumber];
     }
     
-    if (!card) {
-        var cardContainer = document.getElementById('dndCard');
-        if (cardContainer) {
-            cardContainer.innerHTML = '<p style="padding:20px;text-align:center;color:var(--text-gray);">Карта в разработке...</p>';
-            cardContainer.style.display = 'block';
-        }
+    var cardContainer = document.getElementById('dndCard');
+    if (!cardContainer) {
+        console.error('dndCard не найден');
         return;
     }
     
+    if (!card) {
+        cardContainer.innerHTML = '<p style="padding:20px;text-align:center;">❌ Карта не найдена</p>';
+        cardContainer.style.display = 'block';
+        return;
+    }
+    
+    // Финальный босс пройден
     if (card.isFinal && dndApproved) {
         var titleEl = document.getElementById('dndGameTitle');
         if (titleEl) titleEl.innerText = '🎉 Приключение завершено!';
         
-        var cardContainer = document.getElementById('dndCard');
-        if (cardContainer) {
-            cardContainer.style.display = 'block';
-            cardContainer.innerHTML = `
-                <div class="branch-task-card">
-                    <div class="branch-header">
-                        <h3>🎉 Победа!</h3>
-                    </div>
-                    <div class="level-card final-card">
-                        <p style="text-align:center;font-size:18px;font-weight:700;color:var(--accent);">
-                            Ты победил ${card.title}!
-                        </p>
-                        <p style="text-align:center;color:var(--text-gray);">
-                            Спасибо за участие в D&D приключении!
-                        </p>
-                    </div>
+        cardContainer.innerHTML = `
+            <div class="branch-task-card">
+                <div class="branch-header">
+                    <h3>🎉 Победа!</h3>
                 </div>
-            `;
-        }
+                <div class="level-card final-card">
+                    <p style="text-align:center;font-size:18px;font-weight:700;color:var(--accent);">
+                        Ты победил ${card.title}!
+                    </p>
+                    <p style="text-align:center;">Спасибо за участие!</p>
+                </div>
+            </div>
+        `;
+        cardContainer.style.display = 'block';
         return;
     }
     
+    // Определяем текст уровня
     var levelText = '';
     if (card.isStart) levelText = 'Начало приключения';
     else if (card.level === 1) levelText = 'Уровень 1';
@@ -12983,6 +12990,7 @@ function renderDnDCardContent(cardNumber) {
     var titleEl = document.getElementById('dndGameTitle');
     if (titleEl) titleEl.innerText = levelText;
     
+    // Подсказка для кубика
     var diceInfoText = '';
     if (cardNumber === 0 || (cardNumber >= 1 && cardNumber <= 39)) {
         diceInfoText = '(1-2 → карта 1, 3-4 → карта 2, 5-6 → карта 3)';
@@ -13003,10 +13011,6 @@ function renderDnDCardContent(cardNumber) {
             <p style="color: var(--text-gray); font-size: 13px; margin-top: 8px;">Нажми на кубик ${diceInfoText}</p>
         </div>
     `;
-    
-    var cardContainer = document.getElementById('dndCard');
-    if (!cardContainer) return;
-    cardContainer.style.display = 'block';
     
     if (card.isStart) {
         cardContainer.innerHTML = `
@@ -13044,6 +13048,8 @@ function renderDnDCardContent(cardNumber) {
             </div>
         `;
     }
+    
+    cardContainer.style.display = 'block';
 }
 
 function rollDnDDice() {
@@ -13057,11 +13063,11 @@ function rollDnDDice() {
     
     var prevCardData = null;
     if (dndCharacter === 'knight') {
-        prevCardData = window.DND_CARDS && window.DND_CARDS.knight ? window.DND_CARDS.knight[prevCard] : null;
+        prevCardData = window.DND_CARDS?.knight?.[prevCard];
     } else if (dndCharacter === 'mage') {
-        prevCardData = window.DND_CARDS_MAGE && window.DND_CARDS_MAGE.mage ? window.DND_CARDS_MAGE.mage[prevCard] : null;
+        prevCardData = window.DND_CARDS_MAGE?.mage?.[prevCard];
     } else if (dndCharacter === 'archer') {
-        prevCardData = window.DND_CARDS_ARCHER && window.DND_CARDS_ARCHER.archer ? window.DND_CARDS_ARCHER.archer[prevCard] : null;
+        prevCardData = window.DND_CARDS_ARCHER?.archer?.[prevCard];
     }
     
     if (prevCardData && !prevCardData.isStart && !dndApproved) {
@@ -13075,7 +13081,6 @@ function rollDnDDice() {
     }
     
     dndIsRolling = true;
-    dndApproved = false;
     
     var dice = document.getElementById('dndDice');
     if (!dice) {
@@ -13095,15 +13100,16 @@ function rollDnDDice() {
         
         setTimeout(function() {
             dndIsRolling = false;
+            
             var nextCardId = getTransition(prevCard, mappedValue);
             
-            if (nextCardId === null) {
+            if (nextCardId === null || nextCardId === undefined) {
                 alert('Ошибка: нет перехода для этого значения кубика!');
-                dndIsRolling = false;
                 return;
             }
             
             dndCardHistory.push(nextCardId);
+            dndApproved = false;
             showDnDCard(nextCardId);
         }, 1200);
     }, 800);
@@ -13182,6 +13188,8 @@ function approveDnDTask() {
 }
 
 function selectDnDCharacter(char) {
+    console.log('Выбран персонаж:', char);
+    
     dndCharacter = char;
     dndCardHistory = [0];
     dndApproved = true;
@@ -13197,6 +13205,12 @@ function selectDnDCharacter(char) {
     var dndGame = document.getElementById('dndGame');
     if (dndEvent) dndEvent.style.display = 'none';
     if (dndGame) dndGame.style.display = 'block';
+    
+    // Очищаем классы анимации перед показом
+    var cardContainer = document.getElementById('dndCard');
+    if (cardContainer) {
+        cardContainer.classList.remove('card-appear', 'card-disappear');
+    }
     
     showDnDCard(0, true);
 }
