@@ -16845,13 +16845,23 @@ function leaveTeam() {
     });
 }
 function saveGameState() {
-    if (!dndCharacter) return;
+    if (!dndCharacter) {
+        console.log('⚠️ saveGameState: нет персонажа');
+        return;
+    }
+    
+    if (!dndCardHistory || dndCardHistory.length === 0) {
+        console.log('⚠️ saveGameState: нет истории карт');
+        return;
+    }
     
     var gameState = {
         character: dndCharacter,
+        card_history: dndCardHistory,
         completed_cards: dndCardHistory,
         current_card: dndCardHistory[dndCardHistory.length - 1] || 0,
-        is_completed: dndApproved && dndCardHistory.includes(208) || false
+        is_completed: dndCardHistory.includes(208) || false,
+        timestamp: Date.now()
     };
     
     console.log('💾 Сохранение прогресса на сервер:', gameState);
@@ -16875,14 +16885,22 @@ function saveGameState() {
     })
     .catch(err => console.error('❌ Ошибка сети:', err));
     
-    // Также сохраняем в localStorage как резервную копию
+    // Сохраняем в localStorage как резервную копию
     localStorage.setItem(`dnd_game_state_backup_${userId}`, JSON.stringify({
-        ...gameState,
+        character: dndCharacter,
+        card_history: dndCardHistory,
+        completed_cards: dndCardHistory,
+        current_card: dndCardHistory[dndCardHistory.length - 1] || 0,
         timestamp: Date.now()
     }));
 }
 function loadGameStateFromServer() {
-    console.log('📥 Загрузка прогресса с сервера...');
+    console.log('📥 Загрузка прогресса с сервера для персонажа:', dndCharacter);
+    
+    if (!dndCharacter) {
+        console.log('⚠️ Персонаж не выбран');
+        return Promise.resolve(false);
+    }
     
     return fetch(SERVER_URL + '/api/dnd/get_progress?user_id=' + userId + '&character=' + dndCharacter)
         .then(r => r.json())
@@ -16890,29 +16908,30 @@ function loadGameStateFromServer() {
             console.log('📡 Прогресс с сервера:', data);
             
             if (data.status === 'ok' && data.progress) {
-                dndCardHistory = data.progress.completed_cards || [0];
+                // Восстанавливаем историю карт
+                if (data.progress.card_history && data.progress.card_history.length > 0) {
+                    dndCardHistory = data.progress.card_history;
+                } else if (data.progress.completed_cards && data.progress.completed_cards.length > 0) {
+                    dndCardHistory = data.progress.completed_cards;
+                } else {
+                    dndCardHistory = [0];
+                }
                 dndApproved = true;
-                console.log('✅ Прогресс загружен с сервера');
+                
+                console.log('✅ Прогресс загружен с сервера, история:', dndCardHistory);
+                console.log('📌 Последняя карта:', dndCardHistory[dndCardHistory.length - 1]);
                 return true;
             } else {
-                // Пробуем загрузить из резервной копии localStorage
-                var backup = localStorage.getItem(`dnd_game_state_backup_${userId}`);
-                if (backup) {
-                    try {
-                        var saved = JSON.parse(backup);
-                        dndCardHistory = saved.completed_cards || [0];
-                        dndApproved = true;
-                        console.log('✅ Прогресс загружен из резервной копии');
-                        // Восстанавливаем на сервер
-                        saveGameState();
-                        return true;
-                    } catch(e) {}
-                }
+                console.log('⚠️ Нет прогресса на сервере, начинаем с 0');
+                dndCardHistory = [0];
+                dndApproved = true;
                 return false;
             }
         })
         .catch(err => {
             console.error('❌ Ошибка загрузки с сервера:', err);
+            dndCardHistory = [0];
+            dndApproved = true;
             return false;
         });
 }
@@ -17218,7 +17237,7 @@ function checkTeamStatus() {
             }
         });
 }
-     function checkDndGameStatus() {
+   function checkDndGameStatus() {
     console.log('🔍 Проверка статуса игры...');
     
     fetch(SERVER_URL + '/api/dnd/team/status?user_id=' + userId)
@@ -17232,60 +17251,27 @@ function checkTeamStatus() {
                     document.getElementById('dndLobby').style.display = 'none';
                     document.getElementById('dndGame').style.display = 'block';
                     
-                    // Находим себя в команде — используем user_id или id
+                    // Находим себя в команде
                     var myself = null;
                     if (data.members && Array.isArray(data.members)) {
                         myself = data.members.find(m => m.user_id == userId || m.id == userId);
-                        console.log('👤 Найден участник:', myself);
                     }
                     
-                    // Пытаемся получить персонажа
-                    var savedCharacter = null;
-                    if (myself) {
-                        savedCharacter = myself.character || myself.character_class;
-                        console.log('🎭 Персонаж из команды:', savedCharacter);
-                    }
+                    var savedCharacter = myself?.character || myself?.character_class;
                     
-                    // Проверяем localStorage
-                    var savedProgress = localStorage.getItem(`dnd_progress_${userId}`);
-                    var localCharacter = null;
-                    if (savedProgress) {
-                        try {
-                            var progress = JSON.parse(savedProgress);
-                            localCharacter = progress.character;
-                        } catch(e) {}
-                    }
-                    
-                    // Используем найденного персонажа
-                    var finalCharacter = savedCharacter || localCharacter || dndCharacter;
-                    
-                    if (finalCharacter) {
-                        dndCharacter = finalCharacter;
-                        console.log('✅ Персонаж восстановлен:', dndCharacter);
-                        
-                        // Загружаем прогресс с сервера
-                        fetch(SERVER_URL + '/api/dnd/get_progress?user_id=' + userId + '&character=' + dndCharacter)
-                            .then(r => r.json())
-                            .then(progressData => {
-                                console.log('📡 Прогресс с сервера:', progressData);
-                                
-                                if (progressData.status === 'ok' && progressData.progress && progressData.progress.completed_cards) {
-                                    dndCardHistory = progressData.progress.completed_cards;
-                                    dndApproved = true;
-                                    var lastCard = dndCardHistory[dndCardHistory.length - 1];
-                                    showDnDCard(lastCard, true);
-                                } else {
-                                    dndCardHistory = [0];
-                                    dndApproved = true;
-                                    showDnDCard(0, true);
-                                }
-                            })
-                            .catch(err => {
-                                console.error('Ошибка загрузки прогресса:', err);
-                                dndCardHistory = [0];
-                                dndApproved = true;
-                                showDnDCard(0, true);
-                            });
+                    if (savedCharacter) {
+                        dndCharacter = savedCharacter;
+                        // ✅ ЗАГРУЖАЕМ ПРОГРЕСС С СЕРВЕРА
+                        loadGameStateFromServer().then(() => {
+                            var lastCard = dndCardHistory[dndCardHistory.length - 1];
+                            console.log('📌 Восстанавливаем карту:', lastCard);
+                            showDnDCard(lastCard, true);
+                        });
+                    } else if (dndCharacter) {
+                        loadGameStateFromServer().then(() => {
+                            var lastCard = dndCardHistory[dndCardHistory.length - 1];
+                            showDnDCard(lastCard, true);
+                        });
                     } else {
                         console.log('⚠️ Персонаж не выбран, показываем выбор');
                         showTeamCharacterModal();
@@ -17486,7 +17472,6 @@ function showDnDCard(cardNumber, skipAnimation) {
         setTimeout(animateCardAppear, 50);
     });
 }
-
 function renderDnDCardContent(cardNumber) {
     var card = null;
     
@@ -17671,12 +17656,8 @@ function rollDnDDice() {
             console.log('✅ Переход на карту:', nextCardId);
             console.log('📜 История карт:', dndCardHistory);
             
-            // Сохраняем прогресс в localStorage
-            localStorage.setItem(`dnd_progress_${userId}`, JSON.stringify({
-                character: dndCharacter,
-                cardHistory: dndCardHistory,
-                timestamp: Date.now()
-            }));
+            // ✅ СОХРАНЯЕМ НА СЕРВЕР ПОСЛЕ КАЖДОГО БРОСКА
+            saveGameState();
             
             showDnDCard(nextCardId, false);
         }, 1200);
