@@ -17609,6 +17609,7 @@ function renderDnDCardContent(cardNumber) {
     
     // Функция для отрисовки с учётом статуса одобрения
    // Функция для отрисовки с учётом статуса одобрения
+// Функция для отрисовки с учётом статуса одобрения
 function renderWithApprovalStatus(isApproved) {
     dndApproved = isApproved;
     
@@ -17637,10 +17638,8 @@ function renderWithApprovalStatus(isApproved) {
         return;
     }
     
-    // Кубик показывается только если это стартовая карта ИЛИ задание одобрено
     var showDice = card.isStart || isApproved;
     
-    // Показываем индикатор загрузки, пока проверяем статус
     if (!card.isStart && isApproved === undefined) {
         cardContainer.innerHTML = `
             <div class="branch-task-card">
@@ -17694,30 +17693,33 @@ function renderWithApprovalStatus(isApproved) {
     cardContainer.style.display = 'block';
 }
 
-// Для стартовой карты сразу показываем (без проверки)
-if (card.isStart) {
-    renderWithApprovalStatus(true);
-    return;
+// Основная функция для показа карты
+function showDNDCard(card, cardNumber) {
+    // Для стартовой карты сразу показываем (без проверки)
+    if (card.isStart) {
+        renderWithApprovalStatus(true);
+        return;
+    }
+    
+    // Показываем индикатор загрузки
+    renderWithApprovalStatus(undefined);
+    
+    // Проверяем на сервере, одобрена ли карта
+    fetch(SERVER_URL + '/api/dnd/get_progress?user_id=' + userId + '&character=' + dndCharacter)
+        .then(r => r.json())
+        .then(data => {
+            var isApproved = false;
+            if (data.status === 'ok' && data.progress) {
+                var completedCards = data.progress.completed_cards || [];
+                isApproved = completedCards.includes(cardNumber);
+            }
+            renderWithApprovalStatus(isApproved);
+        })
+        .catch(err => {
+            console.error('Ошибка проверки прогресса:', err);
+            renderWithApprovalStatus(false);
+        });
 }
-
-// Показываем индикатор загрузки
-renderWithApprovalStatus(undefined);
-
-// Проверяем на сервере, одобрена ли карта
-fetch(SERVER_URL + '/api/dnd/get_progress?user_id=' + userId + '&character=' + dndCharacter)
-    .then(r => r.json())
-    .then(data => {
-        var isApproved = false;
-        if (data.status === 'ok' && data.progress) {
-            var completedCards = data.progress.completed_cards || [];
-            isApproved = completedCards.includes(cardNumber);
-        }
-        renderWithApprovalStatus(isApproved);
-    })
-    .catch(err => {
-        console.error('Ошибка проверки прогресса:', err);
-        renderWithApprovalStatus(false);
-    });
     
 
 function rollDnDDice() {
