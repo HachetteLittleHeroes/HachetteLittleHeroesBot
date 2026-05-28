@@ -4483,20 +4483,21 @@
     <div id="dndEventContent" class="tasks-content" style="display: none;">
         
         <!-- D&D Pay Section (не оплачено) -->
-        <div id="dndPaySection" style="text-align: center; padding: 20px;">
-            <div style="font-size: 48px;">🔒</div>
-            <h3>Доступ к D&D приключениям</h3>
-            <p style="color: var(--text-gray); margin: 15px 0;">Для участия в D&D квесте необходимо оплатить доступ</p>
-            <div style="background: rgba(255, 152, 0, 0.1); padding: 15px; border-radius: 20px; margin: 15px 0;">
-                <span style="font-size: 28px; font-weight: 700; color: #ff9800;">500 ₽</span>
-            </div>
-            <button class="task-submit-btn" onclick="openPaymentChat()" style="background: #0088cc; width: auto; padding: 12px 30px;">
-                📩 Оплатить участие
-            </button>
-            <p style="margin-top: 15px; font-size: 11px; color: var(--text-gray);">
-                После оплаты напишите организатору @SPB_Zakharin_Sergey
-            </p>
-        </div>
+       <div id="dndPaySection" style="text-align: center; padding: 20px;">
+    <div style="font-size: 48px;">🔒</div>
+    <h3>Доступ к D&D приключениям</h3>
+    <p style="color: var(--text-gray); margin: 15px 0;">Стоимость: <strong>500 ₽</strong></p>
+    <button class="task-submit-btn" onclick="openPaymentChat()" style="background: #0088cc;">
+        📩 Оплатить участие
+    </button>
+    
+    <!-- ✅ ДОБАВЬТЕ ЭТУ КНОПКУ -->
+    <button class="task-submit-btn" onclick="checkDndPaymentStatus()" style="background: #444; margin-top: 10px;">
+        🔄 Проверить доступ
+    </button>
+    
+    <p style="margin-top: 15px; font-size: 11px;">После оплаты напишите @SPB_Zakharin_Sergey</p>
+</div>
         
         <!-- D&D Lobby (оплачено) -->
         <div id="dndLobby" style="display: none; padding: 15px;">
@@ -15276,7 +15277,8 @@ function toggleDnDEvent() {
     } else {
         content.style.display = 'block';
         if (arrow) arrow.style.transform = 'rotate(180deg)';
-        // ВАЖНО: проверяем статус при открытии
+        
+        // ✅ ВАЖНО: вызываем проверку при открытии
         checkDndPaymentStatus();
     }
 }
