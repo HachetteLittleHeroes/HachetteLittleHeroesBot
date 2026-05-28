@@ -15249,13 +15249,15 @@ function selectDnDCharacter(char) {
 function toggleDnDEvent() {
     var content = document.getElementById('dndEventContent');
     var arrow = document.getElementById('dndEventArrow');
+    
     if (content.style.display === 'block') {
         content.style.display = 'none';
         if (arrow) arrow.style.transform = 'rotate(0deg)';
     } else {
         content.style.display = 'block';
         if (arrow) arrow.style.transform = 'rotate(180deg)';
-        if (typeof checkDndPaymentStatus === 'function') checkDndPaymentStatus();
+        // ВАЖНО: проверяем статус при открытии
+        checkDndPaymentStatus();
     }
 }
 
