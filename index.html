@@ -5947,6 +5947,176 @@
 .teams-list-item:hover .join-team-wrapper {
     opacity: 1;
 }
+        /* ===== МОДАЛЬНЫЕ ОКНА ===== */
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 100000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.modal-content {
+    background: var(--bg-secondary) !important;
+    color: var(--text) !important;
+    width: 100%;
+    max-width: 400px;
+    border-radius: 30px;
+    padding: 25px;
+    border: 1px solid var(--border-color);
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* Тёмная тема для модалок */
+[data-theme="dark"] .modal-content {
+    background: #1e1e2e !important;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Светлая тема */
+[data-theme="light"] .modal-content {
+    background: #ffffff !important;
+    border-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Голубая тема */
+[data-theme="blue"] .modal-content {
+    background: #ffffff !important;
+}
+
+/* Зелёная тема */
+[data-theme="green"] .modal-content {
+    background: #ffffff !important;
+}
+
+/* Фиолетовая тема */
+[data-theme="purple"] .modal-content {
+    background: #ffffff !important;
+}
+
+/* Розовая тема */
+[data-theme="pink"] .modal-content {
+    background: #ffffff !important;
+}
+
+/* Кастомная тема */
+body:not([data-theme]) .modal-content,
+[data-theme="custom"] .modal-content {
+    background: var(--bg-secondary) !important;
+}
+
+/* Заголовки в модалке */
+.modal-content h3,
+.modal-content h4 {
+    color: var(--text);
+}
+
+.modal-content .close {
+    color: var(--text-gray);
+}
+
+.modal-content .close:hover {
+    color: var(--accent);
+}
+
+/* Кнопки в модалке */
+.modal-close-btn {
+    background: #444;
+    color: white;
+    width: 100%;
+    padding: 12px;
+    border-radius: 14px;
+    font-weight: 600;
+    font-size: 14px;
+    margin-top: 10px;
+    cursor: pointer;
+    border: none;
+}
+
+.modal-action-btn {
+    background: var(--accent);
+    color: white;
+    width: 100%;
+    padding: 12px;
+    border-radius: 14px;
+    font-weight: 600;
+    font-size: 14px;
+    margin-top: 10px;
+    cursor: pointer;
+    border: none;
+}
+        /* ===== ПУБЛИЧНЫЙ ПРОФИЛЬ ===== */
+
+#publicProfileModal .modal-content {
+    background: var(--bg-secondary) !important;
+    max-width: 450px;
+    padding: 20px;
+}
+
+#publicProfileModal .profile-header-block {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 15px;
+    margin: 0 0 15px 0;
+}
+
+#publicProfileModal .inventory-main-block {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    margin-bottom: 15px;
+}
+
+#publicProfileModal .inventory-header {
+    background: var(--bg-secondary);
+    padding: 12px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    color: var(--text);
+}
+
+#publicProfileModal .inventory-header:hover {
+    background: rgba(var(--accent-rgb, 255, 149, 0), 0.05);
+}
+
+#publicProfileModal .inventory-content {
+    background: var(--bg-secondary);
+    padding: 15px;
+    border-top: 1px solid var(--border-color);
+}
+
+#publicProfileModal .collection-grid {
+    background: var(--bg-secondary);
+}
+
+#publicProfileModal .collection-card {
+    background: var(--bg);
+    border: 1px solid var(--border-color);
+}
+
+#publicProfileModal .category-items {
+    background: var(--bg-secondary);
+}
+
+#publicProfileModal .coloring-book-item {
+    background: var(--bg);
+    border: 1px solid var(--border-color);
+}
+
+#publicProfileModal .no-results {
+    color: var(--text-gray);
+    background: var(--bg);
+}
     </style>
 </head>
 <body>
@@ -26584,22 +26754,19 @@ async function openPublicProfile(userId) {
     const modal = document.getElementById('publicProfileModal');
     modal.style.display = 'flex';
     
+    // Убеждаемся, что модалка использует текущую тему
+    modal.className = 'modal-overlay';
+    
     const container = document.getElementById('publicProfileContent');
     container.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Загрузка профиля...</div>';
     
     try {
-        // ✅ Загружаем работы пользователя
         const artworksResponse = await fetch(`${SERVER_URL}/api/artworks?user_id=${userId}`);
         userArtworks = await artworksResponse.json();
-        console.log('📸 Загружены работы пользователя:', userId);
         
-        // Загружаем профиль
         const response = await fetch(`${SERVER_URL}/api/public_profile?user_id=${userId}`);
         const profile = await response.json();
         
-        console.log('📡 Профиль загружен:', profile);
-        
-        // Рендерим
         renderPublicProfile(profile);
         
     } catch (error) {
