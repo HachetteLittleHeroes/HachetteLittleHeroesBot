@@ -4481,41 +4481,207 @@
         <i class="fas fa-chevron-down" id="dndEventArrow"></i>
     </button>
     <div id="dndEventContent" class="tasks-content" style="display: none;">
-        <div id="dndEvent" style="padding: 15px;">
-            <div class="header">Выбери персонажа</div>
-            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 15px;">
-                <div class="dnd-character-card" onclick="selectDnDCharacter('knight')" data-char="knight">
-                    <div class="dnd-char-img">🛡️</div>
-                    <div class="dnd-char-name">Рыцарь</div>
-                    <div class="dnd-char-desc">Сила и честь</div>
-                </div>
-                <div class="dnd-character-card" onclick="selectDnDCharacter('mage')" data-char="mage">
-                    <div class="dnd-char-img">🔮</div>
-                    <div class="dnd-char-name">Маг</div>
-                    <div class="dnd-char-desc">Магия и знания</div>
-                </div>
-                <div class="dnd-character-card" onclick="selectDnDCharacter('archer')" data-char="archer">
-                    <div class="dnd-char-img">🏹</div>
-                    <div class="dnd-char-name">Лучник</div>
-                    <div class="dnd-char-desc">Меткость и ловкость</div>
-                </div>
-                <div class="dnd-character-card" onclick="selectDnDCharacter('druid')" data-char="druid">
-                    <div class="dnd-char-img">🌿</div>
-                    <div class="dnd-char-name">Друид</div>
-                    <div class="dnd-char-desc">Природа и сила</div>
-                </div>
-                <div class="dnd-character-card" onclick="selectDnDCharacter('assassin')" data-char="assassin">
-                    <div class="dnd-char-img">🗡️</div>
-                    <div class="dnd-char-name">Ассасин</div>
-                    <div class="dnd-char-desc">Тень и яд</div>
-                </div>
-                <div class="dnd-character-card" onclick="selectDnDCharacter('bard')" data-char="bard">
-                    <div class="dnd-char-img">🎵</div>
-                    <div class="dnd-char-name">Бард</div>
-                    <div class="dnd-char-desc">Музыка и обаяние</div>
+        
+        <!-- D&D Pay Section (не оплачено) -->
+        <div id="dndPaySection" style="text-align: center; padding: 20px;">
+            <div style="font-size: 48px;">🔒</div>
+            <h3>Доступ к D&D приключениям</h3>
+            <p style="color: var(--text-gray); margin: 15px 0;">Для участия в D&D квесте необходимо оплатить доступ</p>
+            <div style="background: rgba(255, 152, 0, 0.1); padding: 15px; border-radius: 20px; margin: 15px 0;">
+                <span style="font-size: 28px; font-weight: 700; color: #ff9800;">500 ₽</span>
+            </div>
+            <button class="task-submit-btn" onclick="openPaymentChat()" style="background: #0088cc; width: auto; padding: 12px 30px;">
+                📩 Оплатить участие
+            </button>
+            <p style="margin-top: 15px; font-size: 11px; color: var(--text-gray);">
+                После оплаты напишите организатору @SPB_Zakharin_Sergey
+            </p>
+        </div>
+        
+        <!-- D&D Lobby (оплачено) -->
+        <div id="dndLobby" style="display: none; padding: 15px;">
+            <div class="lobby-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                <h3 style="margin: 0;">🏰 Команды</h3>
+                <div style="display: flex; gap: 10px;">
+                    <button class="task-submit-btn" onclick="showCreateTeamModal()" style="width: auto; padding: 8px 16px; margin: 0;">➕ Создать</button>
+                    <button class="task-submit-btn" onclick="refreshTeamList()" style="width: auto; padding: 8px 16px; margin: 0; background: #444;">🔄</button>
                 </div>
             </div>
+            
+            <!-- Список команд -->
+            <div id="teamsList" style="margin-bottom: 20px;">
+                <div class="loading" style="text-align: center; padding: 20px;">Загрузка команд...</div>
+            </div>
+            
+            <!-- Моя команда -->
+            <div id="myTeamSection" style="display: none;">
+                <h3 style="margin-bottom: 10px;">👥 Моя команда</h3>
+                <div id="myTeamCard"></div>
+            </div>
         </div>
+        
+        <!-- D&D Game (игра) -->
+        <div id="dndGame" style="display: none;">
+            <div id="dndGameTitle" style="display: none;"></div>
+            <div id="dndCard"></div>
+        </div>
+        
+    </div>
+</div>
+
+<!-- Модальные окна (добавить в конец body, перед закрывающим </body>) -->
+<div id="createTeamModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <span class="close" onclick="closeCreateTeamModal()">&times;</span>
+        <h3>Создание команды</h3>
+        <input type="text" id="teamNameInput" placeholder="Название команды" maxlength="50" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #ccc; margin: 10px 0;">
+        <p style="font-size: 12px; color: #888;">👥 Максимум 6 участников. Минимум 4 для старта.</p>
+        <button class="task-submit-btn" onclick="createTeam()">🚀 Создать команду</button>
+    </div>
+</div>
+
+<div id="teamCharacterModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <span class="close" onclick="closeTeamCharacterModal()">&times;</span>
+        <h3>🎭 Выбор персонажа</h3>
+        <p style="margin-bottom: 15px;">Выберите класс для вашего персонажа:</p>
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+            <div class="character-select-card" onclick="selectTeamCharacter('knight')" style="text-align: center; padding: 12px; background: rgba(255,255,255,0.05); border-radius: 12px; cursor: pointer;">
+                <div style="font-size: 32px;">⚔️</div>
+                <div style="font-size: 14px;">Рыцарь</div>
+            </div>
+            <div class="character-select-card" onclick="selectTeamCharacter('mage')" style="text-align: center; padding: 12px; background: rgba(255,255,255,0.05); border-radius: 12px; cursor: pointer;">
+                <div style="font-size: 32px;">🔮</div>
+                <div style="font-size: 14px;">Маг</div>
+            </div>
+            <div class="character-select-card" onclick="selectTeamCharacter('archer')" style="text-align: center; padding: 12px; background: rgba(255,255,255,0.05); border-radius: 12px; cursor: pointer;">
+                <div style="font-size: 32px;">🏹</div>
+                <div style="font-size: 14px;">Лучник</div>
+            </div>
+            <div class="character-select-card" onclick="selectTeamCharacter('druid')" style="text-align: center; padding: 12px; background: rgba(255,255,255,0.05); border-radius: 12px; cursor: pointer;">
+                <div style="font-size: 32px;">🌿</div>
+                <div style="font-size: 14px;">Друид</div>
+            </div>
+            <div class="character-select-card" onclick="selectTeamCharacter('assassin')" style="text-align: center; padding: 12px; background: rgba(255,255,255,0.05); border-radius: 12px; cursor: pointer;">
+                <div style="font-size: 32px;">🗡️</div>
+                <div style="font-size: 14px;">Ассасин</div>
+            </div>
+            <div class="character-select-card" onclick="selectTeamCharacter('bard')" style="text-align: center; padding: 12px; background: rgba(255,255,255,0.05); border-radius: 12px; cursor: pointer;">
+                <div style="font-size: 32px;">🎵</div>
+                <div style="font-size: 14px;">Бард</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="waitingTeamModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <span class="close" onclick="closeWaitingModal()">&times;</span>
+        <h3>⏳ Ожидание команды</h3>
+        <div id="waitingTeamStatus" style="margin: 15px 0;"></div>
+        <div style="font-size: 40px; text-align: center; margin: 15px 0;">🌀</div>
+        <p>Ожидаем выбора персонажей от остальных участников...</p>
+        <button class="task-submit-btn" onclick="checkTeamStatus()" style="margin-top: 15px;">🔄 Проверить</button>
+    </div>
+</div>
+
+<div id="resetProgressModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <span class="close" onclick="closeResetModal()">&times;</span>
+        <h3>🔄 Сброс прогресса</h3>
+        <p>Вы уверены, что хотите сбросить прогресс?</p>
+        <p>После сброса вы сможете пройти игру заново.</p>
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <button class="task-submit-btn" onclick="confirmResetProgress()" style="background: #ff9800;">✅ Да, сбросить</button>
+            <button class="task-submit-btn" onclick="closeResetModal()" style="background: #444;">❌ Отмена</button>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Стили для D&D */
+.team-card {
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    border-radius: 16px;
+    padding: 15px;
+    margin-bottom: 15px;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+.team-leader {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 0;
+    padding: 8px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 8px;
+}
+.team-leader-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #ff9800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.member-badge {
+    background: rgba(255,255,255,0.1);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    display: inline-block;
+    margin: 4px;
+}
+.join-team-btn {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 25px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 10px;
+}
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    margin: 4px;
+}
+.btn-danger {
+    background: #f44336;
+    color: white;
+}
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+.modal-content {
+    background: #1a1a2e;
+    border-radius: 20px;
+    padding: 25px;
+    max-width: 350px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+.close {
+    float: right;
+    font-size: 24px;
+    cursor: pointer;
+    color: #888;
+}
+</style>
         
         <!-- Экран игры -->
         <div id="dndGame" style="display:none; padding: 15px; text-align: center;">
@@ -14468,6 +14634,234 @@ for (var i = 185; i <= 202; i++) {
 for (var i = 203; i <= 208; i++) {
     DND_TRANSITIONS_BARD[i] = {};
 }
+
+        // ==========================================
+// D&D ЛОББИ (ПРОСТАЯ ВЕРСИЯ)
+// ==========================================
+
+var isDndPaid = false;
+
+// Проверка оплаты при клике на D&D
+function checkDndPaymentAndShow() {
+    fetch(SERVER_URL + '/api/dnd/payment_status?user_id=' + userId)
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'ok' && data.is_paid) {
+                // Уже оплачено - показываем лобби
+                showDndLobby();
+            } else {
+                // Не оплачено - показываем сообщение
+                if (confirm('Доступ к D&D стоит 500 ₽. Оплатить?')) {
+                    window.open('https://t.me/SPB_Zakharin_Sergey', '_blank');
+                    alert('После оплаты напишите организатору @SPB_Zakharin_Sergey');
+                }
+            }
+        })
+        .catch(err => console.error('Ошибка:', err));
+}
+
+function showDndLobby() {
+    document.getElementById('dndLobbyModal').style.display = 'flex';
+    refreshLobby();
+}
+
+function closeDndLobbyModal() {
+    document.getElementById('dndLobbyModal').style.display = 'none';
+}
+
+function refreshLobby() {
+    fetch(SERVER_URL + '/api/dnd/teams/list?user_id=' + userId)
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'ok') {
+                renderLobbyTeams(data.teams);
+            }
+        });
+    
+    fetch(SERVER_URL + '/api/dnd/teams/my?user_id=' + userId)
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'ok' && data.team) {
+                renderLobbyMyTeam(data.team);
+            } else {
+                document.getElementById('lobbyMyTeam').innerHTML = '<p>Вы не в команде</p>';
+            }
+        });
+}
+
+function renderLobbyTeams(teams) {
+    var container = document.getElementById('lobbyTeamsList');
+    if (!teams || teams.length === 0) {
+        container.innerHTML = '<p>🤝 Нет открытых команд</p>';
+        return;
+    }
+    
+    var html = '';
+    for (var i = 0; i < teams.length; i++) {
+        var t = teams[i];
+        html += `
+            <div style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 12px; margin-bottom: 10px;">
+                <b>${escapeHtml(t.team_name)}</b><br>
+                👑 Лидер: ${escapeHtml(t.leader_name)}<br>
+                👥 ${t.current_members}/${t.members_needed}<br>
+                ${t.leader_id != userId && t.current_members < 6 ? 
+                    `<button onclick="joinTeamFromLobby(${t.id})" style="background: #4CAF50; border: none; padding: 5px 12px; border-radius: 20px; margin-top: 8px;">🤝 Вступить</button>` : ''}
+            </div>
+        `;
+    }
+    container.innerHTML = html;
+}
+
+function renderLobbyMyTeam(team) {
+    var isLeader = team.leader_id == userId;
+    var membersHtml = '';
+    for (var i = 0; i < team.members.length; i++) {
+        var m = team.members[i];
+        membersHtml += `<span style="background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 20px; margin: 3px; display: inline-block;">${escapeHtml(m.name)}</span>`;
+    }
+    
+    var actions = '';
+    if (isLeader) {
+        actions = `<button class="task-submit-btn" onclick="startTeamGame()" style="margin-top: 10px; background: #ff9800;">🎮 Начать игру</button>`;
+    } else {
+        actions = `<button class="task-submit-btn" onclick="leaveTeamFromLobby()" style="margin-top: 10px; background: #f44336;">🚪 Покинуть команду</button>`;
+    }
+    
+    document.getElementById('lobbyMyTeam').innerHTML = `
+        <div style="background: rgba(255,152,0,0.1); border-radius: 12px; padding: 12px;">
+            <b>${escapeHtml(team.team_name)}</b><br>
+            <div style="margin: 8px 0;">${membersHtml}</div>
+            <span>👥 ${team.current_members}/6</span>
+            ${actions}
+        </div>
+    `;
+}
+
+function showCreateTeamForm() {
+    document.getElementById('createTeamFormModal').style.display = 'flex';
+}
+
+function closeCreateTeamForm() {
+    document.getElementById('createTeamFormModal').style.display = 'none';
+}
+
+function createNewTeam() {
+    var teamName = document.getElementById('newTeamName').value.trim();
+    if (!teamName) {
+        alert('Введите название команды');
+        return;
+    }
+    
+    fetch(SERVER_URL + '/api/dnd/teams/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: userId, team_name: teamName })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.status === 'ok') {
+            alert('✅ Команда создана!');
+            closeCreateTeamForm();
+            refreshLobby();
+        } else {
+            alert('❌ ' + (data.message || 'Ошибка'));
+        }
+    });
+}
+
+function joinTeamFromLobby(teamId) {
+    fetch(SERVER_URL + '/api/dnd/teams/join', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: userId, team_id: teamId })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.status === 'ok') {
+            alert('✅ Вы вступили в команду!');
+            refreshLobby();
+        } else {
+            alert('❌ ' + (data.message || 'Ошибка'));
+        }
+    });
+}
+
+function leaveTeamFromLobby() {
+    if (!confirm('Покинуть команду?')) return;
+    
+    fetch(SERVER_URL + '/api/dnd/teams/leave', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: userId })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.status === 'ok') {
+            alert('✅ Вы покинули команду');
+            refreshLobby();
+        } else {
+            alert('❌ ' + (data.message || 'Ошибка'));
+        }
+    });
+}
+
+function startTeamGame() {
+    if (!confirm('Начать игру? В команде должно быть минимум 4 человека.')) return;
+    
+    fetch(SERVER_URL + '/api/dnd/teams/start', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: userId })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.status === 'ok') {
+            alert('🎉 Игра начинается!');
+            closeDndLobbyModal();
+            // Показываем выбор персонажа (ваша существующая функция)
+            document.getElementById('dndEventContent').style.display = 'block';
+        } else {
+            alert('❌ ' + (data.message || 'Ошибка'));
+        }
+    });
+}
+
+function escapeHtml(text) {
+    if (!text) return '';
+    return text.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+    });
+}
+
+// Переопределяем вашу существующую selectDnDCharacter
+var originalSelectDnDCharacter = window.selectDnDCharacter;
+window.selectDnDCharacter = function(character) {
+    // Проверяем, есть ли у пользователя команда
+    fetch(SERVER_URL + '/api/dnd/teams/my?user_id=' + userId)
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'ok' && data.team) {
+                // Есть команда - отправляем выбор персонажа
+                fetch(SERVER_URL + '/api/dnd/team/select_character', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id: userId, character: character })
+                })
+                .then(r => r.json())
+                .then(res => {
+                    if (res.status === 'ok') {
+                        alert('✅ Персонаж выбран! Ждите начала игры.');
+                    }
+                });
+            } else {
+                alert('Сначала вступите в команду!');
+                showDndLobby();
+            }
+        });
+};
 // ==========================================
 // D&D ПЕРЕМЕННЫЕ И ФУНКЦИИ
 // ==========================================
