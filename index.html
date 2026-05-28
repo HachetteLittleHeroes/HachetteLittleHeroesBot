@@ -17608,116 +17608,116 @@ function renderDnDCardContent(cardNumber) {
 }
     
     // Функция для отрисовки с учётом статуса одобрения
-    function renderWithApprovalStatus(isApproved) {
-        dndApproved = isApproved;
-        
-        if (isFinalBoss(cardNumber) && isApproved) {
-            cardContainer.innerHTML = `
-                <div class="branch-task-card">
-                    <div class="branch-header"><h3>🎉 Победа!</h3></div>
-                    <div class="level-card final-card">
-                        <p style="text-align:center;font-size:18px;font-weight:700;color:var(--accent);">
-                            Ты победил ${card.title}!
-                        </p>
-                        <p style="text-align:center;">Ты прошёл всё приключение до конца!</p>
-                        <p style="text-align:center; font-size:14px; margin-top:10px;">
-                            🎲 Ты можешь сбросить прогресс и пройти игру заново тем же персонажем!
-                        </p>
-                        <button class="task-submit-btn" onclick="confirmResetProgress()" style="margin-top:15px; background:#ff9800;">
-                            🔄 Сбросить прогресс и пройти заново
-                        </button>
-                        <button class="task-submit-btn" onclick="backToLobby()" style="margin-top:10px; background:#444;">
-                            🏠 Вернуться в лобби
-                        </button>
-                    </div>
-                </div>
-            `;
-            cardContainer.style.display = 'block';
-            return;
-        }
-        
-        // Кубик показывается только если это стартовая карта ИЛИ задание одобрено
-        var showDice = card.isStart || isApproved;
-        
-        // Показываем индикатор загрузки, пока проверяем статус
-        if (!card.isStart && isApproved === undefined) {
-            cardContainer.innerHTML = `
-                <div class="branch-task-card">
-                    <div class="branch-header"><h3>${card.title}</h3></div>
-                    <div class="level-card" style="text-align:center;">
-                        <p>⏳ Проверка статуса задания...</p>
-                    </div>
-                </div>
-            `;
-            cardContainer.style.display = 'block';
-            return;
-        }
-        
-        var diceHtml = `
-            <div id="dndDiceWrapper" style="margin: 15px 0; display: ${showDice ? 'block' : 'none'};">
-                <div id="dndDice" class="dnd-dice" onclick="rollDnDDice()">
-                    <div class="dice-face front"><span class="dot dot1"></span></div>
-                    <div class="dice-face back"><span class="dot dot1"></span><span class="dot dot2"></span></div>
-                    <div class="dice-face right"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span></div>
-                    <div class="dice-face left"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span></div>
-                    <div class="dice-face top"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span><span class="dot dot5"></span></div>
-                    <div class="dice-face bottom"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span><span class="dot dot5"></span><span class="dot dot6"></span></div>
+   // Функция для отрисовки с учётом статуса одобрения
+function renderWithApprovalStatus(isApproved) {
+    dndApproved = isApproved;
+    
+    if (isFinalBoss(cardNumber) && isApproved) {
+        cardContainer.innerHTML = `
+            <div class="branch-task-card">
+                <div class="branch-header"><h3>🎉 Победа!</h3></div>
+                <div class="level-card final-card">
+                    <p style="text-align:center;font-size:18px;font-weight:700;color:var(--accent);">
+                        Ты победил ${card.title}!
+                    </p>
+                    <p style="text-align:center;">Ты прошёл всё приключение до конца!</p>
+                    <p style="text-align:center; font-size:14px; margin-top:10px;">
+                        🎲 Ты можешь сбросить прогресс и пройти игру заново тем же персонажем!
+                    </p>
+                    <button class="task-submit-btn" onclick="confirmResetProgress()" style="margin-top:15px; background:#ff9800;">
+                        🔄 Сбросить прогресс и пройти заново
+                    </button>
+                    <button class="task-submit-btn" onclick="backToLobby()" style="margin-top:10px; background:#444;">
+                        🏠 Вернуться в лобби
+                    </button>
                 </div>
             </div>
         `;
-        
-        if (card.isStart) {
-            cardContainer.innerHTML = `
-                <div class="branch-task-card start-card">
-                    <div class="branch-header"><h3>${card.title}</h3></div>
-                    <div class="level-card">
-                        ${card.image ? '<img src="' + card.image + '" class="card-image" style="width:100%;border-radius:12px;margin-bottom:15px;" onerror="this.style.display=\'none\'">' : ''}
-                        <p style="text-align:center;font-weight:600;">Брось кубик, чтобы начать!</p>
-                        ${diceHtml}
-                    </div>
-                </div>
-            `;
-        } else {
-            cardContainer.innerHTML = `
-                <div class="branch-task-card">
-                    <div class="branch-header"><h3>${card.title}</h3></div>
-                    <div class="level-card">
-                        ${card.image ? '<img src="' + card.image + '" class="card-image" style="width:100%;border-radius:12px;margin-bottom:15px;" onerror="this.style.display=\'none\'">' : ''}
-                        <p style="font-weight: 600; margin-bottom: 15px;">📋 ${card.task}</p>
-                        ${!isApproved ? `<button class="task-submit-btn" onclick="openDnDTaskUpload(${cardNumber})"><i class="fas fa-camera"></i> Отправить фото</button>` : `<div style="text-align:center;color:var(--status-green);margin-bottom:10px;"><i class="fas fa-check-circle"></i> Задание одобрено!</div>`}
-                        ${diceHtml}
-                    </div>
-                </div>
-            `;
-        }
         cardContainer.style.display = 'block';
-    }
-    
-    // Для стартовой карты сразу показываем (без проверки)
-    if (card.isStart) {
-        renderWithApprovalStatus(true);
         return;
     }
     
-    // Показываем индикатор загрузки
-    renderWithApprovalStatus(undefined);
+    // Кубик показывается только если это стартовая карта ИЛИ задание одобрено
+    var showDice = card.isStart || isApproved;
     
-    // Проверяем на сервере, одобрена ли карта
-    fetch(SERVER_URL + '/api/dnd/get_progress?user_id=' + userId + '&character=' + dndCharacter)
-        .then(r => r.json())
-        .then(data => {
-            var isApproved = false;
-            if (data.status === 'ok' && data.progress) {
-                var completedCards = data.progress.completed_cards || [];
-                isApproved = completedCards.includes(cardNumber);
-            }
-            renderWithApprovalStatus(isApproved);
-        })
-        .catch(err => {
-            console.error('Ошибка проверки прогресса:', err);
-            renderWithApprovalStatus(false);
-        });
+    // Показываем индикатор загрузки, пока проверяем статус
+    if (!card.isStart && isApproved === undefined) {
+        cardContainer.innerHTML = `
+            <div class="branch-task-card">
+                <div class="branch-header"><h3>${card.title}</h3></div>
+                <div class="level-card" style="text-align:center;">
+                    <p>⏳ Проверка статуса задания...</p>
+                </div>
+            </div>
+        `;
+        cardContainer.style.display = 'block';
+        return;
+    }
+    
+    var diceHtml = `
+        <div id="dndDiceWrapper" style="margin: 15px 0; display: ${showDice ? 'block' : 'none'};">
+            <div id="dndDice" class="dnd-dice" onclick="rollDnDDice()">
+                <div class="dice-face front"><span class="dot dot1"></span></div>
+                <div class="dice-face back"><span class="dot dot1"></span><span class="dot dot2"></span></div>
+                <div class="dice-face right"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span></div>
+                <div class="dice-face left"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span></div>
+                <div class="dice-face top"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span><span class="dot dot5"></span></div>
+                <div class="dice-face bottom"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span><span class="dot dot5"></span><span class="dot dot6"></span></div>
+            </div>
+        </div>
+    `;
+    
+    if (card.isStart) {
+        cardContainer.innerHTML = `
+            <div class="branch-task-card start-card">
+                <div class="branch-header"><h3>${card.title}</h3></div>
+                <div class="level-card">
+                    ${card.image ? '<img src="' + card.image + '" class="card-image" style="width:100%;border-radius:12px;margin-bottom:15px;" onerror="this.style.display=\'none\'">' : ''}
+                    <p style="text-align:center;font-weight:600;">Брось кубик, чтобы начать!</p>
+                    ${diceHtml}
+                </div>
+            </div>
+        `;
+    } else {
+        cardContainer.innerHTML = `
+            <div class="branch-task-card">
+                <div class="branch-header"><h3>${card.title}</h3></div>
+                <div class="level-card">
+                    ${card.image ? '<img src="' + card.image + '" class="card-image" style="width:100%;border-radius:12px;margin-bottom:15px;" onerror="this.style.display=\'none\'">' : ''}
+                    <p style="font-weight: 600; margin-bottom: 15px;">📋 ${card.task}</p>
+                    ${!isApproved ? `<button class="task-submit-btn" onclick="openDnDTaskUpload(${cardNumber})"><i class="fas fa-camera"></i> Отправить фото</button>` : `<div style="text-align:center;color:var(--status-green);margin-bottom:10px;"><i class="fas fa-check-circle"></i> Задание одобрено!</div>`}
+                    ${diceHtml}
+                </div>
+            </div>
+        `;
+    }
+    cardContainer.style.display = 'block';
 }
+
+// Для стартовой карты сразу показываем (без проверки)
+if (card.isStart) {
+    renderWithApprovalStatus(true);
+    return;
+}
+
+// Показываем индикатор загрузки
+renderWithApprovalStatus(undefined);
+
+// Проверяем на сервере, одобрена ли карта
+fetch(SERVER_URL + '/api/dnd/get_progress?user_id=' + userId + '&character=' + dndCharacter)
+    .then(r => r.json())
+    .then(data => {
+        var isApproved = false;
+        if (data.status === 'ok' && data.progress) {
+            var completedCards = data.progress.completed_cards || [];
+            isApproved = completedCards.includes(cardNumber);
+        }
+        renderWithApprovalStatus(isApproved);
+    })
+    .catch(err => {
+        console.error('Ошибка проверки прогресса:', err);
+        renderWithApprovalStatus(false);
+    });
     
 
 function rollDnDDice() {
