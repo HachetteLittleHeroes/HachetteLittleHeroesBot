@@ -14178,6 +14178,364 @@ for (var i = 197; i <= 202; i++) {
 for (var i = 203; i <= 208; i++) {
     DND_TRANSITIONS_ASSASSIN[i] = {};
 }
+        // ==========================================
+// D&D КАРТЫ И ПЕРЕХОДЫ - БАРД
+// ==========================================
+
+var DND_CARDS_BARD = {
+    bard: {
+        // СТАРТ (0)
+        0: {
+            title: "Песнь странника",
+            image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b0.png",
+            isStart: true,
+            level: 0
+        },
+        
+        // УРОВЕНЬ 1: 1-3
+        1: { title: "Таверна у дороги", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b1.png", task: "Раскрась картинку с таверной или музыкой!", level: 1 },
+        2: { title: "Струны вдохновения", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b2.png", task: "Раскрась картинку с инструментом или песней!", level: 1 },
+        3: { title: "Королевский пир", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b3.png", task: "Раскрась картинку с пиром или выступлением!", level: 1 },
+        
+        // УРОВЕНЬ 2: 4-12
+        4: { title: "Лесная чаща", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b4.png", task: "Раскрась картинку с лесом или диким животным!", level: 2 },
+        5: { title: "Разбойничий лагерь", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b5.png", task: "Раскрась картинку с разбойниками или схваткой!", level: 2 },
+        6: { title: "Заброшенная башня", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b6.png", task: "Раскрась картинку с башней или руинами!", level: 2 },
+        7: { title: "Горный перевал", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b7.png", task: "Раскрась картинку с горами или перевалом!", level: 2 },
+        8: { title: "Пещера гоблинов", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b8.png", task: "Раскрась картинку с пещерой или гоблинами!", level: 2 },
+        9: { title: "Орлиное гнездо", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b9.png", task: "Раскрась картинку с орлом или сокровищем!", level: 2 },
+        10: { title: "Старый мост", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b10.png", task: "Раскрась картинку с мостом или рекой!", level: 2 },
+        11: { title: "Деревня у реки", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b11.png", task: "Раскрась картинку с деревней или жителями!", level: 2 },
+        12: { title: "Водопад", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b12.png", task: "Раскрась картинку с водопадом или тайным проходом!", level: 2 },
+        
+        // УРОВЕНЬ 3: 13-39
+        13: { title: "Волчья стая", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b13.png", task: "Раскрась картинку с волком или стаей!", level: 3 },
+        14: { title: "Древний дуб", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b14.png", task: "Раскрась картинку с деревом или амулетом!", level: 3 },
+        15: { title: "Лесной дух", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b15.png", task: "Раскрась картинку с духом или магией!", level: 3 },
+        16: { title: "Главарь разбойников", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b16.png", task: "Раскрась картинку с главарём или переговорами!", level: 3 },
+        17: { title: "Спасение каравана", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b17.png", task: "Раскрась картинку с караваном или зельем!", level: 3 },
+        18: { title: "Разбойничий тайник", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b18.png", task: "Раскрась картинку с сокровищами или ключом!", level: 3 },
+        19: { title: "Руны на стенах", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b19.png", task: "Раскрась картинку с рунами или книгой!", level: 3 },
+        20: { title: "Призрак рыцаря", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b20.png", task: "Раскрась картинку с призраком или магическим мечом!", level: 3 },
+        21: { title: "Подземный ход", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b21.png", task: "Раскрась картинку с подземельем или лестницей!", level: 3 },
+        22: { title: "Каменный мост", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b22.png", task: "Раскрась картинку с мостом или рекой!", level: 3 },
+        23: { title: "Башня призраков", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b23.png", task: "Раскрась картинку с башней или призраком!", level: 3 },
+        24: { title: "Лабиринт", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b24.png", task: "Раскрась картинку с лабиринтом или стеной!", level: 3 },
+        25: { title: "Гнездо виверны", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b25.png", task: "Раскрась картинку с виверной или гнездом!", level: 3 },
+        26: { title: "Проклятый фонтан", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b26.png", task: "Раскрась картинку с фонтаном или водой!", level: 3 },
+        27: { title: "Комната пыток", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b27.png", task: "Раскрась картинку с цепями или инструментами!", level: 3 },
+        28: { title: "Винный погреб", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b28.png", task: "Раскрась картинку с бочками или бутылками!", level: 3 },
+        29: { title: "Королевская усыпальница", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b29.png", task: "Раскрась картинку с саркофагом или короной!", level: 3 },
+        30: { title: "Трон призрачного короля", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b30.png", task: "Раскрась картинку с троном или призраком!", level: 3 },
+        31: { title: "Зал фресок", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b31.png", task: "Раскрась картинку с фресками или живописью!", level: 3 },
+        32: { title: "Келья монаха", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b32.png", task: "Раскрась картинку с монахом или свечой!", level: 3 },
+        33: { title: "Гобеленовый зал", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b33.png", task: "Раскрась картинку с гобеленом или тканью!", level: 3 },
+        34: { title: "Склад оружия", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b34.png", task: "Раскрась картинку с оружием или складом!", level: 3 },
+        35: { title: "Кузня гномов", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b35.png", task: "Раскрась картинку с кузницей или гномом!", level: 3 },
+        36: { title: "Шахта", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b36.png", task: "Раскрась картинку с шахтой или киркой!", level: 3 },
+        37: { title: "Грибная пещера", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b37.png", task: "Раскрась картинку с грибами или пещерой!", level: 3 },
+        38: { title: "Логово тролля", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b38.png", task: "Раскрась картинку с троллем или дубиной!", level: 3 },
+        39: { title: "Подземная река", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b39.png", task: "Раскрась картинку с рекой или лодкой!", level: 3 },
+        
+        // УРОВЕНЬ 4: 40-100
+        40: { title: "Сталактитовая пещера", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b40.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        41: { title: "Костяной зал", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b41.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        42: { title: "Алтарь жертвоприношений", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b42.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        43: { title: "Тюрьма душ", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b43.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        44: { title: "Портал в бездну", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b44.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        45: { title: "Комната с рычагами", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b45.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        46: { title: "Библиотека", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b46.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        47: { title: "Зал карт", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b47.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        48: { title: "Оружейная", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b48.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        49: { title: "Смотровая башня", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b49.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        50: { title: "Казармы стражи", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b50.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        51: { title: "Колодец", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b51.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        52: { title: "Подземный рынок", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b52.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        53: { title: "Таверна", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b53.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        54: { title: "Конюшня", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b54.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        55: { title: "Кладовая", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b55.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        56: { title: "Кузнечный цех", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b56.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        57: { title: "Лаборатория алхимика", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b57.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        58: { title: "Обсерватория", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b58.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        59: { title: "Теплица", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b59.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        60: { title: "Балкон", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b60.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        61: { title: "Зал советов", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b61.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        62: { title: "Галерея героев", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b62.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        63: { title: "Зал фонтанов", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b63.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        64: { title: "Покой рыцаря", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b64.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        65: { title: "Кабинет мага", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b65.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        66: { title: "Зал иллюзий", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b66.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        67: { title: "Пещера отголосков", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b67.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        68: { title: "Зал тишины", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b68.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        69: { title: "Комната с ловушками", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b69.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        70: { title: "Зал шипов", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b70.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        71: { title: "Гнездо змей", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b71.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        72: { title: "Зал скорпионов", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b72.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        73: { title: "Паучий трон", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b73.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        74: { title: "Кокон", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b74.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        75: { title: "Зал муравьёв", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b75.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        76: { title: "Улей", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b76.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        77: { title: "Зал жуков", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b77.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        78: { title: "Термитник", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b78.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        79: { title: "Зал богомолов", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b79.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        80: { title: "Колодец скорпионов", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b80.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        81: { title: "Зал саранчи", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b81.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        82: { title: "Гнездо шершней", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b82.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        83: { title: "Зал светлячков", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b83.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        84: { title: "Пещера мотыльков", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b84.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        85: { title: "Зал бабочек", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b85.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        86: { title: "Гусеничный зал", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b86.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        87: { title: "Коконовая", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b87.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        88: { title: "Зал цикад", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b88.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        89: { title: "Пещера кузнечиков", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b89.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        90: { title: "Зал тараканов", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b90.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        91: { title: "Гнездо сороконожек", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b91.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        92: { title: "Зал мокриц", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b92.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        93: { title: "Пещера улиток", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b93.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        94: { title: "Зал слизней", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b94.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        95: { title: "Червивый зал", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b95.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        96: { title: "Зал пиявок", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b96.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        97: { title: "Пещера клещей", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b97.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        98: { title: "Зал комаров", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b98.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        99: { title: "Гнездо москитов", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b99.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        100: { title: "Зал мух", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b100.png", task: "Раскрась картинку из подземелья!", level: 4 },
+        
+        // УРОВЕНЬ 5: МИНИ-БОССЫ 101-106
+        101: { title: "Хранитель подземелья", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b101.png", task: "Раскрась картинку с боссом или эпической битвой!", level: 5 },
+        102: { title: "Теневой дракон", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b102.png", task: "Раскрась картинку с драконом или тенью!", level: 5 },
+        103: { title: "Король гоблинов", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b103.png", task: "Раскрась картинку с гоблином или короной!", level: 5 },
+        104: { title: "Дух тьмы", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b104.png", task: "Раскрась картинку с духом или тьмой!", level: 5 },
+        105: { title: "Маг хаоса", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b105.png", task: "Раскрась картинку с магом или хаосом!", level: 5 },
+        106: { title: "Железный голем", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b106.png", task: "Раскрась картинку с големом или металлом!", level: 5 },
+        
+        // УРОВЕНЬ 6: 107-112
+        107: { title: "Возрождение", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b107.png", task: "Раскрась картинку с возрождением или светом!", level: 6 },
+        108: { title: "Новая сила", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b108.png", task: "Раскрась картинку с силой или энергией!", level: 6 },
+        109: { title: "Древний артефакт", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b109.png", task: "Раскрась картинку с артефактом или реликвией!", level: 6 },
+        110: { title: "Союзники", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b110.png", task: "Раскрась картинку с союзниками или командой!", level: 6 },
+        111: { title: "Карта сокровищ", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b111.png", task: "Раскрась картинку с картой или сокровищем!", level: 6 },
+        112: { title: "Портал", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b112.png", task: "Раскрась картинку с порталом или вратами!", level: 6 },
+        
+        // УРОВЕНЬ 7: 113-136
+        113: { title: "Солнечный алтарь", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b113.png", task: "Раскрась космическую картинку!", level: 7 },
+        114: { title: "Зал затмения", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b114.png", task: "Раскрась космическую картинку!", level: 7 },
+        115: { title: "Комета", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b115.png", task: "Раскрась космическую картинку!", level: 7 },
+        116: { title: "Метеоритный зал", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b116.png", task: "Раскрась космическую картинку!", level: 7 },
+        117: { title: "Галактика", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b117.png", task: "Раскрась космическую картинку!", level: 7 },
+        118: { title: "Чёрная дыра", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b118.png", task: "Раскрась космическую картинку!", level: 7 },
+        119: { title: "Туманность", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b119.png", task: "Раскрась космическую картинку!", level: 7 },
+        120: { title: "Созвездие рыцаря", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b120.png", task: "Раскрась космическую картинку!", level: 7 },
+        121: { title: "Планетария", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b121.png", task: "Раскрась космическую картинку!", level: 7 },
+        122: { title: "Астероидное поле", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b122.png", task: "Раскрась космическую картинку!", level: 7 },
+        123: { title: "Орбитальная станция", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b123.png", task: "Раскрась космическую картинку!", level: 7 },
+        124: { title: "Космический корабль", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b124.png", task: "Раскрась космическую картинку!", level: 7 },
+        125: { title: "Инопланетный лес", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b125.png", task: "Раскрась космическую картинку!", level: 7 },
+        126: { title: "Кристальная планета", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b126.png", task: "Раскрась космическую картинку!", level: 7 },
+        127: { title: "Огненная планета", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b127.png", task: "Раскрась космическую картинку!", level: 7 },
+        128: { title: "Водная планета", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b128.png", task: "Раскрась космическую картинку!", level: 7 },
+        129: { title: "Воздушная планета", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b129.png", task: "Раскрась космическую картинку!", level: 7 },
+        130: { title: "Земная планета", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b130.png", task: "Раскрась космическую картинку!", level: 7 },
+        131: { title: "Пустынная планета", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b131.png", task: "Раскрась космическую картинку!", level: 7 },
+        132: { title: "Ледяная планета", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b132.png", task: "Раскрась космическую картинку!", level: 7 },
+        133: { title: "Тропическая планета", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b133.png", task: "Раскрась космическую картинку!", level: 7 },
+        134: { title: "Вулканическая планета", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b134.png", task: "Раскрась космическую картинку!", level: 7 },
+        135: { title: "Океаническая планета", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b135.png", task: "Раскрась космическую картинку!", level: 7 },
+        136: { title: "Газовая планета", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b136.png", task: "Раскрась космическую картинку!", level: 7 },
+        
+        // УРОВЕНЬ 8: 137-184
+        137: { title: "Кольцевая планета", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b137.png", task: "Раскрась картинку из глубин вселенной!", level: 8 },
+        138: { title: "Двойная звезда", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b138.png", task: "Раскрась картинку из глубин вселенной!", level: 8 },
+        139: { title: "Нейтронная звезда", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b139.png", task: "Раскрась картинку из глубин вселенной!", level: 8 },
+        140: { title: "Сверхновая", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b140.png", task: "Раскрась картинку из глубин вселенной!", level: 8 },
+        141: { title: "Квазар", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b141.png", task: "Раскрась картинку из глубин вселенной!", level: 8 },
+        142: { title: "Пульсар", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b142.png", task: "Раскрась картинку из глубин вселенной!", level: 8 },
+        143: { title: "Магнитар", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b143.png", task: "Раскрась картинку из глубин вселенной!", level: 8 },
+        144: { title: "Червовая нора", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b144.png", task: "Раскрась картинку из глубин вселенной!", level: 8 },
+        145: { title: "Тёмная материя", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b145.png", task: "Раскрась картинку из глубин вселенной!", level: 8 },
+        146: { title: "Тёмная энергия", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b146.png", task: "Раскрась картинку из глубин вселенной!", level: 8 },
+        147: { title: "Реликтовое излучение", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b147.png", task: "Раскрась картинку из глубин вселенной!", level: 8 },
+        148: { title: "Большой взрыв", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b148.png", task: "Раскрась картинку из глубин вселенной!", level: 8 },
+        149: { title: "Башня молний", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b149.png", task: "Раскрась картинку из глубин вселенной!", level: 8 },
+        150: { title: "Пещера времени", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b150.png", task: "Раскрась картинку из глубин вселенной!", level: 8 },
+        151: { title: "Зал забвения", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b151.png", task: "Раскрась картинку из глубин вселенной!", level: 8 },
+        152: { title: "Мост судьбы", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b152.png", task: "Раскрась картинку из глубин вселенной!", level: 8 },
+        153: { title: "Колодец желаний", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b153.png", task: "Раскрась картинку из глубин вселенной!", level: 8 },
+        154: { title: "Тронный зал", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b154.png", task: "Раскрась картинку из глубин вселенной!", level: 8 },
+        155: { title: "Кристалл души", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b155.png", task: "Раскрась картинку из глубин вселенной!", level: 8 },
+        156: { title: "Демон Бездны", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b156.png", task: "Раскрась картинку из глубин вселенной!", level: 8 },
+        157: { title: "Повелитель хаоса", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b157.png", task: "Раскрась картинку из глубин вселенной!", level: 8 },
+        158: { title: "Хранитель времени", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b158.png", task: "Раскрась картинку из глубин вселенной!", level: 8 },
+        159: { title: "Страж реальности", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b159.png", task: "Раскрась картинку из глубин вселенной!", level: 8 },
+        160: { title: "Испепелитель", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b160.png", task: "Раскрась картинку из глубин вселенной!", level: 8 },
+        161: { title: "Ледяной великан", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b161.png", task: "Раскрась картинку из глубин вселенной!", level: 8 },
+        162: { title: "Каменный голем", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b162.png", task: "Раскрась картинку из глубин вселенной!", level: 8 },
+        163: { title: "Властелин бурь", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b163.png", task: "Раскрась картинку из глубин вселенной!", level: 8 },
+        164: { title: "Повелитель морей", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b164.png", task: "Раскрась картинку из глубин вселенной!", level: 8 },
+        165: { title: "Король небес", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b165.png", task: "Раскрась картинку из глубин вселенной!", level: 8 },
+        166: { title: "Бог войны", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b166.png", task: "Раскрась картинку из глубин вселенной!", level: 8 },
+        167: { title: "Владыка смерти", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b167.png", task: "Раскрась картинку из глубин вселенной!", level: 8 },
+        168: { title: "Архидемон", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b168.png", task: "Раскрась картинку из глубин вселенной!", level: 8 },
+        169: { title: "Князь тьмы", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b169.png", task: "Раскрась картинку из глубин вселенной!", level: 8 },
+        170: { title: "Верховный лич", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b170.png", task: "Раскрась картинку из глубин вселенной!", level: 8 },
+        171: { title: "Дракон апокалипсиса", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b171.png", task: "Раскрась картинку из глубин вселенной!", level: 8 },
+        172: { title: "Титан судьбы", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b172.png", task: "Раскрась картинку из глубин вселенной!", level: 8 },
+        173: { title: "Первородный хаос", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b173.png", task: "Раскрась картинку из глубин вселенной!", level: 8 },
+        174: { title: "Сердце вселенной", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b174.png", task: "Раскрась картинку из глубин вселенной!", level: 8 },
+        175: { title: "Око судьбы", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b175.png", task: "Раскрась картинку из глубин вселенной!", level: 8 },
+        176: { title: "Книга времён", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b176.png", task: "Раскрась картинку из глубин вселенной!", level: 8 },
+        177: { title: "Ключ бытия", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b177.png", task: "Раскрась картинку из глубин вселенной!", level: 8 },
+        178: { title: "Трон творца", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b178.png", task: "Раскрась картинку из глубин вселенной!", level: 8 },
+        179: { title: "Абсолютный ноль", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b179.png", task: "Раскрась картинку из глубин вселенной!", level: 8 },
+        180: { title: "Бесконечность", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b180.png", task: "Раскрась картинку из глубин вселенной!", level: 8 },
+        181: { title: "Бездна", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b181.png", task: "Раскрась картинку из глубин вселенной!", level: 8 },
+        182: { title: "Реликт предтеч", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b182.png", task: "Раскрась картинку из глубин вселенной!", level: 8 },
+        183: { title: "Звёздные врата", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b183.png", task: "Раскрась картинку из глубин вселенной!", level: 8 },
+        184: { title: "Грань миров", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b184.png", task: "Раскрась картинку из глубин вселенной!", level: 8 },
+        
+        // УРОВЕНЬ 9: 185-202
+        185: { title: "Тропа героев", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b185.png", task: "Раскрась картинку на пути к финалу!", level: 9 },
+        186: { title: "Зал легенд", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b186.png", task: "Раскрась картинку на пути к финалу!", level: 9 },
+        187: { title: "Огненная бездна", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b187.png", task: "Раскрась картинку на пути к финалу!", level: 9 },
+        188: { title: "Ледяная пропасть", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b188.png", task: "Раскрась картинку на пути к финалу!", level: 9 },
+        189: { title: "Зал доблести", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b189.png", task: "Раскрась картинку на пути к финалу!", level: 9 },
+        190: { title: "Храм света", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b190.png", task: "Раскрась картинку на пути к финалу!", level: 9 },
+        191: { title: "Пещера отражений", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b191.png", task: "Раскрась картинку на пути к финалу!", level: 9 },
+        192: { title: "Мост надежды", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b192.png", task: "Раскрась картинку на пути к финалу!", level: 9 },
+        193: { title: "Зал мудрости", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b193.png", task: "Раскрась картинку на пути к финалу!", level: 9 },
+        194: { title: "Башня судьбы", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b194.png", task: "Раскрась картинку на пути к финалу!", level: 9 },
+        195: { title: "Портал героев", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b195.png", task: "Раскрась картинку на пути к финалу!", level: 9 },
+        196: { title: "Зал силы", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b196.png", task: "Раскрась картинку на пути к финалу!", level: 9 },
+        197: { title: "Трон победителя", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b197.png", task: "Раскрась картинку на пути к финалу!", level: 9 },
+        198: { title: "Зал чести", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b198.png", task: "Раскрась картинку на пути к финалу!", level: 9 },
+        199: { title: "Арена судьбы", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b199.png", task: "Раскрась картинку на пути к финалу!", level: 9 },
+        200: { title: "Врата победы", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b200.png", task: "Раскрась картинку на пути к финалу!", level: 9 },
+        201: { title: "Зал славы", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b201.png", task: "Раскрась картинку на пути к финалу!", level: 9 },
+        202: { title: "Преддверие финала", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b202.png", task: "Раскрась картинку на пути к финалу!", level: 9 },
+        
+        // УРОВЕНЬ 10: ФИНАЛЬНЫЕ БОССЫ 203-208
+        203: { title: "Демон Бездны", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b203.png", task: "Раскрась картинку с демоном!", level: 10, isFinal: true },
+        204: { title: "Архилич", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b204.png", task: "Раскрась картинку с личом или некромантом!", level: 10, isFinal: true },
+        205: { title: "Древний дракон", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b205.png", task: "Раскрась картинку с древним драконом!", level: 10, isFinal: true },
+        206: { title: "Король демонов", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b206.png", task: "Раскрась картинку с королём демонов!", level: 10, isFinal: true },
+        207: { title: "Титан бездны", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b207.png", task: "Раскрась картинку с титаном!", level: 10, isFinal: true },
+        208: { title: "Властелин тьмы", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b208.png", task: "Раскрась картинку с властелином тьмы!", level: 10, isFinal: true }
+    }
+};
+
+// ==========================================
+// ПЕРЕХОДЫ ДЛЯ БАРДА
+// ==========================================
+
+var DND_TRANSITIONS_BARD = {};
+
+// 0 → 1-3
+DND_TRANSITIONS_BARD[0] = {1: 1, 2: 1, 3: 2, 4: 2, 5: 3, 6: 3};
+
+// 1-3 → 4-12
+DND_TRANSITIONS_BARD[1] = {1: 4, 2: 4, 3: 5, 4: 5, 5: 6, 6: 6};
+DND_TRANSITIONS_BARD[2] = {1: 7, 2: 7, 3: 8, 4: 8, 5: 9, 6: 9};
+DND_TRANSITIONS_BARD[3] = {1: 10, 2: 10, 3: 11, 4: 11, 5: 12, 6: 12};
+
+// 4-12 → 13-39
+(function() {
+    var c = 13;
+    for (var i = 4; i <= 12; i++) {
+        DND_TRANSITIONS_BARD[i] = {};
+        DND_TRANSITIONS_BARD[i][1] = c;
+        DND_TRANSITIONS_BARD[i][2] = c;
+        DND_TRANSITIONS_BARD[i][3] = c+1;
+        DND_TRANSITIONS_BARD[i][4] = c+1;
+        DND_TRANSITIONS_BARD[i][5] = c+2;
+        DND_TRANSITIONS_BARD[i][6] = c+2;
+        c += 3;
+    }
+})();
+
+// 13-39 → 40-100
+(function() {
+    var c = 40;
+    for (var i = 13; i <= 39; i++) {
+        DND_TRANSITIONS_BARD[i] = {};
+        DND_TRANSITIONS_BARD[i][1] = c;
+        DND_TRANSITIONS_BARD[i][2] = c;
+        DND_TRANSITIONS_BARD[i][3] = c+1;
+        DND_TRANSITIONS_BARD[i][4] = c+1;
+        DND_TRANSITIONS_BARD[i][5] = c+2;
+        DND_TRANSITIONS_BARD[i][6] = c+2;
+        c += 3;
+    }
+})();
+
+// 40-100 → 101-106 (мини-боссы) - РАЗДЕЛЯЕМ НА 3 ГРУППЫ
+for (var i = 40; i <= 59; i++) {
+    DND_TRANSITIONS_BARD[i] = {1: 101, 2: 101, 3: 102, 4: 102, 5: 101, 6: 102};
+}
+for (var i = 60; i <= 79; i++) {
+    DND_TRANSITIONS_BARD[i] = {1: 103, 2: 103, 3: 104, 4: 104, 5: 103, 6: 104};
+}
+for (var i = 80; i <= 100; i++) {
+    DND_TRANSITIONS_BARD[i] = {1: 105, 2: 105, 3: 106, 4: 106, 5: 105, 6: 106};
+}
+
+// 101-106 → 107-112
+for (var i = 101; i <= 106; i++) {
+    DND_TRANSITIONS_BARD[i] = {1: 107, 2: 108, 3: 109, 4: 110, 5: 111, 6: 112};
+}
+
+// 107-112 → 113-136 (24 карты)
+(function() {
+    var c = 113;
+    for (var i = 107; i <= 112; i++) {
+        DND_TRANSITIONS_BARD[i] = {};
+        DND_TRANSITIONS_BARD[i][1] = c;
+        DND_TRANSITIONS_BARD[i][2] = c;
+        DND_TRANSITIONS_BARD[i][3] = c+1;
+        DND_TRANSITIONS_BARD[i][4] = c+1;
+        DND_TRANSITIONS_BARD[i][5] = c+2;
+        DND_TRANSITIONS_BARD[i][6] = c+2;
+        DND_TRANSITIONS_BARD[i][7] = c+3;
+        DND_TRANSITIONS_BARD[i][8] = c+3;
+        c += 4;
+    }
+})();
+
+// 113-136 → 137-184 (48 карт)
+(function() {
+    var c = 137;
+    for (var i = 113; i <= 136; i++) {
+        DND_TRANSITIONS_BARD[i] = {};
+        DND_TRANSITIONS_BARD[i][1] = c;
+        DND_TRANSITIONS_BARD[i][2] = c;
+        DND_TRANSITIONS_BARD[i][3] = c+1;
+        DND_TRANSITIONS_BARD[i][4] = c+1;
+        DND_TRANSITIONS_BARD[i][5] = c+2;
+        DND_TRANSITIONS_BARD[i][6] = c+2;
+        DND_TRANSITIONS_BARD[i][7] = c+3;
+        DND_TRANSITIONS_BARD[i][8] = c+3;
+        c += 4;
+    }
+})();
+
+// 137-184 → 185-202
+for (var i = 137; i <= 184; i++) {
+    DND_TRANSITIONS_BARD[i] = {1: 185, 2: 186, 3: 187, 4: 188, 5: 189, 6: 190};
+}
+
+// 185-202 → 203-208 (финальные боссы) - РАЗДЕЛЯЕМ НА 3 ГРУППЫ
+for (var i = 185; i <= 190; i++) {
+    DND_TRANSITIONS_BARD[i] = {1: 203, 2: 203, 3: 204, 4: 204, 5: 203, 6: 204};
+}
+for (var i = 191; i <= 196; i++) {
+    DND_TRANSITIONS_BARD[i] = {1: 205, 2: 205, 3: 206, 4: 206, 5: 205, 6: 206};
+}
+for (var i = 197; i <= 202; i++) {
+    DND_TRANSITIONS_BARD[i] = {1: 207, 2: 207, 3: 208, 4: 208, 5: 207, 6: 208};
+}
+
+// Финальные боссы - конец игры
+for (var i = 203; i <= 208; i++) {
+    DND_TRANSITIONS_BARD[i] = {};
+}
 // ==========================================
 // D&D ПЕРЕМЕННЫЕ И ФУНКЦИИ
 // ==========================================
