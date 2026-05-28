@@ -14635,64 +14635,62 @@ for (var i = 203; i <= 208; i++) {
     DND_TRANSITIONS_BARD[i] = {};
 }
 
-        // ==========================================
-// D&D ЛОББИ (ПРОСТАЯ ВЕРСИЯ)
+       // ==========================================
+// D&D ПОЛНАЯ ВЕРСИЯ - СКОПИРУЙТЕ ЦЕЛИКОМ
 // ==========================================
 
-var isDndPaid = false;
+// ==========================================
+// ПРОВЕРКА ОПЛАТЫ И ЛОББИ
+// ==========================================
 
-// Проверка оплаты при клике на D&D
-function checkDndPaymentAndShow() {
+function checkDndPaymentStatus() {
+    console.log('Проверка статуса оплаты...');
+    
     fetch(SERVER_URL + '/api/dnd/payment_status?user_id=' + userId)
         .then(r => r.json())
         .then(data => {
-            if (data.status === 'ok' && data.is_paid) {
-                // Уже оплачено - показываем лобби
-                showDndLobby();
-            } else {
-                // Не оплачено - показываем сообщение
-                if (confirm('Доступ к D&D стоит 500 ₽. Оплатить?')) {
-                    window.open('https://t.me/SPB_Zakharin_Sergey', '_blank');
-                    alert('После оплаты напишите организатору @SPB_Zakharin_Sergey');
+            console.log('Ответ сервера:', data);
+            
+            if (data.status === 'ok' && data.is_paid === true) {
+                console.log('Доступ открыт! Показываем лобби');
+                var paySection = document.getElementById('dndPaySection');
+                var lobbySection = document.getElementById('dndLobby');
+                if (paySection) paySection.style.display = 'none';
+                if (lobbySection) {
+                    lobbySection.style.display = 'block';
+                    refreshTeamList();
+                    loadMyTeam();
                 }
+            } else {
+                console.log('Доступ закрыт, показываем оплату');
+                var paySection = document.getElementById('dndPaySection');
+                var lobbySection = document.getElementById('dndLobby');
+                if (paySection) paySection.style.display = 'block';
+                if (lobbySection) lobbySection.style.display = 'none';
+            }
+        })
+        .catch(err => console.error('Ошибка проверки оплаты:', err));
+}
+
+function refreshTeamList() {
+    console.log('Загрузка списка команд...');
+    
+    fetch(SERVER_URL + '/api/dnd/teams/list?user_id=' + userId)
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'ok') {
+                renderTeamsList(data.teams);
             }
         })
         .catch(err => console.error('Ошибка:', err));
 }
 
-function showDndLobby() {
-    document.getElementById('dndLobbyModal').style.display = 'flex';
-    refreshLobby();
-}
-
-function closeDndLobbyModal() {
-    document.getElementById('dndLobbyModal').style.display = 'none';
-}
-
-function refreshLobby() {
-    fetch(SERVER_URL + '/api/dnd/teams/list?user_id=' + userId)
-        .then(r => r.json())
-        .then(data => {
-            if (data.status === 'ok') {
-                renderLobbyTeams(data.teams);
-            }
-        });
+function renderTeamsList(teams) {
+    var container = document.getElementById('teamsList');
+    if (!container) return;
     
-    fetch(SERVER_URL + '/api/dnd/teams/my?user_id=' + userId)
-        .then(r => r.json())
-        .then(data => {
-            if (data.status === 'ok' && data.team) {
-                renderLobbyMyTeam(data.team);
-            } else {
-                document.getElementById('lobbyMyTeam').innerHTML = '<p>Вы не в команде</p>';
-            }
-        });
-}
-
-function renderLobbyTeams(teams) {
-    var container = document.getElementById('lobbyTeamsList');
     if (!teams || teams.length === 0) {
-        container.innerHTML = '<p>🤝 Нет открытых команд</p>';
+        container.innerHTML = '<div style="text-align:center; padding:20px;">🤝 Нет открытых команд</div>';
         return;
     }
     
@@ -14705,48 +14703,127 @@ function renderLobbyTeams(teams) {
                 👑 Лидер: ${escapeHtml(t.leader_name)}<br>
                 👥 ${t.current_members}/${t.members_needed}<br>
                 ${t.leader_id != userId && t.current_members < 6 ? 
-                    `<button onclick="joinTeamFromLobby(${t.id})" style="background: #4CAF50; border: none; padding: 5px 12px; border-radius: 20px; margin-top: 8px;">🤝 Вступить</button>` : ''}
+                    `<button onclick="joinTeam('${t.id}')" style="background: #4CAF50; border: none; padding: 5px 12px; border-radius: 20px; margin-top: 8px;">🤝 Вступить</button>` : ''}
             </div>
         `;
     }
     container.innerHTML = html;
 }
 
-function renderLobbyMyTeam(team) {
+function loadMyTeam() {
+    console.log('Загрузка моей команды...');
+    
+    fetch(SERVER_URL + '/api/dnd/teams/my?user_id=' + userId)
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'ok' && data.team) {
+                var myTeamSection = document.getElementById('myTeamSection');
+                if (myTeamSection) myTeamSection.style.display = 'block';
+                renderMyTeam(data.team);
+            } else {
+                var myTeamSection = document.getElementById('myTeamSection');
+                if (myTeamSection) myTeamSection.style.display = 'none';
+            }
+        })
+        .catch(err => console.error('Ошибка:', err));
+}
+
+function renderMyTeam(team) {
     var isLeader = team.leader_id == userId;
+    var canStart = team.current_members >= 4;
+    
     var membersHtml = '';
     for (var i = 0; i < team.members.length; i++) {
         var m = team.members[i];
-        membersHtml += `<span style="background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 20px; margin: 3px; display: inline-block;">${escapeHtml(m.name)}</span>`;
+        membersHtml += `<span style="background: rgba(255,255,255,0.1); padding: 4px 10px; border-radius: 20px; margin: 3px; display: inline-block;">${m.id == team.leader_id ? '👑' : '👤'} ${escapeHtml(m.name)}</span>`;
     }
     
     var actions = '';
     if (isLeader) {
-        actions = `<button class="task-submit-btn" onclick="startTeamGame()" style="margin-top: 10px; background: #ff9800;">🎮 Начать игру</button>`;
+        actions = `
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                <button class="task-submit-btn" onclick="showTeamCharacterModal()" style="width: auto; padding: 8px 16px;">🎭 Выбрать персонажа</button>
+                ${canStart ? '<button class="task-submit-btn" onclick="startTeamGame()" style="width: auto; padding: 8px 16px; background: #ff9800;">🎮 Начать игру</button>' : '<button class="task-submit-btn" disabled style="width: auto; padding: 8px 16px; background: gray;">⏳ Нужно 4+ участников</button>'}
+            </div>
+        `;
     } else {
-        actions = `<button class="task-submit-btn" onclick="leaveTeamFromLobby()" style="margin-top: 10px; background: #f44336;">🚪 Покинуть команду</button>`;
+        actions = `
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                <button class="task-submit-btn" onclick="showTeamCharacterModal()" style="width: auto; padding: 8px 16px;">🎭 Выбрать персонажа</button>
+                <button class="task-submit-btn" onclick="leaveTeam()" style="width: auto; padding: 8px 16px; background: #f44336;">🚪 Покинуть</button>
+            </div>
+        `;
     }
     
-    document.getElementById('lobbyMyTeam').innerHTML = `
-        <div style="background: rgba(255,152,0,0.1); border-radius: 12px; padding: 12px;">
-            <b>${escapeHtml(team.team_name)}</b><br>
-            <div style="margin: 8px 0;">${membersHtml}</div>
-            <span>👥 ${team.current_members}/6</span>
-            ${actions}
-        </div>
-    `;
+    var myTeamCard = document.getElementById('myTeamCard');
+    if (myTeamCard) {
+        myTeamCard.innerHTML = `
+            <div style="background: linear-gradient(135deg, #1a1a2e, #16213e); border-radius: 16px; padding: 15px;">
+                <h4>${escapeHtml(team.team_name)}</h4>
+                <div style="margin: 10px 0;">${membersHtml}</div>
+                <p>👥 ${team.current_members}/6 участников</p>
+                ${actions}
+            </div>
+        `;
+    }
 }
 
-function showCreateTeamForm() {
-    document.getElementById('createTeamFormModal').style.display = 'flex';
+function joinTeam(teamId) {
+    fetch(SERVER_URL + '/api/dnd/teams/join', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: userId, team_id: teamId })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.status === 'ok') {
+            alert('✅ Вы вступили в команду!');
+            refreshTeamList();
+            loadMyTeam();
+        } else {
+            alert('❌ ' + (data.message || 'Ошибка'));
+        }
+    });
 }
 
-function closeCreateTeamForm() {
-    document.getElementById('createTeamFormModal').style.display = 'none';
+function leaveTeam() {
+    if (!confirm('Вы уверены?')) return;
+    
+    fetch(SERVER_URL + '/api/dnd/teams/leave', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: userId })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.status === 'ok') {
+            alert('✅ Вы покинули команду');
+            refreshTeamList();
+            loadMyTeam();
+        } else {
+            alert('❌ ' + (data.message || 'Ошибка'));
+        }
+    });
 }
 
-function createNewTeam() {
-    var teamName = document.getElementById('newTeamName').value.trim();
+// ==========================================
+// МОДАЛЬНЫЕ ОКНА
+// ==========================================
+
+function showCreateTeamModal() {
+    var input = document.getElementById('teamNameInput');
+    if (input) input.value = '';
+    var modal = document.getElementById('createTeamModal');
+    if (modal) modal.style.display = 'flex';
+}
+
+function closeCreateTeamModal() {
+    var modal = document.getElementById('createTeamModal');
+    if (modal) modal.style.display = 'none';
+}
+
+function createTeam() {
+    var teamName = document.getElementById('teamNameInput').value.trim();
     if (!teamName) {
         alert('Введите название команды');
         return;
@@ -14761,44 +14838,37 @@ function createNewTeam() {
     .then(data => {
         if (data.status === 'ok') {
             alert('✅ Команда создана!');
-            closeCreateTeamForm();
-            refreshLobby();
+            closeCreateTeamModal();
+            refreshTeamList();
+            loadMyTeam();
         } else {
             alert('❌ ' + (data.message || 'Ошибка'));
         }
     });
 }
 
-function joinTeamFromLobby(teamId) {
-    fetch(SERVER_URL + '/api/dnd/teams/join', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: userId, team_id: teamId })
-    })
-    .then(r => r.json())
-    .then(data => {
-        if (data.status === 'ok') {
-            alert('✅ Вы вступили в команду!');
-            refreshLobby();
-        } else {
-            alert('❌ ' + (data.message || 'Ошибка'));
-        }
-    });
+function showTeamCharacterModal() {
+    var modal = document.getElementById('teamCharacterModal');
+    if (modal) modal.style.display = 'flex';
 }
 
-function leaveTeamFromLobby() {
-    if (!confirm('Покинуть команду?')) return;
-    
-    fetch(SERVER_URL + '/api/dnd/teams/leave', {
+function closeTeamCharacterModal() {
+    var modal = document.getElementById('teamCharacterModal');
+    if (modal) modal.style.display = 'none';
+}
+
+function selectTeamCharacter(character) {
+    fetch(SERVER_URL + '/api/dnd/team/select_character', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: userId })
+        body: JSON.stringify({ user_id: userId, character: character })
     })
     .then(r => r.json())
     .then(data => {
         if (data.status === 'ok') {
-            alert('✅ Вы покинули команду');
-            refreshLobby();
+            alert('✅ Персонаж выбран!');
+            closeTeamCharacterModal();
+            loadMyTeam();
         } else {
             alert('❌ ' + (data.message || 'Ошибка'));
         }
@@ -14816,54 +14886,77 @@ function startTeamGame() {
     .then(r => r.json())
     .then(data => {
         if (data.status === 'ok') {
-            alert('🎉 Игра начинается!');
-            closeDndLobbyModal();
-            // Показываем выбор персонажа (ваша существующая функция)
-            document.getElementById('dndEventContent').style.display = 'block';
+            alert('🎮 Игра начинается!');
+            var lobby = document.getElementById('dndLobby');
+            var game = document.getElementById('dndGame');
+            if (lobby) lobby.style.display = 'none';
+            if (game) game.style.display = 'block';
         } else {
             alert('❌ ' + (data.message || 'Ошибка'));
         }
     });
 }
 
-function escapeHtml(text) {
-    if (!text) return '';
-    return text.replace(/[&<>]/g, function(m) {
-        if (m === '&') return '&amp;';
-        if (m === '<') return '&lt;';
-        if (m === '>') return '&gt;';
-        return m;
+function closeResetModal() {
+    var modal = document.getElementById('resetProgressModal');
+    if (modal) modal.style.display = 'none';
+}
+
+function confirmResetProgress() {
+    fetch(SERVER_URL + '/api/dnd/reset_progress', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: userId, character: dndCharacter })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.status === 'ok') {
+            alert('✅ Прогресс сброшен!');
+            closeResetModal();
+            dndCardHistory = [0];
+            dndApproved = true;
+            showDnDCard(0, true);
+        } else {
+            alert('❌ ' + (data.message || 'Ошибка'));
+        }
     });
 }
 
-// Переопределяем вашу существующую selectDnDCharacter
-var originalSelectDnDCharacter = window.selectDnDCharacter;
-window.selectDnDCharacter = function(character) {
-    // Проверяем, есть ли у пользователя команда
-    fetch(SERVER_URL + '/api/dnd/teams/my?user_id=' + userId)
+function closeWaitingModal() {
+    var modal = document.getElementById('waitingTeamModal');
+    if (modal) modal.style.display = 'none';
+}
+
+function checkTeamStatus() {
+    fetch(SERVER_URL + '/api/dnd/team/status?user_id=' + userId)
         .then(r => r.json())
         .then(data => {
-            if (data.status === 'ok' && data.team) {
-                // Есть команда - отправляем выбор персонажа
-                fetch(SERVER_URL + '/api/dnd/team/select_character', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ user_id: userId, character: character })
-                })
-                .then(r => r.json())
-                .then(res => {
-                    if (res.status === 'ok') {
-                        alert('✅ Персонаж выбран! Ждите начала игры.');
+            if (data.status === 'ok') {
+                if (data.game_started) {
+                    var waitingModal = document.getElementById('waitingTeamModal');
+                    if (waitingModal) waitingModal.style.display = 'none';
+                    var game = document.getElementById('dndGame');
+                    if (game) game.style.display = 'block';
+                } else {
+                    var statusDiv = document.getElementById('waitingTeamStatus');
+                    if (statusDiv) {
+                        var html = '<div>';
+                        for (var i = 0; i < data.members.length; i++) {
+                            var m = data.members[i];
+                            html += `<div>${m.character ? '✅' : '⏳'} ${escapeHtml(m.name)} ${m.character ? '(' + m.character + ')' : '(выбирает...)'}</div>`;
+                        }
+                        html += '</div>';
+                        statusDiv.innerHTML = html;
                     }
-                });
-            } else {
-                alert('Сначала вступите в команду!');
-                showDndLobby();
+                    var waitingModal = document.getElementById('waitingTeamModal');
+                    if (waitingModal) waitingModal.style.display = 'flex';
+                }
             }
         });
-};
+}
+
 // ==========================================
-// D&D ПЕРЕМЕННЫЕ И ФУНКЦИИ
+// D&D ИГРОВЫЕ ФУНКЦИИ
 // ==========================================
 
 var dndCharacter = null;
@@ -14871,50 +14964,6 @@ var dndCardHistory = [];
 var dndIsRolling = false;
 var dndApproved = false;
 var currentDnDCard = null;
-
-// ==========================================
-// БЫСТРАЯ АНИМАЦИЯ ПОЯВЛЕНИЯ КАРТОЧКИ
-// ==========================================
-
-function animateCardAppear(callback) {
-    var cardContainer = document.getElementById('dndCard');
-    if (!cardContainer) {
-        if (callback) callback();
-        return;
-    }
-    
-    cardContainer.style.transition = 'opacity 0.15s ease-out, transform 0.15s ease-out';
-    cardContainer.style.opacity = '1';
-    cardContainer.style.transform = 'translateY(0) scale(1)';
-    
-    if (callback) {
-        setTimeout(function() {
-            callback();
-        }, 150);
-    }
-}
-
-function animateCardDisappear(callback) {
-    var cardContainer = document.getElementById('dndCard');
-    if (!cardContainer) {
-        if (callback) callback();
-        return;
-    }
-    
-    cardContainer.style.transition = 'opacity 0.1s ease-in, transform 0.1s ease-in';
-    cardContainer.style.opacity = '0';
-    cardContainer.style.transform = 'translateY(-10px) scale(0.98)';
-    
-    if (callback) {
-        setTimeout(function() {
-            callback();
-        }, 100);
-    }
-}
-
-// ==========================================
-// ЛОГИКА КУБИКА
-// ==========================================
 
 function getMappedDiceValue(cardId, diceRoll) {
     if (cardId === 0 || (cardId >= 1 && cardId <= 39)) {
@@ -14941,10 +14990,6 @@ function getDiceFaceRotation(result) {
     return rotations[result] || rotations[1];
 }
 
-// ==========================================
-// ПОЛУЧЕНИЕ ПЕРЕХОДОВ
-// ==========================================
-
 function getTransition(cardId, mappedValue) {
     var transitions = null;
     
@@ -14954,27 +14999,50 @@ function getTransition(cardId, mappedValue) {
         transitions = window.DND_TRANSITIONS_MAGE;
     } else if (dndCharacter === 'archer') {
         transitions = window.DND_TRANSITIONS_ARCHER;
+    } else if (dndCharacter === 'druid') {
+        transitions = window.DND_TRANSITIONS_DRUID;
+    } else if (dndCharacter === 'assassin') {
+        transitions = window.DND_TRANSITIONS_ASSASSIN;
+    } else if (dndCharacter === 'bard') {
+        transitions = window.DND_TRANSITIONS_BARD;
     }
     
     if (!transitions || !transitions[cardId]) return null;
     return transitions[cardId][mappedValue];
 }
 
-// ==========================================
-// ОСНОВНЫЕ ФУНКЦИИ ИГРЫ
-// ==========================================
+function animateCardAppear(callback) {
+    var cardContainer = document.getElementById('dndCard');
+    if (!cardContainer) {
+        if (callback) callback();
+        return;
+    }
+    cardContainer.style.transition = 'opacity 0.15s ease-out, transform 0.15s ease-out';
+    cardContainer.style.opacity = '1';
+    cardContainer.style.transform = 'translateY(0) scale(1)';
+    if (callback) setTimeout(callback, 150);
+}
+
+function animateCardDisappear(callback) {
+    var cardContainer = document.getElementById('dndCard');
+    if (!cardContainer) {
+        if (callback) callback();
+        return;
+    }
+    cardContainer.style.transition = 'opacity 0.1s ease-in, transform 0.1s ease-in';
+    cardContainer.style.opacity = '0';
+    cardContainer.style.transform = 'translateY(-10px) scale(0.98)';
+    if (callback) setTimeout(callback, 100);
+}
 
 function showDnDCard(cardNumber, skipAnimation) {
     if (skipAnimation === true) {
         renderDnDCardContent(cardNumber);
         return;
     }
-    
     animateCardDisappear(function() {
         renderDnDCardContent(cardNumber);
-        setTimeout(function() {
-            animateCardAppear();
-        }, 50);
+        setTimeout(animateCardAppear, 50);
     });
 }
 
@@ -14987,6 +15055,12 @@ function renderDnDCardContent(cardNumber) {
         card = window.DND_CARDS_MAGE?.mage?.[cardNumber];
     } else if (dndCharacter === 'archer') {
         card = window.DND_CARDS_ARCHER?.archer?.[cardNumber];
+    } else if (dndCharacter === 'druid') {
+        card = window.DND_CARDS_DRUID?.druid?.[cardNumber];
+    } else if (dndCharacter === 'assassin') {
+        card = window.DND_CARDS_ASSASSIN?.assassin?.[cardNumber];
+    } else if (dndCharacter === 'bard') {
+        card = window.DND_CARDS_BARD?.bard?.[cardNumber];
     }
     
     var cardContainer = document.getElementById('dndCard');
@@ -15002,18 +15076,14 @@ function renderDnDCardContent(cardNumber) {
         return;
     }
     
-    // Финальный босс пройден
     if (card.isFinal && dndApproved) {
         cardContainer.innerHTML = `
             <div class="branch-task-card">
-                <div class="branch-header">
-                    <h3>🎉 Победа!</h3>
-                </div>
+                <div class="branch-header"><h3>🎉 Победа!</h3></div>
                 <div class="level-card final-card">
-                    <p style="text-align:center;font-size:18px;font-weight:700;color:var(--accent);">
-                        Ты победил ${card.title}!
-                    </p>
+                    <p style="text-align:center;font-size:18px;font-weight:700;color:var(--accent);">Ты победил ${card.title}!</p>
                     <p style="text-align:center;">Спасибо за участие!</p>
+                    <button class="task-submit-btn" onclick="showResetProgressModal()" style="margin-top:15px;">🔄 Сбросить прогресс</button>
                 </div>
             </div>
         `;
@@ -15021,7 +15091,6 @@ function renderDnDCardContent(cardNumber) {
         return;
     }
     
-    // Кубик без подписи
     var diceHtml = `
         <div id="dndDiceWrapper" style="margin: 15px 0; display: ${card.isStart || dndApproved ? 'block' : 'none'};">
             <div id="dndDice" class="dnd-dice" onclick="rollDnDDice()">
@@ -15038,9 +15107,7 @@ function renderDnDCardContent(cardNumber) {
     if (card.isStart) {
         cardContainer.innerHTML = `
             <div class="branch-task-card start-card">
-                <div class="branch-header">
-                    <h3>${card.title}</h3>
-                </div>
+                <div class="branch-header"><h3>${card.title}</h3></div>
                 <div class="level-card">
                     ${card.image ? '<img src="' + card.image + '" class="card-image" style="width:100%;border-radius:12px;margin-bottom:15px;" onerror="this.style.display=\'none\'">' : ''}
                     <p style="text-align:center;font-weight:600;">Брось кубик, чтобы начать!</p>
@@ -15051,64 +15118,38 @@ function renderDnDCardContent(cardNumber) {
     } else {
         cardContainer.innerHTML = `
             <div class="branch-task-card">
-                <div class="branch-header">
-                    <h3>${card.title}</h3>
-                </div>
+                <div class="branch-header"><h3>${card.title}</h3></div>
                 <div class="level-card">
                     ${card.image ? '<img src="' + card.image + '" class="card-image" style="width:100%;border-radius:12px;margin-bottom:15px;" onerror="this.style.display=\'none\'">' : ''}
                     <p style="font-weight: 600; margin-bottom: 15px;">📋 ${card.task}</p>
-                    ${!dndApproved ? `
-                        <button class="task-submit-btn" onclick="openDnDTaskUpload(${cardNumber})">
-                            <i class="fas fa-camera"></i> Отправить фото
-                        </button>
-                    ` : `
-                        <div style="text-align:center;color:var(--status-green);margin-bottom:10px;">
-                            <i class="fas fa-check-circle"></i> Задание одобрено!
-                        </div>
-                    `}
+                    ${!dndApproved ? `<button class="task-submit-btn" onclick="openDnDTaskUpload(${cardNumber})"><i class="fas fa-camera"></i> Отправить фото</button>` : `<div style="text-align:center;color:var(--status-green);margin-bottom:10px;"><i class="fas fa-check-circle"></i> Задание одобрено!</div>`}
                     ${diceHtml}
                 </div>
             </div>
         `;
     }
-    
     cardContainer.style.display = 'block';
 }
+
 function rollDnDDice() {
     if (dndIsRolling) return;
-    if (!dndCharacter) { 
-        alert('Сначала выбери персонажа!'); 
-        return; 
-    }
+    if (!dndCharacter) { alert('Сначала выбери персонажа!'); return; }
     
     var prevCard = dndCardHistory[dndCardHistory.length - 1];
-    
     var prevCardData = null;
-    if (dndCharacter === 'knight') {
-        prevCardData = window.DND_CARDS?.knight?.[prevCard];
-    } else if (dndCharacter === 'mage') {
-        prevCardData = window.DND_CARDS_MAGE?.mage?.[prevCard];
-    } else if (dndCharacter === 'archer') {
-        prevCardData = window.DND_CARDS_ARCHER?.archer?.[prevCard];
-    }
+    if (dndCharacter === 'knight') prevCardData = window.DND_CARDS?.knight?.[prevCard];
+    else if (dndCharacter === 'mage') prevCardData = window.DND_CARDS_MAGE?.mage?.[prevCard];
+    else if (dndCharacter === 'archer') prevCardData = window.DND_CARDS_ARCHER?.archer?.[prevCard];
+    else if (dndCharacter === 'druid') prevCardData = window.DND_CARDS_DRUID?.druid?.[prevCard];
+    else if (dndCharacter === 'assassin') prevCardData = window.DND_CARDS_ASSASSIN?.assassin?.[prevCard];
+    else if (dndCharacter === 'bard') prevCardData = window.DND_CARDS_BARD?.bard?.[prevCard];
     
-    if (prevCardData && !prevCardData.isStart && !dndApproved) {
-        alert('Сначала дождись одобрения задания!');
-        return;
-    }
-    
-    if (prevCardData && prevCardData.isFinal && dndApproved) {
-        alert('🎉 Приключение завершено!');
-        return;
-    }
+    if (prevCardData && !prevCardData.isStart && !dndApproved) { alert('Сначала дождись одобрения задания!'); return; }
+    if (prevCardData && prevCardData.isFinal && dndApproved) { alert('🎉 Приключение завершено!'); return; }
     
     dndIsRolling = true;
-    
     var dice = document.getElementById('dndDice');
-    if (!dice) {
-        dndIsRolling = false;
-        return;
-    }
+    if (!dice) { dndIsRolling = false; return; }
     
     var diceRoll = rollDice();
     var mappedValue = getMappedDiceValue(prevCard, diceRoll);
@@ -15119,17 +15160,10 @@ function rollDnDDice() {
     setTimeout(function() {
         dice.classList.remove('rolling');
         dice.style.transform = rotation;
-        
         setTimeout(function() {
             dndIsRolling = false;
-            
             var nextCardId = getTransition(prevCard, mappedValue);
-            
-            if (nextCardId === null || nextCardId === undefined) {
-                alert('Ошибка: нет перехода!');
-                return;
-            }
-            
+            if (nextCardId === null || nextCardId === undefined) { alert('Ошибка: нет перехода!'); return; }
             dndCardHistory.push(nextCardId);
             dndApproved = false;
             showDnDCard(nextCardId, false);
@@ -15139,63 +15173,21 @@ function rollDnDDice() {
 
 function openDnDTaskUpload(cardNumber) {
     currentDnDCard = cardNumber;
-    
     var fileInput = document.createElement('input');
     fileInput.type = 'file';
     fileInput.accept = 'image/*';
     fileInput.multiple = true;
-    
     fileInput.onchange = function(event) {
         var files = Array.from(event.target.files);
         if (files.length === 0) return;
-        
         window.tempPhotos = files;
-        
-        var previewContainer = document.getElementById('taskPhotoPreviewContainer');
-        if (previewContainer) {
-            previewContainer.innerHTML = '';
-            files.forEach(function(file) {
-                var reader = new FileReader();
-                reader.onload = function(e) {
-                    var img = document.createElement('img');
-                    img.src = e.target.result;
-                    img.style.cssText = 'width: 70px; height: 70px; object-fit: cover; border-radius: 12px; margin: 5px; border: 2px solid var(--accent);';
-                    previewContainer.appendChild(img);
-                };
-                reader.readAsDataURL(file);
-            });
-        }
-        
-        var modal = document.getElementById('taskUploadModal');
-        if (modal) {
-            modal.style.display = 'flex';
-            var titleEl = modal.querySelector('h3');
-            if (titleEl) titleEl.innerText = 'Отправка задания';
-            
-            var submitBtn = modal.querySelector('.modal-action-btn');
-            if (submitBtn) {
-                var newBtn = submitBtn.cloneNode(true);
-                submitBtn.parentNode.replaceChild(newBtn, submitBtn);
-                newBtn.onclick = function(e) {
-                    e.preventDefault();
-                    submitDnDTaskPhoto();
-                };
-            }
-        }
+        submitDnDTaskPhoto();
     };
-    
     fileInput.click();
 }
 
 function submitDnDTaskPhoto() {
-    if (!window.tempPhotos || window.tempPhotos.length === 0) {
-        if (window.Telegram && window.Telegram.WebApp) {
-            window.Telegram.WebApp.showAlert('❌ Выберите хотя бы одно фото');
-        } else {
-            alert('❌ Выберите хотя бы одно фото');
-        }
-        return;
-    }
+    if (!window.tempPhotos || window.tempPhotos.length === 0) { alert('❌ Выберите фото'); return; }
     if (window.isUploading) return;
     window.isUploading = true;
     
@@ -15203,43 +15195,29 @@ function submitDnDTaskPhoto() {
     formData.append('user', userId.toString());
     formData.append('character', dndCharacter);
     formData.append('card', currentDnDCard.toString());
-    formData.append('type', 'dnd_task');
+    for (var i = 0; i < window.tempPhotos.length; i++) formData.append('photos', window.tempPhotos[i]);
     
-    for (var i = 0; i < window.tempPhotos.length; i++) {
-        formData.append('photos', window.tempPhotos[i]);
-    }
-    
-    fetch(SERVER_URL + '/api/check_dnd_task', {
+    fetch(SERVER_URL + '/api/dnd/check_task', {
         method: 'POST',
         body: formData
     })
-    .then(function(r) { return r.json(); })
+    .then(r => r.json())
     .then(function(result) {
         if (result && result.status === 'ok') {
-            if (window.Telegram && window.Telegram.WebApp) {
-                window.Telegram.WebApp.showAlert('✅ Фото отправлено на проверку!');
-            } else {
-                alert('✅ Фото отправлено на проверку!');
-            }
+            alert('✅ Фото отправлено на проверку!');
             closeTaskUploadModal();
-            approveDnDTask();
+        } else if (result && result.status === 'banned') {
+            alert('❌ Ваш аккаунт заблокирован!');
         } else {
             throw new Error(result?.message || 'Ошибка отправки');
         }
     })
     .catch(function(error) {
         console.error('❌ Ошибка:', error);
-        if (window.Telegram && window.Telegram.WebApp) {
-            window.Telegram.WebApp.showAlert('❌ ' + error.message);
-        } else {
-            alert('❌ ' + error.message);
-        }
+        alert('❌ ' + error.message);
     })
-    .finally(function() {
-        window.isUploading = false;
-    });
+    .finally(function() { window.isUploading = false; });
 }
-
 
 function approveDnDTask() {
     dndApproved = true;
@@ -15253,22 +15231,9 @@ function selectDnDCharacter(char) {
     dndApproved = true;
     
     var cards = document.querySelectorAll('.dnd-character-card');
-    for (var i = 0; i < cards.length; i++) {
-        cards[i].classList.remove('selected');
-    }
+    for (var i = 0; i < cards.length; i++) cards[i].classList.remove('selected');
     var cardEl = document.querySelector('[data-char="' + char + '"]');
     if (cardEl) cardEl.classList.add('selected');
-    
-    // Отправка на сервер (с реальным fetch)
-    if (typeof SERVER_URL !== 'undefined' && SERVER_URL && typeof userId !== 'undefined') {
-        fetch(SERVER_URL + '/api/dnd/select_character', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ user_id: userId, character: char })
-        }).catch(function(error) {
-            console.warn('Ошибка при выборе персонажа:', error);
-        });
-    }
     
     var dndEvent = document.getElementById('dndEvent');
     var dndGame = document.getElementById('dndGame');
@@ -15276,34 +15241,42 @@ function selectDnDCharacter(char) {
     if (dndGame) dndGame.style.display = 'block';
     
     var cardContainer = document.getElementById('dndCard');
-    if (cardContainer) {
-        cardContainer.style.transition = '';
-        cardContainer.style.opacity = '1';
-        cardContainer.style.transform = '';
-    }
+    if (cardContainer) { cardContainer.style.transition = ''; cardContainer.style.opacity = '1'; cardContainer.style.transform = ''; }
     
     showDnDCard(0, true);
 }
+
 function toggleDnDEvent() {
     var content = document.getElementById('dndEventContent');
     var arrow = document.getElementById('dndEventArrow');
-    if (!content) return;
     if (content.style.display === 'block') {
         content.style.display = 'none';
         if (arrow) arrow.style.transform = 'rotate(0deg)';
     } else {
         content.style.display = 'block';
         if (arrow) arrow.style.transform = 'rotate(180deg)';
+        if (typeof checkDndPaymentStatus === 'function') checkDndPaymentStatus();
     }
-}
-
-function submitDnDChoice(cardNumber, choiceIdx) {
-    openDnDTaskUpload(cardNumber);
 }
 
 function closeTaskUploadModal() {
     var modal = document.getElementById('taskUploadModal');
     if (modal) modal.style.display = 'none';
+}
+
+function showResetProgressModal() {
+    var modal = document.getElementById('resetProgressModal');
+    if (modal) modal.style.display = 'flex';
+}
+
+function escapeHtml(text) {
+    if (!text) return '';
+    return text.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+    });
 }
       
        // ==========================================
