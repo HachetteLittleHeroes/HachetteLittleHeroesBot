@@ -12730,7 +12730,7 @@ for (var i = 203; i <= 208; i++) {
 }
 
 // ==========================================
-// D&D ПЕРЕМЕННЫЕ И ФУНКЦИИ
+// D&D ПЕРЕМЕННЫЕ И ФУНКЦИИ С АНИМАЦИЕЙ
 // ==========================================
 
 var dndCharacter = null;
@@ -12738,22 +12738,72 @@ var dndCardHistory = [];
 var dndIsRolling = false;
 var dndApproved = false;
 var currentDnDCard = null;
+var dndAnimationTimeout = null;
+
+// ==========================================
+// АНИМАЦИЯ ПОЯВЛЕНИЯ КАРТОЧКИ
+// ==========================================
+
+function animateCardAppear(callback) {
+    var cardContainer = document.getElementById('dndCard');
+    if (!cardContainer) {
+        if (callback) callback();
+        return;
+    }
+    
+    // Убираем предыдущую анимацию
+    cardContainer.classList.remove('card-appear', 'card-disappear');
+    
+    // Принудительный перерасчёт стилей
+    void cardContainer.offsetWidth;
+    
+    // Добавляем анимацию появления
+    cardContainer.classList.add('card-appear');
+    
+    // Ждём окончания анимации
+    if (callback) {
+        var onAnimationEnd = function() {
+            cardContainer.removeEventListener('animationend', onAnimationEnd);
+            callback();
+        };
+        cardContainer.addEventListener('animationend', onAnimationEnd);
+    }
+}
+
+function animateCardDisappear(callback) {
+    var cardContainer = document.getElementById('dndCard');
+    if (!cardContainer) {
+        if (callback) callback();
+        return;
+    }
+    
+    cardContainer.classList.remove('card-appear');
+    cardContainer.classList.add('card-disappear');
+    
+    if (callback) {
+        var onAnimationEnd = function() {
+            cardContainer.removeEventListener('animationend', onAnimationEnd);
+            callback();
+        };
+        cardContainer.addEventListener('animationend', onAnimationEnd);
+    }
+}
 
 // ==========================================
 // УНИВЕРСАЛЬНАЯ ЛОГИКА КУБИКА
 // ==========================================
 
 function getDiceTypeForCard(cardId) {
-    if (cardId === 0) return "d3";           // Старт → 1-3
-    if (cardId >= 1 && cardId <= 39) return "d3";   // Уровни 1-3 → 3 варианта
-    if (cardId >= 40 && cardId <= 100) return "d6"; // Уровень 4 → d6 (но с группировкой)
-    if (cardId >= 101 && cardId <= 106) return "d6"; // Мини-боссы → 6 карт
-    if (cardId >= 107 && cardId <= 112) return "d8"; // Уровень 6 → 8 значений (4 карты)
-    if (cardId >= 113 && cardId <= 136) return "d8"; // Уровень 7 → 8 значений (4 карты)
-    if (cardId >= 137 && cardId <= 184) return "d6"; // Уровень 8 → уровень 9
-    if (cardId >= 185 && cardId <= 202) return "d6"; // Уровень 9 → финальные боссы
-    if (cardId >= 203 && cardId <= 208) return null; // Финал, броска нет
-    return "d6"; // по умолчанию
+    if (cardId === 0) return "d3";
+    if (cardId >= 1 && cardId <= 39) return "d3";
+    if (cardId >= 40 && cardId <= 100) return "d6";
+    if (cardId >= 101 && cardId <= 106) return "d6";
+    if (cardId >= 107 && cardId <= 112) return "d8";
+    if (cardId >= 113 && cardId <= 136) return "d8";
+    if (cardId >= 137 && cardId <= 184) return "d6";
+    if (cardId >= 185 && cardId <= 202) return "d6";
+    if (cardId >= 203 && cardId <= 208) return null;
+    return "d6";
 }
 
 function getDiceRange(cardId) {
@@ -12772,7 +12822,6 @@ function rollDiceForCard(cardId) {
 }
 
 function getDiceFaceRotation(result, diceType) {
-    // Для d3 и d6 используем стандартные вращения
     var rotations = {
         1: 'rotateX(0deg) rotateY(0deg)',
         2: 'rotateX(0deg) rotateY(180deg)',
@@ -12797,7 +12846,6 @@ function getDiceFaceRotation(result, diceType) {
 function getTransition(cardId, diceRoll) {
     var transitions = null;
     
-    // Выбираем правильные переходы для персонажа
     if (dndCharacter === 'knight') {
         transitions = DND_TRANSITIONS[cardId];
     } else if (dndCharacter === 'mage') {
@@ -12808,12 +12856,10 @@ function getTransition(cardId, diceRoll) {
     
     if (!transitions) return null;
     
-    // Прямое попадание
     if (transitions[diceRoll] !== undefined) {
         return transitions[diceRoll];
     }
     
-    // Ищем ближайшее меньшее значение
     for (var i = diceRoll; i >= 1; i--) {
         if (transitions[i] !== undefined) {
             return transitions[i];
@@ -12824,13 +12870,26 @@ function getTransition(cardId, diceRoll) {
 }
 
 // ==========================================
-// ОСНОВНЫЕ ФУНКЦИИ ИГРЫ
+// ОСНОВНЫЕ ФУНКЦИИ ИГРЫ С АНИМАЦИЕЙ
 // ==========================================
 
-function showDnDCard(cardNumber) {
+function showDnDCard(cardNumber, skipAnimation) {
+    // Если анимация не нужна (первый показ), просто показываем
+    if (skipAnimation) {
+        renderDnDCardContent(cardNumber);
+        return;
+    }
+    
+    // Анимируем исчезновение старой карты
+    animateCardDisappear(function() {
+        renderDnDCardContent(cardNumber);
+        animateCardAppear();
+    });
+}
+
+function renderDnDCardContent(cardNumber) {
     var card = null;
     
-    // Выбираем правильную базу карт для персонажа
     if (dndCharacter === 'knight') {
         card = DND_CARDS.knight ? DND_CARDS.knight[cardNumber] : null;
     } else if (dndCharacter === 'mage') {
@@ -12848,13 +12907,12 @@ function showDnDCard(cardNumber) {
     // Финальный босс пройден
     if (card.isFinal && dndApproved) {
         document.getElementById('dndGameTitle').innerText = '🎉 Приключение завершено!';
-        document.getElementById('dndCard').style.display = 'block';
         document.getElementById('dndCard').innerHTML = `
             <div class="branch-task-card">
                 <div class="branch-header">
                     <h3>🎉 Победа!</h3>
                 </div>
-                <div class="level-card">
+                <div class="level-card final-card">
                     <p style="text-align:center;font-size:18px;font-weight:700;color:var(--accent);">
                         Ты победил ${card.title}!
                     </p>
@@ -12911,12 +12969,12 @@ function showDnDCard(cardNumber) {
     
     if (card.isStart) {
         document.getElementById('dndCard').innerHTML = `
-            <div class="branch-task-card">
+            <div class="branch-task-card start-card">
                 <div class="branch-header">
                     <h3>${card.title}</h3>
                 </div>
                 <div class="level-card">
-                    ${card.image ? '<img src="' + card.image + '" style="width:100%;border-radius:12px;margin-bottom:15px;" onerror="this.style.display=\'none\'">' : ''}
+                    ${card.image ? '<img src="' + card.image + '" class="card-image" style="width:100%;border-radius:12px;margin-bottom:15px;" onerror="this.style.display=\'none\'">' : ''}
                     <p style="text-align:center;font-weight:600;">Брось кубик, чтобы начать приключение!</p>
                     ${diceHtml}
                 </div>
@@ -12929,7 +12987,7 @@ function showDnDCard(cardNumber) {
                     <h3>${card.title}</h3>
                 </div>
                 <div class="level-card">
-                    ${card.image ? '<img src="' + card.image + '" style="width:100%;border-radius:12px;margin-bottom:15px;" onerror="this.style.display=\'none\'">' : ''}
+                    ${card.image ? '<img src="' + card.image + '" class="card-image" style="width:100%;border-radius:12px;margin-bottom:15px;" onerror="this.style.display=\'none\'">' : ''}
                     <p style="font-weight: 600; margin-bottom: 15px;">📋 Задание: ${card.task}</p>
                     ${!dndApproved ? `
                         <button class="task-submit-btn" onclick="openDnDTaskUpload(${cardNumber})">
@@ -12995,7 +13053,7 @@ function rollDnDDice() {
             }
             
             dndCardHistory.push(nextCardId);
-            showDnDCard(nextCardId);
+            showDnDCard(nextCardId); // анимация применяется автоматически
         }, 1200);
         
     }, 800);
@@ -13113,7 +13171,7 @@ function selectDnDCharacter(char) {
     
     document.getElementById('dndEvent').style.display = 'none';
     document.getElementById('dndGame').style.display = 'block';
-    showDnDCard(0);
+    showDnDCard(0, true); // true = без анимации при первом показе
 }
 
 function toggleDnDEvent() {
