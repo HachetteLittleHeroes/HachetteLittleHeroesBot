@@ -14684,10 +14684,26 @@ function renderTeamsList(teams) {
     var html = '';
     for (var i = 0; i < teams.length; i++) {
         var t = teams[i];
+        
+        // Получаем персонажа лидера
+        var leaderChar = t.leader_character || '';
+        var leaderIcon = '';
+        if (leaderChar) {
+            switch(leaderChar) {
+                case 'knight': leaderIcon = '🛡️'; break;
+                case 'mage': leaderIcon = '🔮'; break;
+                case 'archer': leaderIcon = '🏹'; break;
+                case 'druid': leaderIcon = '🌿'; break;
+                case 'assassin': leaderIcon = '🗡️'; break;
+                case 'bard': leaderIcon = '🎵'; break;
+                default: leaderIcon = '';
+            }
+        }
+        
         html += `
             <div style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 12px; margin-bottom: 10px;">
                 <b>${escapeHtml(t.team_name)}</b><br>
-                👑 Лидер: ${escapeHtml(t.leader_name)}<br>
+                👑 Лидер: ${escapeHtml(t.leader_name)} ${leaderIcon ? leaderIcon : ''}<br>
                 👥 ${t.current_members}/${t.members_needed}<br>
                 ${t.leader_id != userId && t.current_members < 6 ? 
                     `<button onclick="joinTeam('${t.id}')" style="background: #4CAF50; border: none; padding: 5px 12px; border-radius: 20px; margin-top: 8px;">🤝 Вступить</button>` : ''}
@@ -14717,20 +14733,43 @@ function loadMyTeam() {
 
 function renderMyTeam(team) {
     var isLeader = team.leader_id == userId;
-    var canStart = team.current_members >= 4;
+    // Разрешаем старт с 1 игроком
+    var canStart = team.current_members >= 1;
     
     var membersHtml = '';
     for (var i = 0; i < team.members.length; i++) {
         var m = team.members[i];
-        membersHtml += `<span style="background: rgba(255,255,255,0.1); padding: 4px 10px; border-radius: 20px; margin: 3px; display: inline-block;">${m.id == team.leader_id ? '👑' : '👤'} ${escapeHtml(m.name)}</span>`;
+        var characterIcon = '';
+        var characterName = '';
+        
+        // Отображаем выбранного персонажа
+        if (m.character_class) {
+            switch(m.character_class) {
+                case 'knight': characterIcon = '🛡️'; characterName = 'Рыцарь'; break;
+                case 'mage': characterIcon = '🔮'; characterName = 'Маг'; break;
+                case 'archer': characterIcon = '🏹'; characterName = 'Лучник'; break;
+                case 'druid': characterIcon = '🌿'; characterName = 'Друид'; break;
+                case 'assassin': characterIcon = '🗡️'; characterName = 'Ассасин'; break;
+                case 'bard': characterIcon = '🎵'; characterName = 'Бард'; break;
+                default: characterIcon = '❓'; characterName = m.character_class;
+            }
+        }
+        
+        membersHtml += `
+            <span style="background: rgba(255,255,255,0.1); padding: 4px 10px; border-radius: 20px; margin: 3px; display: inline-block;">
+                ${m.id == team.leader_id ? '👑' : '👤'} ${escapeHtml(m.name)}
+                ${characterIcon ? ` 🎭 ${characterIcon} ${characterName}` : ' (не выбран)'}
+            </span>
+        `;
     }
     
     var actions = '';
     if (isLeader) {
         actions = `
-            <div style="display: flex; gap: 10px; margin-top: 10px;">
+            <div style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;">
                 <button class="task-submit-btn" onclick="showTeamCharacterModal()" style="width: auto; padding: 8px 16px;">🎭 Выбрать персонажа</button>
-                ${canStart ? '<button class="task-submit-btn" onclick="startTeamGame()" style="width: auto; padding: 8px 16px; background: #ff9800;">🎮 Начать игру</button>' : '<button class="task-submit-btn" disabled style="width: auto; padding: 8px 16px; background: gray;">⏳ Нужно 4+ участников</button>'}
+                <button class="task-submit-btn" onclick="startTeamGame()" style="width: auto; padding: 8px 16px; background: #ff9800;">🎮 Начать игру</button>
+                <button class="task-submit-btn" onclick="disbandTeam()" style="width: auto; padding: 8px 16px; background: #f44336;">💥 Расформировать</button>
             </div>
         `;
     } else {
@@ -14749,6 +14788,7 @@ function renderMyTeam(team) {
                 <h4>${escapeHtml(team.team_name)}</h4>
                 <div style="margin: 10px 0;">${membersHtml}</div>
                 <p>👥 ${team.current_members}/6 участников</p>
+                <p style="font-size: 12px; color: #888;">🎭 Выбранный персонаж отображается рядом с ником</p>
                 ${actions}
             </div>
         `;
@@ -15314,6 +15354,74 @@ function escapeHtml(text) {
 function forceCheckDndAccess() {
     checkDndPaymentStatus();
 }
+        // ==========================================
+// УПРАВЛЕНИЕ КОМАНДОЙ
+// ==========================================
+
+// Расформировать команду (только для лидера)
+function disbandTeam() {
+    if (!confirm('⚠️ ВЫ УВЕРЕНЫ? Команда будет расформирована, все участники будут удалены.')) return;
+    
+    fetch(SERVER_URL + '/api/dnd/teams/disband', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: userId })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.status === 'ok') {
+            alert('✅ Команда расформирована');
+            refreshTeamList();
+            loadMyTeam();
+        } else {
+            alert('❌ ' + (data.message || 'Ошибка'));
+        }
+    })
+    .catch(err => console.error('Ошибка:', err));
+}
+
+// Покинуть чужую команду
+function leaveTeam() {
+    if (!confirm('Вы уверены, что хотите покинуть команду?')) return;
+    
+    fetch(SERVER_URL + '/api/dnd/teams/leave', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: userId })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.status === 'ok') {
+            alert('✅ Вы покинули команду');
+            refreshTeamList();
+            loadMyTeam();
+        } else {
+            alert('❌ ' + (data.message || 'Ошибка'));
+        }
+    });
+}
+
+// Начать игру (даже если 1 человек)
+function startTeamGame() {
+    fetch(SERVER_URL + '/api/dnd/teams/start', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: userId })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.status === 'ok') {
+            alert('🎮 Игра начинается!');
+            document.getElementById('dndLobby').style.display = 'none';
+            document.getElementById('dndGame').style.display = 'block';
+            // Показываем выбор персонажа
+            showTeamCharacterModal();
+        } else {
+            alert('❌ ' + (data.message || 'Ошибка'));
+        }
+    });
+}
+        
     // ==========================================
 // ИНИЦИАЛИЗАЦИЯ
 // ==========================================
