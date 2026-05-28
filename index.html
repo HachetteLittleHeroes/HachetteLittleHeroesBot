@@ -12833,30 +12833,15 @@ function animateCardDisappear(callback) {
 }
 
 // ==========================================
-// УНИВЕРСАЛЬНАЯ ЛОГИКА КУБИКА
+// ЛОГИКА КУБИКА (только d6)
 // ==========================================
 
-function getDiceTypeForCard(cardId) {
-    if (cardId === 0) return "d3";
-    if (cardId >= 1 && cardId <= 39) return "d3";
-    if (cardId >= 40 && cardId <= 100) return "d6";
-    if (cardId >= 101 && cardId <= 106) return "d6";
-    if (cardId >= 107 && cardId <= 112) return "d8";
-    if (cardId >= 113 && cardId <= 136) return "d8";
-    if (cardId >= 137 && cardId <= 184) return "d6";
-    if (cardId >= 185 && cardId <= 202) return "d6";
-    if (cardId >= 203 && cardId <= 208) return null;
-    return "d6";
-}
-
 function getDiceRange(cardId) {
-    var diceType = getDiceTypeForCard(cardId);
-    switch(diceType) {
-        case "d3": return { min: 1, max: 3 };
-        case "d6": return { min: 1, max: 6 };
-        case "d8": return { min: 1, max: 8 };
-        default: return { min: 1, max: 6 };
-    }
+    // Всегда d6, но разные уровни могут использовать разные диапазоны значений
+    if (cardId === 0) return { min: 1, max: 3 };      // Старт: только 1-3
+    if (cardId >= 1 && cardId <= 39) return { min: 1, max: 3 };  // Уровни 1-3: 1-3
+    if (cardId >= 107 && cardId <= 136) return { min: 1, max: 8 }; // 8 значений для 4 карт
+    return { min: 1, max: 6 };  // Обычный d6
 }
 
 function rollDiceForCard(cardId) {
@@ -12864,21 +12849,16 @@ function rollDiceForCard(cardId) {
     return Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
 }
 
-function getDiceFaceRotation(result, diceType) {
+function getDiceFaceRotation(result) {
+    // Вращение для обычного шестигранного кубика
     var rotations = {
         1: 'rotateX(0deg) rotateY(0deg)',
         2: 'rotateX(0deg) rotateY(180deg)',
         3: 'rotateX(0deg) rotateY(-90deg)',
         4: 'rotateX(0deg) rotateY(90deg)',
         5: 'rotateX(-90deg) rotateY(0deg)',
-        6: 'rotateX(90deg) rotateY(0deg)',
-        7: 'rotateX(180deg) rotateY(45deg)',
-        8: 'rotateX(0deg) rotateY(135deg)'
+        6: 'rotateX(90deg) rotateY(0deg)'
     };
-    
-    if (diceType === 'd8' && result <= 8) {
-        return rotations[result] || rotations[1];
-    }
     return rotations[result] || rotations[1];
 }
 
@@ -12899,10 +12879,12 @@ function getTransition(cardId, diceRoll) {
     
     if (!transitions) return null;
     
+    // Прямое попадание
     if (transitions[diceRoll] !== undefined) {
         return transitions[diceRoll];
     }
     
+    // Ищем ближайшее меньшее значение (для группировки)
     for (var i = diceRoll; i >= 1; i--) {
         if (transitions[i] !== undefined) {
             return transitions[i];
@@ -12913,7 +12895,7 @@ function getTransition(cardId, diceRoll) {
 }
 
 // ==========================================
-// ОСНОВНЫЕ ФУНКЦИИ ИГРЫ С АНИМАЦИЕЙ
+// ОСНОВНЫЕ ФУНКЦИИ ИГРЫ
 // ==========================================
 
 function showDnDCard(cardNumber, skipAnimation) {
@@ -12992,11 +12974,11 @@ function renderDnDCardContent(cardNumber) {
     var titleEl = document.getElementById('dndGameTitle');
     if (titleEl) titleEl.innerText = levelText;
     
-    var diceType = getDiceTypeForCard(cardNumber);
+    var range = getDiceRange(cardNumber);
     var diceInfoText = '';
-    if (diceType === 'd3') diceInfoText = '(кубик d3, значения 1-3)';
-    else if (diceType === 'd6') diceInfoText = '(кубик d6, значения 1-6)';
-    else if (diceType === 'd8') diceInfoText = '(кубик d8, значения 1-8)';
+    if (range.max === 3) diceInfoText = '(выпадает 1-3)';
+    else if (range.max === 8) diceInfoText = '(группировка: 1-2→1, 3-4→2, 5-6→3, 7-8→4)';
+    else diceInfoText = '(выпадает 1-6)';
     
     var diceHtml = `
         <div id="dndDiceWrapper" style="margin: 15px 0; display: ${card.isStart || dndApproved ? 'block' : 'none'};">
@@ -13091,11 +13073,10 @@ function rollDnDDice() {
         return;
     }
     
-    var diceType = getDiceTypeForCard(prevCard);
     var result = rollDiceForCard(prevCard);
     
     dice.classList.add('rolling');
-    var rotation = getDiceFaceRotation(result, diceType);
+    var rotation = getDiceFaceRotation(result);
     
     setTimeout(function() {
         dice.classList.remove('rolling');
@@ -13179,7 +13160,7 @@ function submitDnDTaskPhoto() {
     if (window.isUploading) return;
     window.isUploading = true;
     
-    // Имитация отправки (для демонстрации)
+    // Имитация отправки
     setTimeout(function() {
         window.isUploading = false;
         if (window.Telegram && window.Telegram.WebApp) {
@@ -13203,7 +13184,6 @@ function selectDnDCharacter(char) {
     dndCardHistory = [0];
     dndApproved = true;
     
-    // Визуальное выделение
     var cards = document.querySelectorAll('.dnd-character-card');
     for (var i = 0; i < cards.length; i++) {
         cards[i].classList.remove('selected');
@@ -13211,13 +13191,11 @@ function selectDnDCharacter(char) {
     var cardEl = document.querySelector('[data-char="' + char + '"]');
     if (cardEl) cardEl.classList.add('selected');
     
-    // Переключение панелей
     var dndEvent = document.getElementById('dndEvent');
     var dndGame = document.getElementById('dndGame');
     if (dndEvent) dndEvent.style.display = 'none';
     if (dndGame) dndGame.style.display = 'block';
     
-    // Старт игры
     showDnDCard(0, true);
 }
 
