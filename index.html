@@ -17430,7 +17430,13 @@ function animateCardDisappear(callback) {
 }
 
 function showDnDCard(cardNumber, skipAnimation) {
-    console.log('🎴 showDnDCard:', cardNumber, 'character:', dndCharacter);
+    console.log('🎴 showDnDCard вызван с cardNumber:', cardNumber, 'skipAnimation:', skipAnimation, 'character:', dndCharacter);
+    
+    // Защита от undefined
+    if (cardNumber === undefined || cardNumber === null) {
+        console.error('❌ cardNumber is undefined! Устанавливаем 0');
+        cardNumber = 0;
+    }
     
     // Для карты 0 не проверяем существование (она есть у всех)
     if (cardNumber !== 0) {
@@ -17479,12 +17485,6 @@ function showDnDCard(cardNumber, skipAnimation) {
         renderDnDCardContent(cardNumber);
         setTimeout(animateCardAppear, 50);
     });
-}
-        function backToLobby() {
-    document.getElementById('dndGame').style.display = 'none';
-    document.getElementById('dndLobby').style.display = 'block';
-    refreshTeamList();
-    loadMyTeam();
 }
 
 function renderDnDCardContent(cardNumber) {
@@ -17610,6 +17610,7 @@ function rollDnDDice() {
     }
     
     if (dndCardHistory.length === 0) {
+        console.warn('⚠️ dndCardHistory пуст, инициализируем');
         dndCardHistory = [0];
     }
     
@@ -17666,6 +17667,9 @@ function rollDnDDice() {
             
             dndCardHistory.push(nextCardId);
             dndApproved = false;
+            
+            console.log('✅ Переход на карту:', nextCardId);
+            console.log('📜 История карт:', dndCardHistory);
             
             // Сохраняем прогресс в localStorage
             localStorage.setItem(`dnd_progress_${userId}`, JSON.stringify({
