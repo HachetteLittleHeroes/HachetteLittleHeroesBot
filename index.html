@@ -17006,22 +17006,31 @@ function selectTeamCharacter(character) {
         if (data.status === 'ok') {
             alert('✅ Персонаж выбран!');
             closeTeamCharacterModal();
-            dndCharacter = character;
-            dndCardHistory = [0];
-            dndApproved = true;
             
-            // Сохраняем прогресс на сервер
-            saveGameState();
+            // Сохраняем в глобальную переменную и localStorage
+            dndCharacter = character;
+            localStorage.setItem(`dnd_character_${userId}`, character);
+            localStorage.setItem(`dnd_progress_${userId}`, JSON.stringify({
+                character: character,
+                cardHistory: [0],
+                timestamp: Date.now()
+            }));
             
             // Проверяем, началась ли уже игра
             fetch(SERVER_URL + '/api/dnd/team/status?user_id=' + userId)
                 .then(r => r.json())
                 .then(statusData => {
+                    console.log('📡 Статус после выбора персонажа:', statusData);
+                    
                     if (statusData.status === 'ok' && statusData.game_started) {
+                        // Игра уже началась
+                        dndCardHistory = [0];
+                        dndApproved = true;
                         document.getElementById('dndLobby').style.display = 'none';
                         document.getElementById('dndGame').style.display = 'block';
                         showDnDCard(0, true);
                     } else {
+                        // Игра ещё не началась
                         document.getElementById('dndLobby').style.display = 'block';
                         document.getElementById('dndGame').style.display = 'none';
                         loadMyTeam();
@@ -17143,7 +17152,7 @@ function checkTeamStatus() {
             }
         });
 }
-      function checkDndGameStatus() {
+     function checkDndGameStatus() {
     console.log('🔍 Проверка статуса игры...');
     
     fetch(SERVER_URL + '/api/dnd/team/status?user_id=' + userId)
@@ -17157,31 +17166,60 @@ function checkTeamStatus() {
                     document.getElementById('dndLobby').style.display = 'none';
                     document.getElementById('dndGame').style.display = 'block';
                     
-                    // Находим себя в команде
-                    var myself = data.members ? data.members.find(m => m.id == userId) : null;
+                    // Находим себя в команде — используем user_id или id
+                    var myself = null;
+                    if (data.members && Array.isArray(data.members)) {
+                        myself = data.members.find(m => m.user_id == userId || m.id == userId);
+                        console.log('👤 Найден участник:', myself);
+                    }
                     
-                    if (myself && myself.character) {
-                        dndCharacter = myself.character;
+                    // Пытаемся получить персонажа
+                    var savedCharacter = null;
+                    if (myself) {
+                        savedCharacter = myself.character || myself.character_class;
+                        console.log('🎭 Персонаж из команды:', savedCharacter);
+                    }
+                    
+                    // Проверяем localStorage
+                    var savedProgress = localStorage.getItem(`dnd_progress_${userId}`);
+                    var localCharacter = null;
+                    if (savedProgress) {
+                        try {
+                            var progress = JSON.parse(savedProgress);
+                            localCharacter = progress.character;
+                        } catch(e) {}
+                    }
+                    
+                    // Используем найденного персонажа
+                    var finalCharacter = savedCharacter || localCharacter || dndCharacter;
+                    
+                    if (finalCharacter) {
+                        dndCharacter = finalCharacter;
+                        console.log('✅ Персонаж восстановлен:', dndCharacter);
+                        
                         // Загружаем прогресс с сервера
-                        loadGameStateFromServer().then(success => {
-                            if (success) {
-                                var lastCard = dndCardHistory[dndCardHistory.length - 1];
-                                showDnDCard(lastCard, true);
-                            } else {
+                        fetch(SERVER_URL + '/api/dnd/get_progress?user_id=' + userId + '&character=' + dndCharacter)
+                            .then(r => r.json())
+                            .then(progressData => {
+                                console.log('📡 Прогресс с сервера:', progressData);
+                                
+                                if (progressData.status === 'ok' && progressData.progress && progressData.progress.completed_cards) {
+                                    dndCardHistory = progressData.progress.completed_cards;
+                                    dndApproved = true;
+                                    var lastCard = dndCardHistory[dndCardHistory.length - 1];
+                                    showDnDCard(lastCard, true);
+                                } else {
+                                    dndCardHistory = [0];
+                                    dndApproved = true;
+                                    showDnDCard(0, true);
+                                }
+                            })
+                            .catch(err => {
+                                console.error('Ошибка загрузки прогресса:', err);
                                 dndCardHistory = [0];
                                 dndApproved = true;
                                 showDnDCard(0, true);
-                            }
-                        });
-                    } else if (dndCharacter) {
-                        loadGameStateFromServer().then(success => {
-                            if (success) {
-                                var lastCard = dndCardHistory[dndCardHistory.length - 1];
-                                showDnDCard(lastCard, true);
-                            } else {
-                                showDnDCard(0, true);
-                            }
-                        });
+                            });
                     } else {
                         console.log('⚠️ Персонаж не выбран, показываем выбор');
                         showTeamCharacterModal();
@@ -17198,7 +17236,11 @@ function checkTeamStatus() {
                 }
             }
         })
-        .catch(err => console.error('❌ Ошибка checkDndGameStatus:', err));
+        .catch(err => {
+            console.error('❌ Ошибка checkDndGameStatus:', err);
+            document.getElementById('dndLobby').style.display = 'block';
+            document.getElementById('dndGame').style.display = 'none';
+        });
 }
 
 function loadDndProgress() {
@@ -17911,13 +17953,34 @@ function closeTeamPreviewModal() {
             document.getElementById('dndLobby').style.display = 'block';
             document.getElementById('dndGame').style.display = 'none';
         });
-}
-    // ==========================================
+}// ==========================================
 // ИНИЦИАЛИЗАЦИЯ
 // ==========================================
 
 window.onload = async () => {
     console.log('🚀 APP STARTING...');
+    
+    // 🔄 Восстанавливаем персонажа D&D из localStorage
+    var savedDndCharacter = localStorage.getItem(`dnd_character_${userId}`);
+    if (savedDndCharacter) {
+        dndCharacter = savedDndCharacter;
+        console.log('🔄 D&D персонаж восстановлен из localStorage:', dndCharacter);
+        
+        // Восстанавливаем прогресс
+        var savedProgress = localStorage.getItem(`dnd_progress_${userId}`);
+        if (savedProgress) {
+            try {
+                var progress = JSON.parse(savedProgress);
+                if (progress.cardHistory) {
+                    dndCardHistory = progress.cardHistory;
+                    dndApproved = true;
+                    console.log('🔄 D&D прогресс восстановлен из localStorage:', dndCardHistory);
+                }
+            } catch(e) {
+                console.error('Ошибка восстановления прогресса:', e);
+            }
+        }
+    }
     
     const savedUser = localStorage.getItem('coloring_user');
     if (savedUser) Object.assign(user, JSON.parse(savedUser));
