@@ -17099,13 +17099,31 @@ function closeResetModal() {
     var modal = document.getElementById('resetProgressModal');
     if (modal) modal.style.display = 'none';
 }
+// Проверка, пройдена ли игра (победа над любым финальным боссом)
+function isGameCompleted() {
+    var finalBosses = [203, 204, 205, 206, 207, 208];
+    return finalBosses.some(function(boss) {
+        return dndCardHistory.includes(boss);
+    });
+}
 
+// Проверка, является ли карта финальным боссом
+function isFinalBoss(cardId) {
+    var finalBosses = [203, 204, 205, 206, 207, 208];
+    return finalBosses.includes(cardId);
+}
 function confirmResetProgress() {
-    // Проверяем, пройдена ли игра (есть карта 208)
-    var isGameCompleted = dndCardHistory.includes(208);
+    // Проверяем, пройдена ли игра (победа над любым финальным боссом)
+    var finalBosses = [203, 204, 205, 206, 207, 208];
+    var isGameCompleted = finalBosses.some(function(boss) {
+        return dndCardHistory.includes(boss);
+    });
+    
+    console.log('🔍 Проверка сброса: игра пройдена?', isGameCompleted);
+    console.log('📜 История карт:', dndCardHistory);
     
     if (!isGameCompleted) {
-        alert('❌ Сброс возможен только после полного прохождения игры (победы над финальным боссом)!');
+        alert('❌ Сброс возможен только после полного прохождения игры (победы над любым финальным боссом)!');
         return;
     }
     
@@ -17474,7 +17492,12 @@ function renderDnDCardContent(cardNumber) {
         return;
     }
     
-    if (card.isFinal && dndApproved) {
+  if (isFinalBoss(cardNumber) && dndApproved) {
+    var finalBosses = [203, 204, 205, 206, 207, 208];
+    var isGameCompleted = finalBosses.some(function(boss) {
+        return dndCardHistory.includes(boss);
+    });
+    
     cardContainer.innerHTML = `
         <div class="branch-task-card">
             <div class="branch-header"><h3>🎉 Победа!</h3></div>
@@ -17741,11 +17764,13 @@ function closeTaskUploadModal() {
 }
 
 function showResetProgressModal() {
-    // Проверяем, пройдена ли игра
-    var isGameCompleted = dndCardHistory.includes(208);
+    var finalBosses = [203, 204, 205, 206, 207, 208];
+    var isGameCompleted = finalBosses.some(function(boss) {
+        return dndCardHistory.includes(boss);
+    });
     
     if (!isGameCompleted) {
-        alert('❌ Сброс прогресса доступен только после полного прохождения игры!');
+        alert('❌ Сброс прогресса доступен только после полного прохождения игры (победы над любым финальным боссом)!');
         return;
     }
     
