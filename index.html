@@ -12633,14 +12633,16 @@ for (var i = 121; i <= 126; i++) {
 })();
 
 // Уровень 8 → 9 (151-204 → 205-222)
+// Карты 151-204: каждая карта ведёт на 3 карты уровня 9
+// 151→205,206,207; 152→208,209,210; ... 204→364,365,366
 (function() {
-    var c = 205;
     for (var i = 151; i <= 204; i++) {
-        DND_TRANSITIONS[i] = {};
-        DND_TRANSITIONS[i][1] = c; DND_TRANSITIONS[i][2] = c;
-        DND_TRANSITIONS[i][3] = c + 1; DND_TRANSITIONS[i][4] = c + 1;
-        DND_TRANSITIONS[i][5] = c + 2; DND_TRANSITIONS[i][6] = c + 2;
-        c += 3;
+        var base = 205 + (i - 151) * 3;
+        DND_TRANSITIONS[i] = {
+            1: base, 2: base,
+            3: base + 1, 4: base + 1,
+            5: base + 2, 6: base + 2
+        };
     }
 })();
 
