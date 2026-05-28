@@ -4313,6 +4313,108 @@
     background: linear-gradient(135deg, var(--card-bg) 0%, rgba(255, 215, 0, 0.1) 100%);
     border: 1px solid gold;
 }
+        /* ===== УЛУЧШЕННЫЕ СТИЛИ ДЛЯ КОМАНД ===== */
+.team-card {
+    background: var(--bg-secondary);
+    border-radius: 24px;
+    padding: 16px;
+    margin-bottom: 16px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.team-member-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: var(--bg);
+    border-radius: 16px;
+    margin-bottom: 8px;
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.team-member-item:hover {
+    background: rgba(255,149,0,0.05);
+}
+.team-member-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--accent);
+}
+.team-member-info {
+    flex: 1;
+}
+.team-member-name {
+    font-weight: 700;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 4px;
+}
+.team-member-status {
+    font-size: 12px;
+    color: var(--accent);
+    background: rgba(255,149,0,0.1);
+    padding: 2px 8px;
+    border-radius: 12px;
+    display: inline-block;
+}
+.team-member-level {
+    font-size: 11px;
+    color: var(--text-gray);
+    margin-top: 4px;
+}
+.team-member-character {
+    font-size: 12px;
+    color: var(--text-gray);
+    margin-top: 4px;
+}
+.team-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+}
+.team-action-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+}
+.team-action-btn.danger {
+    background: #f44336;
+}
+.teams-list-item {
+    background: var(--bg-secondary);
+    border-radius: 20px;
+    padding: 14px;
+    margin-bottom: 12px;
+    border: 1px solid var(--border-color);
+}
+.join-team-btn {
+    width: 100%;
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 30px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-gray);
+}
     </style>
 </head>
 <body>
@@ -14675,38 +14777,21 @@ function refreshTeamList() {
 function renderTeamsList(teams) {
     var container = document.getElementById('teamsList');
     if (!container) return;
-    
+
     if (!teams || teams.length === 0) {
-        container.innerHTML = '<div style="text-align:center; padding:20px;">🤝 Нет открытых команд</div>';
+        container.innerHTML = '<div class="empty-state"><i class="fas fa-users"></i><br>🤝 Нет открытых команд<br><span style="font-size:12px;">Создайте свою команду!</span></div>';
         return;
     }
-    
+
     var html = '';
     for (var i = 0; i < teams.length; i++) {
         var t = teams[i];
-        
-        // Получаем персонажа лидера
-        var leaderChar = t.leader_character || '';
-        var leaderIcon = '';
-        if (leaderChar) {
-            switch(leaderChar) {
-                case 'knight': leaderIcon = '🛡️'; break;
-                case 'mage': leaderIcon = '🔮'; break;
-                case 'archer': leaderIcon = '🏹'; break;
-                case 'druid': leaderIcon = '🌿'; break;
-                case 'assassin': leaderIcon = '🗡️'; break;
-                case 'bard': leaderIcon = '🎵'; break;
-                default: leaderIcon = '';
-            }
-        }
-        
         html += `
-            <div style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 12px; margin-bottom: 10px;">
-                <b>${escapeHtml(t.team_name)}</b><br>
-                👑 Лидер: ${escapeHtml(t.leader_name)} ${leaderIcon ? leaderIcon : ''}<br>
-                👥 ${t.current_members}/${t.members_needed}<br>
-                ${t.leader_id != userId && t.current_members < 6 ? 
-                    `<button onclick="joinTeam('${t.id}')" style="background: #4CAF50; border: none; padding: 5px 12px; border-radius: 20px; margin-top: 8px;">🤝 Вступить</button>` : ''}
+            <div class="teams-list-item">
+                <div class="team-name">🏰 ${escapeHtml(t.team_name)}</div>
+                <div class="team-leader"><i class="fas fa-crown" style="color:#ffd700;"></i> ${escapeHtml(t.leader_name)}</div>
+                <div class="team-members-count"><i class="fas fa-users"></i> ${t.current_members}/${t.members_needed}</div>
+                ${t.leader_id != userId && t.current_members < 6 ? `<button class="join-team-btn" onclick="joinTeam('${t.id}')">🤝 Вступить</button>` : ''}
             </div>
         `;
     }
@@ -14733,50 +14818,74 @@ function loadMyTeam() {
 
 function renderMyTeam(team) {
     var isLeader = team.leader_id == userId;
-    // Разрешаем старт с 1 игроком
     var canStart = team.current_members >= 1;
     
     var membersHtml = '';
+    
     for (var i = 0; i < team.members.length; i++) {
         var m = team.members[i];
-        var characterIcon = '';
-        var characterName = '';
+        var memberDivId = 'member_' + m.id + '_' + Date.now() + '_' + i;
         
-        // Отображаем выбранного персонажа
-        if (m.character_class) {
-            switch(m.character_class) {
-                case 'knight': characterIcon = '🛡️'; characterName = 'Рыцарь'; break;
-                case 'mage': characterIcon = '🔮'; characterName = 'Маг'; break;
-                case 'archer': characterIcon = '🏹'; characterName = 'Лучник'; break;
-                case 'druid': characterIcon = '🌿'; characterName = 'Друид'; break;
-                case 'assassin': characterIcon = '🗡️'; characterName = 'Ассасин'; break;
-                case 'bard': characterIcon = '🎵'; characterName = 'Бард'; break;
-                default: characterIcon = '❓'; characterName = m.character_class;
-            }
-        }
+        membersHtml += '<div id="' + memberDivId + '" class="team-member-item">Загрузка...</div>';
         
-        membersHtml += `
-            <span style="background: rgba(255,255,255,0.1); padding: 4px 10px; border-radius: 20px; margin: 3px; display: inline-block;">
-                ${m.id == team.leader_id ? '👑' : '👤'} ${escapeHtml(m.name)}
-                ${characterIcon ? ` 🎭 ${characterIcon} ${characterName}` : ' (не выбран)'}
-            </span>
-        `;
+        fetch(SERVER_URL + '/api/public_profile?user_id=' + m.id)
+            .then(r => r.json())
+            .then(userData => {
+                var avatarUrl = userData.avatar || 'https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png';
+                var status = userData.status || 'Без статуса';
+                var xp = userData.xp || 0;
+                var level = Math.floor(xp / 100) + 1;
+                
+                var characterIcon = '';
+                var characterName = '';
+                if (m.character_class) {
+                    switch(m.character_class) {
+                        case 'knight': characterIcon = '🛡️'; characterName = 'Рыцарь'; break;
+                        case 'mage': characterIcon = '🔮'; characterName = 'Маг'; break;
+                        case 'archer': characterIcon = '🏹'; characterName = 'Лучник'; break;
+                        case 'druid': characterIcon = '🌿'; characterName = 'Друид'; break;
+                        case 'assassin': characterIcon = '🗡️'; characterName = 'Ассасин'; break;
+                        case 'bard': characterIcon = '🎵'; characterName = 'Бард'; break;
+                        default: characterIcon = '❓'; characterName = m.character_class;
+                    }
+                }
+                
+                var memberHtml = `
+                    <img class="team-member-avatar" src="${avatarUrl}" onclick="event.stopPropagation(); openPublicProfile('${m.id}')" onerror="this.src='https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png'">
+                    <div class="team-member-info" onclick="openPublicProfile('${m.id}')">
+                        <div class="team-member-name">
+                            ${escapeHtml(m.name)}
+                            ${m.id == team.leader_id ? '<span class="team-member-status">👑 Лидер</span>' : ''}
+                        </div>
+                        <div class="team-member-status">${escapeHtml(status)}</div>
+                        <div class="team-member-level">🎨 Уровень ${level} (${xp} XP)</div>
+                        ${characterIcon ? `<div class="team-member-character"> ${characterIcon} ${characterName}</div>` : '<div class="team-member-character">⚡ Персонаж не выбран</div>'}
+                    </div>
+                `;
+                
+                var element = document.getElementById(memberDivId);
+                if (element) element.innerHTML = memberHtml;
+            })
+            .catch(() => {
+                var element = document.getElementById(memberDivId);
+                if (element) element.innerHTML = '<div style="padding:12px;">❌ Ошибка загрузки</div>';
+            });
     }
     
     var actions = '';
     if (isLeader) {
         actions = `
-            <div style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;">
-                <button class="task-submit-btn" onclick="showTeamCharacterModal()" style="width: auto; padding: 8px 16px;">🎭 Выбрать персонажа</button>
-                <button class="task-submit-btn" onclick="startTeamGame()" style="width: auto; padding: 8px 16px; background: #ff9800;">🎮 Начать игру</button>
-                <button class="task-submit-btn" onclick="disbandTeam()" style="width: auto; padding: 8px 16px; background: #f44336;">💥 Расформировать</button>
+            <div class="team-actions">
+                <button class="team-action-btn" onclick="showTeamCharacterModal()">🎭 Выбрать персонажа</button>
+                <button class="team-action-btn" onclick="startTeamGame()">🎮 Начать игру</button>
+                <button class="team-action-btn danger" onclick="disbandTeam()">💥 Расформировать</button>
             </div>
         `;
     } else {
         actions = `
-            <div style="display: flex; gap: 10px; margin-top: 10px;">
-                <button class="task-submit-btn" onclick="showTeamCharacterModal()" style="width: auto; padding: 8px 16px;">🎭 Выбрать персонажа</button>
-                <button class="task-submit-btn" onclick="leaveTeam()" style="width: auto; padding: 8px 16px; background: #f44336;">🚪 Покинуть</button>
+            <div class="team-actions">
+                <button class="team-action-btn" onclick="showTeamCharacterModal()">🎭 Выбрать персонажа</button>
+                <button class="team-action-btn danger" onclick="leaveTeam()">🚪 Покинуть</button>
             </div>
         `;
     }
@@ -14784,11 +14893,10 @@ function renderMyTeam(team) {
     var myTeamCard = document.getElementById('myTeamCard');
     if (myTeamCard) {
         myTeamCard.innerHTML = `
-            <div style="background: linear-gradient(135deg, #1a1a2e, #16213e); border-radius: 16px; padding: 15px;">
-                <h4>${escapeHtml(team.team_name)}</h4>
-                <div style="margin: 10px 0;">${membersHtml}</div>
-                <p>👥 ${team.current_members}/6 участников</p>
-                <p style="font-size: 12px; color: #888;">🎭 Выбранный персонаж отображается рядом с ником</p>
+            <div class="team-card">
+                <h4 style="margin:0 0 12px 0; font-size:18px; color:var(--accent);">${escapeHtml(team.team_name)}</h4>
+                <div>${membersHtml}</div>
+                <div style="font-size:13px; color:var(--text-gray); margin:12px 0;">👥 ${team.current_members}/6 участников</div>
                 ${actions}
             </div>
         `;
@@ -15011,18 +15119,18 @@ function loadDndProgress() {
         .then(r => r.json())
         .then(data => {
             if (data.status === 'ok' && data.progress) {
-                // Восстанавливаем прогресс
                 dndCardHistory = data.progress.completed_cards || [0];
                 dndApproved = true;
-                
-                // Если была незавершённая карта
                 if (data.progress.current_card && data.progress.current_card > 0) {
                     showDnDCard(data.progress.current_card, true);
                 } else {
                     showDnDCard(0, true);
                 }
+            } else {
+                showDnDCard(0, true);
             }
-        });
+        })
+        .catch(() => showDnDCard(0, true));
 }
 // ==========================================
 // D&D ИГРОВЫЕ ФУНКЦИИ
@@ -27326,131 +27434,6 @@ function saveClaimedRewards() {
     }).catch(e => console.error('Save rewards error:', e));
 }
        
- var dndCharacter = null;
-var dndLevel = 1;
-var dndIsRolling = false;
-        
-function selectDnDCharacter(char) {
-    dndCharacter = char;
-    dndCardHistory = [0]; // начинаем с карты 0
-    dndApproved = true; // для первого броска разрешаем
-    
-    document.querySelectorAll('.dnd-character-card').forEach(c => c.classList.remove('selected'));
-    document.querySelector(`[data-char="${char}"]`).classList.add('selected');
-    
-    // Сохраняем на сервер
-    fetch(`${SERVER_URL}/api/dnd/select_character`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: userId, character: char })
-    });
-    
-    // Показываем игру со стартовой картой
-    document.getElementById('dndEvent').style.display = 'none';
-    document.getElementById('dndGame').style.display = 'block';
-    showDnDCard(0);
-}
-
-var dndApproved = false; // одобрено ли текущее задание
-
-function rollDnDDice() {
-    if (dndIsRolling) return;
-    if (!dndCharacter) { alert('Сначала выбери персонажа!'); return; }
-    
-    // Проверка — финальный босс уже пройден
-    if (dndCardHistory.length > 0 && dndCardHistory[dndCardHistory.length - 1] === 161 && dndApproved) {
-        alert('🎉 Приключение завершено! Ты победил Демона Бездны!');
-        return;
-    }
-    
-    if (dndCardHistory.length > 0 && !dndApproved) {
-        alert('Сначала дождись одобрения задания!');
-        return;
-    }
-    
-    dndIsRolling = true;
-    dndApproved = false;
-    
-    const dice = document.getElementById('dndDice');
-    const result = Math.floor(Math.random() * 6) + 1;
-    
-    dice.classList.add('rolling');
-    
-    const rotations = {
-        1: 'rotateX(0deg) rotateY(0deg)',
-        2: 'rotateX(0deg) rotateY(180deg)',
-        3: 'rotateX(0deg) rotateY(-90deg)',
-        4: 'rotateX(0deg) rotateY(90deg)',
-        5: 'rotateX(-90deg) rotateY(0deg)',
-        6: 'rotateX(90deg) rotateY(0deg)'
-    };
-    
-    setTimeout(() => {
-        dice.classList.remove('rolling');
-        dice.style.transform = rotations[result];
-        
-        setTimeout(() => {
-            dndIsRolling = false;
-            
-            let cardNumber;
-            if (dndCardHistory.length === 0) {
-                cardNumber = result <= 2 ? 1 : result <= 4 ? 2 : 3;
-            } else {
-                const prevCard = dndCardHistory[dndCardHistory.length - 1];
-                cardNumber = DND_TRANSITIONS[prevCard] ? DND_TRANSITIONS[prevCard][result] : 1;
-            }
-            
-            dndCardHistory.push(cardNumber);
-            showDnDCard(cardNumber);
-        }, 1200);
-        
-    }, 800);
-}
-
-async function loadDnDCard(cardNumber) {
-    try {
-        const response = await fetch(`${SERVER_URL}/api/dnd/get_card?user_id=${userId}&level=${dndLevel}&card=${cardNumber}`);
-        const card = await response.json();
-        
-        const container = document.getElementById('dndCard');
-        container.style.display = 'block';
-        container.innerHTML = `
-            <div class="branch-task-card">
-                <div class="branch-header">
-                    <h3>Карта ${cardNumber}</h3>
-                    <p>${card.story}</p>
-                </div>
-                <div class="level-card">
-                    <p style="font-weight: 600; margin-bottom: 15px;">${card.question}</p>
-                    ${card.options.map((opt, idx) => `
-                        <button class="task-submit-btn" style="margin-bottom: 10px;" onclick="submitDnDAnswer(${idx}, '${opt.replace(/'/g, "\\'")}')">
-                            ${opt}
-                        </button>
-                    `).join('')}
-                </div>
-            </div>
-        `;
-    } catch(e) {
-        console.error('Card load error:', e);
-    }
-}
-
-function submitDnDAnswer(optionIdx, answer) {
-    // Открываем загрузку фото
-    openCommunityTaskUpload(); // или специальная функция с привязкой к ответу
-}
-function toggleDnDEvent() {
-    const content = document.getElementById('dndEventContent');
-    const arrow = document.getElementById('dndEventArrow');
-    if (!content) return;
-    if (content.style.display === 'block') {
-        content.style.display = 'none';
-        if (arrow) arrow.style.transform = 'rotate(0deg)';
-    } else {
-        content.style.display = 'block';
-        if (arrow) arrow.style.transform = 'rotate(180deg)';
-    }
-}
     </script>
     
     <!-- Модалка поиска пользователей -->
