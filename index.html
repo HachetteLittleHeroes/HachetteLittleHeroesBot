@@ -12806,7 +12806,7 @@ window.fetch = function() {
 };
 
 // ==========================================
-// D&D ПЕРЕМЕННЫЕ И ФУНКЦИИ С АНИМАЦИЕЙ
+// D&D ПЕРЕМЕННЫЕ И ФУНКЦИИ (БЫСТРАЯ АНИМАЦИЯ)
 // ==========================================
 
 var dndCharacter = null;
@@ -12816,7 +12816,7 @@ var dndApproved = false;
 var currentDnDCard = null;
 
 // ==========================================
-// АНИМАЦИЯ ПОЯВЛЕНИЯ КАРТОЧКИ
+// БЫСТРАЯ АНИМАЦИЯ ПОЯВЛЕНИЯ КАРТОЧКИ
 // ==========================================
 
 function animateCardAppear(callback) {
@@ -12826,21 +12826,15 @@ function animateCardAppear(callback) {
         return;
     }
     
-    cardContainer.classList.remove('card-disappear');
-    cardContainer.style.opacity = '0';
-    cardContainer.style.transform = 'translateY(30px) scale(0.95)';
-    
-    // Принудительный перерасчёт
-    void cardContainer.offsetHeight;
-    
-    cardContainer.style.transition = 'all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1)';
+    // Быстрое появление (0.15 сек)
+    cardContainer.style.transition = 'opacity 0.15s ease-out, transform 0.15s ease-out';
     cardContainer.style.opacity = '1';
     cardContainer.style.transform = 'translateY(0) scale(1)';
     
     if (callback) {
         setTimeout(function() {
             callback();
-        }, 400);
+        }, 150);
     }
 }
 
@@ -12851,19 +12845,20 @@ function animateCardDisappear(callback) {
         return;
     }
     
-    cardContainer.style.transition = 'all 0.2s ease-out';
+    // Быстрое исчезновение (0.1 сек)
+    cardContainer.style.transition = 'opacity 0.1s ease-in, transform 0.1s ease-in';
     cardContainer.style.opacity = '0';
-    cardContainer.style.transform = 'translateY(-20px) scale(0.95)';
+    cardContainer.style.transform = 'translateY(-10px) scale(0.98)';
     
     if (callback) {
         setTimeout(function() {
             callback();
-        }, 200);
+        }, 100);
     }
 }
 
 // ==========================================
-// ЛОГИКА КУБИКА (только d6)
+// ЛОГИКА КУБИКА
 // ==========================================
 
 function getMappedDiceValue(cardId, diceRoll) {
@@ -12915,23 +12910,21 @@ function getTransition(cardId, mappedValue) {
 // ==========================================
 
 function showDnDCard(cardNumber, skipAnimation) {
-    console.log('showDnDCard:', cardNumber, 'skipAnimation:', skipAnimation);
-    
-    // Если skipAnimation === undefined или true, показываем без анимации
-    if (skipAnimation !== false) {
+    if (skipAnimation === true) {
         renderDnDCardContent(cardNumber);
         return;
     }
     
     animateCardDisappear(function() {
         renderDnDCardContent(cardNumber);
-        animateCardAppear();
+        // Небольшая задержка перед появлением
+        setTimeout(function() {
+            animateCardAppear();
+        }, 50);
     });
 }
 
 function renderDnDCardContent(cardNumber) {
-    console.log('renderDnDCardContent:', cardNumber);
-    
     var card = null;
     
     if (dndCharacter === 'knight') {
@@ -12943,10 +12936,7 @@ function renderDnDCardContent(cardNumber) {
     }
     
     var cardContainer = document.getElementById('dndCard');
-    if (!cardContainer) {
-        console.error('dndCard не найден');
-        return;
-    }
+    if (!cardContainer) return;
     
     // Сбрасываем стили анимации
     cardContainer.style.transition = '';
@@ -12999,10 +12989,9 @@ function renderDnDCardContent(cardNumber) {
     var titleEl = document.getElementById('dndGameTitle');
     if (titleEl) titleEl.innerText = levelText;
     
-    // Подсказка для кубика
     var diceInfoText = '';
     if (cardNumber === 0 || (cardNumber >= 1 && cardNumber <= 39)) {
-        diceInfoText = '(1-2 → карта 1, 3-4 → карта 2, 5-6 → карта 3)';
+        diceInfoText = '(1-2 → 1, 3-4 → 2, 5-6 → 3)';
     } else {
         diceInfoText = '(1-6 → разные карты)';
     }
@@ -13017,7 +13006,7 @@ function renderDnDCardContent(cardNumber) {
                 <div class="dice-face top"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span><span class="dot dot5"></span></div>
                 <div class="dice-face bottom"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span><span class="dot dot5"></span><span class="dot dot6"></span></div>
             </div>
-            <p style="color: var(--text-gray); font-size: 13px; margin-top: 8px;">Нажми на кубик ${diceInfoText}</p>
+            <p style="color: var(--text-gray); font-size: 12px; margin-top: 8px;">🎲 ${diceInfoText}</p>
         </div>
     `;
     
@@ -13029,7 +13018,7 @@ function renderDnDCardContent(cardNumber) {
                 </div>
                 <div class="level-card">
                     ${card.image ? '<img src="' + card.image + '" class="card-image" style="width:100%;border-radius:12px;margin-bottom:15px;" onerror="this.style.display=\'none\'">' : ''}
-                    <p style="text-align:center;font-weight:600;">Брось кубик, чтобы начать приключение!</p>
+                    <p style="text-align:center;font-weight:600;">Брось кубик, чтобы начать!</p>
                     ${diceHtml}
                 </div>
             </div>
@@ -13042,10 +13031,10 @@ function renderDnDCardContent(cardNumber) {
                 </div>
                 <div class="level-card">
                     ${card.image ? '<img src="' + card.image + '" class="card-image" style="width:100%;border-radius:12px;margin-bottom:15px;" onerror="this.style.display=\'none\'">' : ''}
-                    <p style="font-weight: 600; margin-bottom: 15px;">📋 Задание: ${card.task}</p>
+                    <p style="font-weight: 600; margin-bottom: 15px;">📋 ${card.task}</p>
                     ${!dndApproved ? `
                         <button class="task-submit-btn" onclick="openDnDTaskUpload(${cardNumber})">
-                            <i class="fas fa-camera"></i> Отправить фото ДО/ПОСЛЕ
+                            <i class="fas fa-camera"></i> Отправить фото
                         </button>
                     ` : `
                         <div style="text-align:center;color:var(--status-green);margin-bottom:10px;">
@@ -13113,15 +13102,15 @@ function rollDnDDice() {
             var nextCardId = getTransition(prevCard, mappedValue);
             
             if (nextCardId === null || nextCardId === undefined) {
-                alert('Ошибка: нет перехода для этого значения кубика!');
+                alert('Ошибка: нет перехода!');
                 return;
             }
             
             dndCardHistory.push(nextCardId);
             dndApproved = false;
-            showDnDCard(nextCardId, false); // false = с анимацией
-        }, 1200);
-    }, 800);
+            showDnDCard(nextCardId, false);
+        }, 500);
+    }, 400);
 }
 
 function openDnDTaskUpload(cardNumber) {
@@ -13157,7 +13146,7 @@ function openDnDTaskUpload(cardNumber) {
         if (modal) {
             modal.style.display = 'flex';
             var titleEl = modal.querySelector('h3');
-            if (titleEl) titleEl.innerText = 'Отправка D&D задания';
+            if (titleEl) titleEl.innerText = 'Отправка задания';
             
             var submitBtn = modal.querySelector('.modal-action-btn');
             if (submitBtn) {
@@ -13176,7 +13165,7 @@ function openDnDTaskUpload(cardNumber) {
 
 function submitDnDTaskPhoto() {
     if (!window.tempPhotos || window.tempPhotos.length === 0) {
-        alert('❌ Выберите хотя бы одно фото');
+        alert('❌ Выберите фото');
         return;
     }
     if (window.isUploading) return;
@@ -13184,10 +13173,10 @@ function submitDnDTaskPhoto() {
     
     setTimeout(function() {
         window.isUploading = false;
-        alert('✅ Фото отправлено на проверку!');
+        alert('✅ Фото отправлено!');
         closeTaskUploadModal();
         approveDnDTask();
-    }, 500);
+    }, 300);
 }
 
 function approveDnDTask() {
@@ -13197,8 +13186,6 @@ function approveDnDTask() {
 }
 
 function selectDnDCharacter(char) {
-    console.log('Выбран персонаж:', char);
-    
     dndCharacter = char;
     dndCardHistory = [0];
     dndApproved = true;
@@ -13215,15 +13202,14 @@ function selectDnDCharacter(char) {
     if (dndEvent) dndEvent.style.display = 'none';
     if (dndGame) dndGame.style.display = 'block';
     
-    // Сбрасываем стили анимации
     var cardContainer = document.getElementById('dndCard');
     if (cardContainer) {
         cardContainer.style.transition = '';
-        cardContainer.style.opacity = '';
+        cardContainer.style.opacity = '1';
         cardContainer.style.transform = '';
     }
     
-    showDnDCard(0, true); // true = без анимации
+    showDnDCard(0, true);
 }
 
 function toggleDnDEvent() {
