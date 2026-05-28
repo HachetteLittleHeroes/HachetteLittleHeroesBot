@@ -12345,7 +12345,11 @@ function renderUserLevel() {
     
     return xp;
 }
-       var DND_CARDS = {
+     // ==========================================
+// D&D КАРТЫ И ПЕРЕХОДЫ
+// ==========================================
+
+var DND_CARDS = {
     knight: {
         0: {
             title: "Королевский указ",
@@ -12459,7 +12463,9 @@ function renderUserLevel() {
         }
     }
 };
-        DND_CARDS.knight[22] = { title: "Каменный мост", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k22.jpeg", task: "Раскрась картинку с мостом или рекой" };
+
+// Карты 22-100
+DND_CARDS.knight[22] = { title: "Каменный мост", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k22.jpeg", task: "Раскрась картинку с мостом или рекой" };
 DND_CARDS.knight[23] = { title: "Башня призраков", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k23.jpeg", task: "Раскрась картинку с башней или призраком" };
 DND_CARDS.knight[24] = { title: "Лабиринт", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k24.jpeg", task: "Раскрась картинку с лабиринтом или стеной" };
 DND_CARDS.knight[25] = { title: "Гнездо виверны", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k25.jpeg", task: "Раскрась картинку с виверной или гнездом" };
@@ -12498,7 +12504,7 @@ DND_CARDS.knight[57] = { title: "Лаборатория алхимика", image
 DND_CARDS.knight[58] = { title: "Обсерватория", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k58.jpeg", task: "Раскрась картинку с телескопом или звёздами" };
 DND_CARDS.knight[59] = { title: "Теплица", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k59.jpeg", task: "Раскрась картинку с растениями или горшками" };
 DND_CARDS.knight[60] = { title: "Балкон", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k60.jpeg", task: "Раскрась картинку с балконом или видом" };
-  DND_CARDS.knight[61] = { title: "Зал советов", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k61.jpeg", task: "Раскрась картинку с советом или столом" };
+DND_CARDS.knight[61] = { title: "Зал советов", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k61.jpeg", task: "Раскрась картинку с советом или столом" };
 DND_CARDS.knight[62] = { title: "Галерея героев", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k62.jpeg", task: "Раскрась картинку с портретом или галереей" };
 DND_CARDS.knight[63] = { title: "Зал фонтанов", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k63.jpeg", task: "Раскрась картинку с фонтаном или водой" };
 DND_CARDS.knight[64] = { title: "Покой рыцаря", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k64.jpeg", task: "Раскрась картинку с комнатой или отдыхом" };
@@ -12558,18 +12564,24 @@ DND_CARDS.knight[117] = { title: "Гранитный зал", image: "https://s3
 DND_CARDS.knight[118] = { title: "Мраморный зал", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k118.jpeg", task: "Раскрась картинку с мрамором или статуей" };
 DND_CARDS.knight[119] = { title: "Хрустальный зал", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k119.jpeg", task: "Раскрась картинку с хрусталём или прозрачностью" };
 DND_CARDS.knight[120] = { title: "Магматический зал", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k120.jpeg", task: "Раскрась картинку с магмой или жаром" };
+
+// Мини-боссы (121-126)
 DND_CARDS.knight[121] = { title: "Хранитель подземелья", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k121.jpeg", task: "Раскрась картинку с боссом или эпической битвой!" };        
-DND_CARDS.knight[122] = { title: "Портал Света", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k122.jpeg", task: "Раскрась картинку с порталом или светом" };
-DND_CARDS.knight[123] = { title: "Лавовый водопад", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k123.jpeg", task: "Раскрась картинку с лавой или водопадом" };
-DND_CARDS.knight[124] = { title: "Ледяной трон", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k124.jpeg", task: "Раскрась картинку со льдом или троном" };
-DND_CARDS.knight[125] = { title: "Зал бурь", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k125.jpeg", task: "Раскрась картинку с бурей или молнией" };
-DND_CARDS.knight[126] = { title: "Песчаный вихрь", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k126.jpeg", task: "Раскрась картинку с песком или вихрем" };
-DND_CARDS.knight[127] = { title: "Зал туманов", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k127.jpeg", task: "Раскрась картинку с туманом или дымкой" };
-DND_CARDS.knight[128] = { title: "Грозовой мост", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k128.jpeg", task: "Раскрась картинку с грозой или мостом" };
-DND_CARDS.knight[129] = { title: "Радужный зал", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k129.jpeg", task: "Раскрась картинку с радугой или светом" };
-DND_CARDS.knight[130] = { title: "Зал северного сияния", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k130.jpeg", task: "Раскрась картинку с сиянием или небом" };
-DND_CARDS.knight[131] = { title: "Звёздный зал", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k131.jpeg", task: "Раскрась картинку со звёздами или космосом" };
-DND_CARDS.knight[132] = { title: "Лунный мост", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k132.jpeg", task: "Раскрась картинку с луной или мостом" };
+DND_CARDS.knight[122] = { title: "Теневой дракон", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k122.jpeg", task: "Раскрась картинку с драконом или тенью!" };
+DND_CARDS.knight[123] = { title: "Король гоблинов", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k123.jpeg", task: "Раскрась картинку с гоблином или короной!" };
+DND_CARDS.knight[124] = { title: "Дух тьмы", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k124.jpeg", task: "Раскрась картинку с духом или тьмой!" };
+DND_CARDS.knight[125] = { title: "Маг хаоса", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k125.jpeg", task: "Раскрась картинку с магом или хаосом!" };
+DND_CARDS.knight[126] = { title: "Железный голем", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k126.jpeg", task: "Раскрась картинку с големом или металлом!" };
+
+// Общие карты (127-132)
+DND_CARDS.knight[127] = { title: "Возрождение", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k127.jpeg", task: "Раскрась картинку с возрождением или светом!" };
+DND_CARDS.knight[128] = { title: "Новая сила", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k128.jpeg", task: "Раскрась картинку с силой или энергией!" };
+DND_CARDS.knight[129] = { title: "Древний артефакт", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k129.jpeg", task: "Раскрась картинку с артефактом или реликвией!" };
+DND_CARDS.knight[130] = { title: "Союзники", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k130.jpeg", task: "Раскрась картинку с союзниками или командой!" };
+DND_CARDS.knight[131] = { title: "Карта сокровищ", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k131.jpeg", task: "Раскрась картинку с картой или сокровищем!" };
+DND_CARDS.knight[132] = { title: "Портал", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k132.jpeg", task: "Раскрась картинку с порталом или вратами!" };
+
+// Уровень 7: 133-150
 DND_CARDS.knight[133] = { title: "Солнечный алтарь", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k133.jpeg", task: "Раскрась картинку с солнцем или алтарём" };
 DND_CARDS.knight[134] = { title: "Зал затмения", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k134.jpeg", task: "Раскрась картинку с затмением или тьмой" };
 DND_CARDS.knight[135] = { title: "Комета", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k135.jpeg", task: "Раскрась картинку с кометой или хвостом" };
@@ -12588,6 +12600,8 @@ DND_CARDS.knight[147] = { title: "Огненная планета", image: "http
 DND_CARDS.knight[148] = { title: "Водная планета", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k148.jpeg", task: "Раскрась картинку с водой или планетой" };
 DND_CARDS.knight[149] = { title: "Воздушная планета", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k149.jpeg", task: "Раскрась картинку с облаками или планетой" };
 DND_CARDS.knight[150] = { title: "Земная планета", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k150.jpeg", task: "Раскрась картинку с землёй или планетой" };
+
+// Уровень 8: 151-161
 DND_CARDS.knight[151] = { title: "Пустынная планета", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k151.jpeg", task: "Раскрась картинку с пустыней или планетой" };
 DND_CARDS.knight[152] = { title: "Ледяная планета", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k152.jpeg", task: "Раскрась картинку со льдом или планетой" };
 DND_CARDS.knight[153] = { title: "Тропическая планета", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k153.jpeg", task: "Раскрась картинку с джунглями или планетой" };
@@ -12598,15 +12612,60 @@ DND_CARDS.knight[157] = { title: "Кольцевая планета", image: "ht
 DND_CARDS.knight[158] = { title: "Двойная звезда", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k158.jpeg", task: "Раскрась картинку с двойной звездой или солнцем" };
 DND_CARDS.knight[159] = { title: "Нейтронная звезда", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k159.jpeg", task: "Раскрась картинку со звездой или пульсаром" };
 DND_CARDS.knight[160] = { title: "Сверхновая", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k160.jpeg", task: "Раскрась картинку со сверхновой или взрывом" };
-DND_CARDS.knight[161] = { title: "Демон Бездны", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k161.jpeg", task: "Раскрась самую эпичную картинку с демоном или финальной битвой!" };   
- for (var i = 162; i <= 188; i++) {
+DND_CARDS.knight[161] = { title: "Демон Бездны", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k161.jpeg", task: "Раскрась самую эпичную картинку с демоном или финальной битвой!", isFinal: true };
+
+// Карты 162-188 (преддверие финала)
+for (var i = 162; i <= 188; i++) {
     DND_CARDS.knight[i] = {
         title: "Преддверие финала " + (i - 161),
         image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k" + i + ".jpeg",
         task: "Раскрась картинку перед финальной битвой"
     };
-}       
-// Переходы обновим: карта 0 → 1,2,3
+}
+
+// Уровень 9: 189-204
+DND_CARDS.knight[189] = { title: "Башня молний", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k189.jpeg", task: "Раскрась картинку с молнией или башней!" };
+DND_CARDS.knight[190] = { title: "Пещера времени", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k190.jpeg", task: "Раскрась картинку с часами или пещерой!" };
+DND_CARDS.knight[191] = { title: "Зал забвения", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k191.jpeg", task: "Раскрась картинку с забвением или пустотой!" };
+DND_CARDS.knight[192] = { title: "Мост судьбы", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k192.jpeg", task: "Раскрась картинку с мостом или судьбой!" };
+DND_CARDS.knight[193] = { title: "Колодец желаний", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k193.jpeg", task: "Раскрась картинку с колодцем или желанием!" };
+DND_CARDS.knight[194] = { title: "Тронный зал", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k194.jpeg", task: "Раскрась картинку с троном или залом!" };
+DND_CARDS.knight[195] = { title: "Кристалл души", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k195.jpeg", task: "Раскрась картинку с кристаллом или душой!" };
+DND_CARDS.knight[196] = { title: "Врата миров", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k196.jpeg", task: "Раскрась картинку с вратами или мирами!" };
+DND_CARDS.knight[197] = { title: "Алтарь heroes", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k197.jpeg", task: "Раскрась картинку с алтарём или героями!" };
+DND_CARDS.knight[198] = { title: "Последний рубеж", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k198.jpeg", task: "Раскрась картинку с рубежом или битвой!" };
+
+// Финальные боссы (199-204)
+DND_CARDS.knight[199] = { title: "Демон Бездны", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k199.jpeg", task: "Раскрась картинку с демоном!", isFinal: true };
+DND_CARDS.knight[200] = { title: "Архилич", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k200.jpeg", task: "Раскрась картинку с личом или некромантом!", isFinal: true };
+DND_CARDS.knight[201] = { title: "Древний дракон", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k201.jpeg", task: "Раскрась картинку с древним драконом!", isFinal: true };
+DND_CARDS.knight[202] = { title: "Король демонов", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k202.jpeg", task: "Раскрась картинку с королём демонов!", isFinal: true };
+DND_CARDS.knight[203] = { title: "Титан бездны", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k203.jpeg", task: "Раскрась картинку с титаном!", isFinal: true };
+DND_CARDS.knight[204] = { title: "Властелин тьмы", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k204.jpeg", task: "Раскрась картинку с властелином тьмы!", isFinal: true };
+
+// Уровень финальный: 205-222
+DND_CARDS.knight[205] = { title: "Тропа героев", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k205.jpeg", task: "Раскрась картинку с тропой или героями!" };
+DND_CARDS.knight[206] = { title: "Зал легенд", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k206.jpeg", task: "Раскрась картинку с легендами или залом!" };
+DND_CARDS.knight[207] = { title: "Огненная бездна", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k207.jpeg", task: "Раскрась картинку с бездной или огнём!" };
+DND_CARDS.knight[208] = { title: "Ледяная пропасть", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k208.jpeg", task: "Раскрась картинку с пропастью или льдом!" };
+DND_CARDS.knight[209] = { title: "Зал доблести", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k209.jpeg", task: "Раскрась картинку с доблестью или наградой!" };
+DND_CARDS.knight[210] = { title: "Храм света", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k210.jpeg", task: "Раскрась картинку с храмом или светом!" };
+DND_CARDS.knight[211] = { title: "Пещера отражений", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k211.jpeg", task: "Раскрась картинку с отражениями или пещерой!" };
+DND_CARDS.knight[212] = { title: "Мост надежды", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k212.jpeg", task: "Раскрась картинку с мостом или надеждой!" };
+DND_CARDS.knight[213] = { title: "Зал мудрости", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k213.jpeg", task: "Раскрась картинку с мудростью или книгой!" };
+DND_CARDS.knight[214] = { title: "Башня судьбы", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k214.jpeg", task: "Раскрась картинку с башней или судьбой!" };
+DND_CARDS.knight[215] = { title: "Портал героев", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k215.jpeg", task: "Раскрась картинку с порталом или героями!" };
+DND_CARDS.knight[216] = { title: "Зал силы", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k216.jpeg", task: "Раскрась картинку с силой или энергией!" };
+DND_CARDS.knight[217] = { title: "Трон победителя", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k217.jpeg", task: "Раскрась картинку с троном или победой!" };
+DND_CARDS.knight[218] = { title: "Зал чести", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k218.jpeg", task: "Раскрась картинку с честью или мечом!" };
+DND_CARDS.knight[219] = { title: "Арена судьбы", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k219.jpeg", task: "Раскрась картинку с ареной или битвой!" };
+DND_CARDS.knight[220] = { title: "Врата победы", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k220.jpeg", task: "Раскрась картинку с вратами или победой!" };
+DND_CARDS.knight[221] = { title: "Зал славы", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k221.jpeg", task: "Раскрась картинку со славой или короной!" };
+DND_CARDS.knight[222] = { title: "Преддверие финала", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k222.jpeg", task: "Раскрась картинку перед финальной битвой!" };
+
+// ==========================================
+// ИСПРАВЛЕННЫЕ ПЕРЕХОДЫ
+// ==========================================
 var DND_TRANSITIONS = {};
 
 // Карта 0 → Уровень 1 (карты 1-3)
@@ -12618,72 +12677,94 @@ DND_TRANSITIONS[2] = {1: 7, 2: 7, 3: 8, 4: 8, 5: 9, 6: 9};
 DND_TRANSITIONS[3] = {1: 10, 2: 10, 3: 11, 4: 11, 5: 12, 6: 12};
 
 // Уровень 2 → 3 (карты 4-12 → 13-39)
-var card = 13;
-for (var i = 4; i <= 12; i++) {
-    DND_TRANSITIONS[i] = {};
-    DND_TRANSITIONS[i][1] = card; DND_TRANSITIONS[i][2] = card;
-    DND_TRANSITIONS[i][3] = card + 1; DND_TRANSITIONS[i][4] = card + 1;
-    DND_TRANSITIONS[i][5] = card + 2; DND_TRANSITIONS[i][6] = card + 2;
-    card += 3;
-}
+(function() {
+    var c = 13;
+    for (var i = 4; i <= 12; i++) {
+        DND_TRANSITIONS[i] = {};
+        DND_TRANSITIONS[i][1] = c; DND_TRANSITIONS[i][2] = c;
+        DND_TRANSITIONS[i][3] = c + 1; DND_TRANSITIONS[i][4] = c + 1;
+        DND_TRANSITIONS[i][5] = c + 2; DND_TRANSITIONS[i][6] = c + 2;
+        c += 3;
+    }
+})();
 
 // Уровень 3 → 4 (карты 13-39 → 40-120)
-for (var i = 13; i <= 39; i++) {
-    DND_TRANSITIONS[i] = {};
-    DND_TRANSITIONS[i][1] = card; DND_TRANSITIONS[i][2] = card;
-    DND_TRANSITIONS[i][3] = card + 1; DND_TRANSITIONS[i][4] = card + 1;
-    DND_TRANSITIONS[i][5] = card + 2; DND_TRANSITIONS[i][6] = card + 2;
-    card += 3;
-}
+(function() {
+    var c = 40;
+    for (var i = 13; i <= 39; i++) {
+        DND_TRANSITIONS[i] = {};
+        DND_TRANSITIONS[i][1] = c; DND_TRANSITIONS[i][2] = c;
+        DND_TRANSITIONS[i][3] = c + 1; DND_TRANSITIONS[i][4] = c + 1;
+        DND_TRANSITIONS[i][5] = c + 2; DND_TRANSITIONS[i][6] = c + 2;
+        c += 3;
+    }
+})();
 
-// Уровень 4 → 5 (карты 40-120 → 121, мини-босс)
+// Уровень 4 → 5 (карты 40-120 → 121-126, 6 мини-боссов)
 for (var i = 40; i <= 120; i++) {
-    DND_TRANSITIONS[i] = {1: 121, 2: 121, 3: 121, 4: 121, 5: 121, 6: 121};
+    DND_TRANSITIONS[i] = {1: 121, 2: 122, 3: 123, 4: 124, 5: 125, 6: 126};
 }
 
-// Уровень 5 → 6 (карта 121 → 122-124)
-DND_TRANSITIONS[121] = {1: 122, 2: 122, 3: 123, 4: 123, 5: 124, 6: 124};
-
-// Уровень 6 → 7 (карты 122-124 → 125-133)
-card = 125;
-for (var i = 122; i <= 124; i++) {
-    DND_TRANSITIONS[i] = {};
-    DND_TRANSITIONS[i][1] = card; DND_TRANSITIONS[i][2] = card;
-    DND_TRANSITIONS[i][3] = card + 1; DND_TRANSITIONS[i][4] = card + 1;
-    DND_TRANSITIONS[i][5] = card + 2; DND_TRANSITIONS[i][6] = card + 2;
-    card += 3;
+// Уровень 5 → 6 (все мини-боссы → одинаковые 6 карт 127-132)
+for (var i = 121; i <= 126; i++) {
+    DND_TRANSITIONS[i] = {1: 127, 2: 128, 3: 129, 4: 130, 5: 131, 6: 132};
 }
 
-// Уровень 7 → 8 (карты 125-133 → 134-160)
-for (var i = 125; i <= 133; i++) {
-    DND_TRANSITIONS[i] = {};
-    DND_TRANSITIONS[i][1] = card; DND_TRANSITIONS[i][2] = card;
-    DND_TRANSITIONS[i][3] = card + 1; DND_TRANSITIONS[i][4] = card + 1;
-    DND_TRANSITIONS[i][5] = card + 2; DND_TRANSITIONS[i][6] = card + 2;
-    card += 3;
+// Уровень 6 → 7 (127-132 → 133-150)
+(function() {
+    var c = 133;
+    for (var i = 127; i <= 132; i++) {
+        DND_TRANSITIONS[i] = {};
+        DND_TRANSITIONS[i][1] = c; DND_TRANSITIONS[i][2] = c;
+        DND_TRANSITIONS[i][3] = c + 1; DND_TRANSITIONS[i][4] = c + 1;
+        DND_TRANSITIONS[i][5] = c + 2; DND_TRANSITIONS[i][6] = c + 2;
+        c += 3;
+    }
+})();
+
+// Уровень 7 → 8 (133-150 → 151-204)
+(function() {
+    var c = 151;
+    for (var i = 133; i <= 150; i++) {
+        DND_TRANSITIONS[i] = {};
+        DND_TRANSITIONS[i][1] = c; DND_TRANSITIONS[i][2] = c;
+        DND_TRANSITIONS[i][3] = c + 1; DND_TRANSITIONS[i][4] = c + 1;
+        DND_TRANSITIONS[i][5] = c + 2; DND_TRANSITIONS[i][6] = c + 2;
+        c += 3;
+    }
+})();
+
+// Уровень 8 → 9 (151-204 → 205-222)
+(function() {
+    var c = 205;
+    for (var i = 151; i <= 204; i++) {
+        DND_TRANSITIONS[i] = {};
+        DND_TRANSITIONS[i][1] = c; DND_TRANSITIONS[i][2] = c;
+        DND_TRANSITIONS[i][3] = c + 1; DND_TRANSITIONS[i][4] = c + 1;
+        DND_TRANSITIONS[i][5] = c + 2; DND_TRANSITIONS[i][6] = c + 2;
+        c += 3;
+    }
+})();
+
+// Уровень 9 → 10 (205-222 → 199-204, 6 финальных боссов)
+for (var i = 205; i <= 222; i++) {
+    DND_TRANSITIONS[i] = {1: 199, 2: 200, 3: 201, 4: 202, 5: 203, 6: 204};
 }
 
-// Уровень 8 → 9 (карты 134-160 → 162-188)
-for (var i = 134; i <= 160; i++) {
-    DND_TRANSITIONS[i] = {};
-    DND_TRANSITIONS[i][1] = card; DND_TRANSITIONS[i][2] = card;
-    DND_TRANSITIONS[i][3] = card + 1; DND_TRANSITIONS[i][4] = card + 1;
-    DND_TRANSITIONS[i][5] = card + 2; DND_TRANSITIONS[i][6] = card + 2;
-    card += 3;
-}
-
-// Уровень 9 → 10 (карты 162-188 → 161, финальный босс)
-for (var i = 162; i <= 188; i++) {
-    DND_TRANSITIONS[i] = {1: 161, 2: 161, 3: 161, 4: 161, 5: 161, 6: 161};
-}
+// ==========================================
+// D&D ПЕРЕМЕННЫЕ И ФУНКЦИИ
+// ==========================================
 
 var dndCharacter = null;
 var dndCardHistory = [];
 var dndIsRolling = false;
- function showDnDCard(cardNumber) {
+var dndApproved = false;
+var currentDnDCard = null;
+
+function showDnDCard(cardNumber) {
     console.log('DND CARD:', 'Character:', dndCharacter, 'Card:', cardNumber, 'Exists:', DND_CARDS[dndCharacter] ? !!DND_CARDS[dndCharacter][cardNumber] : 'NO_CHAR');
     
-    const card = DND_CARDS[dndCharacter] ? DND_CARDS[dndCharacter][cardNumber] : null;
+    var card = DND_CARDS[dndCharacter] ? DND_CARDS[dndCharacter][cardNumber] : null;
     
     if (!card) {
         document.getElementById('dndCard').innerHTML = '<p style="padding:20px;text-align:center;color:var(--text-gray);">Карта в разработке...</p>';
@@ -12691,12 +12772,35 @@ var dndIsRolling = false;
         return;
     }
     
-    const level = dndCardHistory.length - 1;
-    document.getElementById('dndGameTitle').innerText = card.isStart ? 'Начало приключения' : `Твоё приключение • Уровень ${level}`;
+    // Финальный босс пройден — показываем завершение
+    if (card.isFinal && dndApproved) {
+        document.getElementById('dndGameTitle').innerText = '🎉 Приключение завершено!';
+        document.getElementById('dndCard').style.display = 'block';
+        document.getElementById('dndCard').innerHTML = `
+            <div class="branch-task-card">
+                <div class="branch-header">
+                    <h3>🎉 Победа!</h3>
+                </div>
+                <div class="level-card">
+                    <p style="text-align:center;font-size:18px;font-weight:700;color:var(--accent);">
+                        Ты победил ${card.title}!
+                    </p>
+                    <p style="text-align:center;color:var(--text-gray);">
+                        Спасибо за участие в D&D приключении!
+                    </p>
+                </div>
+            </div>
+        `;
+        return;
+    }
+    
+    var level = dndCardHistory.length - 1;
+    if (level < 0) level = 0;
+    document.getElementById('dndGameTitle').innerText = card.isStart ? 'Начало приключения' : 'Твоё приключение • Уровень ' + level;
     
     document.getElementById('dndCard').style.display = 'block';
     
-    const diceHtml = `
+    var diceHtml = `
         <div id="dndDiceWrapper" style="margin: 15px 0; display: ${card.isStart || dndApproved ? 'block' : 'none'};">
             <div id="dndDice" class="dnd-dice" onclick="rollDnDDice()">
                 <div class="dice-face front"><span class="dot dot1"></span></div>
@@ -12717,7 +12821,7 @@ var dndIsRolling = false;
                     <h3>${card.title}</h3>
                 </div>
                 <div class="level-card">
-                    ${card.image ? `<img src="${card.image}" style="width:100%;border-radius:12px;margin-bottom:15px;" onerror="this.style.display='none'">` : ''}
+                    ${card.image ? '<img src="' + card.image + '" style="width:100%;border-radius:12px;margin-bottom:15px;" onerror="this.style.display=\'none\'">' : ''}
                     <p style="text-align:center;font-weight:600;">Брось кубик, чтобы начать приключение!</p>
                     ${diceHtml}
                 </div>
@@ -12730,7 +12834,7 @@ var dndIsRolling = false;
                     <h3>${card.title}</h3>
                 </div>
                 <div class="level-card">
-                    ${card.image ? `<img src="${card.image}" style="width:100%;border-radius:12px;margin-bottom:15px;" onerror="this.style.display='none'">` : ''}
+                    ${card.image ? '<img src="' + card.image + '" style="width:100%;border-radius:12px;margin-bottom:15px;" onerror="this.style.display=\'none\'">' : ''}
                     <p style="font-weight: 600; margin-bottom: 15px;">📋 Задание: ${card.task}</p>
                     ${!dndApproved ? `
                         <button class="task-submit-btn" onclick="openDnDTaskUpload(${cardNumber})">
@@ -12747,19 +12851,283 @@ var dndIsRolling = false;
         `;
     }
 }
-function submitDnDChoice(cardNumber, choiceIdx) {
-    // Открываем загрузку фото
-    openCommunityTaskUpload();
+
+function rollDnDDice() {
+    if (dndIsRolling) return;
+    if (!dndCharacter) { alert('Сначала выбери персонажа!'); return; }
+    
+    var prevCard = dndCardHistory[dndCardHistory.length - 1];
+    var prevCardData = DND_CARDS[dndCharacter] ? DND_CARDS[dndCharacter][prevCard] : null;
+    
+    // Проверка: если это не стартовая карта и задание не одобрено — стоп
+    if (prevCardData && !prevCardData.isStart && !dndApproved) {
+        alert('Сначала дождись одобрения задания!');
+        return;
+    }
+    
+    // Финальный босс уже пройден
+    if (prevCardData && prevCardData.isFinal && dndApproved) {
+        alert('🎉 Приключение завершено!');
+        return;
+    }
+    
+    dndIsRolling = true;
+    dndApproved = false;
+    
+    var dice = document.getElementById('dndDice');
+    var result = Math.floor(Math.random() * 6) + 1;
+    
+    dice.classList.add('rolling');
+    
+    var rotations = {
+        1: 'rotateX(0deg) rotateY(0deg)',
+        2: 'rotateX(0deg) rotateY(180deg)',
+        3: 'rotateX(0deg) rotateY(-90deg)',
+        4: 'rotateX(0deg) rotateY(90deg)',
+        5: 'rotateX(-90deg) rotateY(0deg)',
+        6: 'rotateX(90deg) rotateY(0deg)'
+    };
+    
+    setTimeout(function() {
+        dice.classList.remove('rolling');
+        dice.style.transform = rotations[result];
+        
+        setTimeout(function() {
+            dndIsRolling = false;
+            
+            var cardNumber = DND_TRANSITIONS[prevCard] ? DND_TRANSITIONS[prevCard][result] : prevCard + 1;
+            
+            dndCardHistory.push(cardNumber);
+            showDnDCard(cardNumber);
+        }, 1200);
+        
+    }, 800);
 }
-     function openDnDTaskUpload(cardNumber) {
-    // Отправляем фото как задание D&D
+
+function openDnDTaskUpload(cardNumber) {
     currentDnDCard = cardNumber;
-    openCommunityTaskUpload(); // или специальная функция
+    
+    var fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/*';
+    fileInput.multiple = true;
+    
+    fileInput.onchange = function(event) {
+        var files = Array.from(event.target.files);
+        if (files.length === 0) return;
+        tempPhotos = files;
+        
+        var previewContainer = document.getElementById('taskPhotoPreviewContainer');
+        if (previewContainer) {
+            previewContainer.innerHTML = '';
+            files.forEach(function(file) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    var img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.style.cssText = 'width: 70px; height: 70px; object-fit: cover; border-radius: 12px; margin: 5px; border: 2px solid var(--accent);';
+                    previewContainer.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+        
+        var modal = document.getElementById('taskUploadModal');
+        if (modal) {
+            modal.style.display = 'flex';
+            var titleEl = modal.querySelector('h3');
+            if (titleEl) titleEl.innerText = 'Отправка D&D задания';
+            
+            var submitBtn = modal.querySelector('.modal-action-btn');
+            if (submitBtn) {
+                var newBtn = submitBtn.cloneNode(true);
+                submitBtn.parentNode.replaceChild(newBtn, submitBtn);
+                newBtn.onclick = function(e) {
+                    e.preventDefault();
+                    submitDnDTaskPhoto();
+                };
+            }
+        }
+    };
+    
+    fileInput.click();
+}
+
+function submitDnDTaskPhoto() {
+    if (!tempPhotos || tempPhotos.length === 0) {
+        if (tg) tg.showAlert('❌ Выберите хотя бы одно фото');
+        return;
+    }
+    if (isUploading) return;
+    isUploading = true;
+    
+    var formData = new FormData();
+    formData.append('user', userId.toString());
+    formData.append('character', dndCharacter);
+    formData.append('card', currentDnDCard.toString());
+    formData.append('type', 'dnd_task');
+    
+    for (var i = 0; i < tempPhotos.length; i++) {
+        formData.append('photos', tempPhotos[i]);
+    }
+    
+    fetch(SERVER_URL + '/api/check_dnd_task', {
+        method: 'POST',
+        body: formData
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(result) {
+        if (result && result.status === 'ok') {
+            if (tg) tg.showAlert('✅ Фото отправлено на проверку!');
+            closeTaskUploadModal();
+        } else {
+            throw new Error(result?.message || 'Ошибка отправки');
+        }
+    })
+    .catch(function(error) {
+        console.error('❌ Ошибка:', error);
+        if (tg) tg.showAlert('❌ ' + error.message);
+    })
+    .finally(function() {
+        isUploading = false;
+    });
+}
+
+function approveDnDTask() {
+    dndApproved = true;
+    var currentCard = dndCardHistory[dndCardHistory.length - 1];
+    showDnDCard(currentCard);
+}
+
+function selectDnDCharacter(char) {
+    dndCharacter = char;
+    dndCardHistory = [0];
+    dndApproved = true;
+    
+    document.querySelectorAll('.dnd-character-card').forEach(function(c) { c.classList.remove('selected'); });
+    var card = document.querySelector('[data-char="' + char + '"]');
+    if (card) card.classList.add('selected');
+    
+    fetch(SERVER_URL + '/api/dnd/select_character', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: userId, character: char })
+    });
+    
+    document.getElementById('dndEvent').style.display = 'none';
+    document.getElementById('dndGame').style.display = 'block';
+    showDnDCard(0);
+}
+
+function toggleDnDEvent() {
+    var content = document.getElementById('dndEventContent');
+    var arrow = document.getElementById('dndEventArrow');
+    if (!content) return;
+    if (content.style.display === 'block') {
+        content.style.display = 'none';
+        if (arrow) arrow.style.transform = 'rotate(0deg)';
+    } else {
+        content.style.display = 'block';
+        if (arrow) arrow.style.transform = 'rotate(180deg)';
+    }
+}
+
+function submitDnDChoice(cardNumber, choiceIdx) {
+    openDnDTaskUpload(cardNumber);
+}
+    function openDnDTaskUpload(cardNumber) {
+    currentDnDCard = cardNumber;
+    
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/*';
+    fileInput.multiple = true;
+    
+    fileInput.onchange = function(event) {
+        const files = Array.from(event.target.files);
+        if (files.length === 0) return;
+        tempPhotos = files;
+        
+        // Показываем превью
+        const previewContainer = document.getElementById('taskPhotoPreviewContainer');
+        if (previewContainer) {
+            previewContainer.innerHTML = '';
+            files.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.style.cssText = 'width: 70px; height: 70px; object-fit: cover; border-radius: 12px; margin: 5px; border: 2px solid var(--accent);';
+                    previewContainer.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+        
+        const modal = document.getElementById('taskUploadModal');
+        if (modal) {
+            modal.style.display = 'flex';
+            const titleEl = modal.querySelector('h3');
+            if (titleEl) titleEl.innerText = 'Отправка D&D задания';
+            
+            // Вешаем обработчик на кнопку отправки
+            const submitBtn = modal.querySelector('.modal-action-btn');
+            if (submitBtn) {
+                const newBtn = submitBtn.cloneNode(true);
+                submitBtn.parentNode.replaceChild(newBtn, submitBtn);
+                newBtn.onclick = function(e) {
+                    e.preventDefault();
+                    submitDnDTaskPhoto();
+                };
+            }
+        }
+    };
+    
+    fileInput.click();
 }
         function approveDnDTask() {
     dndApproved = true;
     const currentCard = dndCardHistory[dndCardHistory.length - 1];
     showDnDCard(currentCard); // перерисовать с кубиком
+}
+        function submitDnDTaskPhoto() {
+    if (!tempPhotos || tempPhotos.length === 0) {
+        if (tg) tg.showAlert('❌ Выберите хотя бы одно фото');
+        return;
+    }
+    if (isUploading) return;
+    isUploading = true;
+    
+    const formData = new FormData();
+    formData.append('user', userId.toString());
+    formData.append('character', dndCharacter);
+    formData.append('card', currentDnDCard);
+    formData.append('type', 'dnd_task');
+    
+    for (let i = 0; i < tempPhotos.length; i++) {
+        formData.append('photos', tempPhotos[i]);
+    }
+    
+    fetch(`${SERVER_URL}/api/check_dnd_task`, {
+        method: 'POST',
+        body: formData
+    })
+    .then(r => r.json())
+    .then(result => {
+        if (result && result.status === 'ok') {
+            if (tg) tg.showAlert('✅ Фото отправлено на проверку!');
+            closeTaskUploadModal();
+        } else {
+            throw new Error(result?.message || 'Ошибка отправки');
+        }
+    })
+    .catch(error => {
+        console.error('❌ Ошибка:', error);
+        if (tg) tg.showAlert('❌ ' + error.message);
+    })
+    .finally(() => {
+        isUploading = false;
+    });
 }
        // ==========================================
 // ИНИЦИАЛИЗАЦИЯ
@@ -24659,6 +25027,12 @@ function rollDnDDice() {
     if (dndIsRolling) return;
     if (!dndCharacter) { alert('Сначала выбери персонажа!'); return; }
     
+    // Проверка — финальный босс уже пройден
+    if (dndCardHistory.length > 0 && dndCardHistory[dndCardHistory.length - 1] === 161 && dndApproved) {
+        alert('🎉 Приключение завершено! Ты победил Демона Бездны!');
+        return;
+    }
+    
     if (dndCardHistory.length > 0 && !dndApproved) {
         alert('Сначала дождись одобрения задания!');
         return;
@@ -24685,7 +25059,6 @@ function rollDnDDice() {
         dice.classList.remove('rolling');
         dice.style.transform = rotations[result];
         
-        // Пауза чтобы пользователь увидел результат
         setTimeout(() => {
             dndIsRolling = false;
             
