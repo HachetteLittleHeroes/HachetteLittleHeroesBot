@@ -14645,51 +14645,36 @@ for (var i = 203; i <= 208; i++) {
 // ==========================================
 
 function checkDndPaymentStatus() {
-    console.log('Проверка статуса оплаты...');
+    console.log('🔍 Проверка статуса оплаты D&D...');
     
     fetch(SERVER_URL + '/api/dnd/payment_status?user_id=' + userId)
         .then(r => r.json())
         .then(data => {
-            console.log('Ответ сервера:', data);
+            console.log('📡 Ответ сервера:', data);
+            
+            var paySection = document.getElementById('dndPaySection');
+            var lobbySection = document.getElementById('dndLobby');
+            
+            if (!paySection || !lobbySection) {
+                console.log('⚠️ Элементы не найдены');
+                return;
+            }
             
             if (data.status === 'ok' && data.is_paid === true) {
-                console.log('Доступ открыт! Показываем лобби');
+                paySection.style.display = 'none';
+                lobbySection.style.display = 'block';
+                console.log('✅ Лобби открыто автоматически!');
                 
-                // Скрываем оплату
-                var paySection = document.getElementById('dndPaySection');
-                if (paySection) paySection.style.display = 'none';
-                
-                // Показываем лобби
-                var lobbySection = document.getElementById('dndLobby');
-                if (lobbySection) {
-                    lobbySection.style.display = 'block';
-                    lobbySection.style.visibility = 'visible';
-                    lobbySection.style.opacity = '1';
-                }
-                
-                // Скрываем контейнер с выбором персонажа (если есть)
-                var characterSelect = document.getElementById('dndCharacterSelect');
-                if (characterSelect) characterSelect.style.display = 'none';
-                
-                // Обновляем данные
                 if (typeof refreshTeamList === 'function') refreshTeamList();
                 if (typeof loadMyTeam === 'function') loadMyTeam();
-                
             } else {
-                console.log('Доступ закрыт, показываем оплату');
-                var paySection = document.getElementById('dndPaySection');
-                var lobbySection = document.getElementById('dndLobby');
-                if (paySection) paySection.style.display = 'block';
-                if (lobbySection) lobbySection.style.display = 'none';
+                paySection.style.display = 'block';
+                lobbySection.style.display = 'none';
+                console.log('❌ Доступа нет, показана оплата');
             }
         })
         .catch(err => {
-            console.error('Ошибка проверки оплаты:', err);
-            // Если ошибка - показываем оплату
-            var paySection = document.getElementById('dndPaySection');
-            var lobbySection = document.getElementById('dndLobby');
-            if (paySection) paySection.style.display = 'block';
-            if (lobbySection) lobbySection.style.display = 'none';
+            console.error('❌ Ошибка:', err);
         });
 }
 
@@ -15407,12 +15392,23 @@ window.onload = async () => {
     };
     
     // ==========================================
-    // ✅ D&D ИНИЦИАЛИЗАЦИЯ - ДОБАВЛЕНО
-    // ==========================================
-    if (typeof checkDndPaymentStatus === 'function') {
-        console.log('🎲 D&D: Проверка статуса оплаты...');
+// ✅ D&D АВТОМАТИЧЕСКАЯ ПРОВЕРКА
+// ==========================================
+if (typeof checkDndPaymentStatus === 'function') {
+    console.log('🎲 D&D: Запланирована проверка статуса...');
+    
+    // Первая проверка через 1 секунду
+    setTimeout(function() {
+        console.log('🎲 D&D: Выполняем проверку #1');
         checkDndPaymentStatus();
-    }
+    }, 1000);
+    
+    // Вторая проверка через 3 секунды (на случай медленного сервера)
+    setTimeout(function() {
+        console.log('🎲 D&D: Выполняем проверку #2');
+        checkDndPaymentStatus();
+    }, 3000);
+}
     
     console.log('✅ APP READY');
 };
