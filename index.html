@@ -17007,14 +17007,19 @@ function selectTeamCharacter(character) {
             alert('✅ Персонаж выбран!');
             closeTeamCharacterModal();
             
-            // Сохраняем в глобальную переменную и localStorage
+            // ✅ УСТАНАВЛИВАЕМ ПЕРСОНАЖА И ИНИЦИАЛИЗИРУЕМ ИГРУ
             dndCharacter = character;
-            localStorage.setItem(`dnd_character_${userId}`, character);
-            localStorage.setItem(`dnd_progress_${userId}`, JSON.stringify({
-                character: character,
-                cardHistory: [0],
-                timestamp: Date.now()
-            }));
+            dndCardHistory = [0];  // Начинаем с карты 0
+            dndApproved = true;     // Разрешаем бросок
+            
+            console.log('✅ Игра инициализирована:', {
+                character: dndCharacter,
+                history: dndCardHistory,
+                approved: dndApproved
+            });
+            
+            // Сохраняем на сервер
+            saveCurrentCard(0);
             
             // Проверяем, началась ли уже игра
             fetch(SERVER_URL + '/api/dnd/team/status?user_id=' + userId)
@@ -17024,8 +17029,6 @@ function selectTeamCharacter(character) {
                     
                     if (statusData.status === 'ok' && statusData.game_started) {
                         // Игра уже началась
-                        dndCardHistory = [0];
-                        dndApproved = true;
                         document.getElementById('dndLobby').style.display = 'none';
                         document.getElementById('dndGame').style.display = 'block';
                         showDnDCard(0, true);
@@ -17042,7 +17045,6 @@ function selectTeamCharacter(character) {
     })
     .catch(err => console.error('Ошибка:', err));
 }
-
 function startTeamGame() {
     if (!confirm('Начать игру? В команде должно быть минимум 4 человека.')) return;
     
@@ -17302,29 +17304,38 @@ function checkTeamStatus() {
 async function loadDndProgress() {
     console.log('📥 Загрузка прогресса для персонажа:', dndCharacter);
     
-    if (!dndCharacter) return false;
+    if (!dndCharacter) {
+        console.log('⚠️ Персонаж не выбран');
+        return false;
+    }
     
     try {
         const response = await fetch(SERVER_URL + '/api/dnd/get_progress?user_id=' + userId + '&character=' + dndCharacter);
         const data = await response.json();
         
+        console.log('📡 Прогресс с сервера:', data);
+        
         if (data.status === 'ok' && data.progress) {
-            // Загружаем пройденные карты
-            dndCardHistory = data.progress.card_history || [0];
-            dndApproved = data.progress.completed_cards?.includes(dndCardHistory[dndCardHistory.length - 1]) || false;
-            
-            console.log('✅ Загружен прогресс:');
-            console.log('   📜 История карт:', dndCardHistory);
-            console.log('   ✅ Пройдено:', data.progress.completed_cards);
-            console.log('   🎯 Текущая карта:', dndCardHistory[dndCardHistory.length - 1]);
-            console.log('   ✔️ Одобрено:', dndApproved);
-            
+            if (data.progress.card_history && data.progress.card_history.length > 0) {
+                dndCardHistory = data.progress.card_history;
+            } else {
+                dndCardHistory = [0];
+            }
+            dndApproved = true;
+            console.log('✅ Загружен прогресс, текущая карта:', dndCardHistory[dndCardHistory.length - 1]);
             return true;
+        } else {
+            dndCardHistory = [0];
+            dndApproved = true;
+            console.log('🆕 Начинаем новую игру');
+            return false;
         }
     } catch (err) {
-        console.error('Ошибка:', err);
+        console.error('❌ Ошибка загрузки прогресса:', err);
+        dndCardHistory = [0];
+        dndApproved = true;
+        return false;
     }
-    return false;
 }
 // ==========================================
 // D&D ИГРОВЫЕ ФУНКЦИИ
