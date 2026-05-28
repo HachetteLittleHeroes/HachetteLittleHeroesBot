@@ -12826,16 +12826,21 @@ function animateCardAppear(callback) {
         return;
     }
     
-    // Убираем класс исчезновения, добавляем появление
     cardContainer.classList.remove('card-disappear');
-    cardContainer.classList.add('card-appear');
+    cardContainer.style.opacity = '0';
+    cardContainer.style.transform = 'translateY(30px) scale(0.95)';
+    
+    // Принудительный перерасчёт
+    void cardContainer.offsetHeight;
+    
+    cardContainer.style.transition = 'all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1)';
+    cardContainer.style.opacity = '1';
+    cardContainer.style.transform = 'translateY(0) scale(1)';
     
     if (callback) {
-        var onAnimationEnd = function() {
-            cardContainer.removeEventListener('animationend', onAnimationEnd);
+        setTimeout(function() {
             callback();
-        };
-        cardContainer.addEventListener('animationend', onAnimationEnd);
+        }, 400);
     }
 }
 
@@ -12846,16 +12851,14 @@ function animateCardDisappear(callback) {
         return;
     }
     
-    // Убираем класс появления, добавляем исчезновение
-    cardContainer.classList.remove('card-appear');
-    cardContainer.classList.add('card-disappear');
+    cardContainer.style.transition = 'all 0.2s ease-out';
+    cardContainer.style.opacity = '0';
+    cardContainer.style.transform = 'translateY(-20px) scale(0.95)';
     
     if (callback) {
-        var onAnimationEnd = function() {
-            cardContainer.removeEventListener('animationend', onAnimationEnd);
+        setTimeout(function() {
             callback();
-        };
-        cardContainer.addEventListener('animationend', onAnimationEnd);
+        }, 200);
     }
 }
 
@@ -12914,7 +12917,8 @@ function getTransition(cardId, mappedValue) {
 function showDnDCard(cardNumber, skipAnimation) {
     console.log('showDnDCard:', cardNumber, 'skipAnimation:', skipAnimation);
     
-    if (skipAnimation) {
+    // Если skipAnimation === undefined или true, показываем без анимации
+    if (skipAnimation !== false) {
         renderDnDCardContent(cardNumber);
         return;
     }
@@ -12943,6 +12947,11 @@ function renderDnDCardContent(cardNumber) {
         console.error('dndCard не найден');
         return;
     }
+    
+    // Сбрасываем стили анимации
+    cardContainer.style.transition = '';
+    cardContainer.style.opacity = '';
+    cardContainer.style.transform = '';
     
     if (!card) {
         cardContainer.innerHTML = '<p style="padding:20px;text-align:center;">❌ Карта не найдена</p>';
@@ -13110,7 +13119,7 @@ function rollDnDDice() {
             
             dndCardHistory.push(nextCardId);
             dndApproved = false;
-            showDnDCard(nextCardId);
+            showDnDCard(nextCardId, false); // false = с анимацией
         }, 1200);
     }, 800);
 }
@@ -13184,7 +13193,7 @@ function submitDnDTaskPhoto() {
 function approveDnDTask() {
     dndApproved = true;
     var currentCard = dndCardHistory[dndCardHistory.length - 1];
-    showDnDCard(currentCard);
+    showDnDCard(currentCard, false);
 }
 
 function selectDnDCharacter(char) {
@@ -13206,13 +13215,15 @@ function selectDnDCharacter(char) {
     if (dndEvent) dndEvent.style.display = 'none';
     if (dndGame) dndGame.style.display = 'block';
     
-    // Очищаем классы анимации перед показом
+    // Сбрасываем стили анимации
     var cardContainer = document.getElementById('dndCard');
     if (cardContainer) {
-        cardContainer.classList.remove('card-appear', 'card-disappear');
+        cardContainer.style.transition = '';
+        cardContainer.style.opacity = '';
+        cardContainer.style.transform = '';
     }
     
-    showDnDCard(0, true);
+    showDnDCard(0, true); // true = без анимации
 }
 
 function toggleDnDEvent() {
