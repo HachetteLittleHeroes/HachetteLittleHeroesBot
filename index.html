@@ -15414,27 +15414,34 @@ window.onload = async () => {
         });
     };
     
+      // ==========================================
+    // ✅ D&D АВТОМАТИЧЕСКАЯ ПРОВЕРКА С ОЖИДАНИЕМ ЭЛЕМЕНТОВ
     // ==========================================
-// ✅ D&D АВТОМАТИЧЕСКАЯ ПРОВЕРКА
-// ==========================================
-if (typeof checkDndPaymentStatus === 'function') {
-    console.log('🎲 D&D: Запланирована проверка статуса...');
+    function waitForDndElementsAndCheck() {
+        var paySection = document.getElementById('dndPaySection');
+        var lobbySection = document.getElementById('dndLobby');
+        
+        if (paySection && lobbySection) {
+            console.log('🎲 D&D: Элементы найдены, проверяем статус...');
+            if (typeof checkDndPaymentStatus === 'function') {
+                checkDndPaymentStatus();
+            }
+        } else {
+            console.log('🎲 D&D: Элементы не найдены, повтор через 500ms...');
+            setTimeout(waitForDndElementsAndCheck, 500);
+        }
+    }
     
-    // Первая проверка через 1 секунду
-    setTimeout(function() {
-        console.log('🎲 D&D: Выполняем проверку #1');
-        checkDndPaymentStatus();
-    }, 1000);
+    waitForDndElementsAndCheck();
     
-    // Вторая проверка через 3 секунды (на случай медленного сервера)
     setTimeout(function() {
-        console.log('🎲 D&D: Выполняем проверку #2');
-        checkDndPaymentStatus();
+        console.log('🎲 D&D: Дополнительная проверка...');
+        if (typeof checkDndPaymentStatus === 'function') {
+            checkDndPaymentStatus();
+        }
     }, 3000);
-}
     
     console.log('✅ APP READY');
-};
        //БЕСТИАРИЙ
         const BESTIARY = [
     {
