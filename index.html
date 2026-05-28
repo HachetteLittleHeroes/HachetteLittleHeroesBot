@@ -17112,6 +17112,26 @@ function isFinalBoss(cardId) {
     var finalBosses = [203, 204, 205, 206, 207, 208];
     return finalBosses.includes(cardId);
 }
+        function checkGameStatus() {
+    var finalBosses = [203, 204, 205, 206, 207, 208];
+    var defeatedBoss = null;
+    for (var i = 0; i < finalBosses.length; i++) {
+        if (dndCardHistory.includes(finalBosses[i])) {
+            defeatedBoss = finalBosses[i];
+            break;
+        }
+    }
+    
+    console.log('📜 История карт:', dndCardHistory);
+    console.log('👑 Побеждённый босс:', defeatedBoss || 'нет');
+    console.log('🏆 Игра пройдена:', defeatedBoss ? 'Да' : 'Нет');
+    
+    if (defeatedBoss) {
+        alert('✅ Игра пройдена! Вы победили босса на карте ' + defeatedBoss);
+    } else {
+        alert('❌ Игра ещё не пройдена');
+    }
+}
 function confirmResetProgress() {
     // Проверяем, пройдена ли игра (победа над любым финальным боссом)
     var finalBosses = [203, 204, 205, 206, 207, 208];
