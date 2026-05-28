@@ -14520,7 +14520,7 @@ var DND_CARDS = {
     knight: {
         // СТАРТ (0)
         0: {
-            title: "Зок короля",
+            title: "Зов короля",
             image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k0.png",
             isStart: true,
             level: 0
@@ -17042,7 +17042,9 @@ function checkTeamStatus() {
             }
         });
 }
-        function checkDndGameStatus() {
+       function checkDndGameStatus() {
+    console.log('🔍 Проверка статуса игры...');
+    
     fetch(SERVER_URL + '/api/dnd/team/status?user_id=' + userId)
         .then(r => r.json())
         .then(data => {
@@ -17050,48 +17052,86 @@ function checkTeamStatus() {
             
             if (data.status === 'ok') {
                 if (data.game_started) {
-                    // Игра идёт
+                    console.log('🎮 Игра началась!');
                     document.getElementById('dndLobby').style.display = 'none';
                     document.getElementById('dndGame').style.display = 'block';
                     
-                    // Если персонаж ещё не выбран, показываем выбор
-                    if (!dndCharacter) {
-                        showTeamCharacterModal();
-                    } else {
+                    // Проверяем, есть ли уже персонаж
+                    var myself = data.members ? data.members.find(m => m.id == userId) : null;
+                    
+                    if (myself && myself.character) {
+                        dndCharacter = myself.character;
                         loadDndProgress();
+                    } else if (dndCharacter) {
+                        loadDndProgress();
+                    } else {
+                        console.log('⚠️ Персонаж не выбран');
+                        showTeamCharacterModal();
                     }
                 } else if (data.team) {
-                    // В команде, но игра не началась
+                    console.log('👥 В команде, игра не началась');
                     document.getElementById('dndLobby').style.display = 'block';
                     document.getElementById('dndGame').style.display = 'none';
                     loadMyTeam();
                 } else {
-                    // Не в команде
+                    console.log('🏠 Не в команде');
                     document.getElementById('dndLobby').style.display = 'block';
                     document.getElementById('dndGame').style.display = 'none';
+                    // Восстанавливаем из localStorage если есть
+                    restoreGameAfterRefresh();
                 }
+            } else {
+                console.log('⚠️ Ошибка статуса:', data);
+                document.getElementById('dndLobby').style.display = 'block';
+                document.getElementById('dndGame').style.display = 'none';
             }
         })
-        .catch(err => console.error('Ошибка:', err));
+        .catch(err => {
+            console.error('❌ Ошибка checkDndGameStatus:', err);
+            document.getElementById('dndLobby').style.display = 'block';
+            document.getElementById('dndGame').style.display = 'none';
+        });
 }
 
 function loadDndProgress() {
+    console.log('📥 Загрузка прогресса для персонажа:', dndCharacter);
+    
+    if (!dndCharacter) {
+        console.log('⚠️ Персонаж не выбран, показываем выбор');
+        showTeamCharacterModal();
+        return;
+    }
+    
     fetch(SERVER_URL + '/api/dnd/get_progress?user_id=' + userId + '&character=' + dndCharacter)
         .then(r => r.json())
         .then(data => {
+            console.log('📡 Прогресс с сервера:', data);
+            
             if (data.status === 'ok' && data.progress) {
                 dndCardHistory = data.progress.completed_cards || [0];
                 dndApproved = true;
-                if (data.progress.current_card && data.progress.current_card > 0) {
-                    showDnDCard(data.progress.current_card, true);
+                
+                var lastCard = dndCardHistory[dndCardHistory.length - 1];
+                console.log('✅ Загружен прогресс, текущая карта:', lastCard);
+                
+                if (lastCard && lastCard > 0) {
+                    showDnDCard(lastCard, true);
                 } else {
                     showDnDCard(0, true);
                 }
             } else {
+                console.log('⚠️ Прогресс не найден, начинаем с 0');
+                dndCardHistory = [0];
+                dndApproved = true;
                 showDnDCard(0, true);
             }
         })
-        .catch(() => showDnDCard(0, true));
+        .catch(err => {
+            console.error('❌ Ошибка загрузки прогресса:', err);
+            dndCardHistory = [0];
+            dndApproved = true;
+            showDnDCard(0, true);
+        });
 }
 // ==========================================
 // D&D ИГРОВЫЕ ФУНКЦИИ
@@ -17693,6 +17733,56 @@ function joinTeamFromPreview(teamId) {
 
 function closeTeamPreviewModal() {
     document.getElementById('teamPreviewModal').style.display = 'none';
+}
+        function restoreGameAfterRefresh() {
+    console.log('🔄 Восстановление игры после обновления...');
+    
+    // 1. Проверяем статус команды и игры
+    fetch(SERVER_URL + '/api/dnd/team/status?user_id=' + userId)
+        .then(r => r.json())
+        .then(data => {
+            console.log('📡 Статус команды:', data);
+            
+            if (data.status === 'ok' && data.game_started) {
+                // Игра началась — показываем игровой экран
+                document.getElementById('dndLobby').style.display = 'none';
+                document.getElementById('dndGame').style.display = 'block';
+                
+                // Находим себя в команде
+                var myself = null;
+                if (data.members) {
+                    myself = data.members.find(m => m.id == userId);
+                }
+                
+                if (myself && myself.character) {
+                    // Уже выбран персонаж
+                    dndCharacter = myself.character;
+                    console.log('✅ Персонаж из команды:', dndCharacter);
+                    
+                    // Загружаем прогресс
+                    loadDndProgress();
+                } else {
+                    // Нужно выбрать персонажа
+                    console.log('⚠️ Персонаж не выбран, показываем выбор');
+                    showTeamCharacterModal();
+                }
+            } else if (data.status === 'ok' && data.team) {
+                // В команде, но игра не началась
+                document.getElementById('dndLobby').style.display = 'block';
+                document.getElementById('dndGame').style.display = 'none';
+                loadMyTeam();
+            } else {
+                // Не в команде
+                document.getElementById('dndLobby').style.display = 'block';
+                document.getElementById('dndGame').style.display = 'none';
+            }
+        })
+        .catch(err => {
+            console.error('❌ Ошибка восстановления:', err);
+            // Fallback: показываем лобби
+            document.getElementById('dndLobby').style.display = 'block';
+            document.getElementById('dndGame').style.display = 'none';
+        });
 }
     // ==========================================
 // ИНИЦИАЛИЗАЦИЯ
