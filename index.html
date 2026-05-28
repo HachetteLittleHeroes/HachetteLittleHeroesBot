@@ -14653,14 +14653,27 @@ function checkDndPaymentStatus() {
             
             if (data.status === 'ok' && data.is_paid === true) {
                 console.log('Доступ открыт! Показываем лобби');
+                
+                // Скрываем оплату
                 var paySection = document.getElementById('dndPaySection');
-                var lobbySection = document.getElementById('dndLobby');
                 if (paySection) paySection.style.display = 'none';
+                
+                // Показываем лобби
+                var lobbySection = document.getElementById('dndLobby');
                 if (lobbySection) {
                     lobbySection.style.display = 'block';
-                    refreshTeamList();
-                    loadMyTeam();
+                    lobbySection.style.visibility = 'visible';
+                    lobbySection.style.opacity = '1';
                 }
+                
+                // Скрываем контейнер с выбором персонажа (если есть)
+                var characterSelect = document.getElementById('dndCharacterSelect');
+                if (characterSelect) characterSelect.style.display = 'none';
+                
+                // Обновляем данные
+                if (typeof refreshTeamList === 'function') refreshTeamList();
+                if (typeof loadMyTeam === 'function') loadMyTeam();
+                
             } else {
                 console.log('Доступ закрыт, показываем оплату');
                 var paySection = document.getElementById('dndPaySection');
@@ -14669,7 +14682,14 @@ function checkDndPaymentStatus() {
                 if (lobbySection) lobbySection.style.display = 'none';
             }
         })
-        .catch(err => console.error('Ошибка проверки оплаты:', err));
+        .catch(err => {
+            console.error('Ошибка проверки оплаты:', err);
+            // Если ошибка - показываем оплату
+            var paySection = document.getElementById('dndPaySection');
+            var lobbySection = document.getElementById('dndLobby');
+            if (paySection) paySection.style.display = 'block';
+            if (lobbySection) lobbySection.style.display = 'none';
+        });
 }
 
 function refreshTeamList() {
