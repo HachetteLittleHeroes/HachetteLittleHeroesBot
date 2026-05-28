@@ -15414,28 +15414,44 @@ window.onload = async () => {
         });
     };
     
-        // ==========================================
-    // ✅ ПРОСТАЯ ПРОВЕРКА D&D (БЕЗ ОЖИДАНИЯ)
     // ==========================================
-    setTimeout(function() {
+    // ✅ АВТОМАТИЧЕСКОЕ ОТКРЫТИЕ D&D ЛОББИ (С ПОВТОРАМИ)
+    // ==========================================
+    function autoOpenDndLobby() {
         var pay = document.getElementById('dndPaySection');
         var lobby = document.getElementById('dndLobby');
         
-        if (pay && lobby) {
-            fetch(SERVER_URL + '/api/dnd/payment_status?user_id=' + userId)
-                .then(r => r.json())
-                .then(data => {
-                    if (data.status === 'ok' && data.is_paid === true) {
-                        pay.style.display = 'none';
-                        lobby.style.display = 'block';
-                        console.log('✅ D&D лобби открыто!');
-                        if (typeof refreshTeamList === 'function') refreshTeamList();
-                        if (typeof loadMyTeam === 'function') loadMyTeam();
-                    }
-                })
-                .catch(err => console.error('Ошибка:', err));
+        if (!pay || !lobby) {
+            console.log('⚠️ D&D элементы не найдены, повтор через 500ms');
+            setTimeout(autoOpenDndLobby, 500);
+            return;
         }
-    }, 800);
+        
+        fetch(SERVER_URL + '/api/dnd/payment_status?user_id=' + userId)
+            .then(r => r.json())
+            .then(data => {
+                console.log('📡 D&D статус:', data);
+                if (data.status === 'ok' && data.is_paid === true) {
+                    pay.style.display = 'none';
+                    lobby.style.display = 'block';
+                    console.log('✅ D&D лобби открыто АВТОМАТИЧЕСКИ!');
+                    if (typeof refreshTeamList === 'function') refreshTeamList();
+                    if (typeof loadMyTeam === 'function') loadMyTeam();
+                } else {
+                    console.log('⏳ D&D доступ не открыт, повтор через 5 секунд...');
+                    setTimeout(autoOpenDndLobby, 5000);
+                }
+            })
+            .catch(err => {
+                console.error('Ошибка:', err);
+                setTimeout(autoOpenDndLobby, 3000);
+            });
+    }
+    
+    // Запускаем автоматическую проверку
+    autoOpenDndLobby();
+    
+    console.log('✅ APP READY');
 };
        //БЕСТИАРИЙ
         const BESTIARY = [
