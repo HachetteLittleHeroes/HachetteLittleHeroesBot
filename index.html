@@ -5633,6 +5633,273 @@
 .team-action-btn.danger {
     background: #f44336;
 }
+        /* ===== D&D ЛОББИ И КОМАНДЫ ===== */
+
+/* Список команд */
+#teamsList {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Карточка команды в списке */
+.teams-list-item {
+    background: var(--bg-secondary);
+    border-radius: 20px;
+    padding: 14px 16px;
+    border: 1px solid var(--border-color);
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.teams-list-item:hover {
+    border-color: var(--accent);
+    background: rgba(var(--accent-rgb, 255, 149, 0), 0.02);
+}
+
+/* Название команды — 2 строки */
+.team-name {
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--text);
+    flex: 2;
+    line-height: 1.3;
+    word-break: break-word;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Количество участников */
+.team-count {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(var(--accent-rgb, 255, 149, 0), 0.1);
+    padding: 6px 14px;
+    border-radius: 30px;
+    flex-shrink: 0;
+}
+
+.team-count i {
+    font-size: 16px;
+    color: var(--accent);
+}
+
+.team-count span {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--accent);
+}
+
+/* Кнопка вступления (только внутри команды — видна при наведении) */
+.join-team-wrapper {
+    flex-shrink: 0;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.teams-list-item:hover .join-team-wrapper {
+    opacity: 1;
+}
+
+.join-team-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 6px 16px;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.join-team-btn:hover {
+    filter: brightness(0.9);
+    transform: scale(1.02);
+}
+
+/* Заглушка для своей команды (сохраняет место) */
+.join-placeholder {
+    width: 70px;
+    flex-shrink: 0;
+}
+
+/* ===== МОЯ КОМАНДА ===== */
+
+.my-team-card {
+    background: var(--bg-secondary);
+    border-radius: 24px;
+    padding: 16px;
+    margin-bottom: 16px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.team-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.team-header-row h4 {
+    margin: 0;
+    font-size: 18px;
+    color: var(--accent);
+    word-break: break-word;
+}
+
+.team-header-count {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--accent);
+    background: rgba(var(--accent-rgb, 255, 149, 0), 0.15);
+    padding: 4px 12px;
+    border-radius: 30px;
+    flex-shrink: 0;
+}
+
+.team-members-list {
+    margin-bottom: 8px;
+}
+
+/* Участник команды — аватарка больше */
+.team-member-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 14px;
+    background: rgba(var(--accent-rgb, 255, 149, 0), 0.04);
+    border-radius: 20px;
+    margin-bottom: 8px;
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.team-member-item:hover {
+    background: rgba(var(--accent-rgb, 255, 149, 0), 0.1);
+    border-color: var(--accent);
+}
+
+/* Аватарка больше — 52px */
+.team-member-avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--accent);
+    flex-shrink: 0;
+}
+
+.team-member-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.team-member-name-row {
+    margin-bottom: 8px;
+}
+
+.team-member-name-with-badges {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.team-member-name {
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--text);
+}
+
+.team-member-badges {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.team-leader-badge {
+    background: #ffd700;
+    color: #333;
+    font-size: 10px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.team-character-badge {
+    background: rgba(var(--accent-rgb, 255, 149, 0), 0.2);
+    color: var(--accent);
+    font-size: 10px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-weight: 500;
+}
+
+.team-member-status {
+    font-size: 12px;
+    color: var(--accent);
+    background: rgba(var(--accent-rgb, 255, 149, 0), 0.1);
+    padding: 3px 10px;
+    border-radius: 12px;
+    display: inline-block;
+}
+
+/* Кнопки действий */
+.team-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+}
+
+.team-action-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.team-action-btn:active {
+    transform: scale(0.96);
+}
+
+.team-action-btn.danger {
+    background: #f44336;
+}
+
+/* Пустое состояние */
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-gray);
+    background: var(--bg-secondary);
+    border-radius: 24px;
+    border: 1px solid var(--border-color);
+}
     </style>
 </head>
 <body>
@@ -16009,11 +16276,13 @@ function renderTeamsList(teams) {
         
         html += `
             <div class="teams-list-item">
-                <div class="team-name">🏰 ${escapeHtml(t.team_name)}</div>
-                ${showJoinBtn ? `<button class="join-team-btn" onclick="joinTeam('${t.id}')">🤝 Вступить</button>` : '<div class="join-placeholder"></div>'}
+                <div class="team-name" title="${escapeHtml(t.team_name)}">🏰 ${escapeHtml(t.team_name)}</div>
                 <div class="team-count">
                     <i class="fas fa-users"></i>
                     <span>${t.current_members}/${t.members_needed}</span>
+                </div>
+                <div class="join-team-wrapper">
+                    ${showJoinBtn ? `<button class="join-team-btn" onclick="joinTeam('${t.id}')">🤝 Вступить</button>` : '<div class="join-placeholder"></div>'}
                 </div>
             </div>
         `;
