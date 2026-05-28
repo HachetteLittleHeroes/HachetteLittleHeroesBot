@@ -6117,6 +6117,142 @@ body:not([data-theme]) .modal-content,
     color: var(--text-gray);
     background: var(--bg);
 }
+        /* ===== ПРЕДПРОСМОТР КОМАНДЫ ===== */
+
+#teamPreviewModal .modal-content {
+    background: var(--bg-secondary);
+    max-width: 400px;
+    padding: 20px;
+}
+
+#teamPreviewModal .team-preview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+#teamPreviewModal .team-preview-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--accent);
+}
+
+#teamPreviewModal .team-preview-count {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--accent);
+    background: rgba(var(--accent-rgb, 255, 149, 0), 0.1);
+    padding: 4px 10px;
+    border-radius: 20px;
+}
+
+#teamPreviewModal .team-members-list {
+    margin-bottom: 20px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+#teamPreviewModal .team-member-preview {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    background: var(--bg);
+    border-radius: 16px;
+    margin-bottom: 8px;
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+#teamPreviewModal .team-member-preview:hover {
+    background: rgba(var(--accent-rgb, 255, 149, 0), 0.05);
+    border-color: var(--accent);
+}
+
+#teamPreviewModal .team-member-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--accent);
+    flex-shrink: 0;
+}
+
+#teamPreviewModal .team-member-info {
+    flex: 1;
+    min-width: 0;
+}
+
+#teamPreviewModal .team-member-name-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 4px;
+}
+
+#teamPreviewModal .team-member-name {
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--text);
+}
+
+#teamPreviewModal .team-member-character {
+    font-size: 11px;
+    color: var(--accent);
+    background: rgba(var(--accent-rgb, 255, 149, 0), 0.1);
+    padding: 2px 8px;
+    border-radius: 20px;
+}
+
+#teamPreviewModal .team-member-status {
+    font-size: 11px;
+    color: var(--text-gray);
+}
+
+#teamPreviewModal .team-member-role {
+    font-size: 10px;
+    background: #ffd700;
+    color: #333;
+    padding: 2px 6px;
+    border-radius: 12px;
+    display: inline-block;
+}
+
+#teamPreviewModal .join-team-preview-btn {
+    width: 100%;
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.2s;
+}
+
+#teamPreviewModal .join-team-preview-btn:hover {
+    filter: brightness(0.9);
+    transform: scale(1.02);
+}
+
+#teamPreviewModal .your-team-badge {
+    text-align: center;
+    padding: 12px;
+    background: rgba(var(--accent-rgb, 255, 149, 0), 0.1);
+    border-radius: 30px;
+    color: var(--accent);
+    font-weight: 600;
+}
     </style>
 </head>
 <body>
@@ -6303,38 +6439,35 @@ body:not([data-theme]) .modal-content,
     <p style="margin-top: 15px; font-size: 11px;">После оплаты напишите @SPB_Zakharin_Sergey</p>
 </div>
         
-        <!-- D&D Lobby (оплачено) -->
-        <div id="dndLobby" style="display: none; padding: 15px;">
-            <div class="lobby-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
-                <h3 style="margin: 0;">🏰 Команды</h3>
-                <div style="display: flex; gap: 10px;">
-                    <button class="task-submit-btn" onclick="showCreateTeamModal()" style="width: auto; padding: 8px 16px; margin: 0;">➕ Создать</button>
-                    <button class="task-submit-btn" onclick="refreshTeamList()" style="width: auto; padding: 8px 16px; margin: 0; background: #444;">🔄</button>
-                </div>
-            </div>
-            
-         <!-- Список команд -->
-<div id="teamsList" style="margin-bottom: 20px;">
-    <div class="loading" style="text-align: center; padding: 20px;">Загрузка команд...</div>
-</div>
+       <!-- D&D Lobby -->
+<div id="dndLobby" style="display: none; padding: 15px;">
+    <div class="lobby-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+        <h3 style="margin: 0;">🏰 Команды</h3>
+        <div style="display: flex; gap: 10px;">
+            <button class="task-submit-btn" onclick="showCreateTeamModal()" style="width: auto; padding: 8px 16px; margin: 0;">➕ Создать</button>
+            <button class="task-submit-btn" onclick="refreshTeamList()" style="width: auto; padding: 8px 16px; margin: 0; background: #444;">🔄</button>
+        </div>
+    </div>
+    
+    <!-- Список команд -->
+    <div id="teamsList" style="margin-bottom: 20px;">
+        <div class="loading" style="text-align: center; padding: 20px;">Загрузка команд...</div>
+    </div>
 
-<!-- Моя команда -->
-<div id="myTeamSection" style="display: none;">
-    <h3 style="margin-bottom: 10px;">👥 Моя команда</h3>
-    <div id="myTeamCard"></div>
-</div>
-        </div>
-        
-        <!-- D&D Game (игра) -->
-        <div id="dndGame" style="display: none;">
-            <div id="dndGameTitle" style="display: none;"></div>
-            <div id="dndCard"></div>
-        </div>
-        
+    <!-- Моя команда -->
+    <div id="myTeamSection" style="display: none;">
+        <h3 style="margin-bottom: 10px;">👥 Моя команда</h3>
+        <div id="myTeamCard"></div>
     </div>
 </div>
 
-<!-- Модальные окна (добавить в конец body, перед закрывающим </body>) -->
+<!-- D&D Game (игра) -->
+<div id="dndGame" style="display: none;">
+    <div id="dndGameTitle" style="display: none;"></div>
+    <div id="dndCard"></div>
+</div>
+
+<!-- Модалка создания команды -->
 <div id="createTeamModal" class="modal" style="display: none;">
     <div class="modal-content">
         <span class="close" onclick="closeCreateTeamModal()">&times;</span>
@@ -6345,6 +6478,7 @@ body:not([data-theme]) .modal-content,
     </div>
 </div>
 
+<!-- Модалка выбора персонажа -->
 <div id="teamCharacterModal" class="modal" style="display: none;">
     <div class="modal-content">
         <span class="close" onclick="closeTeamCharacterModal()">&times;</span>
@@ -6379,6 +6513,7 @@ body:not([data-theme]) .modal-content,
     </div>
 </div>
 
+<!-- Модалка ожидания команды -->
 <div id="waitingTeamModal" class="modal" style="display: none;">
     <div class="modal-content">
         <span class="close" onclick="closeWaitingModal()">&times;</span>
@@ -6390,6 +6525,7 @@ body:not([data-theme]) .modal-content,
     </div>
 </div>
 
+<!-- Модалка сброса прогресса -->
 <div id="resetProgressModal" class="modal" style="display: none;">
     <div class="modal-content">
         <span class="close" onclick="closeResetModal()">&times;</span>
@@ -6400,6 +6536,17 @@ body:not([data-theme]) .modal-content,
             <button class="task-submit-btn" onclick="confirmResetProgress()" style="background: #ff9800;">✅ Да, сбросить</button>
             <button class="task-submit-btn" onclick="closeResetModal()" style="background: #444;">❌ Отмена</button>
         </div>
+    </div>
+</div>
+
+<!-- Модалка предпросмотра команды -->
+<div id="teamPreviewModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 400px;">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+            <button onclick="closeTeamPreviewModal()" style="background: none; border: none; color: var(--accent); font-size: 20px; cursor: pointer;">←</button>
+            <h3 style="margin: 0;">Команда</h3>
+        </div>
+        <div id="teamPreviewContent"></div>
     </div>
 </div>
 
@@ -16488,18 +16635,13 @@ function renderTeamsList(teams) {
     var html = '';
     for (var i = 0; i < teams.length; i++) {
         var t = teams[i];
-        var isYourTeam = (t.leader_id == userId);
-        var showJoinBtn = !isYourTeam && t.current_members < 6;
         
         html += `
-            <div class="teams-list-item">
+            <div class="teams-list-item" onclick="openTeamPreview('${t.id}')">
                 <div class="team-name" title="${escapeHtml(t.team_name)}">🏰 ${escapeHtml(t.team_name)}</div>
                 <div class="team-count">
                     <i class="fas fa-users"></i>
                     <span>${t.current_members}/${t.members_needed}</span>
-                </div>
-                <div class="join-team-wrapper">
-                    ${showJoinBtn ? `<button class="join-team-btn" onclick="joinTeam('${t.id}')">🤝 Вступить</button>` : '<div class="join-placeholder"></div>'}
                 </div>
             </div>
         `;
@@ -17291,7 +17433,153 @@ function startTeamGame() {
         }
     });
 }
+
+        // ==========================================
+// ПРЕДПРОСМОТР КОМАНДЫ
+// ==========================================
+
+function openTeamPreview(teamId) {
+    console.log('🔍 Открытие предпросмотра команды:', teamId);
+    
+    fetch(SERVER_URL + '/api/dnd/teams/list?user_id=' + userId)
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'ok') {
+                var team = data.teams.find(t => t.id == teamId);
+                if (team) {
+                    renderTeamPreview(team);
+                } else {
+                    alert('Команда не найдена');
+                }
+            }
+        })
+        .catch(err => console.error('Ошибка:', err));
+}
+
+function renderTeamPreview(team) {
+    var isYourTeam = (team.leader_id == userId);
+    var modal = document.getElementById('teamPreviewModal');
+    var container = document.getElementById('teamPreviewContent');
+    
+    // Загружаем character_class для участников
+    var promises = (team.members || []).map(member => {
+        return fetch(SERVER_URL + '/api/dnd/teams/my?user_id=' + member.id)
+            .then(r => r.json())
+            .then(data => {
+                if (data.status === 'ok' && data.team) {
+                    var teamMember = data.team.members.find(m => m.id == member.id);
+                    if (teamMember) {
+                        member.character_class = teamMember.character_class;
+                    }
+                }
+                return member;
+            })
+            .catch(() => member);
+    });
+    
+    // Загружаем публичные профили для аватарок и статусов
+    var profilePromises = (team.members || []).map(member => {
+        return fetch(SERVER_URL + '/api/public_profile?user_id=' + member.id)
+            .then(r => r.json())
+            .then(profile => {
+                member.avatar = profile.avatar;
+                member.status = profile.status;
+                member.name = profile.name || member.name;
+                return member;
+            })
+            .catch(() => member);
+    });
+    
+    Promise.all([...promises, ...profilePromises]).then(() => {
+        var membersHtml = '';
         
+        for (var i = 0; i < team.members.length; i++) {
+            var m = team.members[i];
+            var isLeader = (m.id == team.leader_id);
+            
+            var avatarUrl = m.avatar || 'https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png';
+            var status = m.status || 'Без статуса';
+            var memberName = m.name || 'Пользователь';
+            
+            var characterIcon = '';
+            var characterName = '';
+            if (m.character_class) {
+                switch(m.character_class) {
+                    case 'knight': characterIcon = '⚔️'; characterName = 'Рыцарь'; break;
+                    case 'mage': characterIcon = '🔮'; characterName = 'Маг'; break;
+                    case 'archer': characterIcon = '🏹'; characterName = 'Лучник'; break;
+                    case 'druid': characterIcon = '🌿'; characterName = 'Друид'; break;
+                    case 'assassin': characterIcon = '🗡️'; characterName = 'Ассасин'; break;
+                    case 'bard': characterIcon = '🎵'; characterName = 'Бард'; break;
+                    default: characterIcon = '❓'; characterName = m.character_class;
+                }
+            }
+            
+            membersHtml += `
+                <div class="team-member-preview" onclick="openPublicProfile('${m.id}')">
+                    <img class="team-member-avatar" src="${avatarUrl}" onerror="this.src='https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png'">
+                    <div class="team-member-info">
+                        <div class="team-member-name-row">
+                            <span class="team-member-name">${escapeHtml(memberName)}</span>
+                            ${isLeader ? '<span class="team-member-role">👑 Лидер</span>' : ''}
+                            ${characterIcon ? `<span class="team-member-character">${characterIcon} ${characterName}</span>` : ''}
+                        </div>
+                        <div class="team-member-status">${escapeHtml(status)}</div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        var actionHtml = '';
+        if (isYourTeam) {
+            actionHtml = '<div class="your-team-badge">⭐ Это ваша команда</div>';
+        } else if (team.current_members < 6) {
+            actionHtml = `<button class="join-team-preview-btn" onclick="joinTeamFromPreview('${team.id}')">🤝 Вступить в команду</button>`;
+        } else {
+            actionHtml = '<div class="your-team-badge">❌ Команда полна</div>';
+        }
+        
+        container.innerHTML = `
+            <div class="team-preview-header">
+                <span class="team-preview-name">🏰 ${escapeHtml(team.team_name)}</span>
+                <span class="team-preview-count">
+                    <i class="fas fa-users"></i>
+                    <span>${team.current_members}/${team.members_needed}</span>
+                </span>
+            </div>
+            <div class="team-members-list">
+                ${membersHtml}
+            </div>
+            ${actionHtml}
+        `;
+        
+        modal.style.display = 'flex';
+    });
+}
+
+function joinTeamFromPreview(teamId) {
+    fetch(SERVER_URL + '/api/dnd/teams/join', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: userId, team_id: teamId })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.status === 'ok') {
+            alert('✅ Вы вступили в команду!');
+            closeTeamPreviewModal();
+            refreshTeamList();
+            loadMyTeam();
+        } else {
+            alert('❌ ' + (data.message || 'Ошибка'));
+        }
+    })
+    .catch(err => console.error('Ошибка:', err));
+}
+
+function closeTeamPreviewModal() {
+    document.getElementById('teamPreviewModal').style.display = 'none';
+}
     // ==========================================
 // ИНИЦИАЛИЗАЦИЯ
 // ==========================================
