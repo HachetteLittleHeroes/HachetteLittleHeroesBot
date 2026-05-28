@@ -17101,6 +17101,23 @@ function closeResetModal() {
 }
 
 function confirmResetProgress() {
+    // Проверяем, пройдена ли игра (есть карта 208)
+    var isGameCompleted = dndCardHistory.includes(208);
+    
+    if (!isGameCompleted) {
+        alert('❌ Сброс возможен только после полного прохождения игры (победы над финальным боссом)!');
+        return;
+    }
+    
+    if (!confirm('⚠️ ВЫ УВЕРЕНЫ? Весь прогресс будет сброшен, и вы начнёте игру заново с карты 0.')) {
+        return;
+    }
+    
+    // Сбрасываем локальные переменные
+    dndCardHistory = [0];
+    dndApproved = true;
+    
+    // Отправляем сброс на сервер
     fetch(SERVER_URL + '/api/dnd/reset_progress', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -17109,17 +17126,18 @@ function confirmResetProgress() {
     .then(r => r.json())
     .then(data => {
         if (data.status === 'ok') {
-            alert('✅ Прогресс сброшен!');
+            alert('✅ Прогресс сброшен! Теперь можно пройти игру заново.');
             closeResetModal();
-            dndCardHistory = [0];
-            dndApproved = true;
             showDnDCard(0, true);
         } else {
-            alert('❌ ' + (data.message || 'Ошибка'));
+            alert('❌ ' + (data.message || 'Ошибка сброса прогресса'));
         }
+    })
+    .catch(err => {
+        console.error('Ошибка:', err);
+        alert('❌ Ошибка сети. Не удалось сбросить прогресс.');
     });
 }
-
 function closeWaitingModal() {
     var modal = document.getElementById('waitingTeamModal');
     if (modal) modal.style.display = 'none';
@@ -17403,6 +17421,12 @@ saveGameState();
         setTimeout(animateCardAppear, 50);
     });
 }
+        function backToLobby() {
+    document.getElementById('dndGame').style.display = 'none';
+    document.getElementById('dndLobby').style.display = 'block';
+    refreshTeamList();
+    loadMyTeam();
+}
 
 function renderDnDCardContent(cardNumber) {
     var card = null;
@@ -17451,19 +17475,29 @@ function renderDnDCardContent(cardNumber) {
     }
     
     if (card.isFinal && dndApproved) {
-        cardContainer.innerHTML = `
-            <div class="branch-task-card">
-                <div class="branch-header"><h3>🎉 Победа!</h3></div>
-                <div class="level-card final-card">
-                    <p style="text-align:center;font-size:18px;font-weight:700;color:var(--accent);">Ты победил ${card.title}!</p>
-                    <p style="text-align:center;">Спасибо за участие!</p>
-                    <button class="task-submit-btn" onclick="showResetProgressModal()" style="margin-top:15px;">🔄 Сбросить прогресс</button>
-                </div>
+    cardContainer.innerHTML = `
+        <div class="branch-task-card">
+            <div class="branch-header"><h3>🎉 Победа!</h3></div>
+            <div class="level-card final-card">
+                <p style="text-align:center;font-size:18px;font-weight:700;color:var(--accent);">
+                    Ты победил ${card.title}!
+                </p>
+                <p style="text-align:center;">Ты прошёл всё приключение до конца!</p>
+                <p style="text-align:center; font-size:14px; margin-top:10px;">
+                    🎲 Ты можешь сбросить прогресс и пройти игру заново тем же персонажем!
+                </p>
+                <button class="task-submit-btn" onclick="confirmResetProgress()" style="margin-top:15px; background:#ff9800;">
+                    🔄 Сбросить прогресс и пройти заново
+                </button>
+                <button class="task-submit-btn" onclick="backToLobby()" style="margin-top:10px; background:#444;">
+                    🏠 Вернуться в лобби
+                </button>
             </div>
-        `;
-        cardContainer.style.display = 'block';
-        return;
-    }
+        </div>
+    `;
+    cardContainer.style.display = 'block';
+    return;
+}
     
     var diceHtml = `
         <div id="dndDiceWrapper" style="margin: 15px 0; display: ${card.isStart || dndApproved ? 'block' : 'none'};">
@@ -17707,6 +17741,14 @@ function closeTaskUploadModal() {
 }
 
 function showResetProgressModal() {
+    // Проверяем, пройдена ли игра
+    var isGameCompleted = dndCardHistory.includes(208);
+    
+    if (!isGameCompleted) {
+        alert('❌ Сброс прогресса доступен только после полного прохождения игры!');
+        return;
+    }
+    
     var modal = document.getElementById('resetProgressModal');
     if (modal) modal.style.display = 'flex';
 }
