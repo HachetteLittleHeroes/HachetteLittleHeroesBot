@@ -12745,32 +12745,6 @@ for (var i = 203; i <= 208; i++) {
     DND_TRANSITIONS[i] = {};
 }
 
-// ==========================================
-// ПОЛНОЕ ПЕРЕОПРЕДЕЛЕНИЕ FETCH ДЛЯ ОТЛАДКИ
-// ==========================================
-
-// Сохраняем оригинальный fetch, если он нужен для других частей приложения
-var originalFetch = window.fetch;
-
-// Переопределяем fetch глобально
-window.fetch = function() {
-    console.warn('fetch вызван, но заблокирован:', arguments);
-    
-    // Возвращаем заглушку Promise, чтобы избежать ошибок
-    return new Promise(function(resolve, reject) {
-        // Имитируем успешный ответ, чтобы не ломать остальной код
-        resolve({
-            ok: true,
-            status: 200,
-            json: function() {
-                return Promise.resolve({ status: 'ok', message: 'Заглушка' });
-            },
-            text: function() {
-                return Promise.resolve('OK');
-            }
-        });
-    });
-};
 
 // ==========================================
 // D&D ПЕРЕМЕННЫЕ И ФУНКЦИИ
@@ -13099,19 +13073,57 @@ function openDnDTaskUpload(cardNumber) {
 
 function submitDnDTaskPhoto() {
     if (!window.tempPhotos || window.tempPhotos.length === 0) {
-        alert('❌ Выберите фото');
+        if (window.Telegram && window.Telegram.WebApp) {
+            window.Telegram.WebApp.showAlert('❌ Выберите хотя бы одно фото');
+        } else {
+            alert('❌ Выберите хотя бы одно фото');
+        }
         return;
     }
     if (window.isUploading) return;
     window.isUploading = true;
     
-    setTimeout(function() {
+    var formData = new FormData();
+    formData.append('user', userId.toString());
+    formData.append('character', dndCharacter);
+    formData.append('card', currentDnDCard.toString());
+    formData.append('type', 'dnd_task');
+    
+    for (var i = 0; i < window.tempPhotos.length; i++) {
+        formData.append('photos', window.tempPhotos[i]);
+    }
+    
+    fetch(SERVER_URL + '/api/check_dnd_task', {
+        method: 'POST',
+        body: formData
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(result) {
+        if (result && result.status === 'ok') {
+            if (window.Telegram && window.Telegram.WebApp) {
+                window.Telegram.WebApp.showAlert('✅ Фото отправлено на проверку!');
+            } else {
+                alert('✅ Фото отправлено на проверку!');
+            }
+            closeTaskUploadModal();
+            approveDnDTask();
+        } else {
+            throw new Error(result?.message || 'Ошибка отправки');
+        }
+    })
+    .catch(function(error) {
+        console.error('❌ Ошибка:', error);
+        if (window.Telegram && window.Telegram.WebApp) {
+            window.Telegram.WebApp.showAlert('❌ ' + error.message);
+        } else {
+            alert('❌ ' + error.message);
+        }
+    })
+    .finally(function() {
         window.isUploading = false;
-        alert('✅ Фото отправлено!');
-        closeTaskUploadModal();
-        approveDnDTask();
-    }, 500);
+    });
 }
+
 
 function approveDnDTask() {
     dndApproved = true;
@@ -13131,6 +13143,17 @@ function selectDnDCharacter(char) {
     var cardEl = document.querySelector('[data-char="' + char + '"]');
     if (cardEl) cardEl.classList.add('selected');
     
+    // Отправка на сервер (с реальным fetch)
+    if (typeof SERVER_URL !== 'undefined' && SERVER_URL && typeof userId !== 'undefined') {
+        fetch(SERVER_URL + '/api/dnd/select_character', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId, character: char })
+        }).catch(function(error) {
+            console.warn('Ошибка при выборе персонажа:', error);
+        });
+    }
+    
     var dndEvent = document.getElementById('dndEvent');
     var dndGame = document.getElementById('dndGame');
     if (dndEvent) dndEvent.style.display = 'none';
@@ -13145,7 +13168,6 @@ function selectDnDCharacter(char) {
     
     showDnDCard(0, true);
 }
-
 function toggleDnDEvent() {
     var content = document.getElementById('dndEventContent');
     var arrow = document.getElementById('dndEventArrow');
