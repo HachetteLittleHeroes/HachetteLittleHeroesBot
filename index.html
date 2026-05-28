@@ -16917,7 +16917,7 @@ function loadGameStateFromServer() {
                     dndCardHistory = [0];
                 }
                 
-                // ✅ ВАЖНО: Проверяем, одобрена ли текущая карта
+                // ✅ ВАЖНО: По умолчанию задание НЕ одобрено
                 var currentCard = dndCardHistory[dndCardHistory.length - 1];
                 var completedCards = data.progress.completed_cards || [];
                 
@@ -16930,41 +16930,16 @@ function loadGameStateFromServer() {
                     console.log('⏳ Текущая карта', currentCard, 'ещё не пройдена, ждём одобрения');
                 }
                 
-                console.log('📜 История карт:', dndCardHistory);
-                console.log('✅ Пройденные карты:', completedCards);
-                console.log('🎯 Текущая карта:', currentCard);
-                console.log('✔️ Одобрено:', dndApproved);
-                
                 return true;
             } else {
                 console.log('⚠️ Нет прогресса на сервере, начинаем с 0');
                 dndCardHistory = [0];
-                dndApproved = false;  // ✅ false, так как задание не одобрено
+                dndApproved = false;  // ✅ false
                 return false;
             }
         })
         .catch(err => {
             console.error('❌ Ошибка загрузки с сервера:', err);
-            
-            // Пробуем загрузить из резервной копии localStorage
-            var backup = localStorage.getItem(`dnd_game_state_backup_${userId}`);
-            if (backup) {
-                try {
-                    var saved = JSON.parse(backup);
-                    dndCardHistory = saved.card_history || [0];
-                    var completedCards = saved.completed_cards || [];
-                    var currentCard = dndCardHistory[dndCardHistory.length - 1];
-                    
-                    if (completedCards.includes(currentCard)) {
-                        dndApproved = true;
-                    } else {
-                        dndApproved = false;
-                    }
-                    console.log('✅ Прогресс загружен из резервной копии localStorage');
-                    return true;
-                } catch(e) {}
-            }
-            
             dndCardHistory = [0];
             dndApproved = false;  // ✅ false
             return false;
@@ -17582,10 +17557,22 @@ function renderDnDCardContent(cardNumber) {
             return;
         }
         
-        // ✅ Кубик показывается только если:
-        // - это стартовая карта (всегда показываем)
-        // - ИЛИ задание одобрено админом
+        // Кубик показывается только если это стартовая карта ИЛИ задание одобрено
         var showDice = card.isStart || isApproved;
+        
+        // Показываем индикатор загрузки, пока проверяем статус
+        if (!card.isStart && isApproved === undefined) {
+            cardContainer.innerHTML = `
+                <div class="branch-task-card">
+                    <div class="branch-header"><h3>${card.title}</h3></div>
+                    <div class="level-card" style="text-align:center;">
+                        <p>⏳ Проверка статуса задания...</p>
+                    </div>
+                </div>
+            `;
+            cardContainer.style.display = 'block';
+            return;
+        }
         
         var diceHtml = `
             <div id="dndDiceWrapper" style="margin: 15px 0; display: ${showDice ? 'block' : 'none'};">
@@ -17627,11 +17614,14 @@ function renderDnDCardContent(cardNumber) {
         cardContainer.style.display = 'block';
     }
     
-    // Для стартовой карты сразу показываем
+    // Для стартовой карты сразу показываем (без проверки)
     if (card.isStart) {
         renderWithApprovalStatus(true);
         return;
     }
+    
+    // Показываем индикатор загрузки
+    renderWithApprovalStatus(undefined);
     
     // Проверяем на сервере, одобрена ли карта
     fetch(SERVER_URL + '/api/dnd/get_progress?user_id=' + userId + '&character=' + dndCharacter)
