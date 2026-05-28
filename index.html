@@ -17009,8 +17009,8 @@ function selectTeamCharacter(character) {
             
             // ✅ УСТАНАВЛИВАЕМ ПЕРСОНАЖА И ИНИЦИАЛИЗИРУЕМ ИГРУ
             dndCharacter = character;
-            dndCardHistory = [0];  // Начинаем с карты 0
-            dndApproved = true;     // Разрешаем бросок
+            dndCardHistory = [0];
+            dndApproved = true;
             
             console.log('✅ Игра инициализирована:', {
                 character: dndCharacter,
@@ -17018,8 +17018,18 @@ function selectTeamCharacter(character) {
                 approved: dndApproved
             });
             
-            // Сохраняем на сервер
-            saveCurrentCard(0);
+            // Проверяем, что переходы для персонажа загружены
+            if (character === 'mage') {
+                console.log('Проверка переходов мага для карты 0:', DND_TRANSITIONS_MAGE?.[0]);
+            }
+            
+            // Сохраняем в localStorage
+            localStorage.setItem(`dnd_character_${userId}`, character);
+            localStorage.setItem(`dnd_progress_${userId}`, JSON.stringify({
+                character: character,
+                cardHistory: [0],
+                timestamp: Date.now()
+            }));
             
             // Проверяем, началась ли уже игра
             fetch(SERVER_URL + '/api/dnd/team/status?user_id=' + userId)
@@ -17028,12 +17038,10 @@ function selectTeamCharacter(character) {
                     console.log('📡 Статус после выбора персонажа:', statusData);
                     
                     if (statusData.status === 'ok' && statusData.game_started) {
-                        // Игра уже началась
                         document.getElementById('dndLobby').style.display = 'none';
                         document.getElementById('dndGame').style.display = 'block';
                         showDnDCard(0, true);
                     } else {
-                        // Игра ещё не началась
                         document.getElementById('dndLobby').style.display = 'block';
                         document.getElementById('dndGame').style.display = 'none';
                         loadMyTeam();
@@ -17373,6 +17381,8 @@ function getDiceFaceRotation(result) {
 }
 
 function getTransition(cardId, mappedValue) {
+    console.log('🔍 getTransition:', cardId, mappedValue, dndCharacter);
+    
     var transitions = null;
     
     if (dndCharacter === 'knight') {
@@ -17388,6 +17398,8 @@ function getTransition(cardId, mappedValue) {
     } else if (dndCharacter === 'bard') {
         transitions = window.DND_TRANSITIONS_BARD;
     }
+    
+    console.log('transitions for card', cardId, ':', transitions ? transitions[cardId] : 'not found');
     
     if (!transitions || !transitions[cardId]) return null;
     return transitions[cardId][mappedValue];
@@ -17418,46 +17430,45 @@ function animateCardDisappear(callback) {
 }
 
 function showDnDCard(cardNumber, skipAnimation) {
-    // Проверяем, существует ли карта для выбранного персонажа
-    var cardExists = false;
+    console.log('🎴 showDnDCard:', cardNumber, 'character:', dndCharacter);
     
-    if (dndCharacter === 'knight') {
-        cardExists = window.DND_CARDS?.knight?.hasOwnProperty(cardNumber);
-    } else if (dndCharacter === 'mage') {
-        cardExists = window.DND_CARDS_MAGE?.mage?.hasOwnProperty(cardNumber);
-    } else if (dndCharacter === 'archer') {
-        cardExists = window.DND_CARDS_ARCHER?.archer?.hasOwnProperty(cardNumber);
-    } else if (dndCharacter === 'druid') {
-        cardExists = window.DND_CARDS_DRUID?.druid?.hasOwnProperty(cardNumber);
-    } else if (dndCharacter === 'assassin') {
-        cardExists = window.DND_CARDS_ASSASSIN?.assassin?.hasOwnProperty(cardNumber);
-    } else if (dndCharacter === 'bard') {
-        cardExists = window.DND_CARDS_BARD?.bard?.hasOwnProperty(cardNumber);
-    }
-    
-    if (!cardExists) {
-        console.error('❌ Карта не найдена:', cardNumber, 'Персонаж:', dndCharacter);
-        var cardContainer = document.getElementById('dndCard');
-        if (cardContainer) {
-            cardContainer.innerHTML = `
-                <div class="branch-task-card">
-                    <div class="branch-header">
-                        <h3>❌ Ошибка</h3>
-                    </div>
-                    <div class="level-card">
-                        <p style="text-align:center; padding: 20px;">
-                            Карта #${cardNumber} не найдена для персонажа ${dndCharacter}.<br>
-                            Пожалуйста, сообщите администратору.
-                        </p>
-                        <button class="task-submit-btn" onclick="location.reload()">
-                            🔄 Перезагрузить страницу
-                        </button>
-                    </div>
-                </div>
-            `;
-            cardContainer.style.display = 'block';
+    // Для карты 0 не проверяем существование (она есть у всех)
+    if (cardNumber !== 0) {
+        var cardExists = false;
+        if (dndCharacter === 'knight') {
+            cardExists = window.DND_CARDS?.knight?.hasOwnProperty(cardNumber);
+        } else if (dndCharacter === 'mage') {
+            cardExists = window.DND_CARDS_MAGE?.mage?.hasOwnProperty(cardNumber);
+        } else if (dndCharacter === 'archer') {
+            cardExists = window.DND_CARDS_ARCHER?.archer?.hasOwnProperty(cardNumber);
+        } else if (dndCharacter === 'druid') {
+            cardExists = window.DND_CARDS_DRUID?.druid?.hasOwnProperty(cardNumber);
+        } else if (dndCharacter === 'assassin') {
+            cardExists = window.DND_CARDS_ASSASSIN?.assassin?.hasOwnProperty(cardNumber);
+        } else if (dndCharacter === 'bard') {
+            cardExists = window.DND_CARDS_BARD?.bard?.hasOwnProperty(cardNumber);
         }
-        return;
+        
+        if (!cardExists) {
+            console.error('❌ Карта не найдена:', cardNumber, 'Персонаж:', dndCharacter);
+            var cardContainer = document.getElementById('dndCard');
+            if (cardContainer) {
+                cardContainer.innerHTML = `
+                    <div class="branch-task-card">
+                        <div class="branch-header"><h3>❌ Ошибка</h3></div>
+                        <div class="level-card">
+                            <p style="text-align:center; padding: 20px;">
+                                Карта #${cardNumber} не найдена для персонажа ${dndCharacter}.<br>
+                                Пожалуйста, сообщите администратору.
+                            </p>
+                            <button class="task-submit-btn" onclick="location.reload()">🔄 Перезагрузить</button>
+                        </div>
+                    </div>
+                `;
+                cardContainer.style.display = 'block';
+            }
+            return;
+        }
     }
     
     if (skipAnimation === true) {
@@ -17466,7 +17477,6 @@ function showDnDCard(cardNumber, skipAnimation) {
     }
     animateCardDisappear(function() {
         renderDnDCardContent(cardNumber);
-saveGameState();
         setTimeout(animateCardAppear, 50);
     });
 }
@@ -17599,7 +17609,12 @@ function rollDnDDice() {
         return; 
     }
     
+    if (dndCardHistory.length === 0) {
+        dndCardHistory = [0];
+    }
+    
     var prevCard = dndCardHistory[dndCardHistory.length - 1];
+    console.log('🎲 Бросок, prevCard:', prevCard, 'character:', dndCharacter);
     
     var prevCardData = null;
     if (dndCharacter === 'knight') prevCardData = window.DND_CARDS?.knight?.[prevCard];
@@ -17641,16 +17656,23 @@ function rollDnDDice() {
             dndIsRolling = false;
             
             var nextCardId = getTransition(prevCard, mappedValue);
+            console.log('🎲 Результат: diceRoll=' + diceRoll + ', mappedValue=' + mappedValue + ', nextCard=' + nextCardId);
+            
             if (nextCardId === null || nextCardId === undefined) { 
-                alert('Ошибка: нет перехода!'); 
+                alert('Ошибка: нет перехода для значения ' + mappedValue + ' с карты ' + prevCard); 
+                dndIsRolling = false;
                 return; 
             }
             
             dndCardHistory.push(nextCardId);
             dndApproved = false;
             
-            // ✅ СОХРАНЯЕМ ТЕКУЩУЮ КАРТУ (активную, не пройденную)
-            saveCurrentCard(nextCardId);
+            // Сохраняем прогресс в localStorage
+            localStorage.setItem(`dnd_progress_${userId}`, JSON.stringify({
+                character: dndCharacter,
+                cardHistory: dndCardHistory,
+                timestamp: Date.now()
+            }));
             
             showDnDCard(nextCardId, false);
         }, 1200);
