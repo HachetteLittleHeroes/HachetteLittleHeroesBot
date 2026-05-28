@@ -16907,7 +16907,26 @@ function selectTeamCharacter(character) {
         if (data.status === 'ok') {
             alert('✅ Персонаж выбран!');
             closeTeamCharacterModal();
-            loadMyTeam();
+            
+            // Проверяем, началась ли уже игра
+            fetch(SERVER_URL + '/api/dnd/team/status?user_id=' + userId)
+                .then(r => r.json())
+                .then(statusData => {
+                    if (statusData.status === 'ok' && statusData.game_started) {
+                        // Игра уже началась, запускаем
+                        dndCharacter = character;
+                        dndCardHistory = [0];
+                        dndApproved = true;
+                        document.getElementById('dndLobby').style.display = 'none';
+                        document.getElementById('dndGame').style.display = 'block';
+                        showDnDCard(0, true);
+                    } else {
+                        // Игра ещё не началась, показываем ожидание
+                        document.getElementById('dndLobby').style.display = 'block';
+                        document.getElementById('dndGame').style.display = 'none';
+                        loadMyTeam();
+                    }
+                });
         } else {
             alert('❌ ' + (data.message || 'Ошибка'));
         }
@@ -16926,14 +16945,44 @@ function startTeamGame() {
     .then(data => {
         if (data.status === 'ok') {
             alert('🎮 Игра начинается!');
-            var lobby = document.getElementById('dndLobby');
-            var game = document.getElementById('dndGame');
-            if (lobby) lobby.style.display = 'none';
-            if (game) game.style.display = 'block';
+            // Скрываем лобби
+            document.getElementById('dndLobby').style.display = 'none';
+            // Показываем игру
+            document.getElementById('dndGame').style.display = 'block';
+            // Инициализируем игру для текущего пользователя
+            initDndGameAfterStart();
         } else {
             alert('❌ ' + (data.message || 'Ошибка'));
         }
-    });
+    })
+    .catch(err => console.error('Ошибка:', err));
+}
+
+function initDndGameAfterStart() {
+    // Проверяем, есть ли уже выбранный персонаж
+    fetch(SERVER_URL + '/api/dnd/teams/my?user_id=' + userId)
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'ok' && data.team) {
+                var currentMember = data.team.members.find(m => m.id == userId);
+                if (currentMember && currentMember.character_class) {
+                    // Уже выбран персонаж
+                    dndCharacter = currentMember.character_class;
+                    dndCardHistory = [0];
+                    dndApproved = true;
+                    showDnDCard(0, true);
+                } else {
+                    // Нужно выбрать персонажа
+                    showTeamCharacterModal();
+                }
+            } else {
+                showTeamCharacterModal();
+            }
+        })
+        .catch(err => {
+            console.error('Ошибка:', err);
+            showTeamCharacterModal();
+        });
 }
 
 function closeResetModal() {
@@ -16997,27 +17046,35 @@ function checkTeamStatus() {
     fetch(SERVER_URL + '/api/dnd/team/status?user_id=' + userId)
         .then(r => r.json())
         .then(data => {
+            console.log('📡 Статус игры:', data);
+            
             if (data.status === 'ok') {
                 if (data.game_started) {
-                    // Игра уже идёт - показываем игру
+                    // Игра идёт
                     document.getElementById('dndLobby').style.display = 'none';
                     document.getElementById('dndGame').style.display = 'block';
                     
-                    // Загружаем прогресс игрока
-                    loadDndProgress();
+                    // Если персонаж ещё не выбран, показываем выбор
+                    if (!dndCharacter) {
+                        showTeamCharacterModal();
+                    } else {
+                        loadDndProgress();
+                    }
                 } else if (data.team) {
-                    // В команде, но игра не началась - показываем лобби
+                    // В команде, но игра не началась
                     document.getElementById('dndLobby').style.display = 'block';
                     document.getElementById('dndGame').style.display = 'none';
+                    loadMyTeam();
                 } else {
-                    // Не в команде - показываем лобби
+                    // Не в команде
                     document.getElementById('dndLobby').style.display = 'block';
                     document.getElementById('dndGame').style.display = 'none';
                 }
             }
-        });
+        })
+        .catch(err => console.error('Ошибка:', err));
 }
-// Добавьте эту функцию
+
 function loadDndProgress() {
     fetch(SERVER_URL + '/api/dnd/get_progress?user_id=' + userId + '&character=' + dndCharacter)
         .then(r => r.json())
@@ -17117,6 +17174,48 @@ function animateCardDisappear(callback) {
 }
 
 function showDnDCard(cardNumber, skipAnimation) {
+    // Проверяем, существует ли карта для выбранного персонажа
+    var cardExists = false;
+    
+    if (dndCharacter === 'knight') {
+        cardExists = window.DND_CARDS?.knight?.hasOwnProperty(cardNumber);
+    } else if (dndCharacter === 'mage') {
+        cardExists = window.DND_CARDS_MAGE?.mage?.hasOwnProperty(cardNumber);
+    } else if (dndCharacter === 'archer') {
+        cardExists = window.DND_CARDS_ARCHER?.archer?.hasOwnProperty(cardNumber);
+    } else if (dndCharacter === 'druid') {
+        cardExists = window.DND_CARDS_DRUID?.druid?.hasOwnProperty(cardNumber);
+    } else if (dndCharacter === 'assassin') {
+        cardExists = window.DND_CARDS_ASSASSIN?.assassin?.hasOwnProperty(cardNumber);
+    } else if (dndCharacter === 'bard') {
+        cardExists = window.DND_CARDS_BARD?.bard?.hasOwnProperty(cardNumber);
+    }
+    
+    if (!cardExists) {
+        console.error('❌ Карта не найдена:', cardNumber, 'Персонаж:', dndCharacter);
+        var cardContainer = document.getElementById('dndCard');
+        if (cardContainer) {
+            cardContainer.innerHTML = `
+                <div class="branch-task-card">
+                    <div class="branch-header">
+                        <h3>❌ Ошибка</h3>
+                    </div>
+                    <div class="level-card">
+                        <p style="text-align:center; padding: 20px;">
+                            Карта #${cardNumber} не найдена для персонажа ${dndCharacter}.<br>
+                            Пожалуйста, сообщите администратору.
+                        </p>
+                        <button class="task-submit-btn" onclick="location.reload()">
+                            🔄 Перезагрузить страницу
+                        </button>
+                    </div>
+                </div>
+            `;
+            cardContainer.style.display = 'block';
+        }
+        return;
+    }
+    
     if (skipAnimation === true) {
         renderDnDCardContent(cardNumber);
         return;
@@ -17152,7 +17251,23 @@ function renderDnDCardContent(cardNumber) {
     cardContainer.style.transform = '';
     
     if (!card) {
-        cardContainer.innerHTML = '<p style="padding:20px;text-align:center;">❌ Карта не найдена</p>';
+        console.error('❌ renderDnDCardContent: карта не найдена', cardNumber, dndCharacter);
+        cardContainer.innerHTML = `
+            <div class="branch-task-card">
+                <div class="branch-header">
+                    <h3>❌ Ошибка</h3>
+                </div>
+                <div class="level-card">
+                    <p style="text-align:center; padding: 20px;">
+                        Карта #${cardNumber} не найдена.<br>
+                        Попробуйте перезагрузить страницу.
+                    </p>
+                    <button class="task-submit-btn" onclick="location.reload()">
+                        🔄 Перезагрузить
+                    </button>
+                </div>
+            </div>
+        `;
         cardContainer.style.display = 'block';
         return;
     }
@@ -17211,7 +17326,6 @@ function renderDnDCardContent(cardNumber) {
     }
     cardContainer.style.display = 'block';
 }
-
 function rollDnDDice() {
     if (dndIsRolling) return;
     if (!dndCharacter) { alert('Сначала выбери персонажа!'); return; }
