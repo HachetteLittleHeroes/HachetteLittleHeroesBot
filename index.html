@@ -12914,9 +12914,6 @@ function renderDnDCardContent(cardNumber) {
     
     // Финальный босс пройден
     if (card.isFinal && dndApproved) {
-        var titleEl = document.getElementById('dndGameTitle');
-        if (titleEl) titleEl.innerText = '🎉 Приключение завершено!';
-        
         cardContainer.innerHTML = `
             <div class="branch-task-card">
                 <div class="branch-header">
@@ -12933,27 +12930,6 @@ function renderDnDCardContent(cardNumber) {
         cardContainer.style.display = 'block';
         return;
     }
-    
-    // Определяем уровень из карты
-    var level = card.level;
-    var isStart = (cardNumber === 0);
-    
-    var levelText = '';
-    if (isStart) levelText = 'Начало приключения';
-    else if (level === 1) levelText = 'Уровень 1 • Начало пути';
-    else if (level === 2) levelText = 'Уровень 2 • Лесные тропы';
-    else if (level === 3) levelText = 'Уровень 3 • Тёмные земли';
-    else if (level === 4) levelText = 'Уровень 4 • Подземелья';
-    else if (level === 5) levelText = 'Уровень 5 • Битва с боссом';
-    else if (level === 6) levelText = 'Уровень 6 • Возрождение';
-    else if (level === 7) levelText = 'Уровень 7 • Космический путь';
-    else if (level === 8) levelText = 'Уровень 8 • Глубины вселенной';
-    else if (level === 9) levelText = 'Уровень 9 • Путь к финалу';
-    else if (level === 10) levelText = 'Уровень 10 • Финальный босс';
-    else levelText = 'Уровень ' + level;
-    
-    var titleEl = document.getElementById('dndGameTitle');
-    if (titleEl) titleEl.innerText = levelText;
     
     // Кубик без подписи
     var diceHtml = `
@@ -13008,7 +12984,6 @@ function renderDnDCardContent(cardNumber) {
     
     cardContainer.style.display = 'block';
 }
-
 function rollDnDDice() {
     if (dndIsRolling) return;
     if (!dndCharacter) { 
