@@ -16616,7 +16616,41 @@ function openPaymentChat() {
         window.open('https://t.me/' + username + '?text=' + message, '_blank');
     }
 }
+var approvalPollingInterval = null;
 
+function startApprovalPolling() {
+    if (approvalPollingInterval) clearInterval(approvalPollingInterval);
+    
+    approvalPollingInterval = setInterval(function() {
+        // Проверяем только если игра активна и задание НЕ одобрено
+        if (!dndCharacter || dndApproved || dndCardHistory.length === 0) return;
+        
+        var currentCard = dndCardHistory[dndCardHistory.length - 1];
+        if (currentCard === 0) return;
+        
+        fetch(SERVER_URL + '/api/dnd/get_progress?user_id=' + userId + '&character=' + dndCharacter)
+            .then(r => r.json())
+            .then(data => {
+                if (data.status === 'ok' && data.progress) {
+                    var completedCards = data.progress.completed_cards || [];
+                    
+                    if (completedCards.includes(currentCard) && !dndApproved) {
+                        // Админ одобрил! Обновляем карту
+                        dndApproved = true;
+                        renderDndCard(currentCard);
+                        console.log('✅ Админ одобрил карту ' + currentCard + '!');
+                    }
+                }
+            });
+    }, 5000); // проверка каждые 5 секунд
+}
+
+function stopApprovalPolling() {
+    if (approvalPollingInterval) {
+        clearInterval(approvalPollingInterval);
+        approvalPollingInterval = null;
+    }
+}
 function backToDndMenu() {
     // Если игра активна и не пройдена — не пускаем
     var finalBosses = [203, 204, 205, 206, 207, 208];
