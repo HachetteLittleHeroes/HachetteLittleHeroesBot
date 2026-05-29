@@ -6423,130 +6423,143 @@ body:not([data-theme]) .modal-content,
     <div id="dndEventContent" class="tasks-content" style="display: none;">
         
         <!-- D&D Pay Section (не оплачено) -->
-       <div id="dndPaySection" style="text-align: center; padding: 20px;">
-    <div style="font-size: 48px;">🔒</div>
-    <h3>Доступ к D&D приключениям</h3>
-    <p style="color: var(--text-gray); margin: 15px 0;">Стоимость: <strong>500 ₽</strong></p>
-    <button class="task-submit-btn" onclick="openPaymentChat()" style="background: #0088cc;">
-        📩 Оплатить участие
-    </button>
-    
-    <!-- ✅ ДОБАВЬТЕ ЭТУ КНОПКУ -->
-    <button class="task-submit-btn" onclick="checkDndPaymentStatus()" style="background: #444; margin-top: 10px;">
-        🔄 Проверить доступ
-    </button>
-    
-    <p style="margin-top: 15px; font-size: 11px;">После оплаты напишите @SPB_Zakharin_Sergey</p>
-</div>
+        <div id="dndPaySection" style="text-align: center; padding: 20px;">
+            <div style="font-size: 48px;">🔒</div>
+            <h3>Доступ к D&D приключениям</h3>
+            <p style="color: var(--text-gray); margin: 15px 0;">Стоимость: <strong>500 ₽</strong></p>
+            <button class="task-submit-btn" onclick="openPaymentChat()" style="background: #0088cc;">
+                📩 Оплатить участие
+            </button>
+            <button class="task-submit-btn" onclick="checkDndPaymentStatus()" style="background: #444; margin-top: 10px;">
+                🔄 Проверить доступ
+            </button>
+            <p style="margin-top: 15px; font-size: 11px;">После оплаты напишите @SPB_Zakharin_Sergey</p>
+        </div>
         
-       <!-- D&D Lobby -->
-<div id="dndLobby" style="display: none; padding: 15px;">
-    <div class="lobby-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
-        <h3 style="margin: 0;">🏰 Команды</h3>
-        <div style="display: flex; gap: 10px;">
-            <button class="task-submit-btn" onclick="showCreateTeamModal()" style="width: auto; padding: 8px 16px; margin: 0;">➕ Создать</button>
-            <button class="task-submit-btn" onclick="refreshTeamList()" style="width: auto; padding: 8px 16px; margin: 0; background: #444;">🔄</button>
-        </div>
-    </div>
-    
-    <!-- Список команд -->
-    <div id="teamsList" style="margin-bottom: 20px;">
-        <div class="loading" style="text-align: center; padding: 20px;">Загрузка команд...</div>
-    </div>
-
-    <!-- Моя команда -->
-    <div id="myTeamSection" style="display: none;">
-        <h3 style="margin-bottom: 10px;">👥 Моя команда</h3>
-        <div id="myTeamCard"></div>
-    </div>
-</div>
-
-<!-- D&D Game (игра) -->
-<div id="dndGame" style="display: none;">
-    <div id="dndGameTitle" style="display: none;"></div>
-    <div id="dndCard"></div>
-</div>
-
-<!-- Модалка создания команды -->
-<div id="createTeamModal" class="modal" style="display: none;">
-    <div class="modal-content">
-        <span class="close" onclick="closeCreateTeamModal()">&times;</span>
-        <h3>Создание команды</h3>
-        <input type="text" id="teamNameInput" placeholder="Название команды" maxlength="50" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #ccc; margin: 10px 0;">
-        <p style="font-size: 12px; color: #888;">👥 Максимум 6 участников. Минимум 4 для старта.</p>
-        <button class="task-submit-btn" onclick="createTeam()">🚀 Создать команду</button>
-    </div>
-</div>
-
-<!-- Модалка выбора персонажа -->
-<div id="teamCharacterModal" class="modal" style="display: none;">
-    <div class="modal-content">
-        <span class="close" onclick="closeTeamCharacterModal()">&times;</span>
-        <h3>🎭 Выбор персонажа</h3>
-        <p style="margin-bottom: 15px;">Выберите класс для вашего персонажа:</p>
-        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
-            <div class="character-select-card" onclick="selectTeamCharacter('knight')" style="text-align: center; padding: 12px; background: rgba(255,255,255,0.05); border-radius: 12px; cursor: pointer;">
-                <div style="font-size: 32px;">⚔️</div>
-                <div style="font-size: 14px;">Рыцарь</div>
-            </div>
-            <div class="character-select-card" onclick="selectTeamCharacter('mage')" style="text-align: center; padding: 12px; background: rgba(255,255,255,0.05); border-radius: 12px; cursor: pointer;">
-                <div style="font-size: 32px;">🔮</div>
-                <div style="font-size: 14px;">Маг</div>
-            </div>
-            <div class="character-select-card" onclick="selectTeamCharacter('archer')" style="text-align: center; padding: 12px; background: rgba(255,255,255,0.05); border-radius: 12px; cursor: pointer;">
-                <div style="font-size: 32px;">🏹</div>
-                <div style="font-size: 14px;">Лучник</div>
-            </div>
-            <div class="character-select-card" onclick="selectTeamCharacter('druid')" style="text-align: center; padding: 12px; background: rgba(255,255,255,0.05); border-radius: 12px; cursor: pointer;">
-                <div style="font-size: 32px;">🌿</div>
-                <div style="font-size: 14px;">Друид</div>
-            </div>
-            <div class="character-select-card" onclick="selectTeamCharacter('assassin')" style="text-align: center; padding: 12px; background: rgba(255,255,255,0.05); border-radius: 12px; cursor: pointer;">
-                <div style="font-size: 32px;">🗡️</div>
-                <div style="font-size: 14px;">Ассасин</div>
-            </div>
-            <div class="character-select-card" onclick="selectTeamCharacter('bard')" style="text-align: center; padding: 12px; background: rgba(255,255,255,0.05); border-radius: 12px; cursor: pointer;">
-                <div style="font-size: 32px;">🎵</div>
-                <div style="font-size: 14px;">Бард</div>
+        <!-- D&D Главное меню -->
+        <div id="dndMainMenu" style="display: none; padding: 15px; text-align: center;">
+            <h3 style="margin-bottom: 20px;">🎲 D&D Приключение</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="dnd-character-card" onclick="startSoloGame()" style="cursor: pointer;">
+                    <div style="font-size: 48px;">⚔️</div>
+                    <div style="font-weight: 700; margin-top: 10px;">Соло игра</div>
+                    <div style="font-size: 12px; color: var(--text-gray);">Проходи сам</div>
+                </div>
+                <div class="dnd-character-card" onclick="showDndLobby()" style="cursor: pointer;">
+                    <div style="font-size: 48px;">👥</div>
+                    <div style="font-weight: 700; margin-top: 10px;">Команда</div>
+                    <div style="font-size: 12px; color: var(--text-gray);">Играй с друзьями</div>
+                </div>
             </div>
         </div>
-    </div>
-</div>
 
-<!-- Модалка ожидания команды -->
-<div id="waitingTeamModal" class="modal" style="display: none;">
-    <div class="modal-content">
-        <span class="close" onclick="closeWaitingModal()">&times;</span>
-        <h3>⏳ Ожидание команды</h3>
-        <div id="waitingTeamStatus" style="margin: 15px 0;"></div>
-        <div style="font-size: 40px; text-align: center; margin: 15px 0;">🌀</div>
-        <p>Ожидаем выбора персонажей от остальных участников...</p>
-        <button class="task-submit-btn" onclick="checkTeamStatus()" style="margin-top: 15px;">🔄 Проверить</button>
-    </div>
-</div>
-
-<!-- Модалка сброса прогресса -->
-<div id="resetProgressModal" class="modal" style="display: none;">
-    <div class="modal-content">
-        <span class="close" onclick="closeResetModal()">&times;</span>
-        <h3>🔄 Сброс прогресса</h3>
-        <p>Вы уверены, что хотите сбросить прогресс?</p>
-        <p>После сброса вы сможете пройти игру заново.</p>
-        <div style="display: flex; gap: 10px; margin-top: 20px;">
-            <button class="task-submit-btn" onclick="confirmResetProgress()" style="background: #ff9800;">✅ Да, сбросить</button>
-            <button class="task-submit-btn" onclick="closeResetModal()" style="background: #444;">❌ Отмена</button>
+        <!-- Соло: выбор персонажа -->
+        <div id="soloCharacterModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <span class="close" onclick="closeSoloCharacterModal()">&times;</span>
+                <h3>🎭 Выбери героя (соло)</h3>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+                    <div class="character-select-card" onclick="startSoloWithCharacter('knight')" style="text-align:center;padding:12px;background:rgba(255,255,255,0.05);border-radius:12px;cursor:pointer;"><div style="font-size:32px;">⚔️</div><div>Рыцарь</div></div>
+                    <div class="character-select-card" onclick="startSoloWithCharacter('mage')" style="text-align:center;padding:12px;background:rgba(255,255,255,0.05);border-radius:12px;cursor:pointer;"><div style="font-size:32px;">🔮</div><div>Маг</div></div>
+                    <div class="character-select-card" onclick="startSoloWithCharacter('archer')" style="text-align:center;padding:12px;background:rgba(255,255,255,0.05);border-radius:12px;cursor:pointer;"><div style="font-size:32px;">🏹</div><div>Лучник</div></div>
+                    <div class="character-select-card" onclick="startSoloWithCharacter('druid')" style="text-align:center;padding:12px;background:rgba(255,255,255,0.05);border-radius:12px;cursor:pointer;"><div style="font-size:32px;">🌿</div><div>Друид</div></div>
+                    <div class="character-select-card" onclick="startSoloWithCharacter('assassin')" style="text-align:center;padding:12px;background:rgba(255,255,255,0.05);border-radius:12px;cursor:pointer;"><div style="font-size:32px;">🗡️</div><div>Ассасин</div></div>
+                    <div class="character-select-card" onclick="startSoloWithCharacter('bard')" style="text-align:center;padding:12px;background:rgba(255,255,255,0.05);border-radius:12px;cursor:pointer;"><div style="font-size:32px;">🎵</div><div>Бард</div></div>
+                </div>
+                <button class="modal-close-btn" onclick="closeSoloCharacterModal()" style="margin-top:15px;">Отмена</button>
+            </div>
         </div>
-    </div>
-</div>
 
-<!-- Модалка предпросмотра команды -->
-<div id="teamPreviewModal" class="modal-overlay">
-    <div class="modal-content" style="max-width: 400px;">
-        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
-            <button onclick="closeTeamPreviewModal()" style="background: none; border: none; color: var(--accent); font-size: 20px; cursor: pointer;">←</button>
-            <h3 style="margin: 0;">Команда</h3>
+        <!-- Экран соло игры -->
+        <div id="dndSoloGame" style="display: none;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;">
+                <h3 style="margin:0;" id="dndSoloTitle">🎲 Соло</h3>
+                <button class="task-submit-btn" onclick="backToDndMenu()" style="width:auto;padding:8px 16px;margin:0;background:#444;">← Назад</button>
+            </div>
+            <div id="dndSoloCard"></div>
         </div>
-        <div id="teamPreviewContent"></div>
+        
+        <!-- D&D Lobby -->
+        <div id="dndLobby" style="display: none; padding: 15px;">
+            <div class="lobby-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                <h3 style="margin: 0;">🏰 Команды</h3>
+                <div style="display: flex; gap: 10px;">
+                    <button class="task-submit-btn" onclick="showCreateTeamModal()" style="width: auto; padding: 8px 16px; margin: 0;">➕ Создать</button>
+                    <button class="task-submit-btn" onclick="refreshTeamList()" style="width: auto; padding: 8px 16px; margin: 0; background: #444;">🔄</button>
+                    <button class="task-submit-btn" onclick="backToDndMenu()" style="width: auto; padding: 8px 16px; margin: 0; background: #444;">← Меню</button>
+                </div>
+            </div>
+            
+            <div id="teamsList" style="margin-bottom: 20px;">
+                <div class="loading" style="text-align: center; padding: 20px;">Загрузка команд...</div>
+            </div>
+
+            <div id="myTeamSection" style="display: none;">
+                <h3 style="margin-bottom: 10px;">👥 Моя команда</h3>
+                <div id="myTeamCard"></div>
+            </div>
+        </div>
+
+        <!-- D&D Game (командная игра) -->
+        <div id="dndGame" style="display: none;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;">
+                <h3 style="margin:0;">🎲 Командная игра</h3>
+                <button class="task-submit-btn" onclick="backToDndMenu()" style="width:auto;padding:8px 16px;margin:0;background:#444;">← Меню</button>
+            </div>
+            <div id="dndCard"></div>
+        </div>
+
+        <!-- Модалка создания команды -->
+        <div id="createTeamModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <span class="close" onclick="closeCreateTeamModal()">&times;</span>
+                <h3>Создание команды</h3>
+                <input type="text" id="teamNameInput" placeholder="Название команды" maxlength="50" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #ccc; margin: 10px 0;">
+                <p style="font-size: 12px; color: #888;">👥 Максимум 6 участников. Минимум 4 для старта.</p>
+                <button class="task-submit-btn" onclick="createTeam()">🚀 Создать команду</button>
+            </div>
+        </div>
+
+        <!-- Модалка выбора персонажа (команда) -->
+        <div id="teamCharacterModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <span class="close" onclick="closeTeamCharacterModal()">&times;</span>
+                <h3>🎭 Выбор персонажа</h3>
+                <p style="margin-bottom: 15px;">Выберите класс для вашего персонажа:</p>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+                    <div class="character-select-card" onclick="selectTeamCharacter('knight')" style="text-align: center; padding: 12px; background: rgba(255,255,255,0.05); border-radius: 12px; cursor: pointer;">
+                        <div style="font-size: 32px;">⚔️</div><div style="font-size: 14px;">Рыцарь</div>
+                    </div>
+                    <div class="character-select-card" onclick="selectTeamCharacter('mage')" style="text-align: center; padding: 12px; background: rgba(255,255,255,0.05); border-radius: 12px; cursor: pointer;">
+                        <div style="font-size: 32px;">🔮</div><div style="font-size: 14px;">Маг</div>
+                    </div>
+                    <div class="character-select-card" onclick="selectTeamCharacter('archer')" style="text-align: center; padding: 12px; background: rgba(255,255,255,0.05); border-radius: 12px; cursor: pointer;">
+                        <div style="font-size: 32px;">🏹</div><div style="font-size: 14px;">Лучник</div>
+                    </div>
+                    <div class="character-select-card" onclick="selectTeamCharacter('druid')" style="text-align: center; padding: 12px; background: rgba(255,255,255,0.05); border-radius: 12px; cursor: pointer;">
+                        <div style="font-size: 32px;">🌿</div><div style="font-size: 14px;">Друид</div>
+                    </div>
+                    <div class="character-select-card" onclick="selectTeamCharacter('assassin')" style="text-align: center; padding: 12px; background: rgba(255,255,255,0.05); border-radius: 12px; cursor: pointer;">
+                        <div style="font-size: 32px;">🗡️</div><div style="font-size: 14px;">Ассасин</div>
+                    </div>
+                    <div class="character-select-card" onclick="selectTeamCharacter('bard')" style="text-align: center; padding: 12px; background: rgba(255,255,255,0.05); border-radius: 12px; cursor: pointer;">
+                        <div style="font-size: 32px;">🎵</div><div style="font-size: 14px;">Бард</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Модалка предпросмотра команды -->
+        <div id="teamPreviewModal" class="modal-overlay">
+            <div class="modal-content" style="max-width: 400px;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                    <button onclick="closeTeamPreviewModal()" style="background: none; border: none; color: var(--accent); font-size: 20px; cursor: pointer;">←</button>
+                    <h3 style="margin: 0;">Команда</h3>
+                </div>
+                <div id="teamPreviewContent"></div>
+            </div>
+        </div>
+        
     </div>
 </div>
 
@@ -16572,8 +16585,39 @@ for (var i = 203; i <= 208; i++) {
     DND_TRANSITIONS_BARD[i] = {};
 }
 // ==========================================
-// ПРОВЕРКА ОПЛАТЫ И ЛОББИ
+// D&D ПЕРЕМЕННЫЕ
 // ==========================================
+var dndMode = null;          // 'solo' или 'team'
+var dndCharacter = null;
+var dndCardHistory = [];
+var dndApproved = false;
+var dndIsRolling = false;
+
+// ==========================================
+// D&D ПЕРЕМЕННЫЕ
+// ==========================================
+var dndMode = null;          // 'solo' или 'team'
+var dndCharacter = null;
+var dndCardHistory = [];
+var dndApproved = false;
+var dndIsRolling = false;
+
+// ==========================================
+// D&D НАВИГАЦИЯ
+// ==========================================
+
+function toggleDnDEvent() {
+    var content = document.getElementById('dndEventContent');
+    var arrow = document.getElementById('dndEventArrow');
+    if (content.style.display === 'block') {
+        content.style.display = 'none';
+        if (arrow) arrow.style.transform = 'rotate(0deg)';
+    } else {
+        content.style.display = 'block';
+        if (arrow) arrow.style.transform = 'rotate(180deg)';
+        checkDndPaymentStatus();
+    }
+}
 
 function checkDndPaymentStatus() {
     fetch(SERVER_URL + '/api/dnd/payment_status?user_id=' + userId)
@@ -16581,1127 +16625,144 @@ function checkDndPaymentStatus() {
         .then(data => {
             if (data.status === 'ok' && data.is_paid === true) {
                 document.getElementById('dndPaySection').style.display = 'none';
-                
-                // ✅ Проверяем статус игры
-                checkDndGameStatus();
+                document.getElementById('dndMainMenu').style.display = 'block';
+                hideAllDndScreens();
             } else {
                 document.getElementById('dndPaySection').style.display = 'block';
-                document.getElementById('dndLobby').style.display = 'none';
+                document.getElementById('dndMainMenu').style.display = 'none';
+                hideAllDndScreens();
             }
         });
 }
-function refreshTeamList() {
-    console.log('Загрузка списка команд...');
-    
-    fetch(SERVER_URL + '/api/dnd/teams/list?user_id=' + userId)
-        .then(r => r.json())
-        .then(data => {
-            if (data.status === 'ok') {
-                renderTeamsList(data.teams);
-            }
-        })
-        .catch(err => console.error('Ошибка:', err));
+
+function hideAllDndScreens() {
+    var screens = ['dndLobby', 'dndGame', 'dndSoloGame'];
+    for (var i = 0; i < screens.length; i++) {
+        var el = document.getElementById(screens[i]);
+        if (el) el.style.display = 'none';
+    }
 }
 
-function renderTeamsList(teams) {
-    var container = document.getElementById('teamsList');
-    if (!container) return;
-
-    if (!teams || teams.length === 0) {
-        container.innerHTML = '<div class="empty-state"><i class="fas fa-users"></i><br>🤝 Нет открытых команд<br><span style="font-size:12px;">Создайте свою команду!</span></div>';
-        return;
-    }
-
-    var html = '';
-    for (var i = 0; i < teams.length; i++) {
-        var t = teams[i];
-        
-        html += `
-            <div class="teams-list-item" onclick="openTeamPreview('${t.id}')">
-                <div class="team-name" title="${escapeHtml(t.team_name)}">🏰 ${escapeHtml(t.team_name)}</div>
-                <div class="team-count">
-                    <i class="fas fa-users"></i>
-                    <span>${t.current_members}/${t.members_needed}</span>
-                </div>
-            </div>
-        `;
-    }
-    container.innerHTML = html;
-}
-function loadMyTeam() {
-    console.log('🔄 Загрузка моей команды...');
-    
-    fetch(SERVER_URL + '/api/dnd/teams/my?user_id=' + userId)
-        .then(r => r.json())
-        .then(data => {
-            console.log('📡 Ответ /teams/my:', data);
-            
-            if (data.status === 'ok' && data.team) {
-                var team = data.team;
-                var members = team.members || [];
-                
-                if (members.length === 0) {
-                    document.getElementById('myTeamSection').style.display = 'none';
-                    return;
-                }
-                
-                // Загружаем публичные профили для ВСЕХ участников
-                var promises = members.map(member => {
-                    return fetch(SERVER_URL + '/api/public_profile?user_id=' + member.id)
-                        .then(r => r.json())
-                        .then(profile => {
-                            console.log(`📡 Профиль для ${member.id}:`, profile);
-                            return {
-                                id: member.id,
-                                name: profile.name || member.name,
-                                avatar: profile.avatar,
-                                status: profile.status,
-                                character_class: member.character_class
-                            };
-                        })
-                        .catch(err => {
-                            console.error(`❌ Ошибка загрузки профиля ${member.id}:`, err);
-                            return {
-                                id: member.id,
-                                name: member.name,
-                                avatar: 'https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png',
-                                status: 'Без статуса',
-                                character_class: member.character_class
-                            };
-                        });
-                });
-                
-                Promise.all(promises).then(updatedMembers => {
-                    team.members = updatedMembers;
-                    console.log('✅ Обновлённые участники:', team.members);
-                    document.getElementById('myTeamSection').style.display = 'block';
-                    renderMyTeam(team);
-                });
-                
-            } else {
-                document.getElementById('myTeamSection').style.display = 'none';
-                var myTeamCard = document.getElementById('myTeamCard');
-                if (myTeamCard) myTeamCard.innerHTML = '';
-            }
-        })
-        .catch(err => {
-            console.error('❌ Ошибка загрузки команды:', err);
-            document.getElementById('myTeamSection').style.display = 'none';
-        });
-}
-
-function renderMyTeam(team) {
-    console.log('🎨 renderMyTeam, team.members:', team.members);
-    
-    var isLeader = team.leader_id == userId;
-    var membersHtml = '';
-    
-    for (var i = 0; i < team.members.length; i++) {
-        var m = team.members[i];
-        
-        // Теперь avatar и status должны быть загружены
-        var avatarUrl = m.avatar || 'https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png';
-        var status = m.status || 'Без статуса';
-        var memberName = m.name || 'Пользователь';
-        
-        var characterIcon = '';
-        var characterName = '';
-        if (m.character_class) {
-            switch(m.character_class) {
-                case 'knight': characterIcon = '⚔️'; characterName = 'Рыцарь'; break;
-                case 'mage': characterIcon = '🔮'; characterName = 'Маг'; break;
-                case 'archer': characterIcon = '🏹'; characterName = 'Лучник'; break;
-                case 'druid': characterIcon = '🌿'; characterName = 'Друид'; break;
-                case 'assassin': characterIcon = '🗡️'; characterName = 'Ассасин'; break;
-                case 'bard': characterIcon = '🎵'; characterName = 'Бард'; break;
-                default: characterIcon = '❓'; characterName = m.character_class;
-            }
-        }
-        
-        var badgesHtml = '';
-        if (m.id == team.leader_id) {
-            badgesHtml += '<span class="team-leader-badge"><i class="fas fa-crown"></i> Лидер</span>';
-        }
-        if (characterIcon) {
-            badgesHtml += `<span class="team-character-badge">${characterIcon} ${characterName}</span>`;
-        }
-        
-        var shortName = memberName.length > 20 ? memberName.substring(0, 18) + '...' : memberName;
-        
-        membersHtml += `
-            <div class="team-member-item" onclick="openPublicProfile('${m.id}')">
-                <img class="team-member-avatar" src="${avatarUrl}" onerror="this.src='https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png'">
-                <div class="team-member-info">
-                    <div class="team-member-name-row">
-                        <div class="team-member-name-with-badges">
-                            <span class="team-member-name" title="${escapeHtml(memberName)}">${escapeHtml(shortName)}</span>
-                            <div class="team-member-badges">
-                                ${badgesHtml}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="team-member-status">${escapeHtml(status)}</div>
-                </div>
-            </div>
-        `;
-    }
-    
-    var actions = '';
-    if (isLeader) {
-        actions = `
-            <div class="team-actions">
-                <button class="team-action-btn" onclick="showTeamCharacterModal()">🎭 Выбрать персонажа</button>
-                <button class="team-action-btn" onclick="startTeamGame()">🎮 Начать игру</button>
-                <button class="team-action-btn danger" onclick="disbandTeam()">💥 Расформировать</button>
-            </div>
-        `;
+function openPaymentChat() {
+    var username = 'SPB_Zakharin_Sergey';
+    var message = encodeURIComponent('Здравствуйте! Хочу оплатить участие в D&D приключении (500 ₽).');
+    if (window.Telegram?.WebApp) {
+        window.Telegram.WebApp.openTelegramLink('https://t.me/' + username + '?text=' + message);
     } else {
-        actions = `
-            <div class="team-actions">
-                <button class="team-action-btn" onclick="showTeamCharacterModal()">🎭 Выбрать персонажа</button>
-                <button class="team-action-btn danger" onclick="leaveTeam()">🚪 Покинуть</button>
-            </div>
-        `;
+        window.open('https://t.me/' + username + '?text=' + message, '_blank');
     }
-    
-    var myTeamCard = document.getElementById('myTeamCard');
-    if (myTeamCard) {
-        myTeamCard.innerHTML = `
-            <div class="my-team-card">
-                <div class="team-header-row">
-                    <h4 title="${escapeHtml(team.team_name)}">${escapeHtml(team.team_name)}</h4>
-                    <div class="team-header-count">
-                        <i class="fas fa-users"></i>
-                        <span>${team.current_members}/6</span>
-                    </div>
-                </div>
-                <div class="team-members-list">
-                    ${membersHtml}
-                </div>
-                ${actions}
-            </div>
-        `;
-    }
-}
-function joinTeam(teamId) {
-    fetch(SERVER_URL + '/api/dnd/teams/join', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: userId, team_id: teamId })
-    })
-    .then(r => r.json())
-    .then(data => {
-        if (data.status === 'ok') {
-            alert('✅ Вы вступили в команду!');
-            // Небольшая задержка перед обновлением (даём серверу время)
-            setTimeout(() => {
-                refreshTeamList();
-                loadMyTeam();
-            }, 500);
-        } else {
-            alert('❌ ' + (data.message || 'Ошибка'));
-        }
-    })
-    .catch(err => console.error('Ошибка:', err));
 }
 
-function leaveTeam() {
-    if (!confirm('Вы уверены?')) return;
-    
-    fetch(SERVER_URL + '/api/dnd/teams/leave', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: userId })
-    })
-    .then(r => r.json())
-    .then(data => {
-        if (data.status === 'ok') {
-            alert('✅ Вы покинули команду');
-            refreshTeamList();
-            loadMyTeam();
-        } else {
-            alert('❌ ' + (data.message || 'Ошибка'));
-        }
-    });
+function backToDndMenu() {
+    document.getElementById('dndMainMenu').style.display = 'block';
+    hideAllDndScreens();
+    dndMode = null;
+    dndCharacter = null;
 }
-function saveGameState() {
-    if (!dndCharacter) return;
-    if (!dndCardHistory || dndCardHistory.length === 0) return;
+
+// ==========================================
+// ОБЩАЯ ЗАГРУЗКА/СОХРАНЕНИЕ ПРОГРЕССА
+// ==========================================
+
+function loadDndProgress() {
+    if (!dndCharacter) { dndCardHistory = [0]; dndApproved = true; return Promise.resolve(); }
     
-    var gameState = {
-        card_history: dndCardHistory,
-        current_card: dndCardHistory[dndCardHistory.length - 1] || 0,
-        timestamp: Date.now()
-    };
-    
-    console.log('💾 Сохраняем:', JSON.stringify(gameState));
-    
+    return fetch(SERVER_URL + '/api/dnd/get_progress?user_id=' + userId + '&character=' + dndCharacter)
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'ok' && data.progress) {
+                dndCardHistory = data.progress.card_history || data.progress.completed_cards || [0];
+                if (dndCardHistory.length === 0) dndCardHistory = [0];
+                var lastCard = dndCardHistory[dndCardHistory.length - 1];
+                var completedCards = data.progress.completed_cards || [];
+                dndApproved = (lastCard === 0 || completedCards.includes(lastCard));
+            } else {
+                dndCardHistory = [0];
+                dndApproved = true;
+            }
+        })
+        .catch(function() {
+            dndCardHistory = [0];
+            dndApproved = true;
+        });
+}
+
+function saveDndProgress() {
+    if (!dndCharacter || dndCardHistory.length === 0) return;
     fetch(SERVER_URL + '/api/dnd/update_progress', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
             user_id: userId,
             character: dndCharacter,
-            progress: gameState
+            progress: { card_history: dndCardHistory, current_card: dndCardHistory[dndCardHistory.length - 1] || 0, timestamp: Date.now() }
         })
-    }).catch(err => console.error('❌ Ошибка сохранения:', err));
-    
-    // Дублируем в localStorage
-    localStorage.setItem('dnd_backup_' + userId + '_' + dndCharacter, JSON.stringify(gameState));
-}
-function loadGameStateFromServer() {
-    console.log('📥 Загрузка прогресса для:', dndCharacter);
-    
-    if (!dndCharacter) return Promise.resolve(false);
-    
-    return fetch(SERVER_URL + '/api/dnd/get_progress?user_id=' + userId + '&character=' + dndCharacter)
-        .then(r => r.json())
-        .then(data => {
-            console.log('📡 Прогресс с сервера:', data);
-            
-            if (data.status === 'ok' && data.progress) {
-                // Восстанавливаем историю
-                if (data.progress.card_history && data.progress.card_history.length > 0) {
-                    dndCardHistory = data.progress.card_history;
-                } else if (data.progress.completed_cards && data.progress.completed_cards.length > 0) {
-                    // Миграция со старых данных
-                    dndCardHistory = data.progress.completed_cards;
-                } else {
-                    dndCardHistory = [0];
-                }
-                
-                // Проверяем, одобрена ли ПОСЛЕДНЯЯ карта
-                var lastCard = dndCardHistory[dndCardHistory.length - 1];
-                var completedCards = data.progress.completed_cards || [];
-                
-                dndApproved = (lastCard === 0 || completedCards.includes(lastCard));
-                
-                console.log('📌 Последняя карта:', lastCard, 'Одобрена:', dndApproved);
-                return true;
-            } else {
-                dndCardHistory = [0];
-                dndApproved = true;
-                return false;
-            }
-        })
-        .catch(err => {
-            console.error('❌ Ошибка:', err);
-            // Пробуем восстановить из localStorage
-            var backup = localStorage.getItem('dnd_backup_' + userId + '_' + dndCharacter);
-            if (backup) {
-                try {
-                    var data = JSON.parse(backup);
-                    dndCardHistory = data.card_history || [0];
-                    console.log('📦 Восстановлено из localStorage');
-                } catch(e) {
-                    dndCardHistory = [0];
-                }
-            } else {
-                dndCardHistory = [0];
-            }
-            dndApproved = (dndCardHistory[dndCardHistory.length - 1] === 0);
-            return false;
-        });
-}
-function loadGameState() {
-    var saved = localStorage.getItem(`dnd_game_state_${userId}`);
-    if (!saved) return false;
-    
-    try {
-        var gameState = JSON.parse(saved);
-        // Проверяем, что сохранение не старше 24 часов
-        if (Date.now() - gameState.timestamp > 24 * 60 * 60 * 1000) {
-            localStorage.removeItem(`dnd_game_state_${userId}`);
-            return false;
-        }
-        
-        dndCharacter = gameState.character;
-        dndCardHistory = gameState.cardHistory;
-        dndApproved = gameState.approved;
-        console.log('💾 Состояние игры загружено из localStorage:', gameState);
-        return true;
-    } catch(e) {
-        return false;
-    }
+    }).catch(function() {});
 }
 
-function clearGameState() {
-    localStorage.removeItem(`dnd_game_state_${userId}`);
-    console.log('🗑 Состояние игры очищено');
-}
 // ==========================================
-// МОДАЛЬНЫЕ ОКНА
+// ОБЩАЯ ОТРИСОВКА КАРТЫ
 // ==========================================
 
-function showCreateTeamModal() {
-    var input = document.getElementById('teamNameInput');
-    if (input) input.value = '';
-    var modal = document.getElementById('createTeamModal');
-    if (modal) modal.style.display = 'flex';
+function getCardData(cardNumber) {
+    if (dndCharacter === 'knight') return window.DND_CARDS?.knight?.[cardNumber];
+    if (dndCharacter === 'mage') return window.DND_CARDS_MAGE?.mage?.[cardNumber];
+    if (dndCharacter === 'archer') return window.DND_CARDS_ARCHER?.archer?.[cardNumber];
+    if (dndCharacter === 'druid') return window.DND_CARDS_DRUID?.druid?.[cardNumber];
+    if (dndCharacter === 'assassin') return window.DND_CARDS_ASSASSIN?.assassin?.[cardNumber];
+    if (dndCharacter === 'bard') return window.DND_CARDS_BARD?.bard?.[cardNumber];
+    return null;
 }
 
-function closeCreateTeamModal() {
-    var modal = document.getElementById('createTeamModal');
-    if (modal) modal.style.display = 'none';
+function getCardContainer() {
+    if (dndMode === 'solo') return document.getElementById('dndSoloCard');
+    return document.getElementById('dndCard');
 }
 
-function createTeam() {
-    var teamName = document.getElementById('teamNameInput').value.trim();
-    if (!teamName) {
-        alert('Введите название команды');
-        return;
-    }
+function renderDndCard(cardNumber) {
+    var card = getCardData(cardNumber);
+    var container = getCardContainer();
+    if (!container) return;
+    if (!card) { container.innerHTML = '<p style="text-align:center;padding:20px;">❌ Карта #' + cardNumber + ' не найдена</p>'; return; }
     
-    fetch(SERVER_URL + '/api/dnd/teams/create', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: userId, team_name: teamName })
-    })
-    .then(r => r.json())
-    .then(data => {
-        if (data.status === 'ok') {
-            alert('✅ Команда создана!');
-            closeCreateTeamModal();
-            refreshTeamList();
-            loadMyTeam();
-        } else {
-            alert('❌ ' + (data.message || 'Ошибка'));
-        }
-    });
-}
-
-function showTeamCharacterModal() {
-    var modal = document.getElementById('teamCharacterModal');
-    if (modal) modal.style.display = 'flex';
-}
-
-function closeTeamCharacterModal() {
-    var modal = document.getElementById('teamCharacterModal');
-    if (modal) modal.style.display = 'none';
-}
-
-function selectTeamCharacter(character) {
-    console.log('🎭 Выбор персонажа:', character);
-    
-    fetch(SERVER_URL + '/api/dnd/team/select_character', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: userId, character: character })
-    })
-    .then(r => r.json())
-    .then(data => {
-        if (data.status === 'ok') {
-            alert('✅ Персонаж выбран!');
-            closeTeamCharacterModal();
-            
-            // ✅ УСТАНАВЛИВАЕМ ПЕРСОНАЖА И ИНИЦИАЛИЗИРУЕМ ИГРУ
-            dndCharacter = character;
-            dndCardHistory = [0];
-            dndApproved = true;
-            
-            console.log('✅ Игра инициализирована:', {
-                character: dndCharacter,
-                history: dndCardHistory,
-                approved: dndApproved
-            });
-            
-            // Проверяем, что переходы для персонажа загружены
-            if (character === 'mage') {
-                console.log('Проверка переходов мага для карты 0:', DND_TRANSITIONS_MAGE?.[0]);
-            }
-            
-            // Сохраняем в localStorage
-            localStorage.setItem(`dnd_character_${userId}`, character);
-            localStorage.setItem(`dnd_progress_${userId}`, JSON.stringify({
-                character: character,
-                cardHistory: [0],
-                timestamp: Date.now()
-            }));
-            
-            // Проверяем, началась ли уже игра
-            fetch(SERVER_URL + '/api/dnd/team/status?user_id=' + userId)
-                .then(r => r.json())
-                .then(statusData => {
-                    console.log('📡 Статус после выбора персонажа:', statusData);
-                    
-                    if (statusData.status === 'ok' && statusData.game_started) {
-                        document.getElementById('dndLobby').style.display = 'none';
-                        document.getElementById('dndGame').style.display = 'block';
-                        showDnDCard(0, true);
-                    } else {
-                        document.getElementById('dndLobby').style.display = 'block';
-                        document.getElementById('dndGame').style.display = 'none';
-                        loadMyTeam();
-                    }
-                });
-        } else {
-            alert('❌ ' + (data.message || 'Ошибка'));
-        }
-    })
-    .catch(err => console.error('Ошибка:', err));
-}
-function startTeamGame() {
-    if (!confirm('Начать игру? В команде должно быть минимум 4 человека.')) return;
-    
-    fetch(SERVER_URL + '/api/dnd/teams/start', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: userId })
-    })
-    .then(r => r.json())
-    .then(data => {
-        if (data.status === 'ok') {
-            alert('🎮 Игра начинается!');
-            // Скрываем лобби
-            document.getElementById('dndLobby').style.display = 'none';
-            // Показываем игру
-            document.getElementById('dndGame').style.display = 'block';
-            // Инициализируем игру для текущего пользователя
-            initDndGameAfterStart();
-        } else {
-            alert('❌ ' + (data.message || 'Ошибка'));
-        }
-    })
-    .catch(err => console.error('Ошибка:', err));
-}
-
-function initDndGameAfterStart() {
-    // Проверяем, есть ли уже выбранный персонаж
-    fetch(SERVER_URL + '/api/dnd/teams/my?user_id=' + userId)
-        .then(r => r.json())
-        .then(data => {
-            if (data.status === 'ok' && data.team) {
-                var currentMember = data.team.members.find(m => m.id == userId);
-                if (currentMember && currentMember.character_class) {
-                    // Уже выбран персонаж
-                    dndCharacter = currentMember.character_class;
-                    dndCardHistory = [0];
-                    dndApproved = true;
-                    showDnDCard(0, true);
-                } else {
-                    // Нужно выбрать персонажа
-                    showTeamCharacterModal();
-                }
-            } else {
-                showTeamCharacterModal();
-            }
-        })
-        .catch(err => {
-            console.error('Ошибка:', err);
-            showTeamCharacterModal();
-        });
-}
-
-function closeResetModal() {
-    var modal = document.getElementById('resetProgressModal');
-    if (modal) modal.style.display = 'none';
-}
-// Проверка, пройдена ли игра (победа над любым финальным боссом)
-function isGameCompleted() {
-    var finalBosses = [203, 204, 205, 206, 207, 208];
-    return finalBosses.some(function(boss) {
-        return dndCardHistory.includes(boss);
-    });
-}
-
-// Проверка, является ли карта финальным боссом
-function isFinalBoss(cardId) {
-    var finalBosses = [203, 204, 205, 206, 207, 208];
-    return finalBosses.includes(cardId);
-}
-        function checkGameStatus() {
-    var finalBosses = [203, 204, 205, 206, 207, 208];
-    var defeatedBoss = null;
-    for (var i = 0; i < finalBosses.length; i++) {
-        if (dndCardHistory.includes(finalBosses[i])) {
-            defeatedBoss = finalBosses[i];
-            break;
-        }
-    }
-    
-    console.log('📜 История карт:', dndCardHistory);
-    console.log('👑 Побеждённый босс:', defeatedBoss || 'нет');
-    console.log('🏆 Игра пройдена:', defeatedBoss ? 'Да' : 'Нет');
-    
-    if (defeatedBoss) {
-        alert('✅ Игра пройдена! Вы победили босса на карте ' + defeatedBoss);
-    } else {
-        alert('❌ Игра ещё не пройдена');
-    }
-}
-function confirmResetProgress() {
-    // Проверяем, пройдена ли игра (победа над любым финальным боссом)
-    var finalBosses = [203, 204, 205, 206, 207, 208];
-    var isGameCompleted = finalBosses.some(function(boss) {
-        return dndCardHistory.includes(boss);
-    });
-    
-    console.log('🔍 Проверка сброса: игра пройдена?', isGameCompleted);
-    console.log('📜 История карт:', dndCardHistory);
-    
-    if (!isGameCompleted) {
-        alert('❌ Сброс возможен только после полного прохождения игры (победы над любым финальным боссом)!');
-        return;
-    }
-    
-    if (!confirm('⚠️ ВЫ УВЕРЕНЫ? Весь прогресс будет сброшен, и вы начнёте игру заново с карты 0.')) {
-        return;
-    }
-    
-    // Сбрасываем локальные переменные
-    dndCardHistory = [0];
-    dndApproved = true;
-    
-    // Отправляем сброс на сервер
-    fetch(SERVER_URL + '/api/dnd/reset_progress', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: userId, character: dndCharacter })
-    })
-    .then(r => r.json())
-    .then(data => {
-        if (data.status === 'ok') {
-            alert('✅ Прогресс сброшен! Теперь можно пройти игру заново.');
-            closeResetModal();
-            showDnDCard(0, true);
-        } else {
-            alert('❌ ' + (data.message || 'Ошибка сброса прогресса'));
-        }
-    })
-    .catch(err => {
-        console.error('Ошибка:', err);
-        alert('❌ Ошибка сети. Не удалось сбросить прогресс.');
-    });
-}
-function closeWaitingModal() {
-    var modal = document.getElementById('waitingTeamModal');
-    if (modal) modal.style.display = 'none';
-}
-
-function checkTeamStatus() {
-    fetch(SERVER_URL + '/api/dnd/team/status?user_id=' + userId)
-        .then(r => r.json())
-        .then(data => {
-            if (data.status === 'ok') {
-                if (data.game_started) {
-                    var waitingModal = document.getElementById('waitingTeamModal');
-                    if (waitingModal) waitingModal.style.display = 'none';
-                    var game = document.getElementById('dndGame');
-                    if (game) game.style.display = 'block';
-                } else {
-                    var statusDiv = document.getElementById('waitingTeamStatus');
-                    if (statusDiv) {
-                        var html = '<div>';
-                        for (var i = 0; i < data.members.length; i++) {
-                            var m = data.members[i];
-                            html += `<div>${m.character ? '✅' : '⏳'} ${escapeHtml(m.name)} ${m.character ? '(' + m.character + ')' : '(выбирает...)'}</div>`;
-                        }
-                        html += '</div>';
-                        statusDiv.innerHTML = html;
-                    }
-                    var waitingModal = document.getElementById('waitingTeamModal');
-                    if (waitingModal) waitingModal.style.display = 'flex';
-                }
-            }
-        });
-}
-   function checkDndGameStatus() {
-    console.log('🔍 Проверка статуса игры...');
-    
-    fetch(SERVER_URL + '/api/dnd/team/status?user_id=' + userId)
-        .then(r => r.json())
-        .then(data => {
-            console.log('📡 Статус игры:', data);
-            
-            if (data.status === 'ok') {
-                if (data.game_started) {
-                    console.log('🎮 Игра началась!');
-                    document.getElementById('dndLobby').style.display = 'none';
-                    document.getElementById('dndGame').style.display = 'block';
-                    
-                    // Находим себя в команде
-                    var myself = null;
-                    if (data.members && Array.isArray(data.members)) {
-                        myself = data.members.find(m => m.user_id == userId || m.id == userId);
-                    }
-                    
-                    var savedCharacter = myself?.character || myself?.character_class;
-                    
-                    if (savedCharacter) {
-                        dndCharacter = savedCharacter;
-                        // ✅ ЗАГРУЖАЕМ ПРОГРЕСС С СЕРВЕРА
-                        loadGameStateFromServer().then(() => {
-                            var lastCard = dndCardHistory[dndCardHistory.length - 1];
-                            console.log('📌 Восстанавливаем карту:', lastCard);
-                            showDnDCard(lastCard, true);
-                        });
-                    } else if (dndCharacter) {
-                        loadGameStateFromServer().then(() => {
-                            var lastCard = dndCardHistory[dndCardHistory.length - 1];
-                            showDnDCard(lastCard, true);
-                        });
-                    } else {
-                        console.log('⚠️ Персонаж не выбран, показываем выбор');
-                        showTeamCharacterModal();
-                    }
-                } else if (data.team) {
-                    console.log('👥 В команде, игра не началась');
-                    document.getElementById('dndLobby').style.display = 'block';
-                    document.getElementById('dndGame').style.display = 'none';
-                    loadMyTeam();
-                } else {
-                    console.log('🏠 Не в команде');
-                    document.getElementById('dndLobby').style.display = 'block';
-                    document.getElementById('dndGame').style.display = 'none';
-                }
-            }
-        })
-        .catch(err => {
-            console.error('❌ Ошибка checkDndGameStatus:', err);
-            document.getElementById('dndLobby').style.display = 'block';
-            document.getElementById('dndGame').style.display = 'none';
-        });
-}
-
-async function loadDndProgress() {
-    console.log('📥 Загрузка прогресса для персонажа:', dndCharacter);
-    
-    if (!dndCharacter) {
-        console.log('⚠️ Персонаж не выбран');
-        return false;
-    }
-    
-    try {
-        const response = await fetch(SERVER_URL + '/api/dnd/get_progress?user_id=' + userId + '&character=' + dndCharacter);
-        const data = await response.json();
-        
-        console.log('📡 Прогресс с сервера:', data);
-        
-        if (data.status === 'ok' && data.progress) {
-            if (data.progress.card_history && data.progress.card_history.length > 0) {
-                dndCardHistory = data.progress.card_history;
-            } else {
-                dndCardHistory = [0];
-            }
-            dndApproved = true;
-            console.log('✅ Загружен прогресс, текущая карта:', dndCardHistory[dndCardHistory.length - 1]);
-            return true;
-        } else {
-            dndCardHistory = [0];
-            dndApproved = true;
-            console.log('🆕 Начинаем новую игру');
-            return false;
-        }
-    } catch (err) {
-        console.error('❌ Ошибка загрузки прогресса:', err);
-        dndCardHistory = [0];
-        dndApproved = true;
-        return false;
-    }
-}
-// ==========================================
-// D&D ИГРОВЫЕ ФУНКЦИИ
-// ==========================================
-
-var dndCharacter = null;
-var dndCardHistory = [];
-var dndIsRolling = false;
-var dndApproved = false;
-var currentDnDCard = null;
-
-function getMappedDiceValue(cardId, diceRoll) {
-    if (cardId === 0 || (cardId >= 1 && cardId <= 39)) {
-        if (diceRoll === 1 || diceRoll === 2) return 1;
-        if (diceRoll === 3 || diceRoll === 4) return 2;
-        if (diceRoll === 5 || diceRoll === 6) return 3;
-    }
-    return diceRoll;
-}
-
-function rollDice() {
-    return Math.floor(Math.random() * 6) + 1;
-}
-
-function getDiceFaceRotation(result) {
-    var rotations = {
-        1: 'rotateX(0deg) rotateY(0deg)',
-        2: 'rotateX(0deg) rotateY(180deg)',
-        3: 'rotateX(0deg) rotateY(-90deg)',
-        4: 'rotateX(0deg) rotateY(90deg)',
-        5: 'rotateX(-90deg) rotateY(0deg)',
-        6: 'rotateX(90deg) rotateY(0deg)'
-    };
-    return rotations[result] || rotations[1];
-}
-
-function getTransition(cardId, mappedValue) {
-    console.log('🔍 getTransition:', cardId, mappedValue, dndCharacter);
-    
-    var transitions = null;
-    
-    if (dndCharacter === 'knight') {
-        transitions = window.DND_TRANSITIONS;
-    } else if (dndCharacter === 'mage') {
-        transitions = window.DND_TRANSITIONS_MAGE;
-    } else if (dndCharacter === 'archer') {
-        transitions = window.DND_TRANSITIONS_ARCHER;
-    } else if (dndCharacter === 'druid') {
-        transitions = window.DND_TRANSITIONS_DRUID;
-    } else if (dndCharacter === 'assassin') {
-        transitions = window.DND_TRANSITIONS_ASSASSIN;
-    } else if (dndCharacter === 'bard') {
-        transitions = window.DND_TRANSITIONS_BARD;
-    }
-    
-    console.log('transitions for card', cardId, ':', transitions ? transitions[cardId] : 'not found');
-    
-    if (!transitions || !transitions[cardId]) return null;
-    return transitions[cardId][mappedValue];
-}
-
-function animateCardAppear(callback) {
-    var cardContainer = document.getElementById('dndCard');
-    if (!cardContainer) {
-        if (callback) callback();
-        return;
-    }
-    cardContainer.style.transition = 'opacity 0.15s ease-out, transform 0.15s ease-out';
-    cardContainer.style.opacity = '1';
-    cardContainer.style.transform = 'translateY(0) scale(1)';
-    if (callback) setTimeout(callback, 150);
-}
-
-function animateCardDisappear(callback) {
-    var cardContainer = document.getElementById('dndCard');
-    if (!cardContainer) {
-        if (callback) callback();
-        return;
-    }
-    cardContainer.style.transition = 'opacity 0.1s ease-in, transform 0.1s ease-in';
-    cardContainer.style.opacity = '0';
-    cardContainer.style.transform = 'translateY(-10px) scale(0.98)';
-    if (callback) setTimeout(callback, 100);
-}
-
-function showDnDCard(cardNumber, skipAnimation) {
-    console.log('🎴 showDnDCard вызван с cardNumber:', cardNumber, 'skipAnimation:', skipAnimation, 'character:', dndCharacter);
-    
-    if (cardNumber === undefined || cardNumber === null) {
-        console.error('❌ cardNumber is undefined! Устанавливаем 0');
-        cardNumber = 0;
-    }
-    
-    // ... (проверка существования карты остаётся без изменений) ...
-    
-    if (skipAnimation === true) {
-        renderDnDCardContent(cardNumber);
-        return;
-    }
-    animateCardDisappear(function() {
-        renderDnDCardContent(cardNumber);
-        setTimeout(animateCardAppear, 50);
-    });
-}
-function renderDnDCardContent(cardNumber) {
-    var card = null;
-    
-    if (dndCharacter === 'knight') card = window.DND_CARDS?.knight?.[cardNumber];
-    else if (dndCharacter === 'mage') card = window.DND_CARDS_MAGE?.mage?.[cardNumber];
-    else if (dndCharacter === 'archer') card = window.DND_CARDS_ARCHER?.archer?.[cardNumber];
-    else if (dndCharacter === 'druid') card = window.DND_CARDS_DRUID?.druid?.[cardNumber];
-    else if (dndCharacter === 'assassin') card = window.DND_CARDS_ASSASSIN?.assassin?.[cardNumber];
-    else if (dndCharacter === 'bard') card = window.DND_CARDS_BARD?.bard?.[cardNumber];
-    
-    var cardContainer = document.getElementById('dndCard');
-    if (!cardContainer || !card) {
-        if (cardContainer) cardContainer.innerHTML = '<p style="text-align:center;padding:20px;">❌ Карта #' + cardNumber + ' не найдена</p>';
-        return;
-    }
-    
-    // Стартовая карта — всегда кубик
-    if (card.isStart) {
-        cardContainer.innerHTML = `
-            <div class="branch-task-card start-card">
-                <div class="branch-header"><h3>${card.title}</h3></div>
-                <div class="level-card">
-                    ${card.image ? '<img src="' + card.image + '" class="card-image" style="width:100%;border-radius:12px;margin-bottom:15px;">' : ''}
-                    <p style="text-align:center;font-weight:600;">Брось кубик, чтобы начать!</p>
-                    <div id="dndDiceWrapper" style="margin: 15px 0;">
-                        <div id="dndDice" class="dnd-dice" onclick="rollDnDDice()">
-                            ${getDiceHTML()}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-        cardContainer.style.display = 'block';
-        return;
-    }
+    // Стартовая
+    if (card.isStart) { container.innerHTML = renderCardHTML(card, true, true); return; }
     
     // Финальный босс + одобрен = победа
     if (card.isFinal && dndApproved) {
-        cardContainer.innerHTML = `
-            <div class="branch-task-card">
-                <div class="branch-header"><h3>🎉 Победа!</h3></div>
-                <div class="level-card final-card">
-                    <p style="text-align:center;font-size:18px;font-weight:700;color:var(--accent);">
-                        Ты победил ${card.title}!
-                    </p>
-                    <p style="text-align:center;">Ты прошёл всё приключение до конца!</p>
-                    <button class="task-submit-btn" onclick="confirmResetProgress()" style="margin-top:15px; background:#ff9800;">
-                        🔄 Сбросить прогресс и пройти заново
-                    </button>
-                </div>
-            </div>
-        `;
-        cardContainer.style.display = 'block';
+        container.innerHTML = '<div class="branch-task-card"><div class="branch-header"><h3>🎉 Победа!</h3></div><div class="level-card" style="text-align:center;"><p style="font-size:18px;font-weight:700;color:var(--accent);">Ты победил ' + card.title + '!</p><p>Приключение пройдено!</p><button class="task-submit-btn" onclick="resetDndProgress()" style="margin-top:15px;background:#ff9800;">🔄 Пройти заново</button><button class="task-submit-btn" onclick="backToDndMenu()" style="margin-top:10px;background:#444;">🏠 В меню</button></div></div>';
         return;
     }
     
-    // ✅ ОСНОВНАЯ ЛОГИКА: кубик если dndApproved = true
-    if (dndApproved) {
-        cardContainer.innerHTML = `
-            <div class="branch-task-card">
-                <div class="branch-header"><h3>${card.title}</h3></div>
-                <div class="level-card">
-                    ${card.image ? '<img src="' + card.image + '" class="card-image" style="width:100%;border-radius:12px;margin-bottom:15px;">' : ''}
-                    <p style="font-weight: 600; margin-bottom: 15px;">📋 ${card.task}</p>
-                    <div style="text-align:center;color:var(--status-green);margin-bottom:10px;">
-                        <i class="fas fa-check-circle"></i> Задание одобрено!
-                    </div>
-                    <div id="dndDiceWrapper" style="margin: 15px 0;">
-                        <div id="dndDice" class="dnd-dice" onclick="rollDnDDice()">
-                            ${getDiceHTML()}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-    } else {
-        cardContainer.innerHTML = `
-            <div class="branch-task-card">
-                <div class="branch-header"><h3>${card.title}</h3></div>
-                <div class="level-card">
-                    ${card.image ? '<img src="' + card.image + '" class="card-image" style="width:100%;border-radius:12px;margin-bottom:15px;">' : ''}
-                    <p style="font-weight: 600; margin-bottom: 15px;">📋 ${card.task}</p>
-                    <button class="task-submit-btn" onclick="openDnDTaskUpload(${cardNumber})">
-                        <i class="fas fa-camera"></i> Отправить фото
-                    </button>
-                    <div style="text-align:center;color:var(--text-gray);font-size:12px;margin-top:10px;">
-                        ⏳ Дождитесь одобрения администратором
-                    </div>
-                </div>
-            </div>
-        `;
-    }
-    cardContainer.style.display = 'block';
+    // Обычная
+    container.innerHTML = renderCardHTML(card, dndApproved, false);
 }
 
-// Вспомогательная функция для HTML кубика
-function getDiceHTML() {
-    return `
-        <div class="dice-face front"><span class="dot dot1"></span></div>
-        <div class="dice-face back"><span class="dot dot1"></span><span class="dot dot2"></span></div>
-        <div class="dice-face right"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span></div>
-        <div class="dice-face left"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span></div>
-        <div class="dice-face top"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span><span class="dot dot5"></span></div>
-        <div class="dice-face bottom"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span><span class="dot dot5"></span><span class="dot dot6"></span></div>
-    `;
-}
-    // ==========================================
-    // ДЛЯ НЕ-СТАРТОВЫХ КАРТ: кубик СКРЫТ по умолчанию
-    // ==========================================
+function renderCardHTML(card, showDice, isStart) {
+    var diceHTML = showDice ? '<div id="dndDiceWrapper" style="margin:15px 0;"><div id="dndDice" class="dnd-dice" onclick="rollDndDice()"><div class="dice-face front"><span class="dot dot1"></span></div><div class="dice-face back"><span class="dot dot1"></span><span class="dot dot2"></span></div><div class="dice-face right"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span></div><div class="dice-face left"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span></div><div class="dice-face top"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span><span class="dot dot5"></span></div><div class="dice-face bottom"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span><span class="dot dot5"></span><span class="dot dot6"></span></div></div></div>' : '';
     
-    // Проверяем, пройдена ли уже карта (в истории completed_cards)
-    var isCardCompleted = dndCardHistory.includes(cardNumber);
-    
-    cardContainer.innerHTML = `
-        <div class="branch-task-card">
-            <div class="branch-header"><h3>${card.title}</h3></div>
-            <div class="level-card">
-                ${card.image ? '<img src="' + card.image + '" class="card-image" style="width:100%;border-radius:12px;margin-bottom:15px;" onerror="this.style.display=\'none\'">' : ''}
-                <p style="font-weight: 600; margin-bottom: 15px;">📋 ${card.task}</p>
-                
-                ${isCardCompleted ? `
-                    <!-- Карта уже одобрена — показываем кубик -->
-                    <div style="text-align:center;color:var(--status-green);margin-bottom:10px;">
-                        <i class="fas fa-check-circle"></i> Задание одобрено!
-                    </div>
-                    <div id="dndDiceWrapper" style="margin: 15px 0;">
-                        <div id="dndDice" class="dnd-dice" onclick="rollDnDDice()">
-                            <div class="dice-face front"><span class="dot dot1"></span></div>
-                            <div class="dice-face back"><span class="dot dot1"></span><span class="dot dot2"></span></div>
-                            <div class="dice-face right"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span></div>
-                            <div class="dice-face left"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span></div>
-                            <div class="dice-face top"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span><span class="dot dot5"></span></div>
-                            <div class="dice-face bottom"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span><span class="dot dot5"></span><span class="dot dot6"></span></div>
-                        </div>
-                    </div>
-                ` : `
-                    <!-- Карта НЕ одобрена — показываем кнопку отправки, кубик скрыт -->
-                    <button class="task-submit-btn" onclick="openDnDTaskUpload(${cardNumber})">
-                        <i class="fas fa-camera"></i> Отправить фото
-                    </button>
-                    <div id="dndDiceWrapper" style="margin: 15px 0; display: none;">
-                        <p style="text-align:center;color:var(--text-gray);font-size:12px;">
-                            ⏳ Дождитесь одобрения задания администратором
-                        </p>
-                    </div>
-                `}
-            </div>
-        </div>
-    `;
-    cardContainer.style.display = 'block';
-    
-    // ✅ Дополнительно проверяем статус с сервера и обновляем UI если нужно
-    if (!isCardCompleted) {
-        fetch(SERVER_URL + '/api/dnd/get_progress?user_id=' + userId + '&character=' + dndCharacter)
-            .then(r => r.json())
-            .then(data => {
-                if (data.status === 'ok' && data.progress) {
-                    var completedCards = data.progress.completed_cards || [];
-                    if (completedCards.includes(cardNumber)) {
-                        // Сервер говорит что карта одобрена — обновляем локально и перерисовываем
-                        if (!dndCardHistory.includes(cardNumber)) {
-                            dndCardHistory.push(cardNumber);
-                        }
-                        dndApproved = true;
-                        renderDnDCardContent(cardNumber); // Перерисовываем с кубиком
-                    }
-                }
-            })
-            .catch(err => console.error('Ошибка проверки прогресса:', err));
-    }
-}
-    
-    // Функция для отрисовки с учётом статуса одобрения
-   // Функция для отрисовки с учётом статуса одобрения
-// Функция для отрисовки с учётом статуса одобрения
-function renderWithApprovalStatus(isApproved) {
-    dndApproved = isApproved;
-    
-    if (isFinalBoss(cardNumber) && isApproved) {
-        cardContainer.innerHTML = `
-            <div class="branch-task-card">
-                <div class="branch-header"><h3>🎉 Победа!</h3></div>
-                <div class="level-card final-card">
-                    <p style="text-align:center;font-size:18px;font-weight:700;color:var(--accent);">
-                        Ты победил ${card.title}!
-                    </p>
-                    <p style="text-align:center;">Ты прошёл всё приключение до конца!</p>
-                    <p style="text-align:center; font-size:14px; margin-top:10px;">
-                        🎲 Ты можешь сбросить прогресс и пройти игру заново тем же персонажем!
-                    </p>
-                    <button class="task-submit-btn" onclick="confirmResetProgress()" style="margin-top:15px; background:#ff9800;">
-                        🔄 Сбросить прогресс и пройти заново
-                    </button>
-                    <button class="task-submit-btn" onclick="backToLobby()" style="margin-top:10px; background:#444;">
-                        🏠 Вернуться в лобби
-                    </button>
-                </div>
-            </div>
-        `;
-        cardContainer.style.display = 'block';
-        return;
+    var statusHTML = '';
+    if (!isStart) {
+        if (showDice) {
+            statusHTML = '<div style="text-align:center;color:var(--status-green);margin-bottom:10px;"><i class="fas fa-check-circle"></i> Задание одобрено!</div>';
+        } else {
+            statusHTML = '<button class="task-submit-btn" onclick="openDndTaskUpload()"><i class="fas fa-camera"></i> Отправить фото</button><div style="text-align:center;color:var(--text-gray);font-size:12px;margin-top:10px;">⏳ Дождитесь одобрения администратором</div>';
+        }
     }
     
-    var showDice = card.isStart || isApproved;
-    
-    if (!card.isStart && isApproved === undefined) {
-        cardContainer.innerHTML = `
-            <div class="branch-task-card">
-                <div class="branch-header"><h3>${card.title}</h3></div>
-                <div class="level-card" style="text-align:center;">
-                    <p>⏳ Проверка статуса задания...</p>
-                </div>
-            </div>
-        `;
-        cardContainer.style.display = 'block';
-        return;
-    }
-    
-    var diceHtml = `
-        <div id="dndDiceWrapper" style="margin: 15px 0; display: ${showDice ? 'block' : 'none'};">
-            <div id="dndDice" class="dnd-dice" onclick="rollDnDDice()">
-                <div class="dice-face front"><span class="dot dot1"></span></div>
-                <div class="dice-face back"><span class="dot dot1"></span><span class="dot dot2"></span></div>
-                <div class="dice-face right"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span></div>
-                <div class="dice-face left"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span></div>
-                <div class="dice-face top"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span><span class="dot dot5"></span></div>
-                <div class="dice-face bottom"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span><span class="dot dot5"></span><span class="dot dot6"></span></div>
-            </div>
-        </div>
-    `;
-    
-    if (card.isStart) {
-        cardContainer.innerHTML = `
-            <div class="branch-task-card start-card">
-                <div class="branch-header"><h3>${card.title}</h3></div>
-                <div class="level-card">
-                    ${card.image ? '<img src="' + card.image + '" class="card-image" style="width:100%;border-radius:12px;margin-bottom:15px;" onerror="this.style.display=\'none\'">' : ''}
-                    <p style="text-align:center;font-weight:600;">Брось кубик, чтобы начать!</p>
-                    ${diceHtml}
-                </div>
-            </div>
-        `;
-    } else {
-        cardContainer.innerHTML = `
-            <div class="branch-task-card">
-                <div class="branch-header"><h3>${card.title}</h3></div>
-                <div class="level-card">
-                    ${card.image ? '<img src="' + card.image + '" class="card-image" style="width:100%;border-radius:12px;margin-bottom:15px;" onerror="this.style.display=\'none\'">' : ''}
-                    <p style="font-weight: 600; margin-bottom: 15px;">📋 ${card.task}</p>
-                    ${!isApproved ? `<button class="task-submit-btn" onclick="openDnDTaskUpload(${cardNumber})"><i class="fas fa-camera"></i> Отправить фото</button>` : `<div style="text-align:center;color:var(--status-green);margin-bottom:10px;"><i class="fas fa-check-circle"></i> Задание одобрено!</div>`}
-                    ${diceHtml}
-                </div>
-            </div>
-        `;
-    }
-    cardContainer.style.display = 'block';
+    return '<div class="branch-task-card ' + (isStart ? 'start-card' : '') + '"><div class="branch-header"><h3>' + card.title + '</h3></div><div class="level-card">' + (card.image ? '<img src="' + card.image + '" class="card-image" style="width:100%;border-radius:12px;margin-bottom:15px;" onerror="this.style.display=\'none\'">' : '') + (isStart ? '<p style="text-align:center;font-weight:600;">Брось кубик, чтобы начать!</p>' : '<p style="font-weight:600;margin-bottom:15px;">📋 ' + (card.task || '') + '</p>') + statusHTML + diceHTML + '</div></div>';
 }
 
-// Основная функция для показа карты
-function showDNDCard(card, cardNumber) {
-    // Для стартовой карты сразу показываем (без проверки)
-    if (card.isStart) {
-        renderWithApprovalStatus(true);
-        return;
-    }
-    
-    // Показываем индикатор загрузки
-    renderWithApprovalStatus(undefined);
-    
-    // Проверяем на сервере, одобрена ли карта
-    fetch(SERVER_URL + '/api/dnd/get_progress?user_id=' + userId + '&character=' + dndCharacter)
-        .then(r => r.json())
-        .then(data => {
-            var isApproved = false;
-            if (data.status === 'ok' && data.progress) {
-                var completedCards = data.progress.completed_cards || [];
-                isApproved = completedCards.includes(cardNumber);
-            }
-            renderWithApprovalStatus(isApproved);
-        })
-        .catch(err => {
-            console.error('Ошибка проверки прогресса:', err);
-            renderWithApprovalStatus(false);
-        });
-}
-    
+// ==========================================
+// БРОСОК КУБИКА (общий)
+// ==========================================
 
-function rollDnDDice() {
+function rollDndDice() {
     if (dndIsRolling) return;
-    if (!dndCharacter) { alert('Сначала выбери персонажа!'); return; }
-    
     var prevCard = dndCardHistory[dndCardHistory.length - 1] || 0;
-    
-    if (prevCard !== 0 && !dndApproved) {
-        alert('⏳ Сначала дождитесь одобрения задания администратором!');
-        return;
-    }
+    if (prevCard !== 0 && !dndApproved) { alert('⏳ Сначала дождитесь одобрения задания администратором!'); return; }
     
     dndIsRolling = true;
-    
     var dice = document.getElementById('dndDice');
     if (!dice) { dndIsRolling = false; return; }
     
@@ -17709,7 +16770,8 @@ function rollDnDDice() {
     var mappedValue = getMappedDiceValue(prevCard, diceRoll);
     var nextCardId = getTransition(prevCard, mappedValue);
     
-    if (nextCardId === null || nextCardId === undefined || nextCardId < 0 || nextCardId > 208) {
+    if (nextCardId === null || nextCardId === undefined || nextCardId < 0 || nextCardId > 208 || !getCardData(nextCardId)) {
+        console.error('❌ Ошибка перехода! prevCard:', prevCard, 'diceRoll:', diceRoll, 'mapped:', mappedValue, 'nextCard:', nextCardId);
         alert('⚠️ Ошибка перехода! Обновите страницу.');
         dndIsRolling = false;
         return;
@@ -17720,85 +16782,22 @@ function rollDnDDice() {
     
     setTimeout(function() {
         dice.classList.remove('rolling');
-        
         setTimeout(function() {
             dndIsRolling = false;
-            
             dndCardHistory.push(nextCardId);
-            dndApproved = false;  // Новая карта — не одобрена
-            
-            saveGameState();
-            showDnDCard(nextCardId, false);
+            dndApproved = false;
+            saveDndProgress();
+            renderDndCard(nextCardId);
         }, 1200);
     }, 800);
 }
 
-// Выделяем бросок в отдельную функцию
-function performDiceRoll(prevCard) {
-    dndIsRolling = true;
-    
-    var dice = document.getElementById('dndDice');
-    if (!dice) {
-        dndIsRolling = false;
-        return;
-    }
-    
-    var diceRoll = rollDice();
-    var mappedValue = getMappedDiceValue(prevCard, diceRoll);
-    
-    dice.classList.add('rolling');
-    var rotation = getDiceFaceRotation(diceRoll);
-    
-    setTimeout(function() {
-        dice.classList.remove('rolling');
-        dice.style.transform = rotation;
-        
-        setTimeout(function() {
-            dndIsRolling = false;
-            
-            var nextCardId = getTransition(prevCard, mappedValue);
-            console.log('🎲 Результат: diceRoll=' + diceRoll + ', mappedValue=' + mappedValue + ', nextCard=' + nextCardId);
-            
-            if (nextCardId === null || nextCardId === undefined) { 
-                alert('Ошибка: нет перехода для значения ' + mappedValue + ' с карты ' + prevCard); 
-                dndIsRolling = false;
-                return; 
-            }
-            
-            dndCardHistory.push(nextCardId);
-            dndApproved = false;  // ✅ Сбрасываем одобрение для новой карты
-            
-            console.log('✅ Переход на карту:', nextCardId);
-            console.log('📜 История карт:', dndCardHistory);
-            
-            // ✅ СОХРАНЯЕМ НА СЕРВЕР ПОСЛЕ КАЖДОГО БРОСКА
-            saveGameState();
-            
-            showDnDCard(nextCardId, false);
-        }, 1200);
-    }, 800);
-}
-function saveCurrentCard(cardId) {
-    fetch(SERVER_URL + '/api/dnd/save_current_card', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-            user_id: userId, 
-            character: dndCharacter, 
-            current_card: cardId,
-            card_history: dndCardHistory
-        })
-    })
-    .then(r => r.json())
-    .then(data => {
-        if (data.status === 'ok') {
-            console.log('💾 Текущая карта сохранена:', cardId);
-        }
-    })
-    .catch(err => console.error('Ошибка сохранения:', err));
-}
-function openDnDTaskUpload(cardNumber) {
-    currentDnDCard = cardNumber;
+// ==========================================
+// ОТПРАВКА ФОТО (общая)
+// ==========================================
+
+function openDndTaskUpload() {
+    var currentCard = dndCardHistory[dndCardHistory.length - 1];
     var fileInput = document.createElement('input');
     fileInput.type = 'file';
     fileInput.accept = 'image/*';
@@ -17807,12 +16806,12 @@ function openDnDTaskUpload(cardNumber) {
         var files = Array.from(event.target.files);
         if (files.length === 0) return;
         window.tempPhotos = files;
-        submitDnDTaskPhoto();
+        submitDndTaskPhoto(currentCard);
     };
     fileInput.click();
 }
 
-function submitDnDTaskPhoto() {
+function submitDndTaskPhoto(cardNumber) {
     if (!window.tempPhotos || window.tempPhotos.length === 0) { alert('❌ Выберите фото'); return; }
     if (window.isUploading) return;
     window.isUploading = true;
@@ -17820,106 +16819,80 @@ function submitDnDTaskPhoto() {
     var formData = new FormData();
     formData.append('user', userId.toString());
     formData.append('character', dndCharacter);
-    formData.append('card', currentDnDCard.toString());
+    formData.append('card', cardNumber.toString());
     for (var i = 0; i < window.tempPhotos.length; i++) formData.append('photos', window.tempPhotos[i]);
     
-    fetch(SERVER_URL + '/api/dnd/check_task', {
-        method: 'POST',
-        body: formData
-    })
-    .then(r => r.json())
-    .then(function(result) {
-        if (result && result.status === 'ok') {
-            alert('✅ Фото отправлено на проверку!');
-            closeTaskUploadModal();
-        } else if (result && result.status === 'banned') {
-            alert('❌ Ваш аккаунт заблокирован!');
-        } else {
-            throw new Error(result?.message || 'Ошибка отправки');
-        }
-    })
-    .catch(function(error) {
-        console.error('❌ Ошибка:', error);
-        alert('❌ ' + error.message);
-    })
-    .finally(function() { window.isUploading = false; });
+    fetch(SERVER_URL + '/api/dnd/check_task', { method: 'POST', body: formData })
+        .then(r => r.json())
+        .then(function(result) {
+            if (result && result.status === 'ok') { alert('✅ Фото отправлено на проверку!'); closeTaskUploadModal(); }
+            else if (result && result.status === 'banned') { alert('❌ Аккаунт заблокирован!'); }
+            else { throw new Error(result?.message || 'Ошибка'); }
+        })
+        .catch(function(error) { alert('❌ ' + error.message); })
+        .finally(function() { window.isUploading = false; window.tempPhotos = []; });
 }
 
-function approveDnDTask() {
-    var approvedCard = currentDnDCard;
+// ==========================================
+// СБРОС ПРОГРЕССА (общий)
+// ==========================================
+
+function resetDndProgress() {
+    if (!confirm('⚠️ Сбросить прогресс? Вы начнёте заново с карты 0.')) return;
     
-    console.log('✅ Одобрение карты:', approvedCard, 'для персонажа:', dndCharacter);
-    
-    fetch(SERVER_URL + '/api/dnd/approve_card', {
+    fetch(SERVER_URL + '/api/dnd/reset_progress', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-            user_id: userId, 
-            character: dndCharacter, 
-            card_id: approvedCard 
-        })
+        body: JSON.stringify({ user_id: userId, character: dndCharacter })
     })
     .then(r => r.json())
-    .then(data => {
+    .then(function(data) {
         if (data.status === 'ok') {
+            alert('✅ Прогресс сброшен!');
+            dndCardHistory = [0];
             dndApproved = true;
-            
-            // Обновляем локальную историю
-            if (!dndCardHistory.includes(approvedCard)) {
-                dndCardHistory.push(approvedCard);
-            }
-            
-            // Сохраняем прогресс
-            saveGameState();
-            
-            alert('✅ Задание одобрено! Можете бросать кубик дальше.');
-            
-            // Перезагружаем карту, чтобы показать кубик
-            renderDnDCardContent(approvedCard);
-        } else {
-            alert('❌ ' + (data.message || 'Ошибка'));
-        }
+            saveDndProgress();
+            renderDndCard(0);
+        } else { alert('❌ ' + (data.message || 'Ошибка')); }
     })
-    .catch(err => {
-        console.error('Ошибка:', err);
-        alert('❌ Ошибка при одобрении');
-    });
-}
-function selectDnDCharacter(char) {
-    dndCharacter = char;
-    dndCardHistory = [0];
-    dndApproved = true;
-    
-    var cards = document.querySelectorAll('.dnd-character-card');
-    for (var i = 0; i < cards.length; i++) cards[i].classList.remove('selected');
-    var cardEl = document.querySelector('[data-char="' + char + '"]');
-    if (cardEl) cardEl.classList.add('selected');
-    
-    var dndEvent = document.getElementById('dndEvent');
-    var dndGame = document.getElementById('dndGame');
-    if (dndEvent) dndEvent.style.display = 'none';
-    if (dndGame) dndGame.style.display = 'block';
-    
-    var cardContainer = document.getElementById('dndCard');
-    if (cardContainer) { cardContainer.style.transition = ''; cardContainer.style.opacity = '1'; cardContainer.style.transform = ''; }
-    
-    showDnDCard(0, true);
+    .catch(function() { alert('❌ Ошибка сети'); });
 }
 
-function toggleDnDEvent() {
-    var content = document.getElementById('dndEventContent');
-    var arrow = document.getElementById('dndEventArrow');
-    
-    if (content.style.display === 'block') {
-        content.style.display = 'none';
-        if (arrow) arrow.style.transform = 'rotate(0deg)';
-    } else {
-        content.style.display = 'block';
-        if (arrow) arrow.style.transform = 'rotate(180deg)';
-        
-        // ✅ ВАЖНО: вызываем проверку при открытии
-        checkDndPaymentStatus();
+// ==========================================
+// ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+// ==========================================
+
+function rollDice() { return Math.floor(Math.random() * 6) + 1; }
+
+function getMappedDiceValue(cardId, diceRoll) {
+    if (cardId === 0 || (cardId >= 1 && cardId <= 39)) {
+        if (diceRoll === 1 || diceRoll === 2) return 1;
+        if (diceRoll === 3 || diceRoll === 4) return 2;
+        if (diceRoll === 5 || diceRoll === 6) return 3;
     }
+    return diceRoll;
+}
+
+function getDiceFaceRotation(result) {
+    var r = { 1: 'rotateX(0deg) rotateY(0deg)', 2: 'rotateX(0deg) rotateY(180deg)', 3: 'rotateX(0deg) rotateY(-90deg)', 4: 'rotateX(0deg) rotateY(90deg)', 5: 'rotateX(-90deg) rotateY(0deg)', 6: 'rotateX(90deg) rotateY(0deg)' };
+    return r[result] || r[1];
+}
+
+function getTransition(cardId, mappedValue) {
+    var transitions = null;
+    if (dndCharacter === 'knight') transitions = window.DND_TRANSITIONS;
+    else if (dndCharacter === 'mage') transitions = window.DND_TRANSITIONS_MAGE;
+    else if (dndCharacter === 'archer') transitions = window.DND_TRANSITIONS_ARCHER;
+    else if (dndCharacter === 'druid') transitions = window.DND_TRANSITIONS_DRUID;
+    else if (dndCharacter === 'assassin') transitions = window.DND_TRANSITIONS_ASSASSIN;
+    else if (dndCharacter === 'bard') transitions = window.DND_TRANSITIONS_BARD;
+    if (!transitions || !transitions[cardId]) return null;
+    return transitions[cardId][mappedValue];
+}
+
+function getCharacterName(char) {
+    var names = { knight: '⚔️ Рыцарь', mage: '🔮 Маг', archer: '🏹 Лучник', druid: '🌿 Друид', assassin: '🗡️ Ассасин', bard: '🎵 Бард' };
+    return names[char] || char;
 }
 
 function closeTaskUploadModal() {
@@ -17927,314 +16900,182 @@ function closeTaskUploadModal() {
     if (modal) modal.style.display = 'none';
 }
 
-function showResetProgressModal() {
-    var finalBosses = [203, 204, 205, 206, 207, 208];
-    var isGameCompleted = finalBosses.some(function(boss) {
-        return dndCardHistory.includes(boss);
-    });
-    
-    if (!isGameCompleted) {
-        alert('❌ Сброс прогресса доступен только после полного прохождения игры (победы над любым финальным боссом)!');
-        return;
-    }
-    
-    var modal = document.getElementById('resetProgressModal');
-    if (modal) modal.style.display = 'flex';
-}
-
-function escapeHtml(text) {
-    if (!text) return '';
-    return text.replace(/[&<>]/g, function(m) {
-        if (m === '&') return '&amp;';
-        if (m === '<') return '&lt;';
-        if (m === '>') return '&gt;';
-        return m;
-    });
-}
-      // Функция для принудительной проверки (можно повесить на кнопку)
-function forceCheckDndAccess() {
-    checkDndPaymentStatus();
-}
-        // ==========================================
-// УПРАВЛЕНИЕ КОМАНДОЙ
+// ==========================================
+// СОЛО ИГРА
 // ==========================================
 
-// Расформировать команду (только для лидера)
-function disbandTeam() {
-    if (!confirm('⚠️ ВЫ УВЕРЕНЫ? Команда будет расформирована, все участники будут удалены.')) return;
-    
-    fetch(SERVER_URL + '/api/dnd/teams/disband', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: userId })
-    })
-    .then(r => r.json())
-    .then(data => {
-        if (data.status === 'ok') {
-            alert('✅ Команда расформирована');
-            refreshTeamList();
-            loadMyTeam();
-        } else {
-            alert('❌ ' + (data.message || 'Ошибка'));
-        }
-    })
-    .catch(err => console.error('Ошибка:', err));
+function startSoloGame() {
+    document.getElementById('soloCharacterModal').style.display = 'flex';
 }
 
-// Покинуть чужую команду
-function leaveTeam() {
-    if (!confirm('Вы уверены, что хотите покинуть команду?')) return;
+function closeSoloCharacterModal() {
+    document.getElementById('soloCharacterModal').style.display = 'none';
+}
+
+function startSoloWithCharacter(character) {
+    dndMode = 'solo';
+    dndCharacter = character;
+    closeSoloCharacterModal();
     
-    fetch(SERVER_URL + '/api/dnd/teams/leave', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: userId })
-    })
-    .then(r => r.json())
-    .then(data => {
-        if (data.status === 'ok') {
-            alert('✅ Вы покинули команду');
-            refreshTeamList();
-            loadMyTeam();
-        } else {
-            alert('❌ ' + (data.message || 'Ошибка'));
-        }
+    document.getElementById('dndMainMenu').style.display = 'none';
+    document.getElementById('dndSoloGame').style.display = 'block';
+    document.getElementById('dndSoloTitle').innerText = '🎲 Соло: ' + getCharacterName(character);
+    
+    loadDndProgress().then(function() {
+        var lastCard = dndCardHistory[dndCardHistory.length - 1] || 0;
+        renderDndCard(lastCard);
     });
 }
 
-// Начать игру (даже если 1 человек)
-function startTeamGame() {
-    if (!confirm('Начать игру? В команде должно быть минимум 4 человека.')) return;
-    
-    fetch(SERVER_URL + '/api/dnd/teams/start', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: userId })
-    })
-    .then(r => r.json())
-    .then(data => {
-        if (data.status === 'ok') {
-            alert('🎮 Игра начинается!');
-            
-            // Сохраняем состояние
-            if (dndCharacter) {
-                saveGameState();
-            }
-            
-            // Скрываем лобби
-            document.getElementById('dndLobby').style.display = 'none';
-            // Показываем игру
-            document.getElementById('dndGame').style.display = 'block';
-            
-            // Если персонаж уже выбран, начинаем игру
-            if (dndCharacter) {
-                showDnDCard(0, true);
-            } else {
-                // Иначе показываем выбор персонажа
-                showTeamCharacterModal();
-            }
-        } else {
-            alert('❌ ' + (data.message || 'Ошибка'));
-        }
-    })
-    .catch(err => console.error('Ошибка:', err));
-}
-
-        // ==========================================
-// ПРЕДПРОСМОТР КОМАНДЫ
+// ==========================================
+// КОМАНДНАЯ ИГРА
 // ==========================================
 
-function openTeamPreview(teamId) {
-    console.log('🔍 Открытие предпросмотра команды:', teamId);
-    
+function showDndLobby() {
+    document.getElementById('dndMainMenu').style.display = 'none';
+    document.getElementById('dndLobby').style.display = 'block';
+    dndMode = 'team';
+    refreshTeamList();
+    loadMyTeam();
+}
+
+function refreshTeamList() {
     fetch(SERVER_URL + '/api/dnd/teams/list?user_id=' + userId)
         .then(r => r.json())
+        .then(data => { if (data.status === 'ok') renderTeamsList(data.teams); });
+}
+
+function renderTeamsList(teams) {
+    var container = document.getElementById('teamsList');
+    if (!container) return;
+    if (!teams || teams.length === 0) { container.innerHTML = '<div class="empty-state"><i class="fas fa-users"></i><br>🤝 Нет открытых команд</div>'; return; }
+    var html = '';
+    for (var i = 0; i < teams.length; i++) {
+        var t = teams[i];
+        html += '<div class="teams-list-item" onclick="openTeamPreview(\'' + t.id + '\')"><div class="team-name">🏰 ' + escapeHtml(t.team_name) + '</div><div class="team-count"><i class="fas fa-users"></i><span>' + t.current_members + '/' + t.members_needed + '</span></div></div>';
+    }
+    container.innerHTML = html;
+}
+
+function loadMyTeam() {
+    fetch(SERVER_URL + '/api/dnd/teams/my?user_id=' + userId)
+        .then(r => r.json())
         .then(data => {
-            if (data.status === 'ok') {
-                var team = data.teams.find(t => t.id == teamId);
-                if (team) {
-                    renderTeamPreview(team);
-                } else {
-                    alert('Команда не найдена');
-                }
+            if (data.status === 'ok' && data.team) {
+                document.getElementById('myTeamSection').style.display = 'block';
+                renderMyTeam(data.team);
+            } else {
+                document.getElementById('myTeamSection').style.display = 'none';
             }
-        })
-        .catch(err => console.error('Ошибка:', err));
+        });
 }
 
-function renderTeamPreview(team) {
-    var isYourTeam = (team.leader_id == userId);
-    var modal = document.getElementById('teamPreviewModal');
-    var container = document.getElementById('teamPreviewContent');
-    
-    // Загружаем character_class для участников
-    var promises = (team.members || []).map(member => {
-        return fetch(SERVER_URL + '/api/dnd/teams/my?user_id=' + member.id)
-            .then(r => r.json())
-            .then(data => {
-                if (data.status === 'ok' && data.team) {
-                    var teamMember = data.team.members.find(m => m.id == member.id);
-                    if (teamMember) {
-                        member.character_class = teamMember.character_class;
-                    }
-                }
-                return member;
-            })
-            .catch(() => member);
-    });
-    
-    // Загружаем публичные профили для аватарок и статусов
-    var profilePromises = (team.members || []).map(member => {
-        return fetch(SERVER_URL + '/api/public_profile?user_id=' + member.id)
-            .then(r => r.json())
-            .then(profile => {
-                member.avatar = profile.avatar;
-                member.status = profile.status;
-                member.name = profile.name || member.name;
-                return member;
-            })
-            .catch(() => member);
-    });
-    
-    Promise.all([...promises, ...profilePromises]).then(() => {
-        var membersHtml = '';
-        
-        for (var i = 0; i < team.members.length; i++) {
-            var m = team.members[i];
-            var isLeader = (m.id == team.leader_id);
-            
-            var avatarUrl = m.avatar || 'https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png';
-            var status = m.status || 'Без статуса';
-            var memberName = m.name || 'Пользователь';
-            
-            var characterIcon = '';
-            var characterName = '';
-            if (m.character_class) {
-                switch(m.character_class) {
-                    case 'knight': characterIcon = '⚔️'; characterName = 'Рыцарь'; break;
-                    case 'mage': characterIcon = '🔮'; characterName = 'Маг'; break;
-                    case 'archer': characterIcon = '🏹'; characterName = 'Лучник'; break;
-                    case 'druid': characterIcon = '🌿'; characterName = 'Друид'; break;
-                    case 'assassin': characterIcon = '🗡️'; characterName = 'Ассасин'; break;
-                    case 'bard': characterIcon = '🎵'; characterName = 'Бард'; break;
-                    default: characterIcon = '❓'; characterName = m.character_class;
-                }
-            }
-            
-            membersHtml += `
-                <div class="team-member-preview" onclick="openPublicProfile('${m.id}')">
-                    <img class="team-member-avatar" src="${avatarUrl}" onerror="this.src='https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png'">
-                    <div class="team-member-info">
-                        <div class="team-member-name-row">
-                            <span class="team-member-name">${escapeHtml(memberName)}</span>
-                            ${isLeader ? '<span class="team-member-role">👑 Лидер</span>' : ''}
-                            ${characterIcon ? `<span class="team-member-character">${characterIcon} ${characterName}</span>` : ''}
-                        </div>
-                        <div class="team-member-status">${escapeHtml(status)}</div>
-                    </div>
-                </div>
-            `;
-        }
-        
-        var actionHtml = '';
-        if (isYourTeam) {
-            actionHtml = '<div class="your-team-badge">⭐ Это ваша команда</div>';
-        } else if (team.current_members < 6) {
-            actionHtml = `<button class="join-team-preview-btn" onclick="joinTeamFromPreview('${team.id}')">🤝 Вступить в команду</button>`;
-        } else {
-            actionHtml = '<div class="your-team-badge">❌ Команда полна</div>';
-        }
-        
-        container.innerHTML = `
-            <div class="team-preview-header">
-                <span class="team-preview-name">🏰 ${escapeHtml(team.team_name)}</span>
-                <span class="team-preview-count">
-                    <i class="fas fa-users"></i>
-                    <span>${team.current_members}/${team.members_needed}</span>
-                </span>
-            </div>
-            <div class="team-members-list">
-                ${membersHtml}
-            </div>
-            ${actionHtml}
-        `;
-        
-        modal.style.display = 'flex';
-    });
+function renderMyTeam(team) {
+    var isLeader = team.leader_id == userId;
+    var membersHtml = '';
+    for (var i = 0; i < team.members.length; i++) {
+        var m = team.members[i];
+        var avatarUrl = m.avatar || 'https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png';
+        var charIcon = { knight: '⚔️', mage: '🔮', archer: '🏹', druid: '🌿', assassin: '🗡️', bard: '🎵' }[m.character_class] || '';
+        membersHtml += '<div class="team-member-item" onclick="openPublicProfile(\'' + m.id + '\')"><img class="team-member-avatar" src="' + avatarUrl + '"><div class="team-member-info"><div class="team-member-name-row"><span class="team-member-name">' + escapeHtml(m.name || 'Пользователь') + '</span>' + (m.id == team.leader_id ? '<span class="team-leader-badge"><i class="fas fa-crown"></i> Лидер</span>' : '') + (charIcon ? '<span class="team-character-badge">' + charIcon + '</span>' : '') + '</div><div class="team-member-status">' + escapeHtml(m.status || 'Без статуса') + '</div></div></div>';
+    }
+    var actions = isLeader ? '<div class="team-actions"><button class="team-action-btn" onclick="showTeamCharacterModal()">🎭 Выбрать персонажа</button><button class="team-action-btn" onclick="startTeamGame()">🎮 Начать игру</button><button class="team-action-btn danger" onclick="disbandTeam()">💥 Расформировать</button></div>' : '<div class="team-actions"><button class="team-action-btn" onclick="showTeamCharacterModal()">🎭 Выбрать персонажа</button><button class="team-action-btn danger" onclick="leaveTeam()">🚪 Покинуть</button></div>';
+    document.getElementById('myTeamCard').innerHTML = '<div class="my-team-card"><div class="team-header-row"><h4>' + escapeHtml(team.team_name) + '</h4><div class="team-header-count"><i class="fas fa-users"></i><span>' + team.current_members + '/6</span></div></div><div class="team-members-list">' + membersHtml + '</div>' + actions + '</div>';
 }
 
-function joinTeamFromPreview(teamId) {
-    fetch(SERVER_URL + '/api/dnd/teams/join', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: userId, team_id: teamId })
-    })
-    .then(r => r.json())
-    .then(data => {
-        if (data.status === 'ok') {
-            alert('✅ Вы вступили в команду!');
-            closeTeamPreviewModal();
-            refreshTeamList();
-            loadMyTeam();
-        } else {
-            alert('❌ ' + (data.message || 'Ошибка'));
-        }
-    })
-    .catch(err => console.error('Ошибка:', err));
-}
-
-function closeTeamPreviewModal() {
-    document.getElementById('teamPreviewModal').style.display = 'none';
-}
-        function restoreGameAfterRefresh() {
-    console.log('🔄 Восстановление игры после обновления...');
-    
-    // 1. Проверяем статус команды и игры
+function checkDndGameStatus() {
     fetch(SERVER_URL + '/api/dnd/team/status?user_id=' + userId)
         .then(r => r.json())
         .then(data => {
-            console.log('📡 Статус команды:', data);
-            
             if (data.status === 'ok' && data.game_started) {
-                // Игра началась — показываем игровой экран
                 document.getElementById('dndLobby').style.display = 'none';
                 document.getElementById('dndGame').style.display = 'block';
-                
-                // Находим себя в команде
-                var myself = null;
-                if (data.members) {
-                    myself = data.members.find(m => m.id == userId);
-                }
-                
-                if (myself && myself.character) {
-                    // Уже выбран персонаж
-                    dndCharacter = myself.character;
-                    console.log('✅ Персонаж из команды:', dndCharacter);
-                    
-                    // Загружаем прогресс
-                    loadDndProgress();
+                dndMode = 'team';
+                var myself = (data.members || []).find(function(m) { return m.user_id == userId || m.id == userId; });
+                dndCharacter = myself?.character || myself?.character_class;
+                if (dndCharacter) {
+                    loadDndProgress().then(function() {
+                        renderDndCard(dndCardHistory[dndCardHistory.length - 1] || 0);
+                    });
                 } else {
-                    // Нужно выбрать персонажа
-                    console.log('⚠️ Персонаж не выбран, показываем выбор');
                     showTeamCharacterModal();
                 }
-            } else if (data.status === 'ok' && data.team) {
-                // В команде, но игра не началась
-                document.getElementById('dndLobby').style.display = 'block';
-                document.getElementById('dndGame').style.display = 'none';
-                loadMyTeam();
-            } else {
-                // Не в команде
-                document.getElementById('dndLobby').style.display = 'block';
-                document.getElementById('dndGame').style.display = 'none';
             }
-        })
-        .catch(err => {
-            console.error('❌ Ошибка восстановления:', err);
-            // Fallback: показываем лобби
-            document.getElementById('dndLobby').style.display = 'block';
-            document.getElementById('dndGame').style.display = 'none';
         });
+}
+
+function showCreateTeamModal() { document.getElementById('createTeamModal').style.display = 'flex'; }
+function closeCreateTeamModal() { document.getElementById('createTeamModal').style.display = 'none'; }
+
+function createTeam() {
+    var name = document.getElementById('teamNameInput').value.trim();
+    if (!name) { alert('Введите название'); return; }
+    fetch(SERVER_URL + '/api/dnd/teams/create', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user_id: userId, team_name: name }) })
+        .then(r => r.json())
+        .then(data => { if (data.status === 'ok') { alert('✅ Команда создана!'); closeCreateTeamModal(); refreshTeamList(); loadMyTeam(); } else { alert('❌ Ошибка'); } });
+}
+
+function showTeamCharacterModal() { document.getElementById('teamCharacterModal').style.display = 'flex'; }
+function closeTeamCharacterModal() { document.getElementById('teamCharacterModal').style.display = 'none'; }
+
+function selectTeamCharacter(character) {
+    fetch(SERVER_URL + '/api/dnd/team/select_character', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user_id: userId, character: character }) })
+        .then(r => r.json())
+        .then(data => { if (data.status === 'ok') { alert('✅ Персонаж выбран!'); closeTeamCharacterModal(); dndCharacter = character; dndCardHistory = [0]; dndApproved = true; saveDndProgress(); loadMyTeam(); } else { alert('❌ Ошибка'); } });
+}
+
+function startTeamGame() {
+    if (!confirm('Начать игру?')) return;
+    fetch(SERVER_URL + '/api/dnd/teams/start', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user_id: userId }) })
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'ok') {
+                alert('🎮 Игра начинается!');
+                document.getElementById('dndLobby').style.display = 'none';
+                document.getElementById('dndGame').style.display = 'block';
+                dndMode = 'team';
+                if (dndCharacter) { renderDndCard(0); } else { showTeamCharacterModal(); }
+            } else { alert('❌ Ошибка'); }
+        });
+}
+
+function disbandTeam() {
+    if (!confirm('Расформировать?')) return;
+    fetch(SERVER_URL + '/api/dnd/teams/disband', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user_id: userId }) })
+        .then(r => r.json())
+        .then(data => { if (data.status === 'ok') { alert('✅ Расформирована'); refreshTeamList(); loadMyTeam(); } });
+}
+
+function leaveTeam() {
+    if (!confirm('Покинуть?')) return;
+    fetch(SERVER_URL + '/api/dnd/teams/leave', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user_id: userId }) })
+        .then(r => r.json())
+        .then(data => { if (data.status === 'ok') { alert('✅ Вы покинули команду'); refreshTeamList(); loadMyTeam(); } });
+}
+
+function openTeamPreview(teamId) {
+    fetch(SERVER_URL + '/api/dnd/teams/list?user_id=' + userId)
+        .then(r => r.json())
+        .then(data => {
+            var team = data.teams.find(function(t) { return t.id == teamId; });
+            if (team) {
+                document.getElementById('teamPreviewContent').innerHTML = '<div class="team-preview-header"><span class="team-preview-name">🏰 ' + escapeHtml(team.team_name) + '</span><span class="team-preview-count"><i class="fas fa-users"></i><span>' + team.current_members + '/' + team.members_needed + '</span></span></div>' + (team.leader_id == userId ? '<div class="your-team-badge">⭐ Ваша команда</div>' : '<button class="join-team-preview-btn" onclick="joinTeamFromPreview(\'' + team.id + '\')">🤝 Вступить</button>');
+                document.getElementById('teamPreviewModal').style.display = 'flex';
+            }
+        });
+}
+
+function joinTeamFromPreview(teamId) {
+    fetch(SERVER_URL + '/api/dnd/teams/join', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user_id: userId, team_id: teamId }) })
+        .then(r => r.json())
+        .then(data => { if (data.status === 'ok') { alert('✅ Вступили!'); closeTeamPreviewModal(); refreshTeamList(); loadMyTeam(); } else { alert('❌ Ошибка'); } });
+}
+
+function closeTeamPreviewModal() { document.getElementById('teamPreviewModal').style.display = 'none'; }
+
+function escapeHtml(text) {
+    if (!text) return '';
+    return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 // ==========================================
 // ИНИЦИАЛИЗАЦИЯ
