@@ -14766,15 +14766,15 @@ var DND_CARDS = {
 // ==========================================
 var DND_TRANSITIONS = {};
 
-// 0 → 1-3 (группировка: 1-2→1, 3-4→2, 5-6→3)
+// 0 → 1-3 (1-2→1, 3-4→2, 5-6→3)
 DND_TRANSITIONS[0] = {1: 1, 2: 1, 3: 2, 4: 2, 5: 3, 6: 3};
 
-// 1-3 → 4-12 (группировка: 1-2→первая, 3-4→вторая, 5-6→третья)
+// 1-3 → 4-12
 DND_TRANSITIONS[1] = {1: 4, 2: 4, 3: 5, 4: 5, 5: 6, 6: 6};
 DND_TRANSITIONS[2] = {1: 7, 2: 7, 3: 8, 4: 8, 5: 9, 6: 9};
 DND_TRANSITIONS[3] = {1: 10, 2: 10, 3: 11, 4: 11, 5: 12, 6: 12};
 
-// 4-12 → 13-39 (группировка: 1-2→первая, 3-4→вторая, 5-6→третья)
+// 4-12 → 13-39 (по 3 карты)
 (function() {
     var c = 13;
     for (var i = 4; i <= 12; i++) {
@@ -14786,7 +14786,7 @@ DND_TRANSITIONS[3] = {1: 10, 2: 10, 3: 11, 4: 11, 5: 12, 6: 12};
     }
 })();
 
-// 13-39 → 40-100 (группировка: 1-2→первая, 3-4→вторая, 5-6→третья)
+// 13-39 → 40-100 (по 3 карты)
 (function() {
     var c = 40;
     for (var i = 13; i <= 39; i++) {
@@ -14798,55 +14798,54 @@ DND_TRANSITIONS[3] = {1: 10, 2: 10, 3: 11, 4: 11, 5: 12, 6: 12};
     }
 })();
 
-// 40-100 → 101-106 (мини-боссы) - ПРЯМАЯ ЗАВИСИМОСТЬ ОТ КУБИКА
-// 1→101, 2→102, 3→103, 4→104, 5→105, 6→106
+// 40-100 → 101-106 (прямая зависимость)
 for (var i = 40; i <= 100; i++) {
     DND_TRANSITIONS[i] = {1: 101, 2: 102, 3: 103, 4: 104, 5: 105, 6: 106};
 }
 
-// 101-106 → 107-112 (прямая зависимость: 1→107, 2→108, 3→109, 4→110, 5→111, 6→112)
+// 101-106 → 107-112 (прямая зависимость)
 for (var i = 101; i <= 106; i++) {
     DND_TRANSITIONS[i] = {1: 107, 2: 108, 3: 109, 4: 110, 5: 111, 6: 112};
 }
 
-// 107-112 → 113-136 (24 карты, группировка: 1-2→первая, 3-4→вторая, 5-6→третья, 7-8→четвёртая)
+// 107-112 → 113-136 (по 4 карты, только ключи 1-6)
 (function() {
     var c = 113;
     for (var i = 107; i <= 112; i++) {
         DND_TRANSITIONS[i] = {};
-        DND_TRANSITIONS[i][1] = c; DND_TRANSITIONS[i][2] = c;
+        DND_TRANSITIONS[i][1] = c;   DND_TRANSITIONS[i][2] = c;
         DND_TRANSITIONS[i][3] = c+1; DND_TRANSITIONS[i][4] = c+1;
-        DND_TRANSITIONS[i][5] = c+2; DND_TRANSITIONS[i][6] = c+2;
-        DND_TRANSITIONS[i][7] = c+3; DND_TRANSITIONS[i][8] = c+3;
+        DND_TRANSITIONS[i][5] = c+2; DND_TRANSITIONS[i][6] = c+3;
         c += 4;
     }
 })();
 
-// 113-136 → 137-184 (48 карт, группировка: 1-2→первая, 3-4→вторая, 5-6→третья, 7-8→четвёртая)
+// 113-136 → 137-184 (по 2 карты, с ограничением)
 (function() {
     var c = 137;
     for (var i = 113; i <= 136; i++) {
         DND_TRANSITIONS[i] = {};
-        DND_TRANSITIONS[i][1] = c; DND_TRANSITIONS[i][2] = c;
-        DND_TRANSITIONS[i][3] = c+1; DND_TRANSITIONS[i][4] = c+1;
-        DND_TRANSITIONS[i][5] = c+2; DND_TRANSITIONS[i][6] = c+2;
-        DND_TRANSITIONS[i][7] = c+3; DND_TRANSITIONS[i][8] = c+3;
-        c += 4;
+        DND_TRANSITIONS[i][1] = Math.min(c, 184);
+        DND_TRANSITIONS[i][2] = Math.min(c, 184);
+        DND_TRANSITIONS[i][3] = Math.min(c+1, 184);
+        DND_TRANSITIONS[i][4] = Math.min(c+1, 184);
+        DND_TRANSITIONS[i][5] = Math.min(c+1, 184);
+        DND_TRANSITIONS[i][6] = Math.min(c+1, 184);
+        c += 2;
     }
 })();
 
-// 137-184 → 185-202 (все ведут на уровень 9, но с разными картами)
+// 137-184 → 185-202
 for (var i = 137; i <= 184; i++) {
     DND_TRANSITIONS[i] = {1: 185, 2: 186, 3: 187, 4: 188, 5: 189, 6: 190};
 }
 
-// 185-202 → 203-208 (финальные боссы) - ПРЯМАЯ ЗАВИСИМОСТЬ ОТ КУБИКА
-// 1→203, 2→204, 3→205, 4→206, 5→207, 6→208
+// 185-202 → 203-208
 for (var i = 185; i <= 202; i++) {
     DND_TRANSITIONS[i] = {1: 203, 2: 204, 3: 205, 4: 206, 5: 207, 6: 208};
 }
 
-// Финальные боссы (203-208) - больше никуда не ведут (конец игры)
+// 203-208 — конец
 for (var i = 203; i <= 208; i++) {
     DND_TRANSITIONS[i] = {};
 }
@@ -15435,101 +15434,86 @@ var DND_CARDS_ARCHER = {
 
 var DND_TRANSITIONS_ARCHER = {};
 
-// 0 → 1-3 (группировка: 1-2→1, 3-4→2, 5-6→3)
+// 0 → 1-3 (1-2→1, 3-4→2, 5-6→3)
 DND_TRANSITIONS_ARCHER[0] = {1: 1, 2: 1, 3: 2, 4: 2, 5: 3, 6: 3};
 
-// 1-3 → 4-12 (группировка: 1-2→первая, 3-4→вторая, 5-6→третья)
+// 1-3 → 4-12
 DND_TRANSITIONS_ARCHER[1] = {1: 4, 2: 4, 3: 5, 4: 5, 5: 6, 6: 6};
 DND_TRANSITIONS_ARCHER[2] = {1: 7, 2: 7, 3: 8, 4: 8, 5: 9, 6: 9};
 DND_TRANSITIONS_ARCHER[3] = {1: 10, 2: 10, 3: 11, 4: 11, 5: 12, 6: 12};
 
-// 4-12 → 13-39 (группировка: 1-2→первая, 3-4→вторая, 5-6→третья)
+// 4-12 → 13-39 (по 3 карты)
 (function() {
     var c = 13;
     for (var i = 4; i <= 12; i++) {
         DND_TRANSITIONS_ARCHER[i] = {};
-        DND_TRANSITIONS_ARCHER[i][1] = c;
-        DND_TRANSITIONS_ARCHER[i][2] = c;
-        DND_TRANSITIONS_ARCHER[i][3] = c+1;
-        DND_TRANSITIONS_ARCHER[i][4] = c+1;
-        DND_TRANSITIONS_ARCHER[i][5] = c+2;
-        DND_TRANSITIONS_ARCHER[i][6] = c+2;
+        DND_TRANSITIONS_ARCHER[i][1] = c; DND_TRANSITIONS_ARCHER[i][2] = c;
+        DND_TRANSITIONS_ARCHER[i][3] = c+1; DND_TRANSITIONS_ARCHER[i][4] = c+1;
+        DND_TRANSITIONS_ARCHER[i][5] = c+2; DND_TRANSITIONS_ARCHER[i][6] = c+2;
         c += 3;
     }
 })();
 
-// 13-39 → 40-100 (группировка: 1-2→первая, 3-4→вторая, 5-6→третья)
+// 13-39 → 40-100 (по 3 карты)
 (function() {
     var c = 40;
     for (var i = 13; i <= 39; i++) {
         DND_TRANSITIONS_ARCHER[i] = {};
-        DND_TRANSITIONS_ARCHER[i][1] = c;
-        DND_TRANSITIONS_ARCHER[i][2] = c;
-        DND_TRANSITIONS_ARCHER[i][3] = c+1;
-        DND_TRANSITIONS_ARCHER[i][4] = c+1;
-        DND_TRANSITIONS_ARCHER[i][5] = c+2;
-        DND_TRANSITIONS_ARCHER[i][6] = c+2;
+        DND_TRANSITIONS_ARCHER[i][1] = c; DND_TRANSITIONS_ARCHER[i][2] = c;
+        DND_TRANSITIONS_ARCHER[i][3] = c+1; DND_TRANSITIONS_ARCHER[i][4] = c+1;
+        DND_TRANSITIONS_ARCHER[i][5] = c+2; DND_TRANSITIONS_ARCHER[i][6] = c+2;
         c += 3;
     }
 })();
 
-// 40-100 → 101-106 (мини-боссы) - ПРЯМАЯ ЗАВИСИМОСТЬ ОТ КУБИКА
-// 1→101, 2→102, 3→103, 4→104, 5→105, 6→106
+// 40-100 → 101-106 (прямая зависимость)
 for (var i = 40; i <= 100; i++) {
     DND_TRANSITIONS_ARCHER[i] = {1: 101, 2: 102, 3: 103, 4: 104, 5: 105, 6: 106};
 }
 
-// 101-106 → 107-112 (прямая зависимость: 1→107, 2→108, 3→109, 4→110, 5→111, 6→112)
+// 101-106 → 107-112 (прямая зависимость)
 for (var i = 101; i <= 106; i++) {
     DND_TRANSITIONS_ARCHER[i] = {1: 107, 2: 108, 3: 109, 4: 110, 5: 111, 6: 112};
 }
 
-// 107-112 → 113-136 (24 карты, группировка: 1-2→первая, 3-4→вторая, 5-6→третья, 7-8→четвёртая)
+// 107-112 → 113-136 (по 4 карты, только ключи 1-6)
 (function() {
     var c = 113;
     for (var i = 107; i <= 112; i++) {
         DND_TRANSITIONS_ARCHER[i] = {};
-        DND_TRANSITIONS_ARCHER[i][1] = c;
-        DND_TRANSITIONS_ARCHER[i][2] = c;
-        DND_TRANSITIONS_ARCHER[i][3] = c+1;
-        DND_TRANSITIONS_ARCHER[i][4] = c+1;
-        DND_TRANSITIONS_ARCHER[i][5] = c+2;
-        DND_TRANSITIONS_ARCHER[i][6] = c+2;
-        DND_TRANSITIONS_ARCHER[i][7] = c+3;
-        DND_TRANSITIONS_ARCHER[i][8] = c+3;
+        DND_TRANSITIONS_ARCHER[i][1] = c;   DND_TRANSITIONS_ARCHER[i][2] = c;
+        DND_TRANSITIONS_ARCHER[i][3] = c+1; DND_TRANSITIONS_ARCHER[i][4] = c+1;
+        DND_TRANSITIONS_ARCHER[i][5] = c+2; DND_TRANSITIONS_ARCHER[i][6] = c+3;
         c += 4;
     }
 })();
 
-// 113-136 → 137-184 (48 карт, группировка: 1-2→первая, 3-4→вторая, 5-6→третья, 7-8→четвёртая)
+// 113-136 → 137-184 (по 2 карты, с ограничением)
 (function() {
     var c = 137;
     for (var i = 113; i <= 136; i++) {
         DND_TRANSITIONS_ARCHER[i] = {};
-        DND_TRANSITIONS_ARCHER[i][1] = c;
-        DND_TRANSITIONS_ARCHER[i][2] = c;
-        DND_TRANSITIONS_ARCHER[i][3] = c+1;
-        DND_TRANSITIONS_ARCHER[i][4] = c+1;
-        DND_TRANSITIONS_ARCHER[i][5] = c+2;
-        DND_TRANSITIONS_ARCHER[i][6] = c+2;
-        DND_TRANSITIONS_ARCHER[i][7] = c+3;
-        DND_TRANSITIONS_ARCHER[i][8] = c+3;
-        c += 4;
+        DND_TRANSITIONS_ARCHER[i][1] = Math.min(c, 184);
+        DND_TRANSITIONS_ARCHER[i][2] = Math.min(c, 184);
+        DND_TRANSITIONS_ARCHER[i][3] = Math.min(c+1, 184);
+        DND_TRANSITIONS_ARCHER[i][4] = Math.min(c+1, 184);
+        DND_TRANSITIONS_ARCHER[i][5] = Math.min(c+1, 184);
+        DND_TRANSITIONS_ARCHER[i][6] = Math.min(c+1, 184);
+        c += 2;
     }
 })();
 
-// 137-184 → 185-202 (все ведут на уровень 9, но с разными картами)
+// 137-184 → 185-202
 for (var i = 137; i <= 184; i++) {
     DND_TRANSITIONS_ARCHER[i] = {1: 185, 2: 186, 3: 187, 4: 188, 5: 189, 6: 190};
 }
 
-// 185-202 → 203-208 (финальные боссы) - ПРЯМАЯ ЗАВИСИМОСТЬ ОТ КУБИКА
-// 1→203, 2→204, 3→205, 4→206, 5→207, 6→208
+// 185-202 → 203-208
 for (var i = 185; i <= 202; i++) {
     DND_TRANSITIONS_ARCHER[i] = {1: 203, 2: 204, 3: 205, 4: 206, 5: 207, 6: 208};
 }
 
-// Финальные боссы (203-208) - конец игры
+// 203-208 — конец
 for (var i = 203; i <= 208; i++) {
     DND_TRANSITIONS_ARCHER[i] = {};
 }
@@ -15783,101 +15767,86 @@ var DND_CARDS_DRUID = {
 
 var DND_TRANSITIONS_DRUID = {};
 
-// 0 → 1-3 (группировка: 1-2→1, 3-4→2, 5-6→3)
+// 0 → 1-3 (1-2→1, 3-4→2, 5-6→3)
 DND_TRANSITIONS_DRUID[0] = {1: 1, 2: 1, 3: 2, 4: 2, 5: 3, 6: 3};
 
-// 1-3 → 4-12 (группировка: 1-2→первая, 3-4→вторая, 5-6→третья)
+// 1-3 → 4-12
 DND_TRANSITIONS_DRUID[1] = {1: 4, 2: 4, 3: 5, 4: 5, 5: 6, 6: 6};
 DND_TRANSITIONS_DRUID[2] = {1: 7, 2: 7, 3: 8, 4: 8, 5: 9, 6: 9};
 DND_TRANSITIONS_DRUID[3] = {1: 10, 2: 10, 3: 11, 4: 11, 5: 12, 6: 12};
 
-// 4-12 → 13-39 (группировка: 1-2→первая, 3-4→вторая, 5-6→третья)
+// 4-12 → 13-39 (по 3 карты)
 (function() {
     var c = 13;
     for (var i = 4; i <= 12; i++) {
         DND_TRANSITIONS_DRUID[i] = {};
-        DND_TRANSITIONS_DRUID[i][1] = c;
-        DND_TRANSITIONS_DRUID[i][2] = c;
-        DND_TRANSITIONS_DRUID[i][3] = c+1;
-        DND_TRANSITIONS_DRUID[i][4] = c+1;
-        DND_TRANSITIONS_DRUID[i][5] = c+2;
-        DND_TRANSITIONS_DRUID[i][6] = c+2;
+        DND_TRANSITIONS_DRUID[i][1] = c; DND_TRANSITIONS_DRUID[i][2] = c;
+        DND_TRANSITIONS_DRUID[i][3] = c+1; DND_TRANSITIONS_DRUID[i][4] = c+1;
+        DND_TRANSITIONS_DRUID[i][5] = c+2; DND_TRANSITIONS_DRUID[i][6] = c+2;
         c += 3;
     }
 })();
 
-// 13-39 → 40-100 (группировка: 1-2→первая, 3-4→вторая, 5-6→третья)
+// 13-39 → 40-100 (по 3 карты)
 (function() {
     var c = 40;
     for (var i = 13; i <= 39; i++) {
         DND_TRANSITIONS_DRUID[i] = {};
-        DND_TRANSITIONS_DRUID[i][1] = c;
-        DND_TRANSITIONS_DRUID[i][2] = c;
-        DND_TRANSITIONS_DRUID[i][3] = c+1;
-        DND_TRANSITIONS_DRUID[i][4] = c+1;
-        DND_TRANSITIONS_DRUID[i][5] = c+2;
-        DND_TRANSITIONS_DRUID[i][6] = c+2;
+        DND_TRANSITIONS_DRUID[i][1] = c; DND_TRANSITIONS_DRUID[i][2] = c;
+        DND_TRANSITIONS_DRUID[i][3] = c+1; DND_TRANSITIONS_DRUID[i][4] = c+1;
+        DND_TRANSITIONS_DRUID[i][5] = c+2; DND_TRANSITIONS_DRUID[i][6] = c+2;
         c += 3;
     }
 })();
 
-// 40-100 → 101-106 (мини-боссы) - ПРЯМАЯ ЗАВИСИМОСТЬ ОТ КУБИКА
-// 1→101, 2→102, 3→103, 4→104, 5→105, 6→106
+// 40-100 → 101-106 (прямая зависимость)
 for (var i = 40; i <= 100; i++) {
     DND_TRANSITIONS_DRUID[i] = {1: 101, 2: 102, 3: 103, 4: 104, 5: 105, 6: 106};
 }
 
-// 101-106 → 107-112 (прямая зависимость: 1→107, 2→108, 3→109, 4→110, 5→111, 6→112)
+// 101-106 → 107-112 (прямая зависимость)
 for (var i = 101; i <= 106; i++) {
     DND_TRANSITIONS_DRUID[i] = {1: 107, 2: 108, 3: 109, 4: 110, 5: 111, 6: 112};
 }
 
-// 107-112 → 113-136 (24 карты, группировка: 1-2→первая, 3-4→вторая, 5-6→третья, 7-8→четвёртая)
+// 107-112 → 113-136 (по 4 карты, только ключи 1-6)
 (function() {
     var c = 113;
     for (var i = 107; i <= 112; i++) {
         DND_TRANSITIONS_DRUID[i] = {};
-        DND_TRANSITIONS_DRUID[i][1] = c;
-        DND_TRANSITIONS_DRUID[i][2] = c;
-        DND_TRANSITIONS_DRUID[i][3] = c+1;
-        DND_TRANSITIONS_DRUID[i][4] = c+1;
-        DND_TRANSITIONS_DRUID[i][5] = c+2;
-        DND_TRANSITIONS_DRUID[i][6] = c+2;
-        DND_TRANSITIONS_DRUID[i][7] = c+3;
-        DND_TRANSITIONS_DRUID[i][8] = c+3;
+        DND_TRANSITIONS_DRUID[i][1] = c;   DND_TRANSITIONS_DRUID[i][2] = c;
+        DND_TRANSITIONS_DRUID[i][3] = c+1; DND_TRANSITIONS_DRUID[i][4] = c+1;
+        DND_TRANSITIONS_DRUID[i][5] = c+2; DND_TRANSITIONS_DRUID[i][6] = c+3;
         c += 4;
     }
 })();
 
-// 113-136 → 137-184 (48 карт, группировка: 1-2→первая, 3-4→вторая, 5-6→третья, 7-8→четвёртая)
+// 113-136 → 137-184 (по 2 карты, с ограничением)
 (function() {
     var c = 137;
     for (var i = 113; i <= 136; i++) {
         DND_TRANSITIONS_DRUID[i] = {};
-        DND_TRANSITIONS_DRUID[i][1] = c;
-        DND_TRANSITIONS_DRUID[i][2] = c;
-        DND_TRANSITIONS_DRUID[i][3] = c+1;
-        DND_TRANSITIONS_DRUID[i][4] = c+1;
-        DND_TRANSITIONS_DRUID[i][5] = c+2;
-        DND_TRANSITIONS_DRUID[i][6] = c+2;
-        DND_TRANSITIONS_DRUID[i][7] = c+3;
-        DND_TRANSITIONS_DRUID[i][8] = c+3;
-        c += 4;
+        DND_TRANSITIONS_DRUID[i][1] = Math.min(c, 184);
+        DND_TRANSITIONS_DRUID[i][2] = Math.min(c, 184);
+        DND_TRANSITIONS_DRUID[i][3] = Math.min(c+1, 184);
+        DND_TRANSITIONS_DRUID[i][4] = Math.min(c+1, 184);
+        DND_TRANSITIONS_DRUID[i][5] = Math.min(c+1, 184);
+        DND_TRANSITIONS_DRUID[i][6] = Math.min(c+1, 184);
+        c += 2;
     }
 })();
 
-// 137-184 → 185-202 (все ведут на уровень 9, но с разными картами)
+// 137-184 → 185-202
 for (var i = 137; i <= 184; i++) {
     DND_TRANSITIONS_DRUID[i] = {1: 185, 2: 186, 3: 187, 4: 188, 5: 189, 6: 190};
 }
 
-// 185-202 → 203-208 (финальные боссы) - ПРЯМАЯ ЗАВИСИМОСТЬ ОТ КУБИКА
-// 1→203, 2→204, 3→205, 4→206, 5→207, 6→208
+// 185-202 → 203-208
 for (var i = 185; i <= 202; i++) {
     DND_TRANSITIONS_DRUID[i] = {1: 203, 2: 204, 3: 205, 4: 206, 5: 207, 6: 208};
 }
 
-// Финальные боссы (203-208) - конец игры
+// 203-208 — конец
 for (var i = 203; i <= 208; i++) {
     DND_TRANSITIONS_DRUID[i] = {};
 }
@@ -16131,101 +16100,86 @@ var DND_CARDS_ASSASSIN = {
 
 var DND_TRANSITIONS_ASSASSIN = {};
 
-// 0 → 1-3 (группировка: 1-2→1, 3-4→2, 5-6→3)
+// 0 → 1-3 (1-2→1, 3-4→2, 5-6→3)
 DND_TRANSITIONS_ASSASSIN[0] = {1: 1, 2: 1, 3: 2, 4: 2, 5: 3, 6: 3};
 
-// 1-3 → 4-12 (группировка: 1-2→первая, 3-4→вторая, 5-6→третья)
+// 1-3 → 4-12
 DND_TRANSITIONS_ASSASSIN[1] = {1: 4, 2: 4, 3: 5, 4: 5, 5: 6, 6: 6};
 DND_TRANSITIONS_ASSASSIN[2] = {1: 7, 2: 7, 3: 8, 4: 8, 5: 9, 6: 9};
 DND_TRANSITIONS_ASSASSIN[3] = {1: 10, 2: 10, 3: 11, 4: 11, 5: 12, 6: 12};
 
-// 4-12 → 13-39 (группировка: 1-2→первая, 3-4→вторая, 5-6→третья)
+// 4-12 → 13-39 (по 3 карты)
 (function() {
     var c = 13;
     for (var i = 4; i <= 12; i++) {
         DND_TRANSITIONS_ASSASSIN[i] = {};
-        DND_TRANSITIONS_ASSASSIN[i][1] = c;
-        DND_TRANSITIONS_ASSASSIN[i][2] = c;
-        DND_TRANSITIONS_ASSASSIN[i][3] = c+1;
-        DND_TRANSITIONS_ASSASSIN[i][4] = c+1;
-        DND_TRANSITIONS_ASSASSIN[i][5] = c+2;
-        DND_TRANSITIONS_ASSASSIN[i][6] = c+2;
+        DND_TRANSITIONS_ASSASSIN[i][1] = c; DND_TRANSITIONS_ASSASSIN[i][2] = c;
+        DND_TRANSITIONS_ASSASSIN[i][3] = c+1; DND_TRANSITIONS_ASSASSIN[i][4] = c+1;
+        DND_TRANSITIONS_ASSASSIN[i][5] = c+2; DND_TRANSITIONS_ASSASSIN[i][6] = c+2;
         c += 3;
     }
 })();
 
-// 13-39 → 40-100 (группировка: 1-2→первая, 3-4→вторая, 5-6→третья)
+// 13-39 → 40-100 (по 3 карты)
 (function() {
     var c = 40;
     for (var i = 13; i <= 39; i++) {
         DND_TRANSITIONS_ASSASSIN[i] = {};
-        DND_TRANSITIONS_ASSASSIN[i][1] = c;
-        DND_TRANSITIONS_ASSASSIN[i][2] = c;
-        DND_TRANSITIONS_ASSASSIN[i][3] = c+1;
-        DND_TRANSITIONS_ASSASSIN[i][4] = c+1;
-        DND_TRANSITIONS_ASSASSIN[i][5] = c+2;
-        DND_TRANSITIONS_ASSASSIN[i][6] = c+2;
+        DND_TRANSITIONS_ASSASSIN[i][1] = c; DND_TRANSITIONS_ASSASSIN[i][2] = c;
+        DND_TRANSITIONS_ASSASSIN[i][3] = c+1; DND_TRANSITIONS_ASSASSIN[i][4] = c+1;
+        DND_TRANSITIONS_ASSASSIN[i][5] = c+2; DND_TRANSITIONS_ASSASSIN[i][6] = c+2;
         c += 3;
     }
 })();
 
-// 40-100 → 101-106 (мини-боссы) - ПРЯМАЯ ЗАВИСИМОСТЬ ОТ КУБИКА
-// 1→101, 2→102, 3→103, 4→104, 5→105, 6→106
+// 40-100 → 101-106 (прямая зависимость)
 for (var i = 40; i <= 100; i++) {
     DND_TRANSITIONS_ASSASSIN[i] = {1: 101, 2: 102, 3: 103, 4: 104, 5: 105, 6: 106};
 }
 
-// 101-106 → 107-112 (прямая зависимость: 1→107, 2→108, 3→109, 4→110, 5→111, 6→112)
+// 101-106 → 107-112 (прямая зависимость)
 for (var i = 101; i <= 106; i++) {
     DND_TRANSITIONS_ASSASSIN[i] = {1: 107, 2: 108, 3: 109, 4: 110, 5: 111, 6: 112};
 }
 
-// 107-112 → 113-136 (24 карты, группировка: 1-2→первая, 3-4→вторая, 5-6→третья, 7-8→четвёртая)
+// 107-112 → 113-136 (по 4 карты, только ключи 1-6)
 (function() {
     var c = 113;
     for (var i = 107; i <= 112; i++) {
         DND_TRANSITIONS_ASSASSIN[i] = {};
-        DND_TRANSITIONS_ASSASSIN[i][1] = c;
-        DND_TRANSITIONS_ASSASSIN[i][2] = c;
-        DND_TRANSITIONS_ASSASSIN[i][3] = c+1;
-        DND_TRANSITIONS_ASSASSIN[i][4] = c+1;
-        DND_TRANSITIONS_ASSASSIN[i][5] = c+2;
-        DND_TRANSITIONS_ASSASSIN[i][6] = c+2;
-        DND_TRANSITIONS_ASSASSIN[i][7] = c+3;
-        DND_TRANSITIONS_ASSASSIN[i][8] = c+3;
+        DND_TRANSITIONS_ASSASSIN[i][1] = c;   DND_TRANSITIONS_ASSASSIN[i][2] = c;
+        DND_TRANSITIONS_ASSASSIN[i][3] = c+1; DND_TRANSITIONS_ASSASSIN[i][4] = c+1;
+        DND_TRANSITIONS_ASSASSIN[i][5] = c+2; DND_TRANSITIONS_ASSASSIN[i][6] = c+3;
         c += 4;
     }
 })();
 
-// 113-136 → 137-184 (48 карт, группировка: 1-2→первая, 3-4→вторая, 5-6→третья, 7-8→четвёртая)
+// 113-136 → 137-184 (по 2 карты, с ограничением)
 (function() {
     var c = 137;
     for (var i = 113; i <= 136; i++) {
         DND_TRANSITIONS_ASSASSIN[i] = {};
-        DND_TRANSITIONS_ASSASSIN[i][1] = c;
-        DND_TRANSITIONS_ASSASSIN[i][2] = c;
-        DND_TRANSITIONS_ASSASSIN[i][3] = c+1;
-        DND_TRANSITIONS_ASSASSIN[i][4] = c+1;
-        DND_TRANSITIONS_ASSASSIN[i][5] = c+2;
-        DND_TRANSITIONS_ASSASSIN[i][6] = c+2;
-        DND_TRANSITIONS_ASSASSIN[i][7] = c+3;
-        DND_TRANSITIONS_ASSASSIN[i][8] = c+3;
-        c += 4;
+        DND_TRANSITIONS_ASSASSIN[i][1] = Math.min(c, 184);
+        DND_TRANSITIONS_ASSASSIN[i][2] = Math.min(c, 184);
+        DND_TRANSITIONS_ASSASSIN[i][3] = Math.min(c+1, 184);
+        DND_TRANSITIONS_ASSASSIN[i][4] = Math.min(c+1, 184);
+        DND_TRANSITIONS_ASSASSIN[i][5] = Math.min(c+1, 184);
+        DND_TRANSITIONS_ASSASSIN[i][6] = Math.min(c+1, 184);
+        c += 2;
     }
 })();
 
-// 137-184 → 185-202 (все ведут на уровень 9, но с разными картами)
+// 137-184 → 185-202
 for (var i = 137; i <= 184; i++) {
     DND_TRANSITIONS_ASSASSIN[i] = {1: 185, 2: 186, 3: 187, 4: 188, 5: 189, 6: 190};
 }
 
-// 185-202 → 203-208 (финальные боссы) - ПРЯМАЯ ЗАВИСИМОСТЬ ОТ КУБИКА
-// 1→203, 2→204, 3→205, 4→206, 5→207, 6→208
+// 185-202 → 203-208
 for (var i = 185; i <= 202; i++) {
     DND_TRANSITIONS_ASSASSIN[i] = {1: 203, 2: 204, 3: 205, 4: 206, 5: 207, 6: 208};
 }
 
-// Финальные боссы (203-208) - конец игры
+// 203-208 — конец
 for (var i = 203; i <= 208; i++) {
     DND_TRANSITIONS_ASSASSIN[i] = {};
 }
@@ -16479,101 +16433,86 @@ var DND_CARDS_BARD = {
 
 var DND_TRANSITIONS_BARD = {};
 
-// 0 → 1-3 (группировка: 1-2→1, 3-4→2, 5-6→3)
+// 0 → 1-3 (1-2→1, 3-4→2, 5-6→3)
 DND_TRANSITIONS_BARD[0] = {1: 1, 2: 1, 3: 2, 4: 2, 5: 3, 6: 3};
 
-// 1-3 → 4-12 (группировка: 1-2→первая, 3-4→вторая, 5-6→третья)
+// 1-3 → 4-12
 DND_TRANSITIONS_BARD[1] = {1: 4, 2: 4, 3: 5, 4: 5, 5: 6, 6: 6};
 DND_TRANSITIONS_BARD[2] = {1: 7, 2: 7, 3: 8, 4: 8, 5: 9, 6: 9};
 DND_TRANSITIONS_BARD[3] = {1: 10, 2: 10, 3: 11, 4: 11, 5: 12, 6: 12};
 
-// 4-12 → 13-39 (группировка: 1-2→первая, 3-4→вторая, 5-6→третья)
+// 4-12 → 13-39 (по 3 карты)
 (function() {
     var c = 13;
     for (var i = 4; i <= 12; i++) {
         DND_TRANSITIONS_BARD[i] = {};
-        DND_TRANSITIONS_BARD[i][1] = c;
-        DND_TRANSITIONS_BARD[i][2] = c;
-        DND_TRANSITIONS_BARD[i][3] = c+1;
-        DND_TRANSITIONS_BARD[i][4] = c+1;
-        DND_TRANSITIONS_BARD[i][5] = c+2;
-        DND_TRANSITIONS_BARD[i][6] = c+2;
+        DND_TRANSITIONS_BARD[i][1] = c; DND_TRANSITIONS_BARD[i][2] = c;
+        DND_TRANSITIONS_BARD[i][3] = c+1; DND_TRANSITIONS_BARD[i][4] = c+1;
+        DND_TRANSITIONS_BARD[i][5] = c+2; DND_TRANSITIONS_BARD[i][6] = c+2;
         c += 3;
     }
 })();
 
-// 13-39 → 40-100 (группировка: 1-2→первая, 3-4→вторая, 5-6→третья)
+// 13-39 → 40-100 (по 3 карты)
 (function() {
     var c = 40;
     for (var i = 13; i <= 39; i++) {
         DND_TRANSITIONS_BARD[i] = {};
-        DND_TRANSITIONS_BARD[i][1] = c;
-        DND_TRANSITIONS_BARD[i][2] = c;
-        DND_TRANSITIONS_BARD[i][3] = c+1;
-        DND_TRANSITIONS_BARD[i][4] = c+1;
-        DND_TRANSITIONS_BARD[i][5] = c+2;
-        DND_TRANSITIONS_BARD[i][6] = c+2;
+        DND_TRANSITIONS_BARD[i][1] = c; DND_TRANSITIONS_BARD[i][2] = c;
+        DND_TRANSITIONS_BARD[i][3] = c+1; DND_TRANSITIONS_BARD[i][4] = c+1;
+        DND_TRANSITIONS_BARD[i][5] = c+2; DND_TRANSITIONS_BARD[i][6] = c+2;
         c += 3;
     }
 })();
 
-// 40-100 → 101-106 (мини-боссы) - ПРЯМАЯ ЗАВИСИМОСТЬ ОТ КУБИКА
-// 1→101, 2→102, 3→103, 4→104, 5→105, 6→106
+// 40-100 → 101-106 (прямая зависимость)
 for (var i = 40; i <= 100; i++) {
     DND_TRANSITIONS_BARD[i] = {1: 101, 2: 102, 3: 103, 4: 104, 5: 105, 6: 106};
 }
 
-// 101-106 → 107-112 (прямая зависимость: 1→107, 2→108, 3→109, 4→110, 5→111, 6→112)
+// 101-106 → 107-112 (прямая зависимость)
 for (var i = 101; i <= 106; i++) {
     DND_TRANSITIONS_BARD[i] = {1: 107, 2: 108, 3: 109, 4: 110, 5: 111, 6: 112};
 }
 
-// 107-112 → 113-136 (24 карты, группировка: 1-2→первая, 3-4→вторая, 5-6→третья, 7-8→четвёртая)
+// 107-112 → 113-136 (по 4 карты, только ключи 1-6)
 (function() {
     var c = 113;
     for (var i = 107; i <= 112; i++) {
         DND_TRANSITIONS_BARD[i] = {};
-        DND_TRANSITIONS_BARD[i][1] = c;
-        DND_TRANSITIONS_BARD[i][2] = c;
-        DND_TRANSITIONS_BARD[i][3] = c+1;
-        DND_TRANSITIONS_BARD[i][4] = c+1;
-        DND_TRANSITIONS_BARD[i][5] = c+2;
-        DND_TRANSITIONS_BARD[i][6] = c+2;
-        DND_TRANSITIONS_BARD[i][7] = c+3;
-        DND_TRANSITIONS_BARD[i][8] = c+3;
+        DND_TRANSITIONS_BARD[i][1] = c;   DND_TRANSITIONS_BARD[i][2] = c;
+        DND_TRANSITIONS_BARD[i][3] = c+1; DND_TRANSITIONS_BARD[i][4] = c+1;
+        DND_TRANSITIONS_BARD[i][5] = c+2; DND_TRANSITIONS_BARD[i][6] = c+3;
         c += 4;
     }
 })();
 
-// 113-136 → 137-184 (48 карт, группировка: 1-2→первая, 3-4→вторая, 5-6→третья, 7-8→четвёртая)
+// 113-136 → 137-184 (по 2 карты, с ограничением)
 (function() {
     var c = 137;
     for (var i = 113; i <= 136; i++) {
         DND_TRANSITIONS_BARD[i] = {};
-        DND_TRANSITIONS_BARD[i][1] = c;
-        DND_TRANSITIONS_BARD[i][2] = c;
-        DND_TRANSITIONS_BARD[i][3] = c+1;
-        DND_TRANSITIONS_BARD[i][4] = c+1;
-        DND_TRANSITIONS_BARD[i][5] = c+2;
-        DND_TRANSITIONS_BARD[i][6] = c+2;
-        DND_TRANSITIONS_BARD[i][7] = c+3;
-        DND_TRANSITIONS_BARD[i][8] = c+3;
-        c += 4;
+        DND_TRANSITIONS_BARD[i][1] = Math.min(c, 184);
+        DND_TRANSITIONS_BARD[i][2] = Math.min(c, 184);
+        DND_TRANSITIONS_BARD[i][3] = Math.min(c+1, 184);
+        DND_TRANSITIONS_BARD[i][4] = Math.min(c+1, 184);
+        DND_TRANSITIONS_BARD[i][5] = Math.min(c+1, 184);
+        DND_TRANSITIONS_BARD[i][6] = Math.min(c+1, 184);
+        c += 2;
     }
 })();
 
-// 137-184 → 185-202 (все ведут на уровень 9, но с разными картами)
+// 137-184 → 185-202
 for (var i = 137; i <= 184; i++) {
     DND_TRANSITIONS_BARD[i] = {1: 185, 2: 186, 3: 187, 4: 188, 5: 189, 6: 190};
 }
 
-// 185-202 → 203-208 (финальные боссы) - ПРЯМАЯ ЗАВИСИМОСТЬ ОТ КУБИКА
-// 1→203, 2→204, 3→205, 4→206, 5→207, 6→208
+// 185-202 → 203-208
 for (var i = 185; i <= 202; i++) {
     DND_TRANSITIONS_BARD[i] = {1: 203, 2: 204, 3: 205, 4: 206, 5: 207, 6: 208};
 }
 
-// Финальные боссы (203-208) - конец игры
+// 203-208 — конец
 for (var i = 203; i <= 208; i++) {
     DND_TRANSITIONS_BARD[i] = {};
 }
