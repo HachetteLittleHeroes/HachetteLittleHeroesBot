@@ -16971,16 +16971,86 @@ function loadMyTeam() {
 }
 
 function renderMyTeam(team) {
+    console.log('🎨 renderMyTeam, team.members:', team.members);
+    
     var isLeader = team.leader_id == userId;
     var membersHtml = '';
+    
     for (var i = 0; i < team.members.length; i++) {
         var m = team.members[i];
+        
         var avatarUrl = m.avatar || 'https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png';
-        var charIcon = { knight: '⚔️', mage: '🔮', archer: '🏹', druid: '🌿', assassin: '🗡️', bard: '🎵' }[m.character_class] || '';
-        membersHtml += '<div class="team-member-item" onclick="openPublicProfile(\'' + m.id + '\')"><img class="team-member-avatar" src="' + avatarUrl + '"><div class="team-member-info"><div class="team-member-name-row"><span class="team-member-name">' + escapeHtml(m.name || 'Пользователь') + '</span>' + (m.id == team.leader_id ? '<span class="team-leader-badge"><i class="fas fa-crown"></i> Лидер</span>' : '') + (charIcon ? '<span class="team-character-badge">' + charIcon + '</span>' : '') + '</div><div class="team-member-status">' + escapeHtml(m.status || 'Без статуса') + '</div></div></div>';
+        var status = m.status || 'Без статуса';
+        var memberName = m.name || 'Пользователь';
+        
+        var characterIcon = '';
+        var characterName = '';
+        if (m.character_class) {
+            switch(m.character_class) {
+                case 'knight': characterIcon = '⚔️'; characterName = 'Рыцарь'; break;
+                case 'mage': characterIcon = '🔮'; characterName = 'Маг'; break;
+                case 'archer': characterIcon = '🏹'; characterName = 'Лучник'; break;
+                case 'druid': characterIcon = '🌿'; characterName = 'Друид'; break;
+                case 'assassin': characterIcon = '🗡️'; characterName = 'Ассасин'; break;
+                case 'bard': characterIcon = '🎵'; characterName = 'Бард'; break;
+                default: characterIcon = '❓'; characterName = m.character_class;
+            }
+        }
+        
+        var isMemberLeader = (m.id == team.leader_id);
+        var shortName = memberName.length > 20 ? memberName.substring(0, 18) + '...' : memberName;
+        
+        membersHtml += `
+            <div class="team-member-item" onclick="openPublicProfile('${m.id}')">
+                <img class="team-member-avatar" src="${avatarUrl}" onerror="this.src='https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png'">
+                <div class="team-member-info">
+                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 2px;">
+                        <span class="team-member-name" title="${escapeHtml(memberName)}">${escapeHtml(shortName)}</span>
+                        ${isMemberLeader ? '<span class="team-leader-badge" style="display: inline-flex; align-items: center; gap: 4px; background: #ffd700; color: #333; font-size: 10px; padding: 3px 10px; border-radius: 20px; font-weight: 600;"><i class="fas fa-crown"></i> Лидер</span>' : ''}
+                        ${characterIcon ? '<span class="team-character-badge" style="display: inline-flex; align-items: center; gap: 4px; background: rgba(255,149,0,0.2); color: var(--accent); font-size: 10px; padding: 3px 10px; border-radius: 20px; font-weight: 500;">' + characterIcon + ' ' + characterName + '</span>' : ''}
+                    </div>
+                    <div class="team-member-status" style="margin-top: 1px;">${escapeHtml(status)}</div>
+                </div>
+            </div>
+        `;
     }
-    var actions = isLeader ? '<div class="team-actions"><button class="team-action-btn" onclick="showTeamCharacterModal()">🎭 Выбрать персонажа</button><button class="team-action-btn" onclick="startTeamGame()">🎮 Начать игру</button><button class="team-action-btn danger" onclick="disbandTeam()">💥 Расформировать</button></div>' : '<div class="team-actions"><button class="team-action-btn" onclick="showTeamCharacterModal()">🎭 Выбрать персонажа</button><button class="team-action-btn danger" onclick="leaveTeam()">🚪 Покинуть</button></div>';
-    document.getElementById('myTeamCard').innerHTML = '<div class="my-team-card"><div class="team-header-row"><h4>' + escapeHtml(team.team_name) + '</h4><div class="team-header-count"><i class="fas fa-users"></i><span>' + team.current_members + '/6</span></div></div><div class="team-members-list">' + membersHtml + '</div>' + actions + '</div>';
+    
+    var actions = '';
+    if (isLeader) {
+        actions = `
+            <div class="team-actions">
+                <button class="team-action-btn" onclick="showTeamCharacterModal()">🎭 Выбрать персонажа</button>
+                <button class="team-action-btn" onclick="startTeamGame()">🎮 Начать игру</button>
+                <button class="team-action-btn danger" onclick="disbandTeam()">💥 Расформировать</button>
+            </div>
+        `;
+    } else {
+        actions = `
+            <div class="team-actions">
+                <button class="team-action-btn" onclick="showTeamCharacterModal()">🎭 Выбрать персонажа</button>
+                <button class="team-action-btn danger" onclick="leaveTeam()">🚪 Покинуть</button>
+            </div>
+        `;
+    }
+    
+    var myTeamCard = document.getElementById('myTeamCard');
+    if (myTeamCard) {
+        myTeamCard.innerHTML = `
+            <div class="my-team-card">
+                <div class="team-header-row">
+                    <h4 title="${escapeHtml(team.team_name)}">${escapeHtml(team.team_name)}</h4>
+                    <div class="team-header-count">
+                        <i class="fas fa-users"></i>
+                        <span>${team.current_members}/6</span>
+                    </div>
+                </div>
+                <div class="team-members-list">
+                    ${membersHtml}
+                </div>
+                ${actions}
+            </div>
+        `;
+    }
 }
 
 function checkDndGameStatus() {
