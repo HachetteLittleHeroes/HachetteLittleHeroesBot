@@ -6515,7 +6515,7 @@ body:not([data-theme]) .modal-content,
                 <span class="close" onclick="closeCreateTeamModal()">&times;</span>
                 <h3>Создание команды</h3>
                 <input type="text" id="teamNameInput" placeholder="Название команды" maxlength="50" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #ccc; margin: 10px 0;">
-                <p style="font-size: 12px; color: #888;">👥 Максимум 6 участников. Минимум 4 для старта.</p>
+                <p style="font-size: 12px; color: #888;">👥 Минимум 2 участника для старта. Максимум 6.</p>
                 <button class="task-submit-btn" onclick="createTeam()">🚀 Создать команду</button>
             </div>
         </div>
@@ -16654,10 +16654,16 @@ function openPaymentChat() {
 }
 
 function backToDndMenu() {
+    if (isGameInProgress()) {
+        alert('⚠️ Сначала завершите текущее приключение!');
+        return;
+    }
     document.getElementById('dndMainMenu').style.display = 'block';
     hideAllDndScreens();
     dndMode = null;
     dndCharacter = null;
+    dndCardHistory = [0];
+    dndApproved = true;
 }
 
 // ==========================================
@@ -16728,16 +16734,27 @@ function renderDndCard(cardNumber) {
     // Стартовая
     if (card.isStart) { container.innerHTML = renderCardHTML(card, true, true); return; }
     
+    // Проверяем, пройдена ли игра (побеждён ли финальный босс)
+    var finalBosses = [203, 204, 205, 206, 207, 208];
+    var hasDefeatedBoss = finalBosses.some(function(boss) {
+        return dndCardHistory.includes(boss);
+    });
+    
     // Финальный босс + одобрен = победа
     if (card.isFinal && dndApproved) {
         container.innerHTML = '<div class="branch-task-card"><div class="branch-header"><h3>🎉 Победа!</h3></div><div class="level-card" style="text-align:center;"><p style="font-size:18px;font-weight:700;color:var(--accent);">Ты победил ' + card.title + '!</p><p>Приключение пройдено!</p><button class="task-submit-btn" onclick="resetDndProgress()" style="margin-top:15px;background:#ff9800;">🔄 Пройти заново</button><button class="task-submit-btn" onclick="backToDndMenu()" style="margin-top:10px;background:#444;">🏠 В меню</button></div></div>';
         return;
     }
     
-    // Обычная
-    container.innerHTML = renderCardHTML(card, dndApproved, false);
+    // ✅ Если игра в процессе и это НЕ финальный босс — кнопка "Назад" заблокирована
+    if (hasDefeatedBoss) {
+        // Игра пройдена — можно вернуться
+        container.innerHTML = renderCardHTML(card, dndApproved, false) + '<div style="text-align:center;margin-top:15px;"><button class="task-submit-btn" onclick="backToDndMenu()" style="background:#444;">🏠 В меню</button></div>';
+    } else {
+        // Игра в процессе — только карта
+        container.innerHTML = renderCardHTML(card, dndApproved, false);
+    }
 }
-
 function renderCardHTML(card, showDice, isStart) {
     var diceHTML = showDice ? '<div id="dndDiceWrapper" style="margin:15px 0;"><div id="dndDice" class="dnd-dice" onclick="rollDndDice()"><div class="dice-face front"><span class="dot dot1"></span></div><div class="dice-face back"><span class="dot dot1"></span><span class="dot dot2"></span></div><div class="dice-face right"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span></div><div class="dice-face left"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span></div><div class="dice-face top"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span><span class="dot dot5"></span></div><div class="dice-face bottom"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span><span class="dot dot5"></span><span class="dot dot6"></span></div></div></div>' : '';
     
@@ -16838,6 +16855,17 @@ function submitDndTaskPhoto(cardNumber) {
 // ==========================================
 
 function resetDndProgress() {
+    // Проверяем, что игра действительно пройдена
+    var finalBosses = [203, 204, 205, 206, 207, 208];
+    var hasDefeatedBoss = finalBosses.some(function(boss) {
+        return dndCardHistory.includes(boss);
+    });
+    
+    if (!hasDefeatedBoss) {
+        alert('⚠️ Сброс возможен только после победы над финальным боссом!');
+        return;
+    }
+    
     if (!confirm('⚠️ Сбросить прогресс? Вы начнёте заново с карты 0.')) return;
     
     fetch(SERVER_URL + '/api/dnd/reset_progress', {
@@ -16913,6 +16941,22 @@ function closeSoloCharacterModal() {
 }
 
 function startSoloWithCharacter(character) {
+    // ✅ Проверяем, нет ли активной командной игры
+    if (dndMode === 'team') {
+        fetch(SERVER_URL + '/api/dnd/teams/my?user_id=' + userId)
+            .then(r => r.json())
+            .then(data => {
+                if (data.status === 'ok' && data.team && data.team.status === 'in_progress') {
+                    alert('⚠️ Сначала завершите командное приключение!');
+                    return;
+                }
+                proceedSoloStart(character);
+            });
+        return;
+    }
+    proceedSoloStart(character);
+}
+function proceedSoloStart(character) {
     dndMode = 'solo';
     dndCharacter = character;
     closeSoloCharacterModal();
@@ -16926,18 +16970,9 @@ function startSoloWithCharacter(character) {
         renderDndCard(lastCard);
     });
 }
-
 // ==========================================
 // КОМАНДНАЯ ИГРА
 // ==========================================
-
-function showDndLobby() {
-    document.getElementById('dndMainMenu').style.display = 'none';
-    document.getElementById('dndLobby').style.display = 'block';
-    dndMode = 'team';
-    refreshTeamList();
-    loadMyTeam();
-}
 
 function refreshTeamList() {
     fetch(SERVER_URL + '/api/dnd/teams/list?user_id=' + userId)
@@ -17094,19 +17129,53 @@ function selectTeamCharacter(character) {
         .then(data => { if (data.status === 'ok') { alert('✅ Персонаж выбран!'); closeTeamCharacterModal(); dndCharacter = character; dndCardHistory = [0]; dndApproved = true; saveDndProgress(); loadMyTeam(); } else { alert('❌ Ошибка'); } });
 }
 
-function startTeamGame() {
-    if (!confirm('Начать игру?')) return;
-    fetch(SERVER_URL + '/api/dnd/teams/start', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user_id: userId }) })
-        .then(r => r.json())
-        .then(data => {
-            if (data.status === 'ok') {
-                alert('🎮 Игра начинается!');
-                document.getElementById('dndLobby').style.display = 'none';
-                document.getElementById('dndGame').style.display = 'block';
-                dndMode = 'team';
-                if (dndCharacter) { renderDndCard(0); } else { showTeamCharacterModal(); }
-            } else { alert('❌ Ошибка'); }
-        });
+function startGameStatusPolling() {
+    // Проверяем каждые 5 секунд, не началась ли игра
+    var pollInterval = setInterval(function() {
+        if (dndMode !== 'team') {
+            clearInterval(pollInterval);
+            return;
+        }
+        
+        fetch(SERVER_URL + '/api/dnd/team/status?user_id=' + userId)
+            .then(r => r.json())
+            .then(data => {
+                if (data.status === 'ok' && data.game_started && document.getElementById('dndGame').style.display === 'none') {
+                    // Игра началась! Переключаемся
+                    document.getElementById('dndLobby').style.display = 'none';
+                    document.getElementById('dndGame').style.display = 'block';
+                    alert('🎮 Лидер начал игру! Приключение начинается!');
+                    
+                    // Находим своего персонажа
+                    var myself = (data.members || []).find(function(m) {
+                        return m.user_id == userId || m.id == userId;
+                    });
+                    dndCharacter = myself?.character || myself?.character_class;
+                    
+                    if (dndCharacter) {
+                        loadDndProgress().then(function() {
+                            renderDndCard(dndCardHistory[dndCardHistory.length - 1] || 0);
+                        });
+                    } else {
+                        showTeamCharacterModal();
+                    }
+                    
+                    clearInterval(pollInterval);
+                }
+            });
+    }, 5000);
+}
+
+// Проверка, идёт ли сейчас игра (соло или команда)
+function isGameInProgress() {
+    if (dndMode === 'solo' && dndCharacter) {
+        // Проверяем, не на стартовой ли карте и есть ли прогресс
+        return dndCardHistory.length > 1;
+    }
+    if (dndMode === 'team' && dndCharacter) {
+        return dndCardHistory.length > 1;
+    }
+    return false;
 }
 
 function disbandTeam() {
