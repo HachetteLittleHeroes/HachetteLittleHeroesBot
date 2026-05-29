@@ -17301,53 +17301,12 @@ window.onload = async () => {
     // ==========================================
     // ✅ D&D: авто-восстановление при открытии вкладки
     // ==========================================
-    // Вызывается только если вкладка D&D уже открыта при загрузке
     setTimeout(function() {
         var dndContent = document.getElementById('dndEventContent');
         if (dndContent && dndContent.style.display !== 'none') {
             autoRestoreDndGame();
         }
     }, 2000);
-    
-    console.log('✅ APP READY');
-};
-    
-    // ==========================================
-    // ✅ АВТОМАТИЧЕСКОЕ ОТКРЫТИЕ D&D ЛОББИ (С ПОВТОРАМИ)
-    // ==========================================
-    function autoOpenDndLobby() {
-        var pay = document.getElementById('dndPaySection');
-        var lobby = document.getElementById('dndLobby');
-        
-        if (!pay || !lobby) {
-            console.log('⚠️ D&D элементы не найдены, повтор через 500ms');
-            setTimeout(autoOpenDndLobby, 500);
-            return;
-        }
-        
-        fetch(SERVER_URL + '/api/dnd/payment_status?user_id=' + userId)
-            .then(r => r.json())
-            .then(data => {
-                console.log('📡 D&D статус:', data);
-                if (data.status === 'ok' && data.is_paid === true) {
-                    pay.style.display = 'none';
-                    lobby.style.display = 'block';
-                    console.log('✅ D&D лобби открыто АВТОМАТИЧЕСКИ!');
-                    if (typeof refreshTeamList === 'function') refreshTeamList();
-                    if (typeof loadMyTeam === 'function') loadMyTeam();
-                } else {
-                    console.log('⏳ D&D доступ не открыт, повтор через 5 секунд...');
-                    setTimeout(autoOpenDndLobby, 5000);
-                }
-            })
-            .catch(err => {
-                console.error('Ошибка:', err);
-                setTimeout(autoOpenDndLobby, 3000);
-            });
-    }
-    
-    // Запускаем автоматическую проверку
-    autoOpenDndLobby();
     
     console.log('✅ APP READY');
 };
