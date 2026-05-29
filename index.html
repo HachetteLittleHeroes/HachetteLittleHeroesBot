@@ -16571,11 +16571,6 @@ for (var i = 185; i <= 202; i++) {
 for (var i = 203; i <= 208; i++) {
     DND_TRANSITIONS_BARD[i] = {};
 }
-
-       // ==========================================
-// D&D ПОЛНАЯ ВЕРСИЯ - СКОПИРУЙТЕ ЦЕЛИКОМ
-// ==========================================
-
 // ==========================================
 // ПРОВЕРКА ОПЛАТЫ И ЛОББИ
 // ==========================================
@@ -16830,60 +16825,47 @@ function leaveTeam() {
     });
 }
 function saveGameState() {
-    if (!dndCharacter) {
-        console.log('⚠️ saveGameState: нет персонажа');
-        return;
-    }
+    if (!dndCharacter) return;
+    if (!dndCardHistory || dndCardHistory.length === 0) return;
     
-    if (!dndCardHistory || dndCardHistory.length === 0) {
-        console.log('⚠️ saveGameState: нет истории карт');
-        return;
-    }
-    
-    var gameState = {
-        character: dndCharacter,
-        card_history: dndCardHistory,
-        completed_cards: dndCardHistory,
-        current_card: dndCardHistory[dndCardHistory.length - 1] || 0,
-        is_completed: dndCardHistory.includes(208) || false,
-        timestamp: Date.now()
-    };
-    
-    console.log('💾 Сохранение прогресса на сервер:', gameState);
-    
-    fetch(SERVER_URL + '/api/dnd/update_progress', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            user_id: userId,
-            character: dndCharacter,
-            progress: gameState
+    // ✅ ЗАПРАШИВАЕМ completed_cards с сервера (только одобренные)
+    fetch(SERVER_URL + '/api/dnd/get_progress?user_id=' + userId + '&character=' + dndCharacter)
+        .then(r => r.json())
+        .then(data => {
+            var serverCompletedCards = [];
+            if (data.status === 'ok' && data.progress) {
+                serverCompletedCards = data.progress.completed_cards || [];
+            }
+            
+            var gameState = {
+                character: dndCharacter,
+                card_history: dndCardHistory,           // ← все переходы
+                completed_cards: serverCompletedCards,  // ← только одобренные (НЕ трогаем!)
+                current_card: dndCardHistory[dndCardHistory.length - 1] || 0,
+                is_completed: dndCardHistory.includes(208) || false,
+                timestamp: Date.now()
+            };
+            
+            console.log('💾 Сохраняем на сервер:', JSON.stringify(gameState));
+            
+            return fetch(SERVER_URL + '/api/dnd/update_progress', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    user_id: userId,
+                    character: dndCharacter,
+                    progress: gameState
+                })
+            });
         })
-    })
-    .then(r => r.json())
-    .then(data => {
-        if (data.status === 'ok') {
-            console.log('✅ Прогресс сохранён на сервере');
-        } else {
-            console.error('❌ Ошибка сохранения:', data);
-        }
-    })
-    .catch(err => console.error('❌ Ошибка сети:', err));
-    
-    // Сохраняем в localStorage как резервную копию
-    localStorage.setItem(`dnd_game_state_backup_${userId}`, JSON.stringify({
-        character: dndCharacter,
-        card_history: dndCardHistory,
-        completed_cards: dndCardHistory,
-        current_card: dndCardHistory[dndCardHistory.length - 1] || 0,
-        timestamp: Date.now()
-    }));
+        .then(r => r.json())
+        .then(data => console.log('✅ Сервер ответил:', data))
+        .catch(err => console.error('❌ Ошибка сохранения:', err));
 }
 function loadGameStateFromServer() {
     console.log('📥 Загрузка прогресса с сервера для персонажа:', dndCharacter);
     
     if (!dndCharacter) {
-        console.log('⚠️ Персонаж не выбран');
         return Promise.resolve(false);
     }
     
@@ -16893,40 +16875,34 @@ function loadGameStateFromServer() {
             console.log('📡 Прогресс с сервера:', data);
             
             if (data.status === 'ok' && data.progress) {
-                // Восстанавливаем историю карт
+                // ✅ Восстанавливаем card_history (все переходы)
                 if (data.progress.card_history && data.progress.card_history.length > 0) {
                     dndCardHistory = data.progress.card_history;
-                } else if (data.progress.completed_cards && data.progress.completed_cards.length > 0) {
-                    dndCardHistory = data.progress.completed_cards;
                 } else {
                     dndCardHistory = [0];
                 }
                 
-                // ✅ ВАЖНО: По умолчанию задание НЕ одобрено
+                // ✅ Проверяем ОТДЕЛЬНО completed_cards (одобренные)
                 var currentCard = dndCardHistory[dndCardHistory.length - 1];
                 var completedCards = data.progress.completed_cards || [];
                 
-                // Если текущая карта уже в списке пройденных, значит задание одобрено
-                if (completedCards.includes(currentCard)) {
+                if (currentCard === 0 || completedCards.includes(currentCard)) {
                     dndApproved = true;
-                    console.log('✅ Текущая карта', currentCard, 'уже пройдена, можно бросать кубик');
                 } else {
                     dndApproved = false;
-                    console.log('⏳ Текущая карта', currentCard, 'ещё не пройдена, ждём одобрения');
                 }
                 
+                console.log('📌 Текущая карта:', currentCard, 'Одобрена:', dndApproved);
                 return true;
             } else {
-                console.log('⚠️ Нет прогресса на сервере, начинаем с 0');
                 dndCardHistory = [0];
-                dndApproved = false;  // ✅ false
+                dndApproved = true;  // Для стартовой карты — разрешаем
                 return false;
             }
         })
         .catch(err => {
-            console.error('❌ Ошибка загрузки с сервера:', err);
             dndCardHistory = [0];
-            dndApproved = false;  // ✅ false
+            dndApproved = true;
             return false;
         });
 }
@@ -18229,7 +18205,8 @@ function closeTeamPreviewModal() {
             document.getElementById('dndLobby').style.display = 'block';
             document.getElementById('dndGame').style.display = 'none';
         });
-}// ==========================================
+}
+// ==========================================
 // ИНИЦИАЛИЗАЦИЯ
 // ==========================================
 
