@@ -17406,11 +17406,16 @@ function startTeamGame() {
                 document.getElementById('dndLobby').style.display = 'none';
                 document.getElementById('dndGame').style.display = 'block';
                 dndMode = 'team';
-                if (dndCharacter) { renderDndCard(0); } else { showTeamCharacterModal(); }
+                // ✅ Не спрашиваем персонажа — используем уже выбранного
+                if (dndCharacter) { 
+                    dndCardHistory = [0];
+                    dndApproved = true;
+                    saveDndProgress();
+                    renderDndCard(0); 
+                }
             } else { alert('❌ ' + (data.message || 'Ошибка')); }
         });
 }
-
 function disbandTeam() {
     if (!confirm('Расформировать команду?')) return;
     fetch(SERVER_URL + '/api/dnd/teams/disband', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user_id: userId }) })
@@ -17471,6 +17476,7 @@ function autoRestoreDndGame() {
                 var myself = (teamData.members || []).find(function(m) { return m.user_id == userId || m.id == userId; });
                 dndCharacter = myself?.character || myself?.character_class;
                 if (dndCharacter) {
+                    // ✅ Не спрашиваем персонажа — он уже выбран
                     document.getElementById('dndMainMenu').style.display = 'none';
                     document.getElementById('dndLobby').style.display = 'none';
                     document.getElementById('dndGame').style.display = 'block';
@@ -17518,7 +17524,7 @@ function autoRestoreDndGame() {
                 
                 console.log('🏆 Лучший:', bestResult ? bestResult.character + ' (' + maxLength + ' карт)' : 'нет');
                 
-                // ✅ ВАЖНО: только если история ДЛИННЕЕ чем [0] (больше 1 карты)
+                // ✅ Только если история длиннее чем [0] (больше 1 карты)
                 if (bestResult && maxLength > 1) {
                     dndMode = 'solo';
                     dndCharacter = bestResult.character;
