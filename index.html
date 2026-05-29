@@ -16841,52 +16841,33 @@ function submitDndTaskPhoto(cardNumber) {
 // ==========================================
 
 function resetDndProgress() {
-    // Проверяем через сервер, что игра пройдена
-    fetch(SERVER_URL + '/api/dnd/get_progress?user_id=' + userId + '&character=' + dndCharacter)
-        .then(r => r.json())
-        .then(function(data) {
-            var isCompleted = false;
-            if (data.status === 'ok' && data.progress) {
-                isCompleted = data.progress.is_completed || false;
-                
-                // Дополнительно проверяем по истории
-                var history = data.progress.card_history || data.progress.completed_cards || [];
-                var finalBosses = [203, 204, 205, 206, 207, 208];
-                var hasBoss = finalBosses.some(function(boss) { return history.includes(boss); });
-                
-                if (hasBoss) isCompleted = true;
-            }
+    if (!confirm('⚠️ Сбросить прогресс? Вы вернётесь в меню и сможете начать заново.')) return;
+    
+    fetch(SERVER_URL + '/api/dnd/reset_progress', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: userId, character: dndCharacter })
+    })
+    .then(r => r.json())
+    .then(function(data) {
+        if (data.status === 'ok') {
+            // Сбрасываем всё и возвращаемся в меню
+            dndCardHistory = [0];
+            dndApproved = true;
+            dndMode = null;
+            dndCharacter = null;
             
-            if (!isCompleted) {
-                alert('⚠️ Сброс возможен только после победы над финальным боссом!');
-                return;
-            }
+            document.getElementById('dndMainMenu').style.display = 'block';
+            hideAllDndScreens();
             
-            if (!confirm('⚠️ Сбросить прогресс? Вы начнёте заново.')) return;
-            
-            fetch(SERVER_URL + '/api/dnd/reset_progress', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ user_id: userId, character: dndCharacter })
-            })
-            .then(r => r.json())
-            .then(function(resetData) {
-                if (resetData.status === 'ok') {
-                    alert('✅ Прогресс сброшен!');
-                    // Сбрасываем и возвращаемся в меню
-                    dndCardHistory = [0];
-                    dndApproved = true;
-                    dndMode = null;
-                    dndCharacter = null;
-                    
-                    document.getElementById('dndMainMenu').style.display = 'block';
-                    hideAllDndScreens();
-                } else {
-                    alert('❌ ' + (resetData.message || 'Ошибка'));
-                }
-            })
-            .catch(function() { alert('❌ Ошибка сети'); });
-        });
+            alert('✅ Прогресс сброшен! Можете начать заново.');
+        } else {
+            alert('❌ ' + (data.message || 'Ошибка сброса'));
+        }
+    })
+    .catch(function() {
+        alert('❌ Ошибка сети. Попробуйте ещё раз.');
+    });
 }
 
 // ==========================================
