@@ -6548,11 +6548,11 @@ body:not([data-theme]) .modal-content,
                 <span class="close" onclick="closeSkipTaskModal()">&times;</span>
                 <h3>🎫 Пропустить задание</h3>
                 <img id="skipTaskImage" src="" style="width:100%;border-radius:12px;margin:15px 0;" onerror="this.style.display='none'">
-                <p style="color: var(--text-gray); margin-bottom: 15px;">Стоимость: <strong>50 ашетиков</strong></p>
+             <p style="color: var(--text-gray); margin-bottom: 15px;">Стоимость: <strong>50 <i class="fas fa-book-open gold-book"></i></strong></p>
                 <p style="font-size: 12px; color: var(--accent); margin-bottom: 15px;">⚠️ Можно использовать только 1 раз за всё приключение</p>
-                <button class="task-submit-btn" onclick="confirmSkipTask()" style="background: #ff9800;">
-                    💰 Потратить 50 ашетиков
-                </button>
+              <button class="task-submit-btn" onclick="confirmSkipTask()" style="background: #ff9800;">
+    Потратить 50 <i class="fas fa-book-open gold-book"></i>
+</button>
                 <button class="modal-close-btn" onclick="closeSkipTaskModal()" style="margin-top: 10px;">Отмена</button>
             </div>
         </div>
@@ -16938,7 +16938,7 @@ function renderCardHTML(card, showDice, isStart) {
         } else {
             var skipButtonHTML = '';
             if (!dndSkipUsed) {
-                skipButtonHTML = '<button class="task-submit-btn" onclick="openSkipTaskModal()" style="background:#ff9800;margin-top:8px;">🎫 Пропустить (50 ₳)</button>';
+               skipButtonHTML = '<button class="task-submit-btn" onclick="openSkipTaskModal()" style="background:#ff9800;margin-top:8px;"><i class="fas fa-book-open gold-book"></i> Пропустить (50)</button>';
             }
             
             statusContainer.innerHTML = `
@@ -17595,6 +17595,11 @@ function openSkipTaskModal() {
     var currentCard = dndCardHistory[dndCardHistory.length - 1];
     pendingSkipCard = currentCard;
     
+    if (!currentCard) {
+        alert('❌ Ошибка: нет активной карты');
+        return;
+    }
+    
     var card = getCardData(currentCard);
     var imgEl = document.getElementById('skipTaskImage');
     if (card && card.image) {
@@ -17613,7 +17618,12 @@ function closeSkipTaskModal() {
 }
 
 function confirmSkipTask() {
-    if (!pendingSkipCard) return;
+    var cardToSkip = dndCardHistory[dndCardHistory.length - 1]; // ← берём напрямую
+    
+    if (!cardToSkip) {
+        alert('❌ Ошибка: карта не найдена');
+        return;
+    }
     
     fetch(SERVER_URL + '/api/balance?user_id=' + userId)
         .then(r => r.json())
@@ -17632,7 +17642,7 @@ function confirmSkipTask() {
                 body: JSON.stringify({
                     user_id: userId,
                     character: dndCharacter,
-                    card_id: pendingSkipCard
+                    card_id: cardToSkip
                 })
             })
             .then(r => r.json())
@@ -17643,7 +17653,7 @@ function confirmSkipTask() {
                     user.balance = result.new_balance;
                     updateUI();
                     closeSkipTaskModal();
-                    renderDndCard(pendingSkipCard);
+                    renderDndCard(cardToSkip);
                     alert('✅ Задание пропущено! Можете бросать кубик.');
                 } else {
                     alert('❌ ' + (result.message || 'Ошибка'));
