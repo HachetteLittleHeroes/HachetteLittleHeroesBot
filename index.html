@@ -17297,15 +17297,65 @@ function renderTeamsList(teams) {
 }
 
 function loadMyTeam() {
+    console.log('🔄 Загрузка моей команды...');
+    
     fetch(SERVER_URL + '/api/dnd/teams/my?user_id=' + userId)
         .then(r => r.json())
         .then(data => {
+            console.log('📡 Ответ /teams/my:', data);
+            
             if (data.status === 'ok' && data.team) {
-                document.getElementById('myTeamSection').style.display = 'block';
-                renderMyTeam(data.team);
+                var team = data.team;
+                var members = team.members || [];
+                
+                if (members.length === 0) {
+                    document.getElementById('myTeamSection').style.display = 'none';
+                    return;
+                }
+                
+                // ✅ Загружаем публичные профили для ВСЕХ участников
+                var promises = members.map(function(member) {
+                    return fetch(SERVER_URL + '/api/public_profile?user_id=' + member.id)
+                        .then(r => r.json())
+                        .then(function(profile) {
+                            console.log('📡 Профиль для ' + member.id + ':', profile);
+                            return {
+                                id: member.id,
+                                name: profile.name || member.name || 'Пользователь',
+                                avatar: profile.avatar || 'https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png',
+                                status: profile.status || 'Без статуса',
+                                character_class: member.character_class
+                            };
+                        })
+                        .catch(function(err) {
+                            console.error('❌ Ошибка загрузки профиля ' + member.id + ':', err);
+                            return {
+                                id: member.id,
+                                name: member.name || 'Пользователь',
+                                avatar: 'https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png',
+                                status: 'Без статуса',
+                                character_class: member.character_class
+                            };
+                        });
+                });
+                
+                // ✅ Дожидаемся загрузки ВСЕХ профилей перед отрисовкой
+                Promise.all(promises).then(function(updatedMembers) {
+                    team.members = updatedMembers;
+                    console.log('✅ Обновлённые участники:', team.members);
+                    document.getElementById('myTeamSection').style.display = 'block';
+                    renderMyTeam(team);
+                });
+                
             } else {
                 document.getElementById('myTeamSection').style.display = 'none';
+                var myTeamCard = document.getElementById('myTeamCard');
+                if (myTeamCard) myTeamCard.innerHTML = '';
             }
+        })
+        .catch(err => {
+            console.error('❌ Ошибка загрузки команды:', err);
+            document.getElementById('myTeamSection').style.display = 'none';
         });
 }
 
