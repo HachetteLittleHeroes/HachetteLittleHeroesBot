@@ -17379,8 +17379,8 @@ function autoRestoreDndGame() {
                 
                 console.log('🏆 Лучший:', bestResult ? bestResult.character + ' (' + maxLength + ' карт)' : 'нет');
                 
+                // ✅ ВАЖНО: только если история ДЛИННЕЕ чем [0] (больше 1 карты)
                 if (bestResult && maxLength > 1) {
-                    // ✅ Нашли активную игру — переключаемся
                     dndMode = 'solo';
                     dndCharacter = bestResult.character;
                     dndCardHistory = bestResult.history;
@@ -17388,9 +17388,8 @@ function autoRestoreDndGame() {
                     var lastCard = bestResult.history[bestResult.history.length - 1];
                     dndApproved = (lastCard === 0 || bestResult.completedCards.includes(lastCard));
                     
-                    console.log('🎮 Переключаем на соло: ' + bestResult.character + ', карта ' + lastCard);
+                    console.log('🎮 Восстанавливаем соло: ' + bestResult.character + ', карта ' + lastCard);
                     
-                    // ✅ Принудительно скрываем всё и показываем игру
                     document.getElementById('dndMainMenu').style.display = 'none';
                     document.getElementById('dndLobby').style.display = 'none';
                     document.getElementById('dndGame').style.display = 'none';
@@ -17399,8 +17398,12 @@ function autoRestoreDndGame() {
                     
                     renderDndCard(lastCard);
                 } else {
+                    // ✅ Нет активных игр — показываем меню
                     console.log('👀 Нет активных игр, показываем меню');
                     document.getElementById('dndMainMenu').style.display = 'block';
+                    document.getElementById('dndLobby').style.display = 'none';
+                    document.getElementById('dndGame').style.display = 'none';
+                    document.getElementById('dndSoloGame').style.display = 'none';
                 }
             });
         });
