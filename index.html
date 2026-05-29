@@ -6476,26 +6476,25 @@ body:not([data-theme]) .modal-content,
             <div id="dndSoloCard"></div>
         </div>
         
-        <!-- D&D Lobby -->
-        <div id="dndLobby" style="display: none; padding: 15px;">
-            <div class="lobby-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
-                <h3 style="margin: 0;">🏰 Команды</h3>
-                <div style="display: flex; gap: 10px;">
-                    <button class="task-submit-btn" onclick="showCreateTeamModal()" style="width: auto; padding: 8px 16px; margin: 0;">➕ Создать</button>
-                    <button class="task-submit-btn" onclick="refreshTeamList()" style="width: auto; padding: 8px 16px; margin: 0; background: #444;">🔄</button>
-                </div>
-            </div>
-            <button class="task-submit-btn" onclick="backToDndMenu()" style="width: 100%; margin-bottom: 15px; background: #444;">← В меню</button>
-            
-            <div id="teamsList" style="margin-bottom: 20px;">
-                <div class="loading" style="text-align: center; padding: 20px;">Загрузка команд...</div>
-            </div>
-
-            <div id="myTeamSection" style="display: none;">
-                <h3 style="margin-bottom: 10px;">👥 Моя команда</h3>
-                <div id="myTeamCard"></div>
-            </div>
+       <!-- D&D Lobby -->
+<div id="dndLobby" style="display: none; padding: 15px;">
+    <div class="lobby-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+        <h3 style="margin: 0;">🏰 Команды</h3>
+        <div style="display: flex; gap: 10px;">
+            <button class="task-submit-btn" onclick="showCreateTeamModal()" style="width: auto; padding: 8px 16px; margin: 0;">➕ Создать</button>
+            <button class="task-submit-btn" onclick="backToDndMenu()" style="width: auto; padding: 8px 16px; margin: 0; background: #444;">← В меню</button>
         </div>
+    </div>
+    
+    <div id="teamsList" style="margin-bottom: 20px;">
+        <div class="loading" style="text-align: center; padding: 20px;">Загрузка команд...</div>
+    </div>
+
+    <div id="myTeamSection" style="display: none;">
+        <h3 style="margin-bottom: 10px;">👥 Моя команда</h3>
+        <div id="myTeamCard"></div>
+    </div>
+</div>
 
         <!-- D&D Game (командная игра) -->
         <div id="dndGame" style="display: none;">
