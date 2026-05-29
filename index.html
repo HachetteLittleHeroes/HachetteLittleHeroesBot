@@ -6459,17 +6459,42 @@ body:not([data-theme]) .modal-content,
                 <span class="close" onclick="closeSoloCharacterModal()">&times;</span>
                 <h3>🎭 Выбери героя (соло)</h3>
                 <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
-                    <div class="character-select-card" onclick="startSoloWithCharacter('knight')" style="text-align:center;padding:12px;background:rgba(255,255,255,0.05);border-radius:12px;cursor:pointer;"><div style="font-size:32px;">⚔️</div><div>Рыцарь</div></div>
-                    <div class="character-select-card" onclick="startSoloWithCharacter('mage')" style="text-align:center;padding:12px;background:rgba(255,255,255,0.05);border-radius:12px;cursor:pointer;"><div style="font-size:32px;">🔮</div><div>Маг</div></div>
-                    <div class="character-select-card" onclick="startSoloWithCharacter('archer')" style="text-align:center;padding:12px;background:rgba(255,255,255,0.05);border-radius:12px;cursor:pointer;"><div style="font-size:32px;">🕯️</div><div>Жрец</div></div>
-                    <div class="character-select-card" onclick="startSoloWithCharacter('druid')" style="text-align:center;padding:12px;background:rgba(255,255,255,0.05);border-radius:12px;cursor:pointer;"><div style="font-size:32px;">🌿</div><div>Друид</div></div>
-                    <div class="character-select-card" onclick="startSoloWithCharacter('assassin')" style="text-align:center;padding:12px;background:rgba(255,255,255,0.05);border-radius:12px;cursor:pointer;"><div style="font-size:32px;">🗡️</div><div>Ассасин</div></div>
-                    <div class="character-select-card" onclick="startSoloWithCharacter('bard')" style="text-align:center;padding:12px;background:rgba(255,255,255,0.05);border-radius:12px;cursor:pointer;"><div style="font-size:32px;">🎵</div><div>Бард</div></div>
+                   <div class="character-select-card" onclick="showDifficultyModal('knight')" style="text-align:center;padding:12px;background:rgba(255,255,255,0.05);border-radius:12px;cursor:pointer;"><div style="font-size:32px;">⚔️</div><div>Рыцарь</div></div>
+                   <div class="character-select-card" onclick="showDifficultyModal('mage')" style="text-align:center;padding:12px;background:rgba(255,255,255,0.05);border-radius:12px;cursor:pointer;"><div style="font-size:32px;">🔮</div><div>Маг</div></div>
+                    <div class="character-select-card" onclick="showDifficultyModal('archer')" style="text-align:center;padding:12px;background:rgba(255,255,255,0.05);border-radius:12px;cursor:pointer;"><div style="font-size:32px;">🕯️</div><div>Жрец</div></div>
+                    <div class="character-select-card" onclick="showDifficultyModal('druid')" style="text-align:center;padding:12px;background:rgba(255,255,255,0.05);border-radius:12px;cursor:pointer;"><div style="font-size:32px;">🌿</div><div>Друид</div></div>
+                    <div class="character-select-card" onclick="showDifficultyModal('assassin')" style="text-align:center;padding:12px;background:rgba(255,255,255,0.05);border-radius:12px;cursor:pointer;"><div style="font-size:32px;">🗡️</div><div>Ассасин</div></div>
+                   <div class="character-select-card" onclick="showDifficultyModal('bard')" style="text-align:center;padding:12px;background:rgba(255,255,255,0.05);border-radius:12px;cursor:pointer;"><div style="font-size:32px;">🎵</div><div>Бард</div></div>
                 </div>
                 <button class="modal-close-btn" onclick="closeSoloCharacterModal()" style="margin-top:15px;">Отмена</button>
             </div>
         </div>
-
+<!-- Выбор сложности -->
+<div id="difficultyModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <span class="close" onclick="closeDifficultyModal()">&times;</span>
+        <h3>⭐ Выбери сложность</h3>
+        <p style="color: var(--text-gray); margin-bottom: 15px;">Влияет на количество работ для боссов</p>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+            <div class="character-select-card" onclick="selectDifficulty(1)" style="text-align:center;padding:15px;background:rgba(255,255,255,0.05);border-radius:12px;cursor:pointer;">
+                <div style="font-size:24px;">⭐</div>
+                <div style="font-weight:600;">Лёгкая</div>
+                <div style="font-size:12px;color:var(--text-gray);">5 работ на босса</div>
+            </div>
+            <div class="character-select-card" onclick="selectDifficulty(2)" style="text-align:center;padding:15px;background:rgba(255,255,255,0.05);border-radius:12px;cursor:pointer;">
+                <div style="font-size:24px;">⭐⭐</div>
+                <div style="font-weight:600;">Средняя</div>
+                <div style="font-size:12px;color:var(--text-gray);">10 работ на босса</div>
+            </div>
+            <div class="character-select-card" onclick="selectDifficulty(3)" style="text-align:center;padding:15px;background:rgba(255,255,255,0.05);border-radius:12px;cursor:pointer;">
+                <div style="font-size:24px;">⭐⭐⭐</div>
+                <div style="font-weight:600;">Сложная</div>
+                <div style="font-size:12px;color:var(--text-gray);">15 работ на босса</div>
+            </div>
+        </div>
+        <button class="modal-close-btn" onclick="closeDifficultyModal()" style="margin-top:15px;">Отмена</button>
+    </div>
+</div>
         <!-- Экран соло игры -->
         <div id="dndSoloGame" style="display: none;">
             <h3 style="margin:0 0 15px 0;" id="dndSoloTitle">🎲 Соло</h3>
@@ -14518,6 +14543,11 @@ function renderUserLevel() {
     
     return xp;
 }
+       var dndDifficulty = 1;
+var dndBossWorkRequired = 5;
+var pendingCharacter = null;
+var currentRenderCardNumber = null;
+var currentBossLevel = 'mini'; 
    // ==========================================
 // D&D КАРТЫ И ПЕРЕХОДЫ
 // ==========================================
@@ -16516,6 +16546,25 @@ for (var i = 185; i <= 202; i++) {
 for (var i = 203; i <= 208; i++) {
     DND_TRANSITIONS_BARD[i] = {};
 }
+        function showDifficultyModal(character) {
+    pendingCharacter = character;
+    document.getElementById('difficultyModal').style.display = 'flex';
+}
+
+function closeDifficultyModal() {
+    document.getElementById('difficultyModal').style.display = 'none';
+    pendingCharacter = null;
+}
+
+function selectDifficulty(level) {
+    dndDifficulty = level;
+    dndBossWorkRequired = level === 1 ? 5 : (level === 2 ? 10 : 15);
+    closeDifficultyModal();
+    
+    if (pendingCharacter) {
+        startSoloWithCharacter(pendingCharacter);
+    }
+}
 // ==========================================
 // D&D ПЕРЕМЕННЫЕ
 // ==========================================
@@ -16664,37 +16713,206 @@ function getCardContainer() {
 }
 
 function renderDndCard(cardNumber) {
+    currentRenderCardNumber = cardNumber;
+    
     var card = getCardData(cardNumber);
     var container = getCardContainer();
     if (!container) return;
     if (!card) { container.innerHTML = '<p style="text-align:center;padding:20px;">❌ Карта #' + cardNumber + ' не найдена</p>'; return; }
     
+    // Командная игра — проверка на босса
+    if (dndMode === 'team') {
+        if (cardNumber === 100) { currentBossLevel = 'mini'; checkTeamBossReadiness('mini'); return; }
+        if (cardNumber === 202) { currentBossLevel = 'final'; checkTeamBossReadiness('final'); return; }
+    }
+    
     if (card.isStart) { container.innerHTML = renderCardHTML(card, true, true); return; }
     
     var finalBosses = [203, 204, 205, 206, 207, 208];
-    var hasDefeatedBoss = finalBosses.some(function(boss) { return dndCardHistory.includes(boss); });
     
     if (card.isFinal && dndApproved) {
-    container.innerHTML = '<div class="branch-task-card"><div class="branch-header"><h3>🎉 Победа!</h3></div><div class="level-card" style="text-align:center;"><p style="font-size:18px;font-weight:700;color:var(--accent);">Ты победил ' + card.title + '!</p><p>Приключение пройдено!</p><button class="task-submit-btn" onclick="resetDndProgress()" style="margin-top:15px;background:#ff9800;">🔄 Пройти заново</button></div></div>';
-    return;
-}
+        container.innerHTML = '<div class="branch-task-card"><div class="branch-header"><h3>🎉 Победа!</h3></div><div class="level-card" style="text-align:center;"><p style="font-size:18px;font-weight:700;color:var(--accent);">Ты победил ' + card.title + '!</p><p>Сложность: ' + '⭐'.repeat(dndDifficulty) + '</p><button class="task-submit-btn" onclick="resetDndProgress()" style="margin-top:15px;background:#ff9800;">🔄 Пройти заново</button></div></div>';
+        return;
+    }
     
     container.innerHTML = renderCardHTML(card, dndApproved, false);
 }
+function submitBossWork() {
+    var currentCard = dndCardHistory[dndCardHistory.length - 1];
+    var bossWorkKey = 'boss_work_' + currentCard + '_' + dndCharacter;
+    var submittedCount = parseInt(localStorage.getItem(bossWorkKey) || '0');
+    
+    if (submittedCount >= dndBossWorkRequired) {
+        alert('✅ Все работы уже отправлены! Ожидайте одобрения.');
+        return;
+    }
+    
+    var fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/*';
+    fileInput.multiple = true;
+    fileInput.onchange = function(event) {
+        var files = Array.from(event.target.files);
+        if (files.length === 0) return;
+        window.tempPhotos = files;
+        
+        var formData = new FormData();
+        formData.append('user', userId.toString());
+        formData.append('character', dndCharacter);
+        formData.append('card', currentCard.toString());
+        formData.append('boss_work', 'true');
+        for (var i = 0; i < files.length; i++) formData.append('photos', files[i]);
+        
+        if (window.isUploading) return;
+        window.isUploading = true;
+        
+        fetch(SERVER_URL + '/api/dnd/check_task', { method: 'POST', body: formData })
+            .then(r => r.json())
+            .then(function(result) {
+                if (result && result.status === 'ok') {
+                    var newCount = submittedCount + 1;
+                    localStorage.setItem(bossWorkKey, newCount.toString());
+                    renderDndCard(currentCard);
+                    alert('✅ Работа отправлена! (' + newCount + '/' + dndBossWorkRequired + ')');
+                }
+            })
+            .finally(function() { window.isUploading = false; window.tempPhotos = []; });
+    };
+    fileInput.click();
+}
+ function isTeamLeader() {
+    var myTeamCard = document.getElementById('myTeamCard');
+    if (!myTeamCard) return false;
+    return myTeamCard.innerHTML.indexOf('Расформировать') !== -1;
+}
 
+function checkTeamBossReadiness(bossLevel) {
+    currentBossLevel = bossLevel;
+    
+    fetch(SERVER_URL + '/api/dnd/team_boss_status?user_id=' + userId + '&boss_level=' + bossLevel)
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'ok') {
+                if (data.all_ready) {
+                    if (data.boss_assigned) {
+                        dndCardHistory.push(data.boss_assigned);
+                        dndApproved = false;
+                        saveDndProgress();
+                        renderDndCard(data.boss_assigned);
+                    } else if (isTeamLeader()) {
+                        showBossDiceButton(bossLevel);
+                    } else {
+                        showWaitingForLeader(bossLevel);
+                    }
+                } else {
+                    showTeamReadinessStatus(data.members);
+                }
+            }
+        });
+}
+
+function showTeamReadinessStatus(members) {
+    var container = getCardContainer();
+    var membersHtml = '';
+    for (var i = 0; i < members.length; i++) {
+        var m = members[i];
+        membersHtml += '<div style="display:flex;align-items:center;gap:10px;padding:8px;margin-bottom:5px;background:var(--bg);border-radius:8px;"><span style="font-size:20px;">' + (m.ready ? '✅' : '⏳') + '</span><span style="flex:1;">' + escapeHtml(m.name) + '</span><span style="font-size:12px;color:var(--text-gray);">Карта ' + m.last_card + '</span></div>';
+    }
+    container.innerHTML = '<div class="branch-task-card"><div class="branch-header"><h3>⏳ Ожидание команды</h3></div><div class="level-card"><p style="margin-bottom:15px;">Все должны достичь уровня босса:</p>' + membersHtml + '<button class="task-submit-btn" onclick="checkTeamBossReadiness(\'' + currentBossLevel + '\')" style="margin-top:15px;">🔄 Проверить</button></div></div>';
+}
+
+function showWaitingForLeader(bossLevel) {
+    var container = getCardContainer();
+    container.innerHTML = '<div class="branch-task-card"><div class="branch-header"><h3>⏳ Ожидание лидера</h3></div><div class="level-card" style="text-align:center;"><p>Все готовы!</p><p style="color:var(--text-gray);">Лидер выбирает босса...</p><button class="task-submit-btn" onclick="checkTeamBossStatus()" style="margin-top:15px;">🔄 Проверить</button></div></div>';
+}
+
+function checkTeamBossStatus() {
+    fetch(SERVER_URL + '/api/dnd/team_boss_status?user_id=' + userId + '&boss_level=' + currentBossLevel)
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'ok' && data.boss_assigned) {
+                dndCardHistory.push(data.boss_assigned);
+                dndApproved = false;
+                saveDndProgress();
+                renderDndCard(data.boss_assigned);
+            } else {
+                showWaitingForLeader(currentBossLevel);
+            }
+        });
+}
+
+function showBossDiceButton(bossLevel) {
+    var container = getCardContainer();
+    container.innerHTML = '<div class="branch-task-card"><div class="branch-header"><h3>⚔️ ' + (bossLevel === 'mini' ? 'Мини-босс' : 'Финальный босс') + '</h3></div><div class="level-card" style="text-align:center;"><p>Все участники готовы!</p><p>Брось кубик:</p><div id="dndDiceWrapper" style="margin:15px 0;"><div id="dndDice" class="dnd-dice" onclick="rollForTeamBoss(\'' + bossLevel + '\')"><div class="dice-face front"><span class="dot dot1"></span></div><div class="dice-face back"><span class="dot dot1"></span><span class="dot dot2"></span></div><div class="dice-face right"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span></div><div class="dice-face left"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span></div><div class="dice-face top"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span><span class="dot dot5"></span></div><div class="dice-face bottom"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span><span class="dot dot5"></span><span class="dot dot6"></span></div></div></div></div></div>';
+}
+
+function rollForTeamBoss(bossLevel) {
+    var diceRoll = rollDice();
+    var dice = document.getElementById('dndDice');
+    dice.classList.add('rolling');
+    dice.style.transform = getDiceFaceRotation(diceRoll);
+    
+    setTimeout(function() {
+        dice.classList.remove('rolling');
+        fetch(SERVER_URL + '/api/dnd/team_assign_boss', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId, boss_level: bossLevel, dice_roll: diceRoll })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'ok') {
+                dndCardHistory.push(data.boss_card);
+                dndApproved = false;
+                saveDndProgress();
+                renderDndCard(data.boss_card);
+            }
+        });
+    }, 800);
+}       
 function renderCardHTML(card, showDice, isStart) {
-    var diceHTML = showDice ? '<div id="dndDiceWrapper" style="margin:15px 0;"><div id="dndDice" class="dnd-dice" onclick="rollDndDice()"><div class="dice-face front"><span class="dot dot1"></span></div><div class="dice-face back"><span class="dot dot1"></span><span class="dot dot2"></span></div><div class="dice-face right"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span></div><div class="dice-face left"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span></div><div class="dice-face top"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span><span class="dot dot5"></span></div><div class="dice-face bottom"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span><span class="dot dot5"></span><span class="dot dot6"></span></div></div></div>' : '';
+    var cardNumber = currentRenderCardNumber;
+    var isBoss = (cardNumber >= 101 && cardNumber <= 106) || (cardNumber >= 203 && cardNumber <= 208);
     
     var statusHTML = '';
     if (!isStart) {
-        if (showDice) {
+        if (isBoss && !showDice) {
+            var bossWorkKey = 'boss_work_' + cardNumber + '_' + dndCharacter;
+            var submittedCount = parseInt(localStorage.getItem(bossWorkKey) || '0');
+            
+            statusHTML = `
+                <div style="text-align: center; margin-bottom: 15px;">
+                    <div style="font-size: 14px; color: var(--accent); margin-bottom: 8px;">
+                        📸 Работ: ${submittedCount}/${dndBossWorkRequired}
+                    </div>
+                    <div class="progress-bar-container" style="margin-bottom: 10px;">
+                        <div class="progress-bar-fill" style="width: ${Math.min(100, (submittedCount / dndBossWorkRequired) * 100)}%;"></div>
+                    </div>
+                    <button class="task-submit-btn" onclick="submitBossWork()">
+                        <i class="fas fa-camera"></i> Отправить работу (${submittedCount}/${dndBossWorkRequired})
+                    </button>
+                    <div style="text-align:center;color:var(--text-gray);font-size:12px;margin-top:10px;">
+                        ⏳ Отправьте ${dndBossWorkRequired} работ и дождитесь одобрения
+                    </div>
+                </div>
+            `;
+        } else if (showDice) {
             statusHTML = '<div style="text-align:center;color:var(--status-green);margin-bottom:10px;"><i class="fas fa-check-circle"></i> Задание одобрено!</div>';
         } else {
-            statusHTML = '<button class="task-submit-btn" onclick="openDndTaskUpload()"><i class="fas fa-camera"></i> Отправить фото</button><div style="text-align:center;color:var(--text-gray);font-size:12px;margin-top:10px;">⏳ Дождитесь одобрения администратором</div>';
+            statusHTML = `
+                <button class="task-submit-btn" onclick="openDndTaskUpload()">
+                    <i class="fas fa-camera"></i> Отправить фото
+                </button>
+                <div style="text-align:center;color:var(--text-gray);font-size:12px;margin-top:10px;">
+                    ⏳ Дождитесь одобрения администратором
+                </div>
+            `;
         }
     }
     
-    return '<div class="branch-task-card ' + (isStart ? 'start-card' : '') + '"><div class="branch-header"><h3>' + card.title + '</h3></div><div class="level-card">' + (card.image ? '<img src="' + card.image + '" class="card-image" style="width:100%;border-radius:12px;margin-bottom:15px;" onerror="this.style.display=\'none\'">' : '') + (isStart ? '<p style="text-align:center;font-weight:600;">Брось кубик, чтобы начать!</p>' : '<p style="font-weight:600;margin-bottom:15px;">📋 ' + (card.task || '') + '</p>') + statusHTML + diceHTML + '</div></div>';
+    var diceHTML = showDice ? '<div id="dndDiceWrapper" style="margin:15px 0;"><div id="dndDice" class="dnd-dice" onclick="rollDndDice()"><div class="dice-face front"><span class="dot dot1"></span></div><div class="dice-face back"><span class="dot dot1"></span><span class="dot dot2"></span></div><div class="dice-face right"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span></div><div class="dice-face left"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span></div><div class="dice-face top"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span><span class="dot dot5"></span></div><div class="dice-face bottom"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span><span class="dot dot5"></span><span class="dot dot6"></span></div></div></div>' : '';
+    
+    return '<div class="branch-task-card ' + (isStart ? 'start-card' : '') + '"><div class="branch-header"><h3>' + card.title + (isBoss ? ' <span style="font-size:12px;opacity:0.7;">⭐'.repeat(dndDifficulty) + '</span>' : '') + '</h3></div><div class="level-card">' + (card.image ? '<img src="' + card.image + '" class="card-image" style="width:100%;border-radius:12px;margin-bottom:15px;" onerror="this.style.display=\'none\'">' : '') + (isStart ? '<p style="text-align:center;font-weight:600;">Брось кубик, чтобы начать!</p>' : '<p style="font-weight:600;margin-bottom:15px;">📋 ' + (card.task || '') + '</p>') + statusHTML + diceHTML + '</div></div>';
 }
 
 // ==========================================
