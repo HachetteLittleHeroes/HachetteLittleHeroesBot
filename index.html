@@ -16616,7 +16616,7 @@ function checkDndPaymentStatus() {
                 document.getElementById('dndPaySection').style.display = 'none';
                 document.getElementById('dndMainMenu').style.display = 'block';
                 hideAllDndScreens();
-                autoRestoreDndGame();
+                // ✅ Убрали autoRestoreDndGame() отсюда
             } else {
                 document.getElementById('dndPaySection').style.display = 'block';
                 document.getElementById('dndMainMenu').style.display = 'none';
@@ -17105,12 +17105,17 @@ function closeTeamPreviewModal() { document.getElementById('teamPreviewModal').s
 
 function autoRestoreDndGame() {
     setTimeout(function() {
+        // ✅ НЕ восстанавливаем, если пользователь уже в меню или лобби
+        if (document.getElementById('dndMainMenu').style.display === 'block') return;
+        if (document.getElementById('dndLobby').style.display === 'block') return;
+        if (document.getElementById('dndSoloGame').style.display === 'block') return;
+        if (document.getElementById('dndGame').style.display === 'block') return;
+        
         // 1. Сначала проверяем командную игру
         fetch(SERVER_URL + '/api/dnd/team/status?user_id=' + userId)
             .then(r => r.json())
             .then(teamData => {
                 if (teamData.status === 'ok' && teamData.game_started) {
-                    // Идёт командная игра
                     dndMode = 'team';
                     var myself = (teamData.members || []).find(function(m) { return m.user_id == userId || m.id == userId; });
                     dndCharacter = myself?.character || myself?.character_class;
@@ -17146,7 +17151,6 @@ function autoRestoreDndGame() {
                 }
                 
                 Promise.all(promises).then(function(results) {
-                    // Находим персонажа с самой длинной историей
                     var bestResult = null;
                     var maxLength = 0;
                     
@@ -17157,8 +17161,11 @@ function autoRestoreDndGame() {
                         }
                     }
                     
-                    // Если есть хоть какой-то прогресс (больше чем [0])
                     if (bestResult && maxLength > 1) {
+                        // ✅ Дополнительно проверяем, что пользователь ещё не переключился
+                        if (document.getElementById('dndMainMenu').style.display === 'block') return;
+                        if (document.getElementById('dndLobby').style.display === 'block') return;
+                        
                         dndMode = 'solo';
                         dndCharacter = bestResult.character;
                         dndCardHistory = bestResult.history;
@@ -29099,6 +29106,15 @@ function saveClaimedRewards() {
     }).catch(e => console.error('Save rewards error:', e));
 }
        
+(function() {
+    setTimeout(function() {
+        var dndContent = document.getElementById('dndEventContent');
+        if (dndContent && dndContent.style.display !== 'none') {
+            // D&D был открыт при прошлом визите — проверяем
+            autoRestoreDndGame();
+        }
+    }, 1500);
+})();
     </script>
     
     <!-- Модалка поиска пользователей -->
