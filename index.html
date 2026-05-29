@@ -16828,46 +16828,31 @@ function saveGameState() {
     if (!dndCharacter) return;
     if (!dndCardHistory || dndCardHistory.length === 0) return;
     
-    // ✅ ЗАПРАШИВАЕМ completed_cards с сервера (только одобренные)
-    fetch(SERVER_URL + '/api/dnd/get_progress?user_id=' + userId + '&character=' + dndCharacter)
-        .then(r => r.json())
-        .then(data => {
-            var serverCompletedCards = [];
-            if (data.status === 'ok' && data.progress) {
-                serverCompletedCards = data.progress.completed_cards || [];
-            }
-            
-            var gameState = {
-                character: dndCharacter,
-                card_history: dndCardHistory,           // ← все переходы
-                completed_cards: serverCompletedCards,  // ← только одобренные (НЕ трогаем!)
-                current_card: dndCardHistory[dndCardHistory.length - 1] || 0,
-                is_completed: dndCardHistory.includes(208) || false,
-                timestamp: Date.now()
-            };
-            
-            console.log('💾 Сохраняем на сервер:', JSON.stringify(gameState));
-            
-            return fetch(SERVER_URL + '/api/dnd/update_progress', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    user_id: userId,
-                    character: dndCharacter,
-                    progress: gameState
-                })
-            });
+    var gameState = {
+        card_history: dndCardHistory,
+        current_card: dndCardHistory[dndCardHistory.length - 1] || 0,
+        timestamp: Date.now()
+    };
+    
+    console.log('💾 Сохраняем:', JSON.stringify(gameState));
+    
+    fetch(SERVER_URL + '/api/dnd/update_progress', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            user_id: userId,
+            character: dndCharacter,
+            progress: gameState
         })
-        .then(r => r.json())
-        .then(data => console.log('✅ Сервер ответил:', data))
-        .catch(err => console.error('❌ Ошибка сохранения:', err));
+    }).catch(err => console.error('❌ Ошибка сохранения:', err));
+    
+    // Дублируем в localStorage
+    localStorage.setItem('dnd_backup_' + userId + '_' + dndCharacter, JSON.stringify(gameState));
 }
 function loadGameStateFromServer() {
-    console.log('📥 Загрузка прогресса с сервера для персонажа:', dndCharacter);
+    console.log('📥 Загрузка прогресса для:', dndCharacter);
     
-    if (!dndCharacter) {
-        return Promise.resolve(false);
-    }
+    if (!dndCharacter) return Promise.resolve(false);
     
     return fetch(SERVER_URL + '/api/dnd/get_progress?user_id=' + userId + '&character=' + dndCharacter)
         .then(r => r.json())
@@ -16875,34 +16860,46 @@ function loadGameStateFromServer() {
             console.log('📡 Прогресс с сервера:', data);
             
             if (data.status === 'ok' && data.progress) {
-                // ✅ Восстанавливаем card_history (все переходы)
+                // Восстанавливаем историю
                 if (data.progress.card_history && data.progress.card_history.length > 0) {
                     dndCardHistory = data.progress.card_history;
+                } else if (data.progress.completed_cards && data.progress.completed_cards.length > 0) {
+                    // Миграция со старых данных
+                    dndCardHistory = data.progress.completed_cards;
                 } else {
                     dndCardHistory = [0];
                 }
                 
-                // ✅ Проверяем ОТДЕЛЬНО completed_cards (одобренные)
-                var currentCard = dndCardHistory[dndCardHistory.length - 1];
+                // Проверяем, одобрена ли ПОСЛЕДНЯЯ карта
+                var lastCard = dndCardHistory[dndCardHistory.length - 1];
                 var completedCards = data.progress.completed_cards || [];
                 
-                if (currentCard === 0 || completedCards.includes(currentCard)) {
-                    dndApproved = true;
-                } else {
-                    dndApproved = false;
-                }
+                dndApproved = (lastCard === 0 || completedCards.includes(lastCard));
                 
-                console.log('📌 Текущая карта:', currentCard, 'Одобрена:', dndApproved);
+                console.log('📌 Последняя карта:', lastCard, 'Одобрена:', dndApproved);
                 return true;
             } else {
                 dndCardHistory = [0];
-                dndApproved = true;  // Для стартовой карты — разрешаем
+                dndApproved = true;
                 return false;
             }
         })
         .catch(err => {
-            dndCardHistory = [0];
-            dndApproved = true;
+            console.error('❌ Ошибка:', err);
+            // Пробуем восстановить из localStorage
+            var backup = localStorage.getItem('dnd_backup_' + userId + '_' + dndCharacter);
+            if (backup) {
+                try {
+                    var data = JSON.parse(backup);
+                    dndCardHistory = data.card_history || [0];
+                    console.log('📦 Восстановлено из localStorage');
+                } catch(e) {
+                    dndCardHistory = [0];
+                }
+            } else {
+                dndCardHistory = [0];
+            }
+            dndApproved = (dndCardHistory[dndCardHistory.length - 1] === 0);
             return false;
         });
 }
@@ -17408,57 +17405,30 @@ function showDnDCard(cardNumber, skipAnimation) {
 function renderDnDCardContent(cardNumber) {
     var card = null;
     
-    if (dndCharacter === 'knight') {
-        card = window.DND_CARDS?.knight?.[cardNumber];
-    } else if (dndCharacter === 'mage') {
-        card = window.DND_CARDS_MAGE?.mage?.[cardNumber];
-    } else if (dndCharacter === 'archer') {
-        card = window.DND_CARDS_ARCHER?.archer?.[cardNumber];
-    } else if (dndCharacter === 'druid') {
-        card = window.DND_CARDS_DRUID?.druid?.[cardNumber];
-    } else if (dndCharacter === 'assassin') {
-        card = window.DND_CARDS_ASSASSIN?.assassin?.[cardNumber];
-    } else if (dndCharacter === 'bard') {
-        card = window.DND_CARDS_BARD?.bard?.[cardNumber];
-    }
+    if (dndCharacter === 'knight') card = window.DND_CARDS?.knight?.[cardNumber];
+    else if (dndCharacter === 'mage') card = window.DND_CARDS_MAGE?.mage?.[cardNumber];
+    else if (dndCharacter === 'archer') card = window.DND_CARDS_ARCHER?.archer?.[cardNumber];
+    else if (dndCharacter === 'druid') card = window.DND_CARDS_DRUID?.druid?.[cardNumber];
+    else if (dndCharacter === 'assassin') card = window.DND_CARDS_ASSASSIN?.assassin?.[cardNumber];
+    else if (dndCharacter === 'bard') card = window.DND_CARDS_BARD?.bard?.[cardNumber];
     
     var cardContainer = document.getElementById('dndCard');
-    if (!cardContainer) return;
-    
-    cardContainer.style.transition = '';
-    cardContainer.style.opacity = '';
-    cardContainer.style.transform = '';
-    
-    if (!card) {
-        cardContainer.innerHTML = `
-            <div class="branch-task-card">
-                <div class="branch-header"><h3>❌ Ошибка</h3></div>
-                <div class="level-card">
-                    <p style="text-align:center; padding: 20px;">Карта #${cardNumber} не найдена.</p>
-                    <button class="task-submit-btn" onclick="location.reload()">🔄 Перезагрузить</button>
-                </div>
-            </div>
-        `;
-        cardContainer.style.display = 'block';
+    if (!cardContainer || !card) {
+        if (cardContainer) cardContainer.innerHTML = '<p style="text-align:center;padding:20px;">❌ Карта #' + cardNumber + ' не найдена</p>';
         return;
     }
     
-    // Для стартовой карты — кубик виден сразу
+    // Стартовая карта — всегда кубик
     if (card.isStart) {
         cardContainer.innerHTML = `
             <div class="branch-task-card start-card">
                 <div class="branch-header"><h3>${card.title}</h3></div>
                 <div class="level-card">
-                    ${card.image ? '<img src="' + card.image + '" class="card-image" style="width:100%;border-radius:12px;margin-bottom:15px;" onerror="this.style.display=\'none\'">' : ''}
+                    ${card.image ? '<img src="' + card.image + '" class="card-image" style="width:100%;border-radius:12px;margin-bottom:15px;">' : ''}
                     <p style="text-align:center;font-weight:600;">Брось кубик, чтобы начать!</p>
                     <div id="dndDiceWrapper" style="margin: 15px 0;">
                         <div id="dndDice" class="dnd-dice" onclick="rollDnDDice()">
-                            <div class="dice-face front"><span class="dot dot1"></span></div>
-                            <div class="dice-face back"><span class="dot dot1"></span><span class="dot dot2"></span></div>
-                            <div class="dice-face right"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span></div>
-                            <div class="dice-face left"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span></div>
-                            <div class="dice-face top"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span><span class="dot dot5"></span></div>
-                            <div class="dice-face bottom"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span><span class="dot dot5"></span><span class="dot dot6"></span></div>
+                            ${getDiceHTML()}
                         </div>
                     </div>
                 </div>
@@ -17468,6 +17438,76 @@ function renderDnDCardContent(cardNumber) {
         return;
     }
     
+    // Финальный босс + одобрен = победа
+    if (card.isFinal && dndApproved) {
+        cardContainer.innerHTML = `
+            <div class="branch-task-card">
+                <div class="branch-header"><h3>🎉 Победа!</h3></div>
+                <div class="level-card final-card">
+                    <p style="text-align:center;font-size:18px;font-weight:700;color:var(--accent);">
+                        Ты победил ${card.title}!
+                    </p>
+                    <p style="text-align:center;">Ты прошёл всё приключение до конца!</p>
+                    <button class="task-submit-btn" onclick="confirmResetProgress()" style="margin-top:15px; background:#ff9800;">
+                        🔄 Сбросить прогресс и пройти заново
+                    </button>
+                </div>
+            </div>
+        `;
+        cardContainer.style.display = 'block';
+        return;
+    }
+    
+    // ✅ ОСНОВНАЯ ЛОГИКА: кубик если dndApproved = true
+    if (dndApproved) {
+        cardContainer.innerHTML = `
+            <div class="branch-task-card">
+                <div class="branch-header"><h3>${card.title}</h3></div>
+                <div class="level-card">
+                    ${card.image ? '<img src="' + card.image + '" class="card-image" style="width:100%;border-radius:12px;margin-bottom:15px;">' : ''}
+                    <p style="font-weight: 600; margin-bottom: 15px;">📋 ${card.task}</p>
+                    <div style="text-align:center;color:var(--status-green);margin-bottom:10px;">
+                        <i class="fas fa-check-circle"></i> Задание одобрено!
+                    </div>
+                    <div id="dndDiceWrapper" style="margin: 15px 0;">
+                        <div id="dndDice" class="dnd-dice" onclick="rollDnDDice()">
+                            ${getDiceHTML()}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    } else {
+        cardContainer.innerHTML = `
+            <div class="branch-task-card">
+                <div class="branch-header"><h3>${card.title}</h3></div>
+                <div class="level-card">
+                    ${card.image ? '<img src="' + card.image + '" class="card-image" style="width:100%;border-radius:12px;margin-bottom:15px;">' : ''}
+                    <p style="font-weight: 600; margin-bottom: 15px;">📋 ${card.task}</p>
+                    <button class="task-submit-btn" onclick="openDnDTaskUpload(${cardNumber})">
+                        <i class="fas fa-camera"></i> Отправить фото
+                    </button>
+                    <div style="text-align:center;color:var(--text-gray);font-size:12px;margin-top:10px;">
+                        ⏳ Дождитесь одобрения администратором
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    cardContainer.style.display = 'block';
+}
+
+// Вспомогательная функция для HTML кубика
+function getDiceHTML() {
+    return `
+        <div class="dice-face front"><span class="dot dot1"></span></div>
+        <div class="dice-face back"><span class="dot dot1"></span><span class="dot dot2"></span></div>
+        <div class="dice-face right"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span></div>
+        <div class="dice-face left"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span></div>
+        <div class="dice-face top"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span><span class="dot dot5"></span></div>
+        <div class="dice-face bottom"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span><span class="dot dot5"></span><span class="dot dot6"></span></div>
+    `;
+}
     // ==========================================
     // ДЛЯ НЕ-СТАРТОВЫХ КАРТ: кубик СКРЫТ по умолчанию
     // ==========================================
@@ -17651,56 +17691,46 @@ function showDNDCard(card, cardNumber) {
 
 function rollDnDDice() {
     if (dndIsRolling) return;
-    if (!dndCharacter) { 
-        alert('Сначала выбери персонажа!'); 
-        return; 
-    }
+    if (!dndCharacter) { alert('Сначала выбери персонажа!'); return; }
     
-    if (dndCardHistory.length === 0) {
-        console.warn('⚠️ dndCardHistory пуст, инициализируем');
-        dndCardHistory = [0];
-    }
+    var prevCard = dndCardHistory[dndCardHistory.length - 1] || 0;
     
-    var prevCard = dndCardHistory[dndCardHistory.length - 1];
-    console.log('🎲 Бросок, prevCard:', prevCard, 'character:', dndCharacter);
-    
-    // ✅ Если это стартовая карта (0) — разрешаем бросок всегда
-    if (prevCard === 0) {
-        performDiceRoll(prevCard);
+    if (prevCard !== 0 && !dndApproved) {
+        alert('⏳ Сначала дождитесь одобрения задания администратором!');
         return;
     }
     
-    // ✅ Для не-стартовых карт: проверяем, одобрена ли текущая карта
-    // Запрашиваем свежий статус с сервера
-    fetch(SERVER_URL + '/api/dnd/get_progress?user_id=' + userId + '&character=' + dndCharacter)
-        .then(r => r.json())
-        .then(data => {
-            if (data.status === 'ok' && data.progress) {
-                var completedCards = data.progress.completed_cards || [];
-                
-                if (completedCards.includes(prevCard)) {
-                    // Карта одобрена — можно бросать
-                    if (!dndCardHistory.includes(prevCard)) {
-                        dndCardHistory.push(prevCard);
-                    }
-                    dndApproved = true;
-                    performDiceRoll(prevCard);
-                } else {
-                    // Карта НЕ одобрена — блокируем
-                    alert('⏳ Сначала дождитесь одобрения задания администратором!');
-                    dndIsRolling = false;
-                    
-                    // Обновляем UI чтобы скрыть кубик (на всякий случай)
-                    renderDnDCardContent(prevCard);
-                }
-            } else {
-                performDiceRoll(prevCard);
-            }
-        })
-        .catch(err => {
-            console.error('Ошибка проверки прогресса:', err);
-            performDiceRoll(prevCard);
-        });
+    dndIsRolling = true;
+    
+    var dice = document.getElementById('dndDice');
+    if (!dice) { dndIsRolling = false; return; }
+    
+    var diceRoll = rollDice();
+    var mappedValue = getMappedDiceValue(prevCard, diceRoll);
+    var nextCardId = getTransition(prevCard, mappedValue);
+    
+    if (nextCardId === null || nextCardId === undefined || nextCardId < 0 || nextCardId > 208) {
+        alert('⚠️ Ошибка перехода! Обновите страницу.');
+        dndIsRolling = false;
+        return;
+    }
+    
+    dice.classList.add('rolling');
+    dice.style.transform = getDiceFaceRotation(diceRoll);
+    
+    setTimeout(function() {
+        dice.classList.remove('rolling');
+        
+        setTimeout(function() {
+            dndIsRolling = false;
+            
+            dndCardHistory.push(nextCardId);
+            dndApproved = false;  // Новая карта — не одобрена
+            
+            saveGameState();
+            showDnDCard(nextCardId, false);
+        }, 1200);
+    }, 800);
 }
 
 // Выделяем бросок в отдельную функцию
