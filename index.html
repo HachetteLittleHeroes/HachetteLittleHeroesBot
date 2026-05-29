@@ -16780,32 +16780,81 @@ function submitDndTaskPhoto(cardNumber) {
 // ==========================================
 
 function resetDndProgress() {
-    if (!confirm('⚠️ Сбросить прогресс? Вы вернётесь в меню и сможете начать заново.')) return;
+    if (!confirm('⚠️ Сбросить прогресс? Вы вернётесь в меню.')) return;
     
-    fetch(SERVER_URL + '/api/dnd/reset_progress', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: userId, character: dndCharacter })
-    })
-    .then(r => r.json())
-    .then(function(data) {
-        if (data.status === 'ok') {
-            // Сбрасываем всё и возвращаемся в меню
-            dndCardHistory = [0];
-            dndApproved = true;
-            dndMode = null;
-            dndCharacter = null;
-            
-            document.getElementById('dndMainMenu').style.display = 'block';
-            hideAllDndScreens();
-            
-            alert('✅ Прогресс сброшен! Можете начать заново.');
+    // Определяем, лидер или участник
+    var isTeamMode = (dndMode === 'team');
+    var resetPromise;
+    
+    if (isTeamMode) {
+        // Сначала проверяем, лидер ли пользователь
+        resetPromise = fetch(SERVER_URL + '/api/dnd/teams/my?user_id=' + userId)
+            .then(r => r.json())
+            .then(function(teamData) {
+                var isLeader = (teamData.status === 'ok' && teamData.team && teamData.team.leader_id == userId);
+                
+                // Сбрасываем прогресс
+                return fetch(SERVER_URL + '/api/dnd/reset_progress', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id: userId, character: dndCharacter })
+                }).then(r => r.json()).then(function(resetData) {
+                    if (resetData.status !== 'ok') {
+                        throw new Error(resetData.message || 'Ошибка сброса');
+                    }
+                    
+                    if (isLeader) {
+                        // Лидер — удаляем команду
+                        return fetch(SERVER_URL + '/api/dnd/teams/disband', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ user_id: userId })
+                        }).then(r => r.json()).then(function() {
+                            return { role: 'leader' };
+                        });
+                    } else {
+                        // Участник — выходим из команды
+                        return fetch(SERVER_URL + '/api/dnd/teams/leave', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ user_id: userId })
+                        }).then(r => r.json()).then(function() {
+                            return { role: 'member' };
+                        });
+                    }
+                });
+            });
+    } else {
+        // Соло — просто сбрасываем
+        resetPromise = fetch(SERVER_URL + '/api/dnd/reset_progress', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId, character: dndCharacter })
+        }).then(r => r.json()).then(function(data) {
+            if (data.status !== 'ok') throw new Error(data.message || 'Ошибка');
+            return { role: 'solo' };
+        });
+    }
+    
+    resetPromise.then(function(result) {
+        // Сбрасываем локально
+        dndCardHistory = [0];
+        dndApproved = true;
+        dndMode = null;
+        dndCharacter = null;
+        
+        document.getElementById('dndMainMenu').style.display = 'block';
+        hideAllDndScreens();
+        
+        if (result.role === 'leader') {
+            alert('✅ Прогресс сброшен! Команда расформирована.');
+        } else if (result.role === 'member') {
+            alert('✅ Прогресс сброшен! Вы вышли из команды.');
         } else {
-            alert('❌ ' + (data.message || 'Ошибка сброса'));
+            alert('✅ Прогресс сброшен! Можете начать заново.');
         }
-    })
-    .catch(function() {
-        alert('❌ Ошибка сети. Попробуйте ещё раз.');
+    }).catch(function(error) {
+        alert('❌ ' + (error.message || 'Ошибка'));
     });
 }
 
