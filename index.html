@@ -6461,7 +6461,7 @@ body:not([data-theme]) .modal-content,
                 <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
                     <div class="character-select-card" onclick="startSoloWithCharacter('knight')" style="text-align:center;padding:12px;background:rgba(255,255,255,0.05);border-radius:12px;cursor:pointer;"><div style="font-size:32px;">⚔️</div><div>Рыцарь</div></div>
                     <div class="character-select-card" onclick="startSoloWithCharacter('mage')" style="text-align:center;padding:12px;background:rgba(255,255,255,0.05);border-radius:12px;cursor:pointer;"><div style="font-size:32px;">🔮</div><div>Маг</div></div>
-                    <div class="character-select-card" onclick="startSoloWithCharacter('archer')" style="text-align:center;padding:12px;background:rgba(255,255,255,0.05);border-radius:12px;cursor:pointer;"><div style="font-size:32px;">🏹</div><div>Лучник</div></div>
+                    <div class="character-select-card" onclick="startSoloWithCharacter('archer')" style="text-align:center;padding:12px;background:rgba(255,255,255,0.05);border-radius:12px;cursor:pointer;"><div style="font-size:32px;">🕯️</div><div>Жрец</div></div>
                     <div class="character-select-card" onclick="startSoloWithCharacter('druid')" style="text-align:center;padding:12px;background:rgba(255,255,255,0.05);border-radius:12px;cursor:pointer;"><div style="font-size:32px;">🌿</div><div>Друид</div></div>
                     <div class="character-select-card" onclick="startSoloWithCharacter('assassin')" style="text-align:center;padding:12px;background:rgba(255,255,255,0.05);border-radius:12px;cursor:pointer;"><div style="font-size:32px;">🗡️</div><div>Ассасин</div></div>
                     <div class="character-select-card" onclick="startSoloWithCharacter('bard')" style="text-align:center;padding:12px;background:rgba(255,255,255,0.05);border-radius:12px;cursor:pointer;"><div style="font-size:32px;">🎵</div><div>Бард</div></div>
@@ -6527,7 +6527,7 @@ body:not([data-theme]) .modal-content,
                         <div style="font-size: 32px;">🔮</div><div style="font-size: 14px;">Маг</div>
                     </div>
                     <div class="character-select-card" onclick="selectTeamCharacter('archer')" style="text-align: center; padding: 12px; background: rgba(255,255,255,0.05); border-radius: 12px; cursor: pointer;">
-                        <div style="font-size: 32px;">🏹</div><div style="font-size: 14px;">Лучник</div>
+                        <div style="font-size: 32px;">🕯️</div><div style="font-size: 14px;">Жрец</div>
                     </div>
                     <div class="character-select-card" onclick="selectTeamCharacter('druid')" style="text-align: center; padding: 12px; background: rgba(255,255,255,0.05); border-radius: 12px; cursor: pointer;">
                         <div style="font-size: 32px;">🌿</div><div style="font-size: 14px;">Друид</div>
@@ -15185,7 +15185,7 @@ for (var i = 203; i <= 208; i++) {
 }
 
         // ==========================================
-// D&D КАРТЫ И ПЕРЕХОДЫ - ЛУЧНИК
+// D&D КАРТЫ И ПЕРЕХОДЫ - ЖРЕЦ
 // ==========================================
 
 var DND_CARDS_ARCHER = {
@@ -15429,7 +15429,7 @@ var DND_CARDS_ARCHER = {
 };
 
 // ==========================================
-// ПЕРЕХОДЫ ДЛЯ ЛУЧНИКА (ARCHER)
+// ПЕРЕХОДЫ ДЛЯ ЖРЕЦА
 // ==========================================
 
 var DND_TRANSITIONS_ARCHER = {};
@@ -16891,7 +16891,7 @@ function getTransition(cardId, mappedValue) {
 }
 
 function getCharacterName(char) {
-    var names = { knight: '⚔️ Рыцарь', mage: '🔮 Маг', archer: '🏹 Лучник', druid: '🌿 Друид', assassin: '🗡️ Ассасин', bard: '🎵 Бард' };
+    var names = { knight: '⚔️ Рыцарь', mage: '🔮 Маг', archer: '🕯️ Жрец', druid: '🌿 Друид', assassin: '🗡️ Ассасин', bard: '🎵 Бард' };
     return names[char] || char;
 }
 
@@ -17017,8 +17017,8 @@ function renderMyTeam(team) {
     for (var i = 0; i < team.members.length; i++) {
         var m = team.members[i];
         var avatarUrl = m.avatar || 'https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png';
-        var charIcon = { knight: '⚔️', mage: '🔮', archer: '🏹', druid: '🌿', assassin: '🗡️', bard: '🎵' }[m.character_class] || '';
-        var charName = { knight: 'Рыцарь', mage: 'Маг', archer: 'Лучник', druid: 'Друид', assassin: 'Ассасин', bard: 'Бард' }[m.character_class] || '';
+        var charIcon = { knight: '⚔️', mage: '🔮', archer: '🕯️', druid: '🌿', assassin: '🗡️', bard: '🎵' }[m.character_class] || '';
+        var charName = { knight: 'Рыцарь', mage: 'Маг', archer: 'Жрец', druid: 'Друид', assassin: 'Ассасин', bard: 'Бард' }[m.character_class] || '';
         var isMemberLeader = (m.id == team.leader_id);
         var shortName = (m.name || 'Пользователь').length > 20 ? (m.name || 'Пользователь').substring(0, 18) + '...' : (m.name || 'Пользователь');
         
