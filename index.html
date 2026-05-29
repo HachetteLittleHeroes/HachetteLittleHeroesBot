@@ -6471,11 +6471,10 @@ body:not([data-theme]) .modal-content,
         </div>
 
         <!-- Экран соло игры -->
-        <div id="dndSoloGame" style="display: none;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;">
-                <h3 style="margin:0;" id="dndSoloTitle">🎲 Соло</h3>
-                <button class="task-submit-btn" onclick="backToDndMenu()" style="width:auto;padding:8px 16px;margin:0;background:#444;">← Назад</button>
-            </div>
+       <div id="dndSoloGame" style="display: none;">
+    <h3 style="margin:0 0 15px 0;" id="dndSoloTitle">🎲 Соло</h3>
+    <div id="dndSoloCard"></div>
+</div>
             <div id="dndSoloCard"></div>
         </div>
         
@@ -6501,11 +6500,10 @@ body:not([data-theme]) .modal-content,
         </div>
 
         <!-- D&D Game (командная игра) -->
-        <div id="dndGame" style="display: none;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;">
-                <h3 style="margin:0;">🎲 Командная игра</h3>
-                <button class="task-submit-btn" onclick="backToDndMenu()" style="width:auto;padding:8px 16px;margin:0;background:#444;">← Меню</button>
-            </div>
+       <div id="dndGame" style="display: none;">
+    <h3 style="margin:0 0 15px 0;">🎲 Командная игра</h3>
+    <div id="dndCard"></div>
+</div>
             <div id="dndCard"></div>
         </div>
 
@@ -16646,11 +16644,12 @@ function openPaymentChat() {
 }
 
 function backToDndMenu() {
+    // Если игра активна и не пройдена — не пускаем
     var finalBosses = [203, 204, 205, 206, 207, 208];
     var hasDefeatedBoss = finalBosses.some(function(boss) { return dndCardHistory.includes(boss); });
     
     if (dndCardHistory.length > 1 && !hasDefeatedBoss) {
-        alert('⚠️ Сначала завершите текущее приключение!');
+        alert('⚠️ Сначала завершите приключение!');
         return;
     }
     
@@ -16661,7 +16660,6 @@ function backToDndMenu() {
     dndCardHistory = [0];
     dndApproved = true;
 }
-
 function isGameInProgress() {
     return dndCardHistory.length > 1;
 }
@@ -16922,19 +16920,53 @@ function closeSoloCharacterModal() {
 }
 
 function startSoloWithCharacter(character) {
-    dndMode = 'solo';
-    dndCharacter = character;
-    closeSoloCharacterModal();
-    
-    document.getElementById('dndMainMenu').style.display = 'none';
-    document.getElementById('dndSoloGame').style.display = 'block';
-    document.getElementById('dndSoloTitle').innerText = '🎲 Соло: ' + getCharacterName(character);
-    
-    loadDndProgress().then(function() {
-        renderDndCard(dndCardHistory[dndCardHistory.length - 1] || 0);
-    });
+    // ✅ Проверяем, нет ли уже активной игры у этого персонажа
+    fetch(SERVER_URL + '/api/dnd/get_progress?user_id=' + userId + '&character=' + character)
+        .then(r => r.json())
+        .then(progressData => {
+            var history = [];
+            if (progressData.status === 'ok' && progressData.progress) {
+                history = progressData.progress.card_history || progressData.progress.completed_cards || [];
+            }
+            
+            // Проверяем, не пройдена ли уже игра
+            var finalBosses = [203, 204, 205, 206, 207, 208];
+            var hasDefeatedBoss = finalBosses.some(function(boss) { return history.includes(boss); });
+            
+            // Если игра в процессе и не пройдена — восстанавливаем
+            if (history.length > 1 && !hasDefeatedBoss) {
+                dndMode = 'solo';
+                dndCharacter = character;
+                dndCardHistory = history;
+                var lastCard = history[history.length - 1];
+                var completedCards = progressData.progress?.completed_cards || [];
+                dndApproved = (lastCard === 0 || completedCards.includes(lastCard));
+                
+                closeSoloCharacterModal();
+                document.getElementById('dndMainMenu').style.display = 'none';
+                document.getElementById('dndSoloGame').style.display = 'block';
+                document.getElementById('dndSoloTitle').innerText = '🎲 Соло: ' + getCharacterName(character);
+                
+                saveDndProgress();
+                renderDndCard(lastCard);
+                return;
+            }
+            
+            // Если игра пройдена или не начата — начинаем новую
+            dndMode = 'solo';
+            dndCharacter = character;
+            dndCardHistory = [0];
+            dndApproved = true;
+            
+            closeSoloCharacterModal();
+            document.getElementById('dndMainMenu').style.display = 'none';
+            document.getElementById('dndSoloGame').style.display = 'block';
+            document.getElementById('dndSoloTitle').innerText = '🎲 Соло: ' + getCharacterName(character);
+            
+            saveDndProgress();
+            renderDndCard(0);
+        });
 }
-
 // ==========================================
 // КОМАНДНАЯ ИГРА
 // ==========================================
@@ -17073,10 +17105,12 @@ function closeTeamPreviewModal() { document.getElementById('teamPreviewModal').s
 
 function autoRestoreDndGame() {
     setTimeout(function() {
+        // 1. Сначала проверяем командную игру
         fetch(SERVER_URL + '/api/dnd/team/status?user_id=' + userId)
             .then(r => r.json())
             .then(teamData => {
                 if (teamData.status === 'ok' && teamData.game_started) {
+                    // Идёт командная игра
                     dndMode = 'team';
                     var myself = (teamData.members || []).find(function(m) { return m.user_id == userId || m.id == userId; });
                     dndCharacter = myself?.character || myself?.character_class;
@@ -17088,34 +17122,57 @@ function autoRestoreDndGame() {
                     return;
                 }
                 
+                // 2. Ищем соло-игру с НАИБОЛЬШИМ прогрессом
                 var characters = ['knight', 'mage', 'archer', 'druid', 'assassin', 'bard'];
-                var found = false;
-                function checkNext(idx) {
-                    if (idx >= characters.length) return;
-                    var char = characters[idx];
-                    fetch(SERVER_URL + '/api/dnd/get_progress?user_id=' + userId + '&character=' + char)
-                        .then(r => r.json())
-                        .then(progressData => {
-                            if (!found && progressData.status === 'ok' && progressData.progress) {
-                                var history = progressData.progress.card_history || progressData.progress.completed_cards || [];
-                                if (history.length > 1) {
-                                    found = true;
-                                    dndMode = 'solo';
-                                    dndCharacter = char;
-                                    dndCardHistory = history;
-                                    var lastCard = history[history.length - 1];
-                                    var completedCards = progressData.progress.completed_cards || [];
-                                    dndApproved = (lastCard === 0 || completedCards.includes(lastCard));
-                                    document.getElementById('dndMainMenu').style.display = 'none';
-                                    document.getElementById('dndSoloGame').style.display = 'block';
-                                    document.getElementById('dndSoloTitle').innerText = '🎲 Соло: ' + getCharacterName(char);
-                                    renderDndCard(lastCard);
-                                }
-                            }
-                            if (!found) checkNext(idx + 1);
-                        });
+                var promises = [];
+                
+                for (var i = 0; i < characters.length; i++) {
+                    (function(char) {
+                        promises.push(
+                            fetch(SERVER_URL + '/api/dnd/get_progress?user_id=' + userId + '&character=' + char)
+                                .then(r => r.json())
+                                .then(progressData => {
+                                    if (progressData.status === 'ok' && progressData.progress) {
+                                        var history = progressData.progress.card_history || progressData.progress.completed_cards || [];
+                                        return { character: char, history: history, completedCards: progressData.progress.completed_cards || [] };
+                                    }
+                                    return { character: char, history: [0], completedCards: [] };
+                                })
+                                .catch(function() {
+                                    return { character: char, history: [0], completedCards: [] };
+                                })
+                        );
+                    })(characters[i]);
                 }
-                checkNext(0);
+                
+                Promise.all(promises).then(function(results) {
+                    // Находим персонажа с самой длинной историей
+                    var bestResult = null;
+                    var maxLength = 0;
+                    
+                    for (var i = 0; i < results.length; i++) {
+                        if (results[i].history.length > maxLength) {
+                            maxLength = results[i].history.length;
+                            bestResult = results[i];
+                        }
+                    }
+                    
+                    // Если есть хоть какой-то прогресс (больше чем [0])
+                    if (bestResult && maxLength > 1) {
+                        dndMode = 'solo';
+                        dndCharacter = bestResult.character;
+                        dndCardHistory = bestResult.history;
+                        
+                        var lastCard = bestResult.history[bestResult.history.length - 1];
+                        dndApproved = (lastCard === 0 || bestResult.completedCards.includes(lastCard));
+                        
+                        document.getElementById('dndMainMenu').style.display = 'none';
+                        document.getElementById('dndSoloGame').style.display = 'block';
+                        document.getElementById('dndSoloTitle').innerText = '🎲 Соло: ' + getCharacterName(bestResult.character);
+                        
+                        renderDndCard(lastCard);
+                    }
+                });
             });
     }, 500);
 }
