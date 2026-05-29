@@ -6459,67 +6459,42 @@ body:not([data-theme]) .modal-content,
                 <span class="close" onclick="closeSoloCharacterModal()">&times;</span>
                 <h3>🎭 Выбери героя (соло)</h3>
                 <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
-                  <div class="character-select-card" onclick="startSoloWithCharacter('knight')" style="text-align:center;padding:12px;background:rgba(255,255,255,0.05);border-radius:12px;cursor:pointer;"><div style="font-size:32px;">⚔️</div><div>Рыцарь</div></div>
-                   <div class="character-select-card" onclick="startSoloWithCharacter('mage')" style="text-align:center;padding:12px;background:rgba(255,255,255,0.05);border-radius:12px;cursor:pointer;"><div style="font-size:32px;">🔮</div><div>Маг</div></div>
-                   <div class="character-select-card" onclick="startSoloWithCharacter('archer')" style="text-align:center;padding:12px;background:rgba(255,255,255,0.05);border-radius:12px;cursor:pointer;"><div style="font-size:32px;">🕯️</div><div>Жрец</div></div>
+                    <div class="character-select-card" onclick="startSoloWithCharacter('knight')" style="text-align:center;padding:12px;background:rgba(255,255,255,0.05);border-radius:12px;cursor:pointer;"><div style="font-size:32px;">⚔️</div><div>Рыцарь</div></div>
+                    <div class="character-select-card" onclick="startSoloWithCharacter('mage')" style="text-align:center;padding:12px;background:rgba(255,255,255,0.05);border-radius:12px;cursor:pointer;"><div style="font-size:32px;">🔮</div><div>Маг</div></div>
+                    <div class="character-select-card" onclick="startSoloWithCharacter('archer')" style="text-align:center;padding:12px;background:rgba(255,255,255,0.05);border-radius:12px;cursor:pointer;"><div style="font-size:32px;">🕯️</div><div>Жрец</div></div>
                     <div class="character-select-card" onclick="startSoloWithCharacter('druid')" style="text-align:center;padding:12px;background:rgba(255,255,255,0.05);border-radius:12px;cursor:pointer;"><div style="font-size:32px;">🌿</div><div>Друид</div></div>
-                   <div class="character-select-card" onclick="startSoloWithCharacter('assassin')" style="text-align:center;padding:12px;background:rgba(255,255,255,0.05);border-radius:12px;cursor:pointer;"><div style="font-size:32px;">🗡️</div><div>Ассасин</div></div>
-                  <div class="character-select-card" onclick="startSoloWithCharacter('bard')" style="text-align:center;padding:12px;background:rgba(255,255,255,0.05);border-radius:12px;cursor:pointer;"><div style="font-size:32px;">🎵</div><div>Бард</div></div>
+                    <div class="character-select-card" onclick="startSoloWithCharacter('assassin')" style="text-align:center;padding:12px;background:rgba(255,255,255,0.05);border-radius:12px;cursor:pointer;"><div style="font-size:32px;">🗡️</div><div>Ассасин</div></div>
+                    <div class="character-select-card" onclick="startSoloWithCharacter('bard')" style="text-align:center;padding:12px;background:rgba(255,255,255,0.05);border-radius:12px;cursor:pointer;"><div style="font-size:32px;">🎵</div><div>Бард</div></div>
                 </div>
                 <button class="modal-close-btn" onclick="closeSoloCharacterModal()" style="margin-top:15px;">Отмена</button>
             </div>
         </div>
-<!-- Выбор сложности -->
-<div id="difficultyModal" class="modal" style="display: none;">
-    <div class="modal-content">
-        <span class="close" onclick="closeDifficultyModal()">&times;</span>
-        <h3>⭐ Выбери сложность</h3>
-        <p style="color: var(--text-gray); margin-bottom: 15px;">Влияет на количество работ для боссов</p>
-        <div style="display: flex; flex-direction: column; gap: 10px;">
-            <div class="character-select-card" onclick="selectDifficulty(1)" style="text-align:center;padding:15px;background:rgba(255,255,255,0.05);border-radius:12px;cursor:pointer;">
-                <div style="font-size:24px;">⭐</div>
-                <div style="font-weight:600;">Лёгкая</div>
-                <div style="font-size:12px;color:var(--text-gray);">5 работ на босса</div>
-            </div>
-            <div class="character-select-card" onclick="selectDifficulty(2)" style="text-align:center;padding:15px;background:rgba(255,255,255,0.05);border-radius:12px;cursor:pointer;">
-                <div style="font-size:24px;">⭐⭐</div>
-                <div style="font-weight:600;">Средняя</div>
-                <div style="font-size:12px;color:var(--text-gray);">10 работ на босса</div>
-            </div>
-            <div class="character-select-card" onclick="selectDifficulty(3)" style="text-align:center;padding:15px;background:rgba(255,255,255,0.05);border-radius:12px;cursor:pointer;">
-                <div style="font-size:24px;">⭐⭐⭐</div>
-                <div style="font-weight:600;">Сложная</div>
-                <div style="font-size:12px;color:var(--text-gray);">15 работ на босса</div>
-            </div>
-        </div>
-        <button class="modal-close-btn" onclick="closeDifficultyModal()" style="margin-top:15px;">Отмена</button>
-    </div>
-</div>
+
         <!-- Экран соло игры -->
         <div id="dndSoloGame" style="display: none;">
             <h3 style="margin:0 0 15px 0;" id="dndSoloTitle">🎲 Соло</h3>
             <div id="dndSoloCard"></div>
         </div>
         
-       <!-- D&D Lobby -->
-<div id="dndLobby" style="display: none; padding: 15px;">
-    <div class="lobby-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
-        <h3 style="margin: 0;">🏰 Команды</h3>
-        <div style="display: flex; gap: 10px;">
-            <button class="task-submit-btn" onclick="showCreateTeamModal()" style="width: auto; padding: 8px 16px; margin: 0;">➕ Создать</button>
-            <button class="task-submit-btn" onclick="backToDndMenu()" style="width: auto; padding: 8px 16px; margin: 0; background: #444;">← В меню</button>
-        </div>
-    </div>
-    
-    <div id="teamsList" style="margin-bottom: 20px;">
-        <div class="loading" style="text-align: center; padding: 20px;">Загрузка команд...</div>
-    </div>
+        <!-- D&D Lobby -->
+        <div id="dndLobby" style="display: none; padding: 15px;">
+            <div class="lobby-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                <h3 style="margin: 0;">🏰 Команды</h3>
+                <div style="display: flex; gap: 10px;">
+                    <button class="task-submit-btn" onclick="showCreateTeamModal()" style="width: auto; padding: 8px 16px; margin: 0;">➕ Создать</button>
+                    <button class="task-submit-btn" onclick="backToDndMenu()" style="width: auto; padding: 8px 16px; margin: 0; background: #444;">← В меню</button>
+                </div>
+            </div>
+            
+            <div id="teamsList" style="margin-bottom: 20px;">
+                <div class="loading" style="text-align: center; padding: 20px;">Загрузка команд...</div>
+            </div>
 
-    <div id="myTeamSection" style="display: none;">
-        <h3 style="margin-bottom: 10px;">👥 Моя команда</h3>
-        <div id="myTeamCard"></div>
-    </div>
-</div>
+            <div id="myTeamSection" style="display: none;">
+                <h3 style="margin-bottom: 10px;">👥 Моя команда</h3>
+                <div id="myTeamCard"></div>
+            </div>
+        </div>
 
         <!-- D&D Game (командная игра) -->
         <div id="dndGame" style="display: none;">
@@ -6564,6 +6539,21 @@ body:not([data-theme]) .modal-content,
                         <div style="font-size: 32px;">🎵</div><div style="font-size: 14px;">Бард</div>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Модалка пропуска задания -->
+        <div id="skipTaskModal" class="modal" style="display: none;">
+            <div class="modal-content" style="text-align: center;">
+                <span class="close" onclick="closeSkipTaskModal()">&times;</span>
+                <h3>🎫 Пропустить задание</h3>
+                <img id="skipTaskImage" src="" style="width:100%;border-radius:12px;margin:15px 0;" onerror="this.style.display='none'">
+                <p style="color: var(--text-gray); margin-bottom: 15px;">Стоимость: <strong>50 ашетиков</strong></p>
+                <p style="font-size: 12px; color: var(--accent); margin-bottom: 15px;">⚠️ Можно использовать только 1 раз за всё приключение</p>
+                <button class="task-submit-btn" onclick="confirmSkipTask()" style="background: #ff9800;">
+                    💰 Потратить 50 ашетиков
+                </button>
+                <button class="modal-close-btn" onclick="closeSkipTaskModal()" style="margin-top: 10px;">Отмена</button>
             </div>
         </div>
 
@@ -16554,6 +16544,8 @@ var dndCharacter = null;
 var dndCardHistory = [];
 var dndApproved = false;
 var dndIsRolling = false;
+var dndSkipUsed = false; 
+var pendingSkipCard = null;
 
         function getBossWorkRequired() {
     return dndMode === 'team' ? 20 : 10;
@@ -16895,13 +16887,11 @@ function renderCardHTML(card, showDice, isStart) {
     
     var bossLabel = '';
     if (isBoss) {
-        bossLabel = ' <span style="font-size:12px;opacity:0.7;">👑 ' + (cardNumber <= 106 ? 'Мини-босс' : 'Финальный босс') + ' · ' + bossWorkRequired + ' очков</span>';
+        bossLabel = '<div style="font-size:12px;opacity:0.7;margin-top:4px;">👑 ' + (cardNumber <= 106 ? 'Мини-босс' : 'Финальный босс') + ' · ' + bossWorkRequired + ' очков</div>';
     }
     
-    // Базовая структура карты (без statusHTML — он добавится асинхронно)
-    var cardHTML = '<div class="branch-task-card ' + (isStart ? 'start-card' : '') + '"><div class="branch-header"><h3>' + card.title + bossLabel + '</h3></div><div class="level-card" id="card-level-' + cardNumber + '">' + (card.image ? '<img src="' + card.image + '" class="card-image" style="width:100%;border-radius:12px;margin-bottom:15px;" onerror="this.style.display=\'none\'">' : '') + (isStart ? '<p style="text-align:center;font-weight:600;">Брось кубик, чтобы начать!</p>' : '<p style="font-weight:600;margin-bottom:15px;">📋 ' + (card.task || '') + '</p>') + '<div id="card-status-' + cardNumber + '"></div>' + diceHTML + '</div></div>';
+    var cardHTML = '<div class="branch-task-card ' + (isStart ? 'start-card' : '') + '"><div class="branch-header"><h3>' + card.title + '</h3>' + bossLabel + '</div><div class="level-card" id="card-level-' + cardNumber + '">' + (card.image ? '<img src="' + card.image + '" class="card-image" style="width:100%;border-radius:12px;margin-bottom:15px;" onerror="this.style.display=\'none\'">' : '') + (isStart ? '<p style="text-align:center;font-weight:600;">Брось кубик, чтобы начать!</p>' : '<p style="font-weight:600;margin-bottom:15px;">📋 ' + (card.task || '') + '</p>') + '<div id="card-status-' + cardNumber + '"></div>' + diceHTML + '</div></div>';
     
-    // Асинхронно заполняем statusHTML
     setTimeout(function() {
         var statusContainer = document.getElementById('card-status-' + cardNumber);
         if (!statusContainer) return;
@@ -16914,7 +16904,6 @@ function renderCardHTML(card, showDice, isStart) {
         if (showDice) {
             statusContainer.innerHTML = '<div style="text-align:center;color:var(--status-green);margin-bottom:10px;"><i class="fas fa-check-circle"></i> Задание одобрено!</div>';
         } else if (isBoss) {
-            // ✅ Получаем очки с сервера
             fetch(SERVER_URL + '/api/dnd/get_progress?user_id=' + userId + '&character=' + dndCharacter)
                 .then(r => r.json())
                 .then(function(data) {
@@ -16947,10 +16936,16 @@ function renderCardHTML(card, showDice, isStart) {
                     statusContainer.innerHTML = '<p style="text-align:center;">⏳ Загрузка...</p>';
                 });
         } else {
+            var skipButtonHTML = '';
+            if (!dndSkipUsed) {
+                skipButtonHTML = '<button class="task-submit-btn" onclick="openSkipTaskModal()" style="background:#ff9800;margin-top:8px;">🎫 Пропустить (50 ₳)</button>';
+            }
+            
             statusContainer.innerHTML = `
                 <button class="task-submit-btn" onclick="openDndTaskUpload()">
                     <i class="fas fa-camera"></i> Отправить фото
                 </button>
+                ${skipButtonHTML}
                 <div style="text-align:center;color:var(--text-gray);font-size:12px;margin-top:10px;">
                     ⏳ Дождитесь одобрения администратором
                 </div>
@@ -17104,8 +17099,19 @@ function resetDndProgress() {
         // Сбрасываем локально
         dndCardHistory = [0];
         dndApproved = true;
+        dndSkipUsed = false;
         dndMode = null;
         dndCharacter = null;
+        
+        // Останавливаем опросы
+        if (teamPollingInterval) {
+            clearInterval(teamPollingInterval);
+            teamPollingInterval = null;
+        }
+        if (approvalPollingInterval) {
+            clearInterval(approvalPollingInterval);
+            approvalPollingInterval = null;
+        }
         
         document.getElementById('dndMainMenu').style.display = 'block';
         hideAllDndScreens();
@@ -17182,7 +17188,7 @@ function closeSoloCharacterModal() {
 }
 
 function startSoloWithCharacter(character) {
-    // ✅ Проверяем, нет ли уже активной игры у этого персонажа
+    // Проверяем, нет ли уже активной игры у этого персонажа
     fetch(SERVER_URL + '/api/dnd/get_progress?user_id=' + userId + '&character=' + character)
         .then(r => r.json())
         .then(progressData => {
@@ -17191,11 +17197,9 @@ function startSoloWithCharacter(character) {
                 history = progressData.progress.card_history || progressData.progress.completed_cards || [];
             }
             
-            // Проверяем, не пройдена ли уже игра
             var finalBosses = [203, 204, 205, 206, 207, 208];
             var hasDefeatedBoss = finalBosses.some(function(boss) { return history.includes(boss); });
             
-            // Если игра в процессе и не пройдена — восстанавливаем
             if (history.length > 1 && !hasDefeatedBoss) {
                 dndMode = 'solo';
                 dndCharacter = character;
@@ -17210,11 +17214,11 @@ function startSoloWithCharacter(character) {
                 document.getElementById('dndSoloTitle').innerText = '🎲 Соло: ' + getCharacterName(character);
                 
                 saveDndProgress();
+                checkSkipAvailability();  // ← ВОТ ЭТО ДОБАВИТЬ
                 renderDndCard(lastCard);
                 return;
             }
             
-            // Если игра пройдена или не начата — начинаем новую
             dndMode = 'solo';
             dndCharacter = character;
             dndCardHistory = [0];
@@ -17226,6 +17230,7 @@ function startSoloWithCharacter(character) {
             document.getElementById('dndSoloTitle').innerText = '🎲 Соло: ' + getCharacterName(character);
             
             saveDndProgress();
+            checkSkipAvailability();  // ← И ЗДЕСЬ ДОБАВИТЬ
             renderDndCard(0);
         });
 }
@@ -17420,10 +17425,11 @@ function startTeamGame() {
                 document.getElementById('dndLobby').style.display = 'none';
                 document.getElementById('dndGame').style.display = 'block';
                 dndMode = 'team';
-                // ✅ Не спрашиваем персонажа — используем уже выбранного
                 if (dndCharacter) { 
                     dndCardHistory = [0];
                     dndApproved = true;
+                    dndSkipUsed = false;  // ← И это тоже
+                    checkSkipAvailability();  // ← ДОБАВИТЬ
                     saveDndProgress();
                     renderDndCard(0); 
                 }
@@ -17495,7 +17501,10 @@ function autoRestoreDndGame() {
                     document.getElementById('dndLobby').style.display = 'none';
                     document.getElementById('dndGame').style.display = 'block';
                     document.getElementById('dndSoloGame').style.display = 'none';
-                    loadDndProgress().then(function() { renderDndCard(dndCardHistory[dndCardHistory.length - 1] || 0); });
+                    loadDndProgress().then(function() {
+                        checkSkipAvailability();
+                        renderDndCard(dndCardHistory[dndCardHistory.length - 1] || 0);
+                    });
                 }
                 return;
             }
@@ -17555,6 +17564,7 @@ function autoRestoreDndGame() {
                     document.getElementById('dndSoloGame').style.display = 'block';
                     document.getElementById('dndSoloTitle').innerText = '🎲 Соло: ' + getCharacterName(bestResult.character);
                     
+                    checkSkipAvailability();
                     renderDndCard(lastCard);
                 } else {
                     // ✅ Нет активных игр — показываем меню
@@ -17563,6 +17573,80 @@ function autoRestoreDndGame() {
                     document.getElementById('dndLobby').style.display = 'none';
                     document.getElementById('dndGame').style.display = 'none';
                     document.getElementById('dndSoloGame').style.display = 'none';
+                }
+            });
+        });
+}
+
+
+function checkSkipAvailability() {
+    if (!dndCharacter) return;
+    
+    fetch(SERVER_URL + '/api/dnd/get_progress?user_id=' + userId + '&character=' + dndCharacter)
+        .then(r => r.json())
+        .then(function(data) {
+            if (data.status === 'ok' && data.progress) {
+                dndSkipUsed = data.progress.skip_used || false;
+            }
+        });
+}
+
+function openSkipTaskModal() {
+    var currentCard = dndCardHistory[dndCardHistory.length - 1];
+    pendingSkipCard = currentCard;
+    
+    var card = getCardData(currentCard);
+    var imgEl = document.getElementById('skipTaskImage');
+    if (card && card.image) {
+        imgEl.src = card.image;
+        imgEl.style.display = 'block';
+    } else {
+        imgEl.style.display = 'none';
+    }
+    
+    document.getElementById('skipTaskModal').style.display = 'flex';
+}
+
+function closeSkipTaskModal() {
+    document.getElementById('skipTaskModal').style.display = 'none';
+    pendingSkipCard = null;
+}
+
+function confirmSkipTask() {
+    if (!pendingSkipCard) return;
+    
+    fetch(SERVER_URL + '/api/balance?user_id=' + userId)
+        .then(r => r.json())
+        .then(function(balanceData) {
+            var balance = balanceData.balance || 0;
+            if (balance < 50) {
+                alert('❌ Недостаточно ашетиков! Нужно 50, у вас ' + balance);
+                return;
+            }
+            
+            if (!confirm('Потратить 50 ашетиков на пропуск задания? Можно использовать только 1 раз за приключение.')) return;
+            
+            fetch(SERVER_URL + '/api/dnd/skip_task', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    user_id: userId,
+                    character: dndCharacter,
+                    card_id: pendingSkipCard
+                })
+            })
+            .then(r => r.json())
+            .then(function(result) {
+                if (result.status === 'ok') {
+                    dndSkipUsed = true;
+                    dndApproved = true;
+                    user.balance = result.new_balance;
+                    updateUI();
+                    closeSkipTaskModal();
+                    renderDndCard(pendingSkipCard);
+                    alert('✅ Задание пропущено! Можете бросать кубик.');
+                } else {
+                    alert('❌ ' + (result.message || 'Ошибка'));
                 }
             });
         });
