@@ -16600,7 +16600,10 @@ function toggleDnDEvent() {
         content.style.display = 'block';
         if (arrow) arrow.style.transform = 'rotate(180deg)';
         checkDndPaymentStatus();
-        autoRestoreDndGame();  // ← восстановление при открытии
+        // Вызываем с небольшой задержкой, чтобы меню успело отрисоваться
+        setTimeout(function() {
+            autoRestoreDndGame();
+        }, 300);
     }
 }
 
@@ -17142,7 +17145,6 @@ function autoRestoreDndGame() {
                         fetch(SERVER_URL + '/api/dnd/get_progress?user_id=' + userId + '&character=' + char)
                             .then(r => r.json())
                             .then(progressData => {
-                                console.log('📡 Прогресс ' + char + ':', progressData);
                                 if (progressData.status === 'ok' && progressData.progress) {
                                     var history = progressData.progress.card_history || progressData.progress.completed_cards || [];
                                     return { character: char, history: history, completedCards: progressData.progress.completed_cards || [] };
@@ -17157,23 +17159,22 @@ function autoRestoreDndGame() {
             }
             
             Promise.all(promises).then(function(results) {
-                console.log('📊 Все результаты:', results);
+                console.log('📊 Все результаты:', JSON.stringify(results));
                 
                 var bestResult = null;
                 var maxLength = 0;
                 
                 for (var i = 0; i < results.length; i++) {
-                    console.log('  ' + results[i].character + ': history.length=' + results[i].history.length);
                     if (results[i].history.length > maxLength) {
                         maxLength = results[i].history.length;
                         bestResult = results[i];
                     }
                 }
                 
-                console.log('🏆 Лучший: ' + (bestResult ? bestResult.character + ' (' + maxLength + ' карт)' : 'нет'));
+                console.log('🏆 Лучший:', bestResult ? bestResult.character + ' (' + maxLength + ' карт)' : 'нет');
                 
                 if (bestResult && maxLength > 1) {
-                    // ✅ Нашли активную игру!
+                    // ✅ Нашли активную игру — переключаемся
                     dndMode = 'solo';
                     dndCharacter = bestResult.character;
                     dndCardHistory = bestResult.history;
@@ -17181,8 +17182,9 @@ function autoRestoreDndGame() {
                     var lastCard = bestResult.history[bestResult.history.length - 1];
                     dndApproved = (lastCard === 0 || bestResult.completedCards.includes(lastCard));
                     
-                    console.log('🎮 Восстанавливаем соло: ' + bestResult.character + ', карта ' + lastCard + ', одобрена: ' + dndApproved);
+                    console.log('🎮 Переключаем на соло: ' + bestResult.character + ', карта ' + lastCard);
                     
+                    // ✅ Принудительно скрываем всё и показываем игру
                     document.getElementById('dndMainMenu').style.display = 'none';
                     document.getElementById('dndLobby').style.display = 'none';
                     document.getElementById('dndGame').style.display = 'none';
@@ -17191,7 +17193,8 @@ function autoRestoreDndGame() {
                     
                     renderDndCard(lastCard);
                 } else {
-                    console.log('👀 Нет активных игр, остаёмся в меню');
+                    console.log('👀 Нет активных игр, показываем меню');
+                    document.getElementById('dndMainMenu').style.display = 'block';
                 }
             });
         });
