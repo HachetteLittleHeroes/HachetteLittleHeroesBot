@@ -16601,6 +16601,7 @@ function toggleDnDEvent() {
         content.style.display = 'block';
         if (arrow) arrow.style.transform = 'rotate(180deg)';
         checkDndPaymentStatus();
+        autoRestoreDndGame();  // ← восстановление при открытии
     }
 }
 
@@ -16610,17 +16611,16 @@ function checkDndPaymentStatus() {
         .then(data => {
             if (data.status === 'ok' && data.is_paid === true) {
                 document.getElementById('dndPaySection').style.display = 'none';
+                // ✅ Показываем меню только если нет активной игры
+                // (autoRestoreDndGame сама переключит на игру если нужно)
                 document.getElementById('dndMainMenu').style.display = 'block';
                 document.getElementById('dndLobby').style.display = 'none';
                 document.getElementById('dndGame').style.display = 'none';
                 document.getElementById('dndSoloGame').style.display = 'none';
-                // Не вызываем autoRestore — оно сработает отдельно при загрузке
             } else {
                 document.getElementById('dndPaySection').style.display = 'block';
                 document.getElementById('dndMainMenu').style.display = 'none';
-                document.getElementById('dndLobby').style.display = 'none';
-                document.getElementById('dndGame').style.display = 'none';
-                document.getElementById('dndSoloGame').style.display = 'none';
+                hideAllDndScreens();
             }
         });
 }
@@ -17110,12 +17110,16 @@ function resetDndUI() {
 // ==========================================
 
 function autoRestoreDndGame() {
-    // Сначала проверяем командную игру
+    console.log('🔍 autoRestoreDndGame запущен');
+    
+    // 1. Проверяем командную игру
     fetch(SERVER_URL + '/api/dnd/team/status?user_id=' + userId)
         .then(r => r.json())
         .then(teamData => {
+            console.log('📡 Статус команды:', teamData);
+            
             if (teamData.status === 'ok' && teamData.game_started) {
-                // Командная игра активна
+                console.log('🎮 Найдена активная командная игра');
                 dndMode = 'team';
                 var myself = (teamData.members || []).find(function(m) { return m.user_id == userId || m.id == userId; });
                 dndCharacter = myself?.character || myself?.character_class;
@@ -17129,7 +17133,7 @@ function autoRestoreDndGame() {
                 return;
             }
             
-            // Ищем соло с максимальным прогрессом
+            // 2. Ищем соло с максимальным прогрессом
             var characters = ['knight', 'mage', 'archer', 'druid', 'assassin', 'bard'];
             var promises = [];
             
@@ -17139,6 +17143,7 @@ function autoRestoreDndGame() {
                         fetch(SERVER_URL + '/api/dnd/get_progress?user_id=' + userId + '&character=' + char)
                             .then(r => r.json())
                             .then(progressData => {
+                                console.log('📡 Прогресс ' + char + ':', progressData);
                                 if (progressData.status === 'ok' && progressData.progress) {
                                     var history = progressData.progress.card_history || progressData.progress.completed_cards || [];
                                     return { character: char, history: history, completedCards: progressData.progress.completed_cards || [] };
@@ -17153,24 +17158,31 @@ function autoRestoreDndGame() {
             }
             
             Promise.all(promises).then(function(results) {
+                console.log('📊 Все результаты:', results);
+                
                 var bestResult = null;
                 var maxLength = 0;
                 
                 for (var i = 0; i < results.length; i++) {
+                    console.log('  ' + results[i].character + ': history.length=' + results[i].history.length);
                     if (results[i].history.length > maxLength) {
                         maxLength = results[i].history.length;
                         bestResult = results[i];
                     }
                 }
                 
+                console.log('🏆 Лучший: ' + (bestResult ? bestResult.character + ' (' + maxLength + ' карт)' : 'нет'));
+                
                 if (bestResult && maxLength > 1) {
-                    // Нашли активную игру
+                    // ✅ Нашли активную игру!
                     dndMode = 'solo';
                     dndCharacter = bestResult.character;
                     dndCardHistory = bestResult.history;
                     
                     var lastCard = bestResult.history[bestResult.history.length - 1];
                     dndApproved = (lastCard === 0 || bestResult.completedCards.includes(lastCard));
+                    
+                    console.log('🎮 Восстанавливаем соло: ' + bestResult.character + ', карта ' + lastCard + ', одобрена: ' + dndApproved);
                     
                     document.getElementById('dndMainMenu').style.display = 'none';
                     document.getElementById('dndLobby').style.display = 'none';
@@ -17179,8 +17191,9 @@ function autoRestoreDndGame() {
                     document.getElementById('dndSoloTitle').innerText = '🎲 Соло: ' + getCharacterName(bestResult.character);
                     
                     renderDndCard(lastCard);
+                } else {
+                    console.log('👀 Нет активных игр, остаёмся в меню');
                 }
-                // Если нет активных игр — остаёмся в главном меню (уже показано)
             });
         });
 }
@@ -17191,27 +17204,7 @@ function autoRestoreDndGame() {
 window.onload = async () => {
     console.log('🚀 APP STARTING...');
     
-    // 🔄 Восстанавливаем персонажа D&D из localStorage
-    var savedDndCharacter = localStorage.getItem(`dnd_character_${userId}`);
-    if (savedDndCharacter) {
-        dndCharacter = savedDndCharacter;
-        console.log('🔄 D&D персонаж восстановлен из localStorage:', dndCharacter);
-        
-        // Восстанавливаем прогресс
-        var savedProgress = localStorage.getItem(`dnd_progress_${userId}`);
-        if (savedProgress) {
-            try {
-                var progress = JSON.parse(savedProgress);
-                if (progress.cardHistory) {
-                    dndCardHistory = progress.cardHistory;
-                    dndApproved = true;
-                    console.log('🔄 D&D прогресс восстановлен из localStorage:', dndCardHistory);
-                }
-            } catch(e) {
-                console.error('Ошибка восстановления прогресса:', e);
-            }
-        }
-    }
+    // ✅ D&D: НЕ восстанавливаем из localStorage — всё через сервер
     
     const savedUser = localStorage.getItem('coloring_user');
     if (savedUser) Object.assign(user, JSON.parse(savedUser));
@@ -17305,6 +17298,20 @@ window.onload = async () => {
             }
         });
     };
+    
+    // ==========================================
+    // ✅ D&D: авто-восстановление при открытии вкладки
+    // ==========================================
+    // Вызывается только если вкладка D&D уже открыта при загрузке
+    setTimeout(function() {
+        var dndContent = document.getElementById('dndEventContent');
+        if (dndContent && dndContent.style.display !== 'none') {
+            autoRestoreDndGame();
+        }
+    }, 2000);
+    
+    console.log('✅ APP READY');
+};
     
     // ==========================================
     // ✅ АВТОМАТИЧЕСКОЕ ОТКРЫТИЕ D&D ЛОББИ (С ПОВТОРАМИ)
