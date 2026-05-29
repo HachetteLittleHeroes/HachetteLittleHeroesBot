@@ -16568,14 +16568,15 @@ function toggleDnDEvent() {
     if (content.style.display === 'block') {
         content.style.display = 'none';
         if (arrow) arrow.style.transform = 'rotate(0deg)';
+        if (teamPollingInterval) {
+            clearInterval(teamPollingInterval);
+            teamPollingInterval = null;
+        }
     } else {
         content.style.display = 'block';
         if (arrow) arrow.style.transform = 'rotate(180deg)';
         checkDndPaymentStatus();
-        // Вызываем с небольшой задержкой, чтобы меню успело отрисоваться
-        setTimeout(function() {
-            autoRestoreDndGame();
-        }, 300);
+        setTimeout(function() { autoRestoreDndGame(); }, 300);
     }
 }
 
@@ -16624,6 +16625,12 @@ function backToDndMenu() {
     if (dndCardHistory.length > 1 && !hasDefeatedBoss) {
         alert('⚠️ Сначала завершите приключение!');
         return;
+    }
+    
+    // Останавливаем опрос команды
+    if (teamPollingInterval) {
+        clearInterval(teamPollingInterval);
+        teamPollingInterval = null;
     }
     
     document.getElementById('dndMainMenu').style.display = 'block';
@@ -17184,8 +17191,56 @@ function showDndLobby() {
     dndMode = 'team';
     refreshTeamList();
     loadMyTeam();
+    startTeamPolling();  // ← запускаем опрос
 }
+// Переменная для интервала
+var teamPollingInterval = null;
 
+function startTeamPolling() {
+    // Очищаем предыдущий интервал если есть
+    if (teamPollingInterval) clearInterval(teamPollingInterval);
+    
+    teamPollingInterval = setInterval(function() {
+        // Проверяем только если в режиме команды и не в игре
+        if (dndMode !== 'team') {
+            clearInterval(teamPollingInterval);
+            return;
+        }
+        
+        fetch(SERVER_URL + '/api/dnd/team/status?user_id=' + userId)
+            .then(r => r.json())
+            .then(data => {
+                if (data.status === 'ok') {
+                    // Обновляем список участников в реальном времени
+                    if (document.getElementById('myTeamSection').style.display === 'block') {
+                        loadMyTeam();
+                    }
+                    
+                    // Если игра началась — переключаемся
+                    if (data.game_started && document.getElementById('dndGame').style.display === 'none') {
+                        clearInterval(teamPollingInterval);
+                        
+                        document.getElementById('dndLobby').style.display = 'none';
+                        document.getElementById('dndGame').style.display = 'block';
+                        dndMode = 'team';
+                        
+                        var myself = (data.members || []).find(function(m) { return m.user_id == userId || m.id == userId; });
+                        dndCharacter = myself?.character || myself?.character_class;
+                        
+                        if (dndCharacter) {
+                            loadDndProgress().then(function() {
+                                renderDndCard(dndCardHistory[dndCardHistory.length - 1] || 0);
+                            });
+                        } else {
+                            showTeamCharacterModal();
+                        }
+                        
+                        alert('🎮 Лидер начал игру! Приключение начинается!');
+                    }
+                }
+            });
+    }, 3000); // проверка каждые 3 секунды
+}
 function refreshTeamList() {
     fetch(SERVER_URL + '/api/dnd/teams/list?user_id=' + userId)
         .then(r => r.json())
