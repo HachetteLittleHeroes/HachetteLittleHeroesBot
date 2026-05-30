@@ -6357,16 +6357,29 @@ body:not([data-theme]) .modal-content,
         </div>
     </div>
 
-    <div class="tasks-section">
-        <button class="tasks-header" onclick="toggleTasks()">
-            <span>Задания на статусы</span>
-            <i class="fas fa-chevron-down" id="tasksArrow"></i>
-        </button>
-        <div id="tasksContent" class="tasks-content">
-            <div id="branchTasksList"></div>
+   <!-- ========== ЗАДАНИЯ НА СТАТУСЫ ========== -->
+<div class="tasks-section">
+    <button class="tasks-header" onclick="toggleTasks()">
+        <span>🏅 Задания на статусы</span>
+        <i class="fas fa-chevron-down" id="tasksArrow"></i>
+    </button>
+    <div id="tasksContent" class="tasks-content">
+        <div id="branchTasksList"></div>
+    </div>
+</div>
+
+    <!-- ========== ИСПЫТАНИЕ СООБЩЕСТВА ========== -->
+<div class="tasks-section" style="margin-top: 15px;">
+    <button class="tasks-header" onclick="toggleCommunityEvent()">
+        <span>🏆 Испытание сообщества</span>
+        <i class="fas fa-chevron-down" id="communityEventArrow"></i>
+    </button>
+    <div id="communityEventContent" class="tasks-content" style="display: none;">
+        <div id="communityEventContainer">
+            <div class="loading"><i class="fas fa-spinner fa-spin"></i> Загрузка...</div>
         </div>
     </div>
-
+</div>
     <!-- ========== ЗАДАНИЯ НА ВРЕМЯ ========== -->
     <div class="tasks-section time-tasks-section">
         <button class="tasks-header" onclick="toggleTimeTasks()">
@@ -6378,18 +6391,18 @@ body:not([data-theme]) .modal-content,
         </div>
     </div>
 
-    <!-- ========== ЗАДАНИЯ ОТ НАШИХ ДРУЗЕЙ ========== -->
-    <div class="tasks-section friend-tasks-section">
-        <button class="tasks-header" onclick="toggleFriendTasks()">
-            <span>🤝 Задания от наших друзей</span>
-            <i class="fas fa-chevron-down" id="friendTasksArrow"></i>
-        </button>
-        <div id="friendTasksContent" class="tasks-content">
-            <div id="friendTasksList"></div>
-        </div>
+   <!-- ========== ЗАДАНИЯ ОТ НАШИХ ДРУЗЕЙ ========== -->
+<div class="tasks-section friend-tasks-section">
+    <button class="tasks-header" onclick="toggleFriendTasks()">
+        <span>🤝 Задания от наших друзей</span>
+        <i class="fas fa-chevron-down" id="friendTasksArrow"></i>
+    </button>
+    <div id="friendTasksContent" class="tasks-content">
+        <div id="friendTasksList"></div>
     </div>
+</div>
 
-   <!-- ========== SEASON PASS ========== -->
+<!-- ========== SEASON PASS ========== -->
 <div class="tasks-section season-pass-section" id="seasonPassSection">
     <button class="tasks-header" onclick="toggleSeasonPass()">
         <span>🌸 Сезонный пропуск</span>
@@ -6404,18 +6417,7 @@ body:not([data-theme]) .modal-content,
     </div>
 </div>
     
-<!-- ========== ИСПЫТАНИЕ СООБЩЕСТВА ========== -->
-<div class="tasks-section" style="margin-top: 15px;">
-    <button class="tasks-header" onclick="toggleCommunityEvent()">
-        <span>🏆 Испытание сообщества</span>
-        <i class="fas fa-chevron-down" id="communityEventArrow"></i>
-    </button>
-    <div id="communityEventContent" class="tasks-content" style="display: none;">
-        <div id="communityEventContainer">
-            <div class="loading"><i class="fas fa-spinner fa-spin"></i> Загрузка...</div>
-        </div>
-    </div>
-</div>
+
 
 <!-- D&D СОБЫТИЕ -->
 <div class="tasks-section" style="margin-top: 15px;">
@@ -6548,11 +6550,11 @@ body:not([data-theme]) .modal-content,
                 <span class="close" onclick="closeSkipTaskModal()">&times;</span>
                 <h3>🎫 Пропустить задание</h3>
                 <img id="skipTaskImage" src="" style="width:100%;border-radius:12px;margin:15px 0;" onerror="this.style.display='none'">
-             <p style="color: var(--text-gray); margin-bottom: 15px;">Стоимость: <strong>50 <i class="fas fa-book-open gold-book"></i></strong></p>
+                <p style="color: var(--text-gray); margin-bottom: 15px;">Стоимость: <strong>50 <i class="fas fa-book-open gold-book"></i></strong></p>
                 <p style="font-size: 12px; color: var(--accent); margin-bottom: 15px;">⚠️ Можно использовать только 1 раз за всё приключение</p>
-              <button class="task-submit-btn" onclick="confirmSkipTask()" style="background: #ff9800;">
-    Потратить 50 <i class="fas fa-book-open gold-book"></i>
-</button>
+                <button class="task-submit-btn" onclick="confirmSkipTask()" style="background: #ff9800;">
+                    Потратить 50 <i class="fas fa-book-open gold-book"></i>
+                </button>
                 <button class="modal-close-btn" onclick="closeSkipTaskModal()" style="margin-top: 10px;">Отмена</button>
             </div>
         </div>
