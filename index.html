@@ -30272,16 +30272,14 @@ function renderPublicStatsBooks() {
     document.body.appendChild(modal);
 }
 function openBookPageFromBestiary(category, bookName, page) {
-    // Открываем модалку страниц раскраски
     openBookPagesModal(category, bookName);
-    
-    // Закрываем текущую модалку
     const modal = document.querySelector('.modal-overlay[style*="display: flex"]');
     if (modal && modal.innerHTML.includes('Осталось раскрасить')) {
         modal.remove();
     }
-} 
-        async function uploadCustomCover(category, bookName) {
+}
+
+async function uploadCustomCover(category, bookName) {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
@@ -30304,7 +30302,6 @@ function openBookPageFromBestiary(category, bookName, page) {
             const result = await response.json();
             
             if (result.status === 'ok') {
-                // Обновляем обложку локально
                 const userBooks = userColoringBooks[category] || [];
                 const book = userBooks.find(b => (typeof b === 'string' ? b : b.name) === bookName);
                 if (book && typeof book === 'object') {
@@ -30316,7 +30313,6 @@ function openBookPageFromBestiary(category, bookName, page) {
                 
                 localStorage.setItem(`coloring_books_${userId}`, JSON.stringify(userColoringBooks));
                 
-                // ✅ Сохраняем обложку на сервере
                 await fetch(`${SERVER_URL}/api/coloring_books`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -30341,15 +30337,16 @@ function openBookPageFromBestiary(category, bookName, page) {
     
     input.click();
 }
-     function openThemeModal() {
-    // Обновляем активную тему в модалке
+
+function openThemeModal() {
     const currentTheme = localStorage.getItem('app_theme') || user.theme || 'light';
     document.querySelectorAll('#themeModal .theme-option').forEach(el => {
         el.classList.toggle('active', el.dataset.theme === currentTheme);
     });
     document.getElementById('themeModal').style.display = 'flex';
 }
-    function setTheme(themeName) {
+
+function setTheme(themeName) {
     const oldStyle = document.getElementById('custom-theme-style');
     if (oldStyle) oldStyle.remove();
     if (themeName === 'custom') {
@@ -30363,18 +30360,11 @@ function openBookPageFromBestiary(category, bookName, page) {
         el.classList.remove('active');
         if (el.dataset.theme === themeName) el.classList.add('active');
     });
-    // Закрываем модалку
     var themeModal = document.getElementById('themeModal');
     if (themeModal) themeModal.style.display = 'none';
 }
-        function openThemeModal() {
-    const currentTheme = localStorage.getItem('app_theme') || user.theme || 'light';
-    document.querySelectorAll('#themeModal .theme-option').forEach(el => {
-        el.classList.toggle('active', el.dataset.theme === currentTheme);
-    });
-    document.getElementById('themeModal').style.display = 'flex';
-}
-        function toggleTasks() {
+
+function toggleTasks() {
     const content = document.getElementById('tasksContent');
     const arrow = document.getElementById('tasksArrow');
     if (!content) return;
@@ -30385,9 +30375,10 @@ function openBookPageFromBestiary(category, bookName, page) {
         content.style.display = 'block';
         if (arrow) arrow.style.transform = 'rotate(180deg)';
         renderBranchTasks();
-        renderStatusFilters();  // ← добавить
+        renderStatusFilters();
     }
 }
+
 function loadClaimedRewards() {
     fetch(`${SERVER_URL}/api/season_rewards?user_id=${userId}`)
         .then(r => r.json())
@@ -30413,17 +30404,8 @@ function saveClaimedRewards() {
         body: JSON.stringify({ user_id: userId, rewards: claimedSeasonRewards })
     }).catch(e => console.error('Save rewards error:', e));
 }
-       
-(function() {
-    setTimeout(function() {
-        var dndContent = document.getElementById('dndEventContent');
-        if (dndContent && dndContent.style.display !== 'none') {
-            // D&D был открыт при прошлом визите — проверяем
-            autoRestoreDndGame();
-        }
-    }, 1500);
-})();
-        // Запускаем авто-восстановление только при первой загрузке
+
+// ✅ Авто-восстановление D&D при загрузке
 (function initDnd() {
     setTimeout(function() {
         fetch(SERVER_URL + '/api/dnd/payment_status?user_id=' + userId)
@@ -30433,9 +30415,9 @@ function saveClaimedRewards() {
                     autoRestoreDndGame();
                 }
             });
-    }, 1500);
+    }, 300);
 })();
-    </script>
+</script>
     
     <!-- Модалка поиска пользователей -->
 <div id="userSearchModal" class="modal-overlay">
