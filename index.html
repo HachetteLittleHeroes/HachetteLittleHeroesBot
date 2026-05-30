@@ -16739,10 +16739,20 @@ function renderDndCard(cardNumber) {
     if (!container) return;
     if (!card) { container.innerHTML = '<p style="text-align:center;padding:20px;">❌ Карта #' + cardNumber + ' не найдена</p>'; return; }
     
-    // Командная игра — проверка на босса
-    if (dndMode === 'team') {
-        if (cardNumber === 100) { currentBossLevel = 'mini'; checkTeamBossReadiness('mini'); return; }
-        if (cardNumber === 202) { currentBossLevel = 'final'; checkTeamBossReadiness('final'); return; }
+    // ✅ Командная игра — блокируем кубик в конце уровней перед боссами
+    if (dndMode === 'team' && dndApproved) {
+        // Мини-босс: уровень 4, карты 40-100
+        if (cardNumber >= 40 && cardNumber <= 100) {
+            currentBossLevel = 'mini';
+            showWaitingForTeam('mini');
+            return;
+        }
+        // Финальный босс: уровень 9, карты 185-202
+        if (cardNumber >= 185 && cardNumber <= 202) {
+            currentBossLevel = 'final';
+            showWaitingForTeam('final');
+            return;
+        }
     }
     
     if (card.isStart) { container.innerHTML = renderCardHTML(card, true, true); return; }
