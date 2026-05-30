@@ -16574,17 +16574,19 @@ function checkDndPaymentStatus() {
         .then(r => r.json())
         .then(data => {
             if (data.status === 'ok' && data.is_paid === true) {
+                // ✅ Доступ открыт — показываем меню
                 document.getElementById('dndPaySection').style.display = 'none';
-                // ✅ Показываем меню только если нет активной игры
-                // (autoRestoreDndGame сама переключит на игру если нужно)
                 document.getElementById('dndMainMenu').style.display = 'block';
                 document.getElementById('dndLobby').style.display = 'none';
                 document.getElementById('dndGame').style.display = 'none';
                 document.getElementById('dndSoloGame').style.display = 'none';
             } else {
+                // ❌ Доступ не открыт — показываем заглушку
                 document.getElementById('dndPaySection').style.display = 'block';
                 document.getElementById('dndMainMenu').style.display = 'none';
-                hideAllDndScreens();
+                document.getElementById('dndLobby').style.display = 'none';
+                document.getElementById('dndGame').style.display = 'none';
+                document.getElementById('dndSoloGame').style.display = 'none';
             }
         });
 }
