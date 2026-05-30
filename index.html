@@ -16686,17 +16686,21 @@ function loadDndProgress() {
                 var lastCard = dndCardHistory[dndCardHistory.length - 1];
                 var completedCards = data.progress.completed_cards || [];
                 dndApproved = (lastCard === 0 || completedCards.includes(lastCard));
+                
+                // ✅ Загружаем статус пропуска с сервера
+                dndSkipUsed = data.progress.skip_used || false;
             } else {
                 dndCardHistory = [0];
                 dndApproved = true;
+                dndSkipUsed = false;
             }
         })
         .catch(function() {
             dndCardHistory = [0];
             dndApproved = true;
+            dndSkipUsed = false;
         });
 }
-
 function saveDndProgress() {
     if (!dndCharacter || dndCardHistory.length === 0) return;
     fetch(SERVER_URL + '/api/dnd/update_progress', {
@@ -16747,10 +16751,10 @@ function renderDndCard(cardNumber) {
     
     var finalBosses = [203, 204, 205, 206, 207, 208];
     
-    if (card.isFinal && dndApproved) {
-        container.innerHTML = '<div class="branch-task-card"><div class="branch-header"><h3>🎉 Победа!</h3></div><div class="level-card" style="text-align:center;"><p style="font-size:18px;font-weight:700;color:var(--accent);">Ты победил ' + card.title + '!<p>Режим: ' + (dndMode === 'team' ? '👥 Команда' : '⚔️ Соло') + '</p><button class="task-submit-btn" onclick="resetDndProgress()" style="margin-top:15px;background:#ff9800;">🔄 Пройти заново</button></div></div>';
-        return;
-    }
+   if (card.isFinal && dndApproved) {
+    container.innerHTML = '<div class="branch-task-card"><div class="branch-header"><h3>🎉 Победа!</h3></div><div class="level-card" style="text-align:center;"><p style="font-size:18px;font-weight:700;color:var(--accent);">Ты победил ' + card.title + '!</p><p>Приключение пройдено!</p><p style="color:#ffd700;margin-top:10px;">🎫 Получен билет на розыгрыш призов D&D!</p><button class="task-submit-btn" onclick="resetDndProgress()" style="margin-top:15px;background:#ff9800;">🔄 Пройти заново</button></div></div>';
+    return;
+}
     
     container.innerHTML = renderCardHTML(card, dndApproved, false);
 }
