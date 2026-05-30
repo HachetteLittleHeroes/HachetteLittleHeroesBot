@@ -17254,24 +17254,66 @@ function startSoloWithCharacter(character) {
 // ==========================================
 // КОМАНДНАЯ ИГРА
 // ==========================================
+function showWaitingForTeam(bossLevel) {
+    console.log('⏳ showWaitingForTeam вызван, bossLevel:', bossLevel);
+    var container = getCardContainer();
+    if (!container) {
+        console.error('❌ Контейнер не найден!');
+        return;
+    }
+    
+    fetch(SERVER_URL + '/api/dnd/team_boss_status?user_id=' + userId + '&boss_level=' + bossLevel)
+        .then(r => r.json())
+        .then(data => {
+            console.log('📡 Ответ team_boss_status:', data);
+            
+            if (data.status === 'ok') {
+                if (data.all_ready) {
+                    if (data.boss_assigned) {
+                        // Босс уже назначен — переходим
+                        dndCardHistory.push(data.boss_assigned);
+                        dndApproved = false;
+                        saveDndProgress();
+                        renderDndCard(data.boss_assigned);
+                    } else if (isTeamLeader()) {
+                        // Лидер бросает кубик
+                        container.innerHTML = '<div class="branch-task-card"><div class="branch-header"><h3>⚔️ ' + (bossLevel === 'mini' ? 'Мини-босс' : 'Финальный босс') + '</h3></div><div class="level-card" style="text-align:center;"><p style="color:var(--status-green);">✅ Все участники готовы!</p><p>Брось кубик чтобы выбрать босса:</p><div id="dndDiceWrapper" style="margin:15px 0;"><div id="dndDice" class="dnd-dice" onclick="rollForTeamBoss(\'' + bossLevel + '\')"><div class="dice-face front"><span class="dot dot1"></span></div><div class="dice-face back"><span class="dot dot1"></span><span class="dot dot2"></span></div><div class="dice-face right"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span></div><div class="dice-face left"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span></div><div class="dice-face top"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span><span class="dot dot5"></span></div><div class="dice-face bottom"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span><span class="dot dot5"></span><span class="dot dot6"></span></div></div></div></div></div>';
+                    } else {
+                        // Ждём лидера
+                        container.innerHTML = '<div class="branch-task-card"><div class="branch-header"><h3>⏳ Ожидание лидера</h3></div><div class="level-card" style="text-align:center;"><p>Все участники готовы!</p><p style="color:var(--text-gray);">Ожидаем, пока лидер выберет босса...</p><button class="task-submit-btn" onclick="showWaitingForTeam(\'' + bossLevel + '\')" style="margin-top:15px;">🔄 Проверить</button></div></div>';
+                    }
+                } else {
+                    // Ждём остальных
+                    var membersHtml = '';
+                    for (var i = 0; i < data.members.length; i++) {
+                        var m = data.members[i];
+                        membersHtml += '<div style="display:flex;align-items:center;gap:10px;padding:8px;margin-bottom:5px;background:var(--bg);border-radius:8px;"><span>' + (m.ready ? '✅' : '⏳') + '</span><span>' + escapeHtml(m.name) + '</span></div>';
+                    }
+                    container.innerHTML = '<div class="branch-task-card"><div class="branch-header"><h3>⏳ Ожидание команды</h3></div><div class="level-card"><p>Все должны достичь уровня босса:</p>' + membersHtml + '<button class="task-submit-btn" onclick="showWaitingForTeam(\'' + bossLevel + '\')" style="margin-top:15px;">🔄 Проверить</button></div></div>';
+                }
+            }
+        })
+        .catch(function(err) {
+            console.error('❌ Ошибка:', err);
+            container.innerHTML = '<p>Ошибка загрузки. Попробуйте обновить страницу.</p>';
+        });
+}
 
-function showDndLobby() {
+        function showDndLobby() {
     document.getElementById('dndMainMenu').style.display = 'none';
     document.getElementById('dndLobby').style.display = 'block';
     dndMode = 'team';
     refreshTeamList();
     loadMyTeam();
-    startTeamPolling();  // ← запускаем опрос
+    startTeamPolling();  // ← добавить
 }
 // Переменная для интервала
 var teamPollingInterval = null;
 
 function startTeamPolling() {
-    // Очищаем предыдущий интервал если есть
     if (teamPollingInterval) clearInterval(teamPollingInterval);
     
     teamPollingInterval = setInterval(function() {
-        // Проверяем только если в режиме команды и не в игре
         if (dndMode !== 'team') {
             clearInterval(teamPollingInterval);
             return;
@@ -17280,18 +17322,13 @@ function startTeamPolling() {
         fetch(SERVER_URL + '/api/dnd/team/status?user_id=' + userId)
             .then(r => r.json())
             .then(data => {
-                if (data.status === 'ok') {
-                    // Обновляем список участников в реальном времени
-                    if (document.getElementById('myTeamSection').style.display === 'block') {
-                        loadMyTeam();
-                    }
-                    
-                    // Если игра началась — переключаемся
-                    if (data.game_started && document.getElementById('dndGame').style.display === 'none') {
-                        clearInterval(teamPollingInterval);
-                        
+                if (data.status === 'ok' && data.game_started) {
+                    // Игра началась — переключаемся
+                    var gameScreen = document.getElementById('dndGame');
+                    if (gameScreen.style.display === 'none') {
                         document.getElementById('dndLobby').style.display = 'none';
-                        document.getElementById('dndGame').style.display = 'block';
+                        document.getElementById('dndMainMenu').style.display = 'none';
+                        gameScreen.style.display = 'block';
                         dndMode = 'team';
                         
                         var myself = (data.members || []).find(function(m) { return m.user_id == userId || m.id == userId; });
@@ -17299,17 +17336,19 @@ function startTeamPolling() {
                         
                         if (dndCharacter) {
                             loadDndProgress().then(function() {
+                                checkSkipAvailability();
                                 renderDndCard(dndCardHistory[dndCardHistory.length - 1] || 0);
                             });
-                        } else {
-                            showTeamCharacterModal();
                         }
-                        
-                        alert('🎮 Лидер начал игру! Приключение начинается!');
+                    }
+                    
+                    // Обновляем список команды
+                    if (document.getElementById('myTeamSection').style.display === 'block') {
+                        loadMyTeam();
                     }
                 }
             });
-    }, 3000); // проверка каждые 3 секунды
+    }, 3000);
 }
 function refreshTeamList() {
     fetch(SERVER_URL + '/api/dnd/teams/list?user_id=' + userId)
@@ -17442,11 +17481,12 @@ function startTeamGame() {
                 document.getElementById('dndLobby').style.display = 'none';
                 document.getElementById('dndGame').style.display = 'block';
                 dndMode = 'team';
+                startTeamPolling();  // ← добавить
                 if (dndCharacter) { 
                     dndCardHistory = [0];
                     dndApproved = true;
-                    dndSkipUsed = false;  // ← И это тоже
-                    checkSkipAvailability();  // ← ДОБАВИТЬ
+                    dndSkipUsed = false;
+                    checkSkipAvailability();
                     saveDndProgress();
                     renderDndCard(0); 
                 }
