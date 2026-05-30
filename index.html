@@ -17571,14 +17571,6 @@ function resetDndUI() {
 function autoRestoreDndGame() {
     console.log('🔍 autoRestoreDndGame запущен');
     
-    // ✅ Открываем вкладку D&D если она скрыта
-    var dndContent = document.getElementById('dndEventContent');
-    var dndArrow = document.getElementById('dndEventArrow');
-    if (dndContent && dndContent.style.display !== 'block') {
-        dndContent.style.display = 'block';
-        if (dndArrow) dndArrow.style.transform = 'rotate(180deg)';
-    }
-    
     // Блокируем кнопки меню на время проверки
     var menuButtons = document.querySelectorAll('#dndMainMenu .dnd-character-card');
     for (var i = 0; i < menuButtons.length; i++) {
