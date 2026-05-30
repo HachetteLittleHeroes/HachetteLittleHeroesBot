@@ -17705,7 +17705,7 @@ function renderCardHTML(card, showDice, isStart) {
             }
             window._bossIntervals = window._bossIntervals || {};
             
-           function updateBossProgress() {
+         function updateBossProgress() {
     var totalPoints = tasksRequired * pointsPerTask;
     
     if (dndMode === 'team') {
@@ -17720,10 +17720,9 @@ function renderCardHTML(card, showDice, isStart) {
                 }
                 var el = document.getElementById('card-status-' + cardNumber);
                 if (el) {
-                    var submittedCount = data.current || 0;
                     var tasksHTML = '<p style="color:var(--accent);font-size:12px;margin-bottom:10px;">👥 Командный счёт</p>';
                     for (var t = 0; t < tasksRequired; t++) {
-                        var taskPoints = Math.min(pointsPerTask, Math.max(0, submittedCount - t * pointsPerTask));
+                        var taskPoints = (data.tasks && data.tasks[t]) || 0;
                         var taskDone = taskPoints >= pointsPerTask;
                         var taskDesc = card.bossTasks ? card.bossTasks[t] : ('Задание ' + (t + 1));
                         tasksHTML += '<div class="subtask-card">';
@@ -17743,7 +17742,6 @@ function renderCardHTML(card, showDice, isStart) {
         fetch(SERVER_URL + '/api/dnd/get_progress?user_id=' + userId + '&character=' + dndCharacter)
             .then(r => r.json())
             .then(function(data) {
-                // Суммируем очки по всем заданиям
                 var count = 0;
                 var taskPointsArr = [];
                 for (var i = 0; i < tasksRequired; i++) {
