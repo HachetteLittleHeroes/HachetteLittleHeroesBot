@@ -17823,6 +17823,17 @@ window.onload = async () => {
     };
     
     console.log('✅ APP READY');
+    
+    // ✅ D&D: авто-восстановление при загрузке (только если оплачено)
+    setTimeout(function() {
+        fetch(SERVER_URL + '/api/dnd/payment_status?user_id=' + userId)
+            .then(r => r.json())
+            .then(function(data) {
+                if (data.is_paid) {
+                    autoRestoreDndGame();
+                }
+            });
+    }, 1500);
 };
        //БЕСТИАРИЙ
         const BESTIARY = [
