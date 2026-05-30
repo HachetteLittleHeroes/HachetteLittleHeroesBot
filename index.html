@@ -17684,7 +17684,7 @@ function renderCardHTML(card, showDice, isStart) {
         bossLabel = '<div style="font-size:12px;opacity:0.7;margin-top:4px;">👑 ' + (cardNumber <= 106 ? 'Мини-босс' : 'Финальный босс') + ' · ' + tasksRequired + ' заданий по ' + pointsPerTask + ' очков</div>';
     }
     
-    var cardHTML = '<div class="branch-task-card ' + (isStart ? 'start-card' : '') + '"><div class="branch-header"><h3>' + card.title + '</h3>' + bossLabel + '</div><div class="level-card" id="card-level-' + cardNumber + '">' + (card.image ? '<img src="' + card.image + '" class="card-image" style="width:100%;border-radius:12px;margin-bottom:15px;" onerror="this.style.display=\'none\'">' : '') + (isStart ? '<p style="text-align:center;font-weight:600;">Брось кубик, чтобы начать!</p>' : '<p style="font-weight:600;margin-bottom:15px;">📋 ' + (card.task || '') + '</p>') + '<div id="card-status-' + cardNumber + '"></div>' + diceHTML + '</div></div>';
+    var cardHTML = '<div class="branch-task-card ' + (isStart ? 'start-card' : '') + '"><div class="branch-header"><h3>' + card.title + '</h3>' + bossLabel + '</div><div class="level-card" id="card-level-' + cardNumber + '">' + (card.image ? '<img src="' + card.image + '" class="card-image" style="width:100%;border-radius:12px;margin-bottom:15px;" onerror="this.style.display=\'none\'">' : '') + (isStart ? '<p style="text-align:center;font-weight:600;">Брось кубик, чтобы начать!</p>' : '<p style="font-weight:600;margin-bottom:15px;">' + (card.task || '') + '</p>') + '<div id="card-status-' + cardNumber + '"></div>' + diceHTML + '</div></div>';
     
     setTimeout(function() {
         var statusContainer = document.getElementById('card-status-' + cardNumber);
@@ -17721,22 +17721,22 @@ function renderCardHTML(card, showDice, isStart) {
                             var el = document.getElementById('card-status-' + cardNumber);
                             if (el) {
                                 var submittedCount = data.current || 0;
-                                var tasksHTML = '';
+                                var tasksHTML = '<p style="color:var(--accent);font-size:12px;margin-bottom:10px;">👥 Командный счёт</p>';
                                 for (var t = 0; t < tasksRequired; t++) {
                                     var taskPoints = Math.min(pointsPerTask, Math.max(0, submittedCount - t * pointsPerTask));
                                     var taskDone = taskPoints >= pointsPerTask;
                                     var taskDesc = card.bossTasks ? card.bossTasks[t] : ('Задание ' + (t + 1));
-                                    tasksHTML += '<div style="padding:12px;margin-bottom:8px;background:var(--card-bg);border-radius:12px;border:1px solid ' + (taskDone ? 'var(--status-green)' : 'var(--border-color)') + ';">';
-                                    tasksHTML += '<div style="font-size:13px;color:var(--text);margin-bottom:8px;">📋 ' + taskDesc + '</div>';
-                                    tasksHTML += '<div style="display:flex;align-items:center;gap:8px;">';
-                                    tasksHTML += '<div class="progress-bar-container" style="flex:1;height:6px;margin:0;"><div class="progress-bar-fill" style="width:' + (taskPoints / pointsPerTask * 100) + '%;"></div></div>';
-                                    tasksHTML += '<span style="font-size:11px;color:var(--text-gray);white-space:nowrap;">' + taskPoints + '/' + pointsPerTask + '</span>';
+                                    tasksHTML += '<div class="subtask-card">';
+                                    tasksHTML += '<div class="subtask-header"><span class="subtask-name">' + taskDesc + '</span><span class="subtask-progress">' + taskPoints + '/' + pointsPerTask + '</span></div>';
+                                    tasksHTML += '<div class="progress-bar-container" style="height:6px;margin:0 0 8px 0;"><div class="progress-bar-fill" style="width:' + (taskPoints / pointsPerTask * 100) + '%;height:100%;"></div></div>';
                                     if (!taskDone) {
-                                        tasksHTML += '<button class="task-submit-btn" onclick="submitBossWork(' + t + ')" style="padding:6px 12px;font-size:11px;margin:0;white-space:nowrap;"><i class="fas fa-camera"></i></button>';
+                                        tasksHTML += '<button class="task-submit-btn subtask-btn" onclick="submitBossWork(' + t + ')"><i class="fas fa-camera"></i> Отправить фото</button>';
+                                    } else {
+                                        tasksHTML += '<div style="text-align:center;color:var(--status-green);font-size:12px;"><i class="fas fa-check-circle"></i> Выполнено!</div>';
                                     }
-                                    tasksHTML += '</div></div>';
+                                    tasksHTML += '</div>';
                                 }
-                                el.innerHTML = '<div style="margin-bottom:15px;"><p style="color:var(--accent);font-size:12px;margin-bottom:10px;">👥 Командный счёт</p>' + tasksHTML + '</div>';
+                                el.innerHTML = tasksHTML;
                             }
                         });
                 } else {
@@ -17758,17 +17758,17 @@ function renderCardHTML(card, showDice, isStart) {
                                     var taskPoints = Math.min(pointsPerTask, Math.max(0, count - t * pointsPerTask));
                                     var taskDone = taskPoints >= pointsPerTask;
                                     var taskDesc = card.bossTasks ? card.bossTasks[t] : ('Задание ' + (t + 1));
-                                    tasksHTML += '<div style="padding:12px;margin-bottom:8px;background:var(--card-bg);border-radius:12px;border:1px solid ' + (taskDone ? 'var(--status-green)' : 'var(--border-color)') + ';">';
-                                    tasksHTML += '<div style="font-size:13px;color:var(--text);margin-bottom:8px;">📋 ' + taskDesc + '</div>';
-                                    tasksHTML += '<div style="display:flex;align-items:center;gap:8px;">';
-                                    tasksHTML += '<div class="progress-bar-container" style="flex:1;height:6px;margin:0;"><div class="progress-bar-fill" style="width:' + (taskPoints / pointsPerTask * 100) + '%;"></div></div>';
-                                    tasksHTML += '<span style="font-size:11px;color:var(--text-gray);white-space:nowrap;">' + taskPoints + '/' + pointsPerTask + '</span>';
+                                    tasksHTML += '<div class="subtask-card">';
+                                    tasksHTML += '<div class="subtask-header"><span class="subtask-name">' + taskDesc + '</span><span class="subtask-progress">' + taskPoints + '/' + pointsPerTask + '</span></div>';
+                                    tasksHTML += '<div class="progress-bar-container" style="height:6px;margin:0 0 8px 0;"><div class="progress-bar-fill" style="width:' + (taskPoints / pointsPerTask * 100) + '%;height:100%;"></div></div>';
                                     if (!taskDone) {
-                                        tasksHTML += '<button class="task-submit-btn" onclick="submitBossWork(' + t + ')" style="padding:6px 12px;font-size:11px;margin:0;white-space:nowrap;"><i class="fas fa-camera"></i></button>';
+                                        tasksHTML += '<button class="task-submit-btn subtask-btn" onclick="submitBossWork(' + t + ')"><i class="fas fa-camera"></i> Отправить фото</button>';
+                                    } else {
+                                        tasksHTML += '<div style="text-align:center;color:var(--status-green);font-size:12px;"><i class="fas fa-check-circle"></i> Выполнено!</div>';
                                     }
-                                    tasksHTML += '</div></div>';
+                                    tasksHTML += '</div>';
                                 }
-                                el.innerHTML = '<div style="margin-bottom:15px;">' + tasksHTML + '</div>';
+                                el.innerHTML = tasksHTML;
                             }
                         });
                 }
