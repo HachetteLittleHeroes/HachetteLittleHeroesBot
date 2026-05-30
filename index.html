@@ -6395,11 +6395,13 @@ body:not([data-theme]) .modal-content,
             <span>🌸 Сезонный пропуск</span>
             <i class="fas fa-chevron-down" id="seasonPassArrow"></i>
         </button>
-        <div id="seasonPassContent" class="tasks-content" style="display: none;">
-            <div id="seasonPassPremiumStatus" style="display: none;"></div>
-            <div id="seasonPassTasksList"></div>
-        </div>
+      <div id="seasonPassContent" class="tasks-content" style="display: none;">
+    <div style="text-align: center; padding: 20px;">
+        <div style="font-size: 48px;">🌸</div>
+        <h3>Сезонный пропуск завершён!</h3>
+        <p style="color: var(--text-gray); margin: 15px 0;">Вы можете принять участие в других активностях</p>
     </div>
+</div>
     
 <!-- ========== ИСПЫТАНИЕ СООБЩЕСТВА ========== -->
 <div class="tasks-section" style="margin-top: 15px;">
@@ -8196,12 +8198,12 @@ function renderBranchTasks() {
 
 const TIME_TASKS = [
     {
-        id: 'time_task_7',
-        title: 'Ломаем голову',
-        description: 'Раскрась любую картинку, где изображена Райли из мф Головоломка',
+        id: 'time_task_9',
+        title: 'Солнечные Гавайи',
+        description: 'Раскрась картинку с Лило',
         reward: 5,
-        deadline: '2026-05-24',
-        deadlineText: 'ДО 24.05.2026',
+        deadline: '2026-06-07',
+        deadlineText: 'ДО 07.06.2026',
         completed: false
     }
 ];
@@ -12540,13 +12542,13 @@ function saveClaimedRewards() {
 }
 
 function toggleSeasonPass() {
-    const content = document.getElementById('seasonPassContent');
-    const arrow = document.getElementById('seasonPassArrow');
+    var content = document.getElementById('seasonPassContent');
+    var arrow = document.getElementById('seasonPassArrow');
     if (!content) return;
     if (content.style.display === 'none' || content.style.display === '') {
         content.style.display = 'block';
         if (arrow) arrow.style.transform = 'rotate(180deg)';
-        renderSeasonPassTasks();
+        // renderSeasonPassTasks(); — НЕ вызываем
     } else {
         content.style.display = 'none';
         if (arrow) arrow.style.transform = 'rotate(0deg)';
