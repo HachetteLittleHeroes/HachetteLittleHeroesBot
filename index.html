@@ -17743,8 +17743,12 @@ function renderCardHTML(card, showDice, isStart) {
                     fetch(SERVER_URL + '/api/dnd/get_progress?user_id=' + userId + '&character=' + dndCharacter)
                         .then(r => r.json())
                         .then(function(data) {
-                            var bpk = 'boss_points_' + cardNumber;
-                            var count = (data.progress && data.progress[bpk]) || 0;
+                           // Суммируем очки по всем заданиям
+var count = 0;
+for (var i = 0; i < tasksRequired; i++) {
+    var bpk = 'boss_points_' + cardNumber + '_task_' + i;
+    count += (data.progress && data.progress[bpk]) || 0;
+}
                             if (count >= totalPoints) {
                                 clearInterval(window._bossIntervals[cardNumber]);
                                 dndApproved = true;
