@@ -16749,10 +16749,14 @@ function renderDndCard(cardNumber) {
     
     var finalBosses = [203, 204, 205, 206, 207, 208];
     
-   if (card.isFinal && dndApproved) {
-    container.innerHTML = '<div class="branch-task-card"><div class="branch-header"><h3>🎉 Победа!</h3></div><div class="level-card" style="text-align:center;"><p style="font-size:18px;font-weight:700;color:var(--accent);">Ты победил ' + card.title + '!</p><p>Приключение пройдено!</p><p style="color:#ffd700;margin-top:10px;">🎫 Получен билет на розыгрыш призов D&D!</p><button class="task-submit-btn" onclick="resetDndProgress()" style="margin-top:15px;background:#ff9800;">📖 Завершить историю</button></div></div>';
-    return;
-}
+    if (card.isFinal && dndApproved) {
+        var winImage = dndMode === 'team' 
+            ? 'https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/f2.png'
+            : 'https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/f1.png';
+        
+        container.innerHTML = '<div class="branch-task-card"><div class="branch-header"><h3>🎉 Победа!</h3></div><div class="level-card" style="text-align:center;"><img src="' + winImage + '" style="width:100%;border-radius:12px;margin-bottom:15px;" onerror="this.style.display=\'none\'"><p style="font-size:18px;font-weight:700;color:var(--accent);">Ты победил ' + card.title + '!</p><p>Приключение пройдено!</p><p style="color:#ffd700;margin-top:10px;">🎫 Получен билет на розыгрыш призов D&D!</p><button class="task-submit-btn" onclick="resetDndProgress()" style="margin-top:15px;background:#ff9800;">📖 Завершить историю</button></div></div>';
+        return;
+    }
     
     container.innerHTML = renderCardHTML(card, dndApproved, false);
 }
@@ -17602,14 +17606,10 @@ function openSkipTaskModal() {
         return;
     }
     
-    var card = getCardData(currentCard);
     var imgEl = document.getElementById('skipTaskImage');
-    if (card && card.image) {
-        imgEl.src = card.image;
-        imgEl.style.display = 'block';
-    } else {
-        imgEl.style.display = 'none';
-    }
+    // ✅ Всегда показываем propusk.png
+    imgEl.src = 'https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/propusk.png';
+    imgEl.style.display = 'block';
     
     document.getElementById('skipTaskModal').style.display = 'flex';
 }
