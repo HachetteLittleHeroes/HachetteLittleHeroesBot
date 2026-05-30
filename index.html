@@ -16675,7 +16675,7 @@ function isGameInProgress() {
 // ==========================================
 
 function loadDndProgress() {
-    if (!dndCharacter) { dndCardHistory = [0]; dndApproved = true; return Promise.resolve(); }
+    if (!dndCharacter) { dndCardHistory = [0]; dndApproved = true; dndSkipUsed = false; return Promise.resolve(); }
     
     return fetch(SERVER_URL + '/api/dnd/get_progress?user_id=' + userId + '&character=' + dndCharacter)
         .then(r => r.json())
@@ -16686,8 +16686,6 @@ function loadDndProgress() {
                 var lastCard = dndCardHistory[dndCardHistory.length - 1];
                 var completedCards = data.progress.completed_cards || [];
                 dndApproved = (lastCard === 0 || completedCards.includes(lastCard));
-                
-                // ✅ Загружаем статус пропуска с сервера
                 dndSkipUsed = data.progress.skip_used || false;
             } else {
                 dndCardHistory = [0];
