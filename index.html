@@ -15116,13 +15116,72 @@ var DND_CARDS_MAGE = {
         100: { title: "Зал мух", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/m100.png", task: "Раскрась картинку из подземелья!", level: 4 },
         
         // УРОВЕНЬ 5: МИНИ-БОССЫ 101-106
-        101: { title: "Хранитель подземелья", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/m101.png", task: "Раскрась картинку с боссом или эпической битвой!", level: 5 },
-        102: { title: "Теневой дракон", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/m102.png", task: "Раскрась картинку с драконом или тенью!", level: 5 },
-        103: { title: "Король гоблинов", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/m103.png", task: "Раскрась картинку с гоблином или короной!", level: 5 },
-        104: { title: "Дух тьмы", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/m104.png", task: "Раскрась картинку с духом или тьмой!", level: 5 },
-        105: { title: "Маг хаоса", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/m105.png", task: "Раскрась картинку с магом или хаосом!", level: 5 },
-        106: { title: "Железный голем", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/m106.png", task: "Раскрась картинку с големом или металлом!", level: 5 },
-        
+        101: { 
+    title: "Хранитель подземелья", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/m101.png", 
+    level: 5,
+    bossTasks: [
+        "Раскрась картинку с боссом",
+        "Раскрась картинку с эпической битвой",
+        "Раскрась картинку с заклинанием",
+        "Раскрась картинку с магическим щитом"
+    ]
+},
+102: { 
+    title: "Теневой дракон", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/m102.png", 
+    level: 5,
+    bossTasks: [
+        "Раскрась картинку с драконом",
+        "Раскрась картинку с тенью",
+        "Раскрась картинку с магическим огнём",
+        "Раскрась картинку с рунной ловушкой"
+    ]
+},
+103: { 
+    title: "Король гоблинов", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/m103.png", 
+    level: 5,
+    bossTasks: [
+        "Раскрась картинку с гоблином",
+        "Раскрась картинку с короной",
+        "Раскрась картинку с магическим посохом",
+        "Раскрась картинку с ордой гоблинов"
+    ]
+},
+104: { 
+    title: "Дух тьмы", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/m104.png", 
+    level: 5,
+    bossTasks: [
+        "Раскрась картинку с духом",
+        "Раскрась картинку с тьмой",
+        "Раскрась картинку с заклинанием света",
+        "Раскрась картинку с магическим барьером"
+    ]
+},
+105: { 
+    title: "Маг хаоса", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/m105.png", 
+    level: 5,
+    bossTasks: [
+        "Раскрась картинку с магом",
+        "Раскрась картинку с хаосом",
+        "Раскрась картинку с порталом",
+        "Раскрась картинку с разрушенным замком"
+    ]
+},
+106: { 
+    title: "Железный голем", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/m106.png", 
+    level: 5,
+    bossTasks: [
+        "Раскрась картинку с големом",
+        "Раскрась картинку с металлом",
+        "Раскрась картинку с магической руной",
+        "Раскрась картинку с алхимической лабораторией"
+    ]
+},
         // УРОВЕНЬ 6: 107-112
         107: { title: "Возрождение", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/m107.png", task: "Раскрась картинку с возрождением или светом!", level: 6 },
         108: { title: "Новая сила", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/m108.png", task: "Раскрась картинку с силой или энергией!", level: 6 },
@@ -15228,12 +15287,78 @@ var DND_CARDS_MAGE = {
         202: { title: "Преддверие финала", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/m202.png", task: "Раскрась картинку на пути к финалу!", level: 9 },
         
         // УРОВЕНЬ 10: ФИНАЛЬНЫЕ БОССЫ 203-208
-        203: { title: "Демон Бездны", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/m203.png", task: "Раскрась картинку с демоном!", level: 10, isFinal: true },
-        204: { title: "Архилич", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/m204.png", task: "Раскрась картинку с личом или некромантом!", level: 10, isFinal: true },
-        205: { title: "Древний дракон", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/m205.png", task: "Раскрась картинку с древним драконом!", level: 10, isFinal: true },
-        206: { title: "Король демонов", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/m206.png", task: "Раскрась картинку с королём демонов!", level: 10, isFinal: true },
-        207: { title: "Титан бездны", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/m207.png", task: "Раскрась картинку с титаном!", level: 10, isFinal: true },
-        208: { title: "Властелин тьмы", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/m208.png", task: "Раскрась картинку с властелином тьмы!", level: 10, isFinal: true }
+      203: { 
+    title: "Демон Бездны", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/m203.png", 
+    level: 10, 
+    isFinal: true,
+    bossTasks: [
+        "Раскрась картинку с демоном",
+        "Раскрась картинку с бездной",
+        "Раскрась картинку с адским пламенем",
+        "Раскрась картинку с демоническим порталом"
+    ]
+},
+204: { 
+    title: "Архилич", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/m204.png", 
+    level: 10, 
+    isFinal: true,
+    bossTasks: [
+        "Раскрась картинку с личом",
+        "Раскрась картинку с некромантом",
+        "Раскрась картинку с филактерией",
+        "Раскрась картинку с армией нежити"
+    ]
+},
+205: { 
+    title: "Древний дракон", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/m205.png", 
+    level: 10, 
+    isFinal: true,
+    bossTasks: [
+        "Раскрась картинку с древним драконом",
+        "Раскрась картинку с драконьим огнём",
+        "Раскрась картинку с магическим кристаллом",
+        "Раскрась картинку с драконьим логовом"
+    ]
+},
+206: { 
+    title: "Король демонов", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/m206.png", 
+    level: 10, 
+    isFinal: true,
+    bossTasks: [
+        "Раскрась картинку с королём демонов",
+        "Раскрась картинку с троном тьмы",
+        "Раскрась картинку с пентаграммой",
+        "Раскрась картинку с жертвоприношением"
+    ]
+},
+207: { 
+    title: "Титан бездны", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/m207.png", 
+    level: 10, 
+    isFinal: true,
+    bossTasks: [
+        "Раскрась картинку с титаном",
+        "Раскрась картинку с разрушением",
+        "Раскрась картинку с молниями",
+        "Раскрась картинку с падающими звёздами"
+    ]
+},
+208: { 
+    title: "Властелин тьмы", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/m208.png", 
+    level: 10, 
+    isFinal: true,
+    bossTasks: [
+        "Раскрась картинку с властелином тьмы",
+        "Раскрась картинку с армией тьмы",
+        "Раскрась картинку с чёрной магией",
+        "Раскрась картинку с последней битвой"
+    ]
+}
     }
 };
 
@@ -15450,12 +15575,72 @@ var DND_CARDS_ARCHER = {
         100: { title: "Зал мух", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/l100.png", task: "Раскрась картинку из подземелья!", level: 4 },
         
         // УРОВЕНЬ 5: МИНИ-БОССЫ 101-106
-        101: { title: "Хранитель подземелья", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/l101.png", task: "Раскрась картинку с боссом или эпической битвой!", level: 5 },
-        102: { title: "Теневой дракон", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/l102.png", task: "Раскрась картинку с драконом или тенью!", level: 5 },
-        103: { title: "Король гоблинов", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/l103.png", task: "Раскрась картинку с гоблином или короной!", level: 5 },
-        104: { title: "Дух тьмы", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/l104.png", task: "Раскрась картинку с духом или тьмой!", level: 5 },
-        105: { title: "Маг хаоса", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/l105.png", task: "Раскрась картинку с магом или хаосом!", level: 5 },
-        106: { title: "Железный голем", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/l106.png", task: "Раскрась картинку с големом или металлом!", level: 5 },
+      101: { 
+    title: "Хранитель подземелья", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/l101.png", 
+    level: 5,
+    bossTasks: [
+        "Раскрась картинку с боссом",
+        "Раскрась картинку с эпической битвой",
+        "Раскрась картинку со святым символом",
+        "Раскрась картинку с молитвой"
+    ]
+},
+102: { 
+    title: "Теневой дракон", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/l102.png", 
+    level: 5,
+    bossTasks: [
+        "Раскрась картинку с драконом",
+        "Раскрась картинку с тенью",
+        "Раскрась картинку с божественным светом",
+        "Раскрась картинку с изгнанием тьмы"
+    ]
+},
+103: { 
+    title: "Король гоблинов", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/l103.png", 
+    level: 5,
+    bossTasks: [
+        "Раскрась картинку с гоблином",
+        "Раскрась картинку с короной",
+        "Раскрась картинку с благословением",
+        "Раскрась картинку с исцелением"
+    ]
+},
+104: { 
+    title: "Дух тьмы", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/l104.png", 
+    level: 5,
+    bossTasks: [
+        "Раскрась картинку с духом",
+        "Раскрась картинку с тьмой",
+        "Раскрась картинку со святой водой",
+        "Раскрась картинку с изгоняющим заклинанием"
+    ]
+},
+105: { 
+    title: "Маг хаоса", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/l105.png", 
+    level: 5,
+    bossTasks: [
+        "Раскрась картинку с магом",
+        "Раскрась картинку с хаосом",
+        "Раскрась картинку с божественным щитом",
+        "Раскрась картинку с храмом"
+    ]
+},
+106: { 
+    title: "Железный голем", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/l106.png", 
+    level: 5,
+    bossTasks: [
+        "Раскрась картинку с големом",
+        "Раскрась картинку с металлом",
+        "Раскрась картинку с освящённым оружием",
+        "Раскрась картинку с алтарём"
+    ]
+},
         
         // УРОВЕНЬ 6: 107-112
         107: { title: "Возрождение", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/l107.png", task: "Раскрась картинку с возрождением или светом!", level: 6 },
@@ -15562,13 +15747,78 @@ var DND_CARDS_ARCHER = {
         202: { title: "Преддверие финала", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/l202.png", task: "Раскрась картинку на пути к финалу!", level: 9 },
         
         // УРОВЕНЬ 10: ФИНАЛЬНЫЕ БОССЫ 203-208
-        203: { title: "Демон Бездны", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/l203.png", task: "Раскрась картинку с демоном!", level: 10, isFinal: true },
-        204: { title: "Архилич", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/l204.png", task: "Раскрась картинку с личом или некромантом!", level: 10, isFinal: true },
-        205: { title: "Древний дракон", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/l205.png", task: "Раскрась картинку с древним драконом!", level: 10, isFinal: true },
-        206: { title: "Король демонов", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/l206.png", task: "Раскрась картинку с королём демонов!", level: 10, isFinal: true },
-        207: { title: "Титан бездны", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/l207.png", task: "Раскрась картинку с титаном!", level: 10, isFinal: true },
-        208: { title: "Властелин тьмы", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/l208.png", task: "Раскрась картинку с властелином тьмы!", level: 10, isFinal: true }
-    }
+        203: { 
+    title: "Демон Бездны", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/l203.png", 
+    level: 10, 
+    isFinal: true,
+    bossTasks: [
+        "Раскрась картинку с демоном",
+        "Раскрась картинку с бездной",
+        "Раскрась картинку с экзорцизмом",
+        "Раскрась картинку с небесным воинством"
+    ]
+},
+204: { 
+    title: "Архилич", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/l204.png", 
+    level: 10, 
+    isFinal: true,
+    bossTasks: [
+        "Раскрась картинку с личом",
+        "Раскрась картинку с некромантом",
+        "Раскрась картинку с упокоением души",
+        "Раскрась картинку с кладбищем"
+    ]
+},
+205: { 
+    title: "Древний дракон", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/l205.png", 
+    level: 10, 
+    isFinal: true,
+    bossTasks: [
+        "Раскрась картинку с древним драконом",
+        "Раскрась картинку с драконьим огнём",
+        "Раскрась картинку с божественным судом",
+        "Раскрась картинку с небесным пламенем"
+    ]
+},
+206: { 
+    title: "Король демонов", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/l206.png", 
+    level: 10, 
+    isFinal: true,
+    bossTasks: [
+        "Раскрась картинку с королём демонов",
+        "Раскрась картинку с троном тьмы",
+        "Раскрась картинку со священной войной",
+        "Раскрась картинку с падшим ангелом"
+    ]
+},
+207: { 
+    title: "Титан бездны", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/l207.png", 
+    level: 10, 
+    isFinal: true,
+    bossTasks: [
+        "Раскрась картинку с титаном",
+        "Раскрась картинку с разрушением",
+        "Раскрась картинку с божественным гневом",
+        "Раскрась картинку с апокалипсисом"
+    ]
+},
+208: { 
+    title: "Властелин тьмы", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/l208.png", 
+    level: 10, 
+    isFinal: true,
+    bossTasks: [
+        "Раскрась картинку с властелином тьмы",
+        "Раскрась картинку с армией тьмы",
+        "Раскрась картинку с последней молитвой",
+        "Раскрась картинку с победой света"
+    ]
+}
 };
 
 // ==========================================
@@ -15783,12 +16033,72 @@ var DND_CARDS_DRUID = {
         100: { title: "Зал мух", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/d100.png", task: "Раскрась картинку из подземелья!", level: 4 },
         
         // УРОВЕНЬ 5: МИНИ-БОССЫ 101-106
-        101: { title: "Хранитель подземелья", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/d101.png", task: "Раскрась картинку с боссом или эпической битвой!", level: 5 },
-        102: { title: "Теневой дракон", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/d102.png", task: "Раскрась картинку с драконом или тенью!", level: 5 },
-        103: { title: "Король гоблинов", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/d103.png", task: "Раскрась картинку с гоблином или короной!", level: 5 },
-        104: { title: "Дух тьмы", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/d104.png", task: "Раскрась картинку с духом или тьмой!", level: 5 },
-        105: { title: "Маг хаоса", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/d105.png", task: "Раскрась картинку с магом или хаосом!", level: 5 },
-        106: { title: "Железный голем", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/d106.png", task: "Раскрась картинку с големом или металлом!", level: 5 },
+        101: { 
+    title: "Хранитель подземелья", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/d101.png", 
+    level: 5,
+    bossTasks: [
+        "Раскрась картинку с боссом",
+        "Раскрась картинку с эпической битвой",
+        "Раскрась картинку с силой природы",
+        "Раскрась картинку с лесным духом"
+    ]
+},
+102: { 
+    title: "Теневой дракон", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/d102.png", 
+    level: 5,
+    bossTasks: [
+        "Раскрась картинку с драконом",
+        "Раскрась картинку с тенью",
+        "Раскрась картинку с ядовитым плющом",
+        "Раскрась картинку с лесным пожаром"
+    ]
+},
+103: { 
+    title: "Король гоблинов", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/d103.png", 
+    level: 5,
+    bossTasks: [
+        "Раскрась картинку с гоблином",
+        "Раскрась картинку с короной",
+        "Раскрась картинку с превращением в зверя",
+        "Раскрась картинку с лесной армией"
+    ]
+},
+104: { 
+    title: "Дух тьмы", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/d104.png", 
+    level: 5,
+    bossTasks: [
+        "Раскрась картинку с духом",
+        "Раскрась картинку с тьмой",
+        "Раскрась картинку с лунным светом",
+        "Раскрась картинку с тотемом"
+    ]
+},
+105: { 
+    title: "Маг хаоса", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/d105.png", 
+    level: 5,
+    bossTasks: [
+        "Раскрась картинку с магом",
+        "Раскрась картинку с хаосом",
+        "Раскрась картинку с ураганом",
+        "Раскрась картинку с землетрясением"
+    ]
+},
+106: { 
+    title: "Железный голем", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/d106.png", 
+    level: 5,
+    bossTasks: [
+        "Раскрась картинку с големом",
+        "Раскрась картинку с металлом",
+        "Раскрась картинку с корнями деревьев",
+        "Раскрась картинку с каменной лавиной"
+    ]
+},
         
         // УРОВЕНЬ 6: 107-112
         107: { title: "Возрождение", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/d107.png", task: "Раскрась картинку с возрождением или светом!", level: 6 },
@@ -15895,12 +16205,78 @@ var DND_CARDS_DRUID = {
         202: { title: "Преддверие финала", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/d202.png", task: "Раскрась картинку на пути к финалу!", level: 9 },
         
         // УРОВЕНЬ 10: ФИНАЛЬНЫЕ БОССЫ 203-208
-        203: { title: "Демон Бездны", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/d203.png", task: "Раскрась картинку с демоном!", level: 10, isFinal: true },
-        204: { title: "Архилич", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/d204.png", task: "Раскрась картинку с личом или некромантом!", level: 10, isFinal: true },
-        205: { title: "Древний дракон", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/d205.png", task: "Раскрась картинку с древним драконом!", level: 10, isFinal: true },
-        206: { title: "Король демонов", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/d206.png", task: "Раскрась картинку с королём демонов!", level: 10, isFinal: true },
-        207: { title: "Титан бездны", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/d207.png", task: "Раскрась картинку с титаном!", level: 10, isFinal: true },
-        208: { title: "Властелин тьмы", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/d208.png", task: "Раскрась картинку с властелином тьмы!", level: 10, isFinal: true }
+       203: { 
+    title: "Демон Бездны", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/d203.png", 
+    level: 10, 
+    isFinal: true,
+    bossTasks: [
+        "Раскрась картинку с демоном",
+        "Раскрась картинку с бездной",
+        "Раскрась картинку с пробуждением земли",
+        "Раскрась картинку с древним энтом"
+    ]
+},
+204: { 
+    title: "Архилич", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/d204.png", 
+    level: 10, 
+    isFinal: true,
+    bossTasks: [
+        "Раскрась картинку с личом",
+        "Раскрась картинку с некромантом",
+        "Раскрась картинку с кругом жизни",
+        "Раскрась картинку с возрождением"
+    ]
+},
+205: { 
+    title: "Древний дракон", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/d205.png", 
+    level: 10, 
+    isFinal: true,
+    bossTasks: [
+        "Раскрась картинку с древним драконом",
+        "Раскрась картинку с драконьим огнём",
+        "Раскрась картинку с ледяной бурей",
+        "Раскрась картинку с грозовым небом"
+    ]
+},
+206: { 
+    title: "Король демонов", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/d206.png", 
+    level: 10, 
+    isFinal: true,
+    bossTasks: [
+        "Раскрась картинку с королём демонов",
+        "Раскрась картинку с троном тьмы",
+        "Раскрась картинку с силой стихий",
+        "Раскрась картинку с мировым древом"
+    ]
+},
+207: { 
+    title: "Титан бездны", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/d207.png", 
+    level: 10, 
+    isFinal: true,
+    bossTasks: [
+        "Раскрась картинку с титаном",
+        "Раскрась картинку с разрушением",
+        "Раскрась картинку с цунами",
+        "Раскрась картинку с извержением вулкана"
+    ]
+},
+208: { 
+    title: "Властелин тьмы", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/d208.png", 
+    level: 10, 
+    isFinal: true,
+    bossTasks: [
+        "Раскрась картинку с властелином тьмы",
+        "Раскрась картинку с армией тьмы",
+        "Раскрась картинку с пробуждением природы",
+        "Раскрась картинку с новым рассветом"
+    ]
+}
     }
 };
 
@@ -16116,12 +16492,72 @@ var DND_CARDS_ASSASSIN = {
         100: { title: "Зал мух", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/a100.png", task: "Раскрась картинку из подземелья!", level: 4 },
         
         // УРОВЕНЬ 5: МИНИ-БОССЫ 101-106
-        101: { title: "Хранитель подземелья", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/a101.png", task: "Раскрась картинку с боссом или эпической битвой!", level: 5 },
-        102: { title: "Теневой дракон", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/a102.png", task: "Раскрась картинку с драконом или тенью!", level: 5 },
-        103: { title: "Король гоблинов", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/a103.png", task: "Раскрась картинку с гоблином или короной!", level: 5 },
-        104: { title: "Дух тьмы", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/a104.png", task: "Раскрась картинку с духом или тьмой!", level: 5 },
-        105: { title: "Маг хаоса", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/a105.png", task: "Раскрась картинку с магом или хаосом!", level: 5 },
-        106: { title: "Железный голем", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/a106.png", task: "Раскрась картинку с големом или металлом!", level: 5 },
+        101: { 
+    title: "Хранитель подземелья", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/a101.png", 
+    level: 5,
+    bossTasks: [
+        "Раскрась картинку с боссом",
+        "Раскрась картинку с эпической битвой",
+        "Раскрась картинку со скрытым убийством",
+        "Раскрась картинку с теневой ловушкой"
+    ]
+},
+102: { 
+    title: "Теневой дракон", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/a102.png", 
+    level: 5,
+    bossTasks: [
+        "Раскрась картинку с драконом",
+        "Раскрась картинку с тенью",
+        "Раскрась картинку с отравленным клинком",
+        "Раскрась картинку с ночной засадой"
+    ]
+},
+103: { 
+    title: "Король гоблинов", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/a103.png", 
+    level: 5,
+    bossTasks: [
+        "Раскрась картинку с гоблином",
+        "Раскрась картинку с короной",
+        "Раскрась картинку с бесшумным убийством",
+        "Раскрась картинку с подземным лагерем"
+    ]
+},
+104: { 
+    title: "Дух тьмы", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/a104.png", 
+    level: 5,
+    bossTasks: [
+        "Раскрась картинку с духом",
+        "Раскрась картинку с тьмой",
+        "Раскрась картинку с призрачным клинком",
+        "Раскрась картинку с побегом из тени"
+    ]
+},
+105: { 
+    title: "Маг хаоса", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/a105.png", 
+    level: 5,
+    bossTasks: [
+        "Раскрась картинку с магом",
+        "Раскрась картинку с хаосом",
+        "Раскрась картинку с метательным ножом",
+        "Раскрась картинку с башней мага"
+    ]
+},
+106: { 
+    title: "Железный голем", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/a106.png", 
+    level: 5,
+    bossTasks: [
+        "Раскрась картинку с големом",
+        "Раскрась картинку с металлом",
+        "Раскрась картинку с взрывной ловушкой",
+        "Раскрась картинку с кузницей"
+    ]
+},
         
         // УРОВЕНЬ 6: 107-112
         107: { title: "Возрождение", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/a107.png", task: "Раскрась картинку с возрождением или светом!", level: 6 },
@@ -16228,12 +16664,78 @@ var DND_CARDS_ASSASSIN = {
         202: { title: "Преддверие финала", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/a202.png", task: "Раскрась картинку на пути к финалу!", level: 9 },
         
         // УРОВЕНЬ 10: ФИНАЛЬНЫЕ БОССЫ 203-208
-        203: { title: "Демон Бездны", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/a203.png", task: "Раскрась картинку с демоном!", level: 10, isFinal: true },
-        204: { title: "Архилич", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/a204.png", task: "Раскрась картинку с личом или некромантом!", level: 10, isFinal: true },
-        205: { title: "Древний дракон", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/a205.png", task: "Раскрась картинку с древним драконом!", level: 10, isFinal: true },
-        206: { title: "Король демонов", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/a206.png", task: "Раскрась картинку с королём демонов!", level: 10, isFinal: true },
-        207: { title: "Титан бездны", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/a207.png", task: "Раскрась картинку с титаном!", level: 10, isFinal: true },
-        208: { title: "Властелин тьмы", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/a208.png", task: "Раскрась картинку с властелином тьмы!", level: 10, isFinal: true }
+       203: { 
+    title: "Демон Бездны", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/a203.png", 
+    level: 10, 
+    isFinal: true,
+    bossTasks: [
+        "Раскрась картинку с демоном",
+        "Раскрась картинку с бездной",
+        "Раскрась картинку с адским ядом",
+        "Раскрась картинку с последним ударом"
+    ]
+},
+204: { 
+    title: "Архилич", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/a204.png", 
+    level: 10, 
+    isFinal: true,
+    bossTasks: [
+        "Раскрась картинку с личом",
+        "Раскрась картинку с некромантом",
+        "Раскрась картинку с уничтожением филактерии",
+        "Раскрась картинку со склепом"
+    ]
+},
+205: { 
+    title: "Древний дракон", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/a205.png", 
+    level: 10, 
+    isFinal: true,
+    bossTasks: [
+        "Раскрась картинку с древним драконом",
+        "Раскрась картинку с драконьим огнём",
+        "Раскрась картинку со смертельным ядом",
+        "Раскрась картинку с драконьим логовом"
+    ]
+},
+206: { 
+    title: "Король демонов", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/a206.png", 
+    level: 10, 
+    isFinal: true,
+    bossTasks: [
+        "Раскрась картинку с королём демонов",
+        "Раскрась картинку с троном тьмы",
+        "Раскрась картинку с убийством короля",
+        "Раскрась картинку с теневым побегом"
+    ]
+},
+207: { 
+    title: "Титан бездны", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/a207.png", 
+    level: 10, 
+    isFinal: true,
+    bossTasks: [
+        "Раскрась картинку с титаном",
+        "Раскрась картинку с разрушением",
+        "Раскрась картинку с гигантской ловушкой",
+        "Раскрась картинку с падением титана"
+    ]
+},
+208: { 
+    title: "Властелин тьмы", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/a208.png", 
+    level: 10, 
+    isFinal: true,
+    bossTasks: [
+        "Раскрась картинку с властелином тьмы",
+        "Раскрась картинку с армией тьмы",
+        "Раскрась картинку с последней тенью",
+        "Раскрась картинку с рассветом после битвы"
+    ]
+}
     }
 };
 
@@ -16449,12 +16951,72 @@ var DND_CARDS_BARD = {
         100: { title: "Зал мух", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b100.png", task: "Раскрась картинку из подземелья!", level: 4 },
         
         // УРОВЕНЬ 5: МИНИ-БОССЫ 101-106
-        101: { title: "Хранитель подземелья", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b101.png", task: "Раскрась картинку с боссом или эпической битвой!", level: 5 },
-        102: { title: "Теневой дракон", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b102.png", task: "Раскрась картинку с драконом или тенью!", level: 5 },
-        103: { title: "Король гоблинов", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b103.png", task: "Раскрась картинку с гоблином или короной!", level: 5 },
-        104: { title: "Дух тьмы", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b104.png", task: "Раскрась картинку с духом или тьмой!", level: 5 },
-        105: { title: "Маг хаоса", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b105.png", task: "Раскрась картинку с магом или хаосом!", level: 5 },
-        106: { title: "Железный голем", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b106.png", task: "Раскрась картинку с големом или металлом!", level: 5 },
+       101: { 
+    title: "Хранитель подземелья", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b101.png", 
+    level: 5,
+    bossTasks: [
+        "Раскрась картинку с боссом",
+        "Раскрась картинку с эпической битвой",
+        "Раскрась картинку с вдохновляющей песней",
+        "Раскрась картинку с героической балладой"
+    ]
+},
+102: { 
+    title: "Теневой дракон", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b102.png", 
+    level: 5,
+    bossTasks: [
+        "Раскрась картинку с драконом",
+        "Раскрась картинку с тенью",
+        "Раскрась картинку с усыпляющей мелодией",
+        "Раскрась картинку с легендой о драконе"
+    ]
+},
+103: { 
+    title: "Король гоблинов", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b103.png", 
+    level: 5,
+    bossTasks: [
+        "Раскрась картинку с гоблином",
+        "Раскрась картинку с короной",
+        "Раскрась картинку с ослепительным выступлением",
+        "Раскрась картинку с таверной"
+    ]
+},
+104: { 
+    title: "Дух тьмы", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b104.png", 
+    level: 5,
+    bossTasks: [
+        "Раскрась картинку с духом",
+        "Раскрась картинку с тьмой",
+        "Раскрась картинку с успокаивающей арфой",
+        "Раскрась картинку с изгнанием духа"
+    ]
+},
+105: { 
+    title: "Маг хаоса", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b105.png", 
+    level: 5,
+    bossTasks: [
+        "Раскрась картинку с магом",
+        "Раскрась картинку с хаосом",
+        "Раскрась картинку с контр-мелодией",
+        "Раскрась картинку с магической дуэлью"
+    ]
+},
+106: { 
+    title: "Железный голем", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b106.png", 
+    level: 5,
+    bossTasks: [
+        "Раскрась картинку с големом",
+        "Раскрась картинку с металлом",
+        "Раскрась картинку с разрушительным аккордом",
+        "Раскрась картинку с концертным залом"
+    ]
+},
         
         // УРОВЕНЬ 6: 107-112
         107: { title: "Возрождение", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b107.png", task: "Раскрась картинку с возрождением или светом!", level: 6 },
@@ -16561,12 +17123,78 @@ var DND_CARDS_BARD = {
         202: { title: "Преддверие финала", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b202.png", task: "Раскрась картинку на пути к финалу!", level: 9 },
         
         // УРОВЕНЬ 10: ФИНАЛЬНЫЕ БОССЫ 203-208
-        203: { title: "Демон Бездны", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b203.png", task: "Раскрась картинку с демоном!", level: 10, isFinal: true },
-        204: { title: "Архилич", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b204.png", task: "Раскрась картинку с личом или некромантом!", level: 10, isFinal: true },
-        205: { title: "Древний дракон", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b205.png", task: "Раскрась картинку с древним драконом!", level: 10, isFinal: true },
-        206: { title: "Король демонов", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b206.png", task: "Раскрась картинку с королём демонов!", level: 10, isFinal: true },
-        207: { title: "Титан бездны", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b207.png", task: "Раскрась картинку с титаном!", level: 10, isFinal: true },
-        208: { title: "Властелин тьмы", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b208.png", task: "Раскрась картинку с властелином тьмы!", level: 10, isFinal: true }
+       203: { 
+    title: "Демон Бездны", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b203.png", 
+    level: 10, 
+    isFinal: true,
+    bossTasks: [
+        "Раскрась картинку с демоном",
+        "Раскрась картинку с бездной",
+        "Раскрась картинку с симфонией света",
+        "Раскрась картинку с легендарным финалом"
+    ]
+},
+204: { 
+    title: "Архилич", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b204.png", 
+    level: 10, 
+    isFinal: true,
+    bossTasks: [
+        "Раскрась картинку с личом",
+        "Раскрась картинку с некромантом",
+        "Раскрась картинку с песней жизни",
+        "Раскрась картинку с древним некрополем"
+    ]
+},
+205: { 
+    title: "Древний дракон", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b205.png", 
+    level: 10, 
+    isFinal: true,
+    bossTasks: [
+        "Раскрась картинку с древним драконом",
+        "Раскрась картинку с драконьим огнём",
+        "Раскрась картинку с эпической поэмой",
+        "Раскрась картинку с королевским двором"
+    ]
+},
+206: { 
+    title: "Король демонов", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b206.png", 
+    level: 10, 
+    isFinal: true,
+    bossTasks: [
+        "Раскрась картинку с королём демонов",
+        "Раскрась картинку с троном тьмы",
+        "Раскрась картинку с последней серенадой",
+        "Раскрась картинку с падением тирана"
+    ]
+},
+207: { 
+    title: "Титан бездны", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b207.png", 
+    level: 10, 
+    isFinal: true,
+    bossTasks: [
+        "Раскрась картинку с титаном",
+        "Раскрась картинку с разрушением",
+        "Раскрась картинку с гимном победы",
+        "Раскрась картинку с триумфальной аркой"
+    ]
+},
+208: { 
+    title: "Властелин тьмы", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/b208.png", 
+    level: 10, 
+    isFinal: true,
+    bossTasks: [
+        "Раскрась картинку с властелином тьмы",
+        "Раскрась картинку с армией тьмы",
+        "Раскрась картинку с последней песней",
+        "Раскрась картинку с новым началом"
+    ]
+}
     }
 };
 
