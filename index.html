@@ -16928,66 +16928,79 @@ function renderCardHTML(card, showDice, isStart) {
         if (showDice) {
             statusContainer.innerHTML = '<div style="text-align:center;color:var(--status-green);margin-bottom:10px;"><i class="fas fa-check-circle"></i> Задание одобрено!</div>';
         } else if (isBoss) {
-            if (dndMode === 'team') {
-                // Командный босс — общий прогресс
-                fetch(SERVER_URL + '/api/dnd/team_boss_progress?user_id=' + userId + '&card_id=' + cardNumber)
-                    .then(r => r.json())
-                    .then(function(data) {
-                        var submittedCount = data.current || 0;
-                        var required = data.required || 20;
-                        
-                        statusContainer.innerHTML = `
-                            <div style="text-align: center; margin-bottom: 15px;">
-                                <p style="color: var(--accent); font-size: 12px;">👥 Командный счёт</p>
-                                <div style="font-size: 14px; color: var(--accent); margin-bottom: 8px;">
-                                    📸 Очков: ${submittedCount}/${required}
+            function updateBossProgress() {
+                if (dndMode === 'team') {
+                    fetch(SERVER_URL + '/api/dnd/team_boss_progress?user_id=' + userId + '&card_id=' + cardNumber)
+                        .then(r => r.json())
+                        .then(function(data) {
+                            var submittedCount = data.current || 0;
+                            var required = data.required || 20;
+                            
+                            if (data.is_completed) {
+                                dndApproved = true;
+                                loadDndProgress().then(function() {
+                                    renderDndCard(cardNumber);
+                                });
+                                return;
+                            }
+                            
+                            statusContainer.innerHTML = `
+                                <div style="text-align: center; margin-bottom: 15px;">
+                                    <p style="color: var(--accent); font-size: 12px;">👥 Командный счёт</p>
+                                    <div style="font-size: 14px; color: var(--accent); margin-bottom: 8px;">
+                                        📸 Очков: ${submittedCount}/${required}
+                                    </div>
+                                    <div class="progress-bar-container" style="margin-bottom: 10px;">
+                                        <div class="progress-bar-fill" style="width: ${Math.min(100, (submittedCount / required) * 100)}%;"></div>
+                                    </div>
+                                    <button class="task-submit-btn" onclick="submitBossWork()">
+                                        <i class="fas fa-camera"></i> Отправить работу
+                                    </button>
                                 </div>
-                                <div class="progress-bar-container" style="margin-bottom: 10px;">
-                                    <div class="progress-bar-fill" style="width: ${Math.min(100, (submittedCount / required) * 100)}%;"></div>
+                            `;
+                        });
+                } else {
+                    fetch(SERVER_URL + '/api/dnd/get_progress?user_id=' + userId + '&character=' + dndCharacter)
+                        .then(r => r.json())
+                        .then(function(data) {
+                            var bossPointsKey = 'boss_points_' + cardNumber;
+                            var submittedCount = 0;
+                            if (data.status === 'ok' && data.progress) {
+                                submittedCount = data.progress[bossPointsKey] || 0;
+                            }
+                            var required = getBossWorkRequired();
+                            
+                            if (submittedCount >= required) {
+                                dndApproved = true;
+                                loadDndProgress().then(function() {
+                                    renderDndCard(cardNumber);
+                                });
+                                return;
+                            }
+                            
+                            statusContainer.innerHTML = `
+                                <div style="text-align: center; margin-bottom: 15px;">
+                                    <div style="font-size: 14px; color: var(--accent); margin-bottom: 8px;">
+                                        📸 Очков: ${submittedCount}/${required}
+                                    </div>
+                                    <div class="progress-bar-container" style="margin-bottom: 10px;">
+                                        <div class="progress-bar-fill" style="width: ${Math.min(100, (submittedCount / required) * 100)}%;"></div>
+                                    </div>
+                                    <button class="task-submit-btn" onclick="submitBossWork()">
+                                        <i class="fas fa-camera"></i> Отправить работу
+                                    </button>
                                 </div>
-                                <button class="task-submit-btn" onclick="submitBossWork()">
-                                    <i class="fas fa-camera"></i> Отправить работу
-                                </button>
-                            </div>
-                        `;
-                    })
-                    .catch(function() {
-                        statusContainer.innerHTML = '<p style="text-align:center;">⏳ Загрузка...</p>';
-                    });
-            } else {
-                // Соло-босс — личный прогресс
-                fetch(SERVER_URL + '/api/dnd/get_progress?user_id=' + userId + '&character=' + dndCharacter)
-                    .then(r => r.json())
-                    .then(function(data) {
-                        var bossPointsKey = 'boss_points_' + cardNumber;
-                        var submittedCount = 0;
-                        if (data.status === 'ok' && data.progress) {
-                            submittedCount = data.progress[bossPointsKey] || 0;
-                        }
-                        
-                        var required = getBossWorkRequired();
-                        
-                        statusContainer.innerHTML = `
-                            <div style="text-align: center; margin-bottom: 15px;">
-                                <div style="font-size: 14px; color: var(--accent); margin-bottom: 8px;">
-                                    📸 Очков: ${submittedCount}/${required}
-                                </div>
-                                <div class="progress-bar-container" style="margin-bottom: 10px;">
-                                    <div class="progress-bar-fill" style="width: ${Math.min(100, (submittedCount / required) * 100)}%;"></div>
-                                </div>
-                                <button class="task-submit-btn" onclick="submitBossWork()">
-                                    <i class="fas fa-camera"></i> Отправить работу
-                                </button>
-                                <div style="text-align:center;color:var(--text-gray);font-size:12px;margin-top:10px;">
-                                    ⏳ Нужно ${required} очков. Админ начисляет за каждую работу.
-                                </div>
-                            </div>
-                        `;
-                    })
-                    .catch(function() {
-                        statusContainer.innerHTML = '<p style="text-align:center;">⏳ Загрузка...</p>';
-                    });
+                            `;
+                        });
+                }
             }
+            
+            updateBossProgress();
+            setInterval(function() {
+                if (currentRenderCardNumber !== cardNumber) return;
+                updateBossProgress();
+            }, 5000);
+            
         } else {
             var skipButtonHTML = '';
             if (!dndSkipUsed) {
