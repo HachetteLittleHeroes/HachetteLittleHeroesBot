@@ -17547,6 +17547,13 @@ function resetDndUI() {
 function autoRestoreDndGame() {
     console.log('🔍 autoRestoreDndGame запущен');
     
+    // Блокируем кнопки меню на время проверки
+    var menuButtons = document.querySelectorAll('#dndMainMenu .dnd-character-card');
+    for (var i = 0; i < menuButtons.length; i++) {
+        menuButtons[i].style.pointerEvents = 'none';
+        menuButtons[i].style.opacity = '0.5';
+    }
+    
     // 1. Проверяем командную игру
     fetch(SERVER_URL + '/api/dnd/team/status?user_id=' + userId)
         .then(r => r.json())
@@ -17559,7 +17566,6 @@ function autoRestoreDndGame() {
                 var myself = (teamData.members || []).find(function(m) { return m.user_id == userId || m.id == userId; });
                 dndCharacter = myself?.character || myself?.character_class;
                 if (dndCharacter) {
-                    // ✅ Не спрашиваем персонажа — он уже выбран
                     document.getElementById('dndMainMenu').style.display = 'none';
                     document.getElementById('dndLobby').style.display = 'none';
                     document.getElementById('dndGame').style.display = 'block';
@@ -17610,7 +17616,6 @@ function autoRestoreDndGame() {
                 
                 console.log('🏆 Лучший:', bestResult ? bestResult.character + ' (' + maxLength + ' карт)' : 'нет');
                 
-                // ✅ Только если история длиннее чем [0] (больше 1 карты)
                 if (bestResult && maxLength > 1) {
                     dndMode = 'solo';
                     dndCharacter = bestResult.character;
@@ -17630,17 +17635,22 @@ function autoRestoreDndGame() {
                     checkSkipAvailability();
                     renderDndCard(lastCard);
                 } else {
-                    // ✅ Нет активных игр — показываем меню
+                    // Нет активных игр — показываем меню и разблокируем кнопки
                     console.log('👀 Нет активных игр, показываем меню');
                     document.getElementById('dndMainMenu').style.display = 'block';
                     document.getElementById('dndLobby').style.display = 'none';
                     document.getElementById('dndGame').style.display = 'none';
                     document.getElementById('dndSoloGame').style.display = 'none';
+                    
+                    // Разблокируем кнопки меню
+                    for (var j = 0; j < menuButtons.length; j++) {
+                        menuButtons[j].style.pointerEvents = 'auto';
+                        menuButtons[j].style.opacity = '1';
+                    }
                 }
             });
         });
 }
-
 
 function checkSkipAvailability() {
     if (!dndCharacter) return;
@@ -17822,7 +17832,7 @@ window.onload = async () => {
         });
     };
     
-    console.log('✅ APP READY');
+      console.log('✅ APP READY');
     
     // ✅ D&D: авто-восстановление при загрузке (только если оплачено)
     setTimeout(function() {
@@ -17833,7 +17843,7 @@ window.onload = async () => {
                     autoRestoreDndGame();
                 }
             });
-    }, 1500);
+    }, 300);
 };
        //БЕСТИАРИЙ
         const BESTIARY = [
