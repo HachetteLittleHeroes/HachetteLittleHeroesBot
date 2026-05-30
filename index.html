@@ -16557,15 +16557,11 @@ function toggleDnDEvent() {
     if (content.style.display === 'block') {
         content.style.display = 'none';
         if (arrow) arrow.style.transform = 'rotate(0deg)';
-        if (teamPollingInterval) {
-            clearInterval(teamPollingInterval);
-            teamPollingInterval = null;
-        }
     } else {
         content.style.display = 'block';
         if (arrow) arrow.style.transform = 'rotate(180deg)';
         checkDndPaymentStatus();
-        setTimeout(function() { autoRestoreDndGame(); }, 300);
+        // autoRestoreDndGame() — НЕ вызываем
     }
 }
 
@@ -17773,6 +17769,9 @@ window.onload = async () => {
             }
         });
     };
+    
+    console.log('✅ APP READY');
+};
     
     // ==========================================
     // ✅ D&D: авто-восстановление при открытии вкладки
