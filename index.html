@@ -17234,7 +17234,7 @@ function closeSoloCharacterModal() {
 }
 
 function startSoloWithCharacter(character) {
-    // Проверяем, нет ли уже активной игры у этого персонажа
+    // ✅ Проверяем, нет ли уже активной игры у этого или другого персонажа
     fetch(SERVER_URL + '/api/dnd/get_progress?user_id=' + userId + '&character=' + character)
         .then(r => r.json())
         .then(progressData => {
@@ -17247,6 +17247,7 @@ function startSoloWithCharacter(character) {
             var hasDefeatedBoss = finalBosses.some(function(boss) { return history.includes(boss); });
             
             if (history.length > 1 && !hasDefeatedBoss) {
+                // Есть активная игра — восстанавливаем
                 dndMode = 'solo';
                 dndCharacter = character;
                 dndCardHistory = history;
@@ -17260,24 +17261,47 @@ function startSoloWithCharacter(character) {
                 document.getElementById('dndSoloTitle').innerText = '🎲 Соло: ' + getCharacterName(character);
                 
                 saveDndProgress();
-                checkSkipAvailability();  // ← ВОТ ЭТО ДОБАВИТЬ
+                checkSkipAvailability();
                 renderDndCard(lastCard);
                 return;
             }
             
-            dndMode = 'solo';
-            dndCharacter = character;
-            dndCardHistory = [0];
-            dndApproved = true;
+            // Проверяем другие активные игры
+            var characters = ['knight', 'mage', 'archer', 'druid', 'assassin', 'bard'];
+            var promises = characters.map(function(c) {
+                if (c === character) return Promise.resolve({ history: history });
+                return fetch(SERVER_URL + '/api/dnd/get_progress?user_id=' + userId + '&character=' + c)
+                    .then(r => r.json())
+                    .then(d => ({ history: (d.progress?.card_history || d.progress?.completed_cards || []) }))
+                    .catch(() => ({ history: [0] }));
+            });
             
-            closeSoloCharacterModal();
-            document.getElementById('dndMainMenu').style.display = 'none';
-            document.getElementById('dndSoloGame').style.display = 'block';
-            document.getElementById('dndSoloTitle').innerText = '🎲 Соло: ' + getCharacterName(character);
-            
-            saveDndProgress();
-            checkSkipAvailability();  // ← И ЗДЕСЬ ДОБАВИТЬ
-            renderDndCard(0);
+            Promise.all(promises).then(function(results) {
+                for (var i = 0; i < results.length; i++) {
+                    var h = results[i].history;
+                    var hasBoss = finalBosses.some(function(b) { return h.includes(b); });
+                    if (h.length > 1 && !hasBoss) {
+                        alert('⚠️ У вас уже есть активная игра за персонажа ' + getCharacterName(characters[i]) + '! Завершите её сначала.');
+                        closeSoloCharacterModal();
+                        return;
+                    }
+                }
+                
+                // Нет активных игр — начинаем новую
+                dndMode = 'solo';
+                dndCharacter = character;
+                dndCardHistory = [0];
+                dndApproved = true;
+                dndSkipUsed = false;
+                
+                closeSoloCharacterModal();
+                document.getElementById('dndMainMenu').style.display = 'none';
+                document.getElementById('dndSoloGame').style.display = 'block';
+                document.getElementById('dndSoloTitle').innerText = '🎲 Соло: ' + getCharacterName(character);
+                
+                saveDndProgress();
+                renderDndCard(0);
+            });
         });
 }
 // ==========================================
@@ -17547,6 +17571,14 @@ function resetDndUI() {
 function autoRestoreDndGame() {
     console.log('🔍 autoRestoreDndGame запущен');
     
+    // ✅ Открываем вкладку D&D если она скрыта
+    var dndContent = document.getElementById('dndEventContent');
+    var dndArrow = document.getElementById('dndEventArrow');
+    if (dndContent && dndContent.style.display !== 'block') {
+        dndContent.style.display = 'block';
+        if (dndArrow) dndArrow.style.transform = 'rotate(180deg)';
+    }
+    
     // Блокируем кнопки меню на время проверки
     var menuButtons = document.querySelectorAll('#dndMainMenu .dnd-character-card');
     for (var i = 0; i < menuButtons.length; i++) {
@@ -17651,7 +17683,6 @@ function autoRestoreDndGame() {
             });
         });
 }
-
 function checkSkipAvailability() {
     if (!dndCharacter) return;
     
