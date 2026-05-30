@@ -16536,6 +16536,7 @@ for (var i = 203; i <= 208; i++) {
 // ==========================================
 // D&D ПЕРЕМЕННЫЕ
 // ==========================================
+var bossUpdateInterval = null;
 var dndMode = null;
 var dndCharacter = null;
 var dndCardHistory = [];
@@ -16927,8 +16928,14 @@ function renderCardHTML(card, showDice, isStart) {
         
         if (showDice) {
             statusContainer.innerHTML = '<div style="text-align:center;color:var(--status-green);margin-bottom:10px;"><i class="fas fa-check-circle"></i> Задание одобрено!</div>';
-        } else if (isBoss) {
+               } else if (isBoss) {
             function updateBossProgress() {
+                // ✅ Если карта сменилась — не обновляем
+                if (currentRenderCardNumber !== cardNumber) {
+                    if (bossUpdateInterval) clearInterval(bossUpdateInterval);
+                    return;
+                }
+                
                 if (dndMode === 'team') {
                     fetch(SERVER_URL + '/api/dnd/team_boss_progress?user_id=' + userId + '&card_id=' + cardNumber)
                         .then(r => r.json())
@@ -16937,6 +16944,8 @@ function renderCardHTML(card, showDice, isStart) {
                             var required = data.required || 20;
                             
                             if (data.is_completed) {
+                                // ✅ Останавливаем интервал перед перерисовкой
+                                if (bossUpdateInterval) clearInterval(bossUpdateInterval);
                                 dndApproved = true;
                                 loadDndProgress().then(function() {
                                     renderDndCard(cardNumber);
@@ -16971,6 +16980,7 @@ function renderCardHTML(card, showDice, isStart) {
                             var required = getBossWorkRequired();
                             
                             if (submittedCount >= required) {
+                                if (bossUpdateInterval) clearInterval(bossUpdateInterval);
                                 dndApproved = true;
                                 loadDndProgress().then(function() {
                                     renderDndCard(cardNumber);
@@ -16996,8 +17006,14 @@ function renderCardHTML(card, showDice, isStart) {
             }
             
             updateBossProgress();
-            setInterval(function() {
-                if (currentRenderCardNumber !== cardNumber) return;
+            
+            // ✅ Останавливаем старый интервал перед созданием нового
+            if (bossUpdateInterval) clearInterval(bossUpdateInterval);
+            bossUpdateInterval = setInterval(function() {
+                if (currentRenderCardNumber !== cardNumber) {
+                    clearInterval(bossUpdateInterval);
+                    return;
+                }
                 updateBossProgress();
             }, 5000);
             
