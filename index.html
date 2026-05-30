@@ -16921,37 +16921,66 @@ function renderCardHTML(card, showDice, isStart) {
         if (showDice) {
             statusContainer.innerHTML = '<div style="text-align:center;color:var(--status-green);margin-bottom:10px;"><i class="fas fa-check-circle"></i> Задание одобрено!</div>';
         } else if (isBoss) {
-            fetch(SERVER_URL + '/api/dnd/get_progress?user_id=' + userId + '&character=' + dndCharacter)
-                .then(r => r.json())
-                .then(function(data) {
-                    var bossPointsKey = 'boss_points_' + cardNumber;
-                    var submittedCount = 0;
-                    if (data.status === 'ok' && data.progress) {
-                        submittedCount = data.progress[bossPointsKey] || 0;
-                    }
-                    
-                    var required = getBossWorkRequired();
-                    
-                    statusContainer.innerHTML = `
-                        <div style="text-align: center; margin-bottom: 15px;">
-                            <div style="font-size: 14px; color: var(--accent); margin-bottom: 8px;">
-                                📸 Очков: ${submittedCount}/${required}
+            if (dndMode === 'team') {
+                // Командный босс — общий прогресс
+                fetch(SERVER_URL + '/api/dnd/team_boss_progress?user_id=' + userId + '&card_id=' + cardNumber)
+                    .then(r => r.json())
+                    .then(function(data) {
+                        var submittedCount = data.current || 0;
+                        var required = data.required || 20;
+                        
+                        statusContainer.innerHTML = `
+                            <div style="text-align: center; margin-bottom: 15px;">
+                                <p style="color: var(--accent); font-size: 12px;">👥 Командный счёт</p>
+                                <div style="font-size: 14px; color: var(--accent); margin-bottom: 8px;">
+                                    📸 Очков: ${submittedCount}/${required}
+                                </div>
+                                <div class="progress-bar-container" style="margin-bottom: 10px;">
+                                    <div class="progress-bar-fill" style="width: ${Math.min(100, (submittedCount / required) * 100)}%;"></div>
+                                </div>
+                                <button class="task-submit-btn" onclick="submitBossWork()">
+                                    <i class="fas fa-camera"></i> Отправить работу
+                                </button>
                             </div>
-                            <div class="progress-bar-container" style="margin-bottom: 10px;">
-                                <div class="progress-bar-fill" style="width: ${Math.min(100, (submittedCount / required) * 100)}%;"></div>
+                        `;
+                    })
+                    .catch(function() {
+                        statusContainer.innerHTML = '<p style="text-align:center;">⏳ Загрузка...</p>';
+                    });
+            } else {
+                // Соло-босс — личный прогресс
+                fetch(SERVER_URL + '/api/dnd/get_progress?user_id=' + userId + '&character=' + dndCharacter)
+                    .then(r => r.json())
+                    .then(function(data) {
+                        var bossPointsKey = 'boss_points_' + cardNumber;
+                        var submittedCount = 0;
+                        if (data.status === 'ok' && data.progress) {
+                            submittedCount = data.progress[bossPointsKey] || 0;
+                        }
+                        
+                        var required = getBossWorkRequired();
+                        
+                        statusContainer.innerHTML = `
+                            <div style="text-align: center; margin-bottom: 15px;">
+                                <div style="font-size: 14px; color: var(--accent); margin-bottom: 8px;">
+                                    📸 Очков: ${submittedCount}/${required}
+                                </div>
+                                <div class="progress-bar-container" style="margin-bottom: 10px;">
+                                    <div class="progress-bar-fill" style="width: ${Math.min(100, (submittedCount / required) * 100)}%;"></div>
+                                </div>
+                                <button class="task-submit-btn" onclick="submitBossWork()">
+                                    <i class="fas fa-camera"></i> Отправить работу
+                                </button>
+                                <div style="text-align:center;color:var(--text-gray);font-size:12px;margin-top:10px;">
+                                    ⏳ Нужно ${required} очков. Админ начисляет за каждую работу.
+                                </div>
                             </div>
-                            <button class="task-submit-btn" onclick="submitBossWork()">
-                                <i class="fas fa-camera"></i> Отправить работу
-                            </button>
-                            <div style="text-align:center;color:var(--text-gray);font-size:12px;margin-top:10px;">
-                                ⏳ Нужно ${required} очков. Админ начисляет за каждую работу.
-                            </div>
-                        </div>
-                    `;
-                })
-                .catch(function() {
-                    statusContainer.innerHTML = '<p style="text-align:center;">⏳ Загрузка...</p>';
-                });
+                        `;
+                    })
+                    .catch(function() {
+                        statusContainer.innerHTML = '<p style="text-align:center;">⏳ Загрузка...</p>';
+                    });
+            }
         } else {
             var skipButtonHTML = '';
             if (!dndSkipUsed) {
@@ -17255,100 +17284,77 @@ function startSoloWithCharacter(character) {
 // КОМАНДНАЯ ИГРА
 // ==========================================
 function showWaitingForTeam(bossLevel) {
-    console.log('⏳ showWaitingForTeam вызван, bossLevel:', bossLevel);
     var container = getCardContainer();
-    if (!container) {
-        console.error('❌ Контейнер не найден!');
-        return;
-    }
+    if (!container) return;
     
-    fetch(SERVER_URL + '/api/dnd/team_boss_status?user_id=' + userId + '&boss_level=' + bossLevel)
-        .then(r => r.json())
-        .then(data => {
-            console.log('📡 Ответ team_boss_status:', data);
-            
-            if (data.status === 'ok') {
-                if (data.all_ready) {
+    function checkStatus() {
+        fetch(SERVER_URL + '/api/dnd/team_boss_status?user_id=' + userId + '&boss_level=' + bossLevel)
+            .then(r => r.json())
+            .then(data => {
+                if (data.status === 'ok') {
                     if (data.boss_assigned) {
                         // Босс уже назначен — переходим
-                        dndCardHistory.push(data.boss_assigned);
+                        if (!dndCardHistory.includes(data.boss_assigned)) {
+                            dndCardHistory.push(data.boss_assigned);
+                        }
                         dndApproved = false;
                         saveDndProgress();
                         renderDndCard(data.boss_assigned);
-                    } else if (isTeamLeader()) {
+                    } else if (data.all_ready && isTeamLeader()) {
                         // Лидер бросает кубик
                         container.innerHTML = '<div class="branch-task-card"><div class="branch-header"><h3>⚔️ ' + (bossLevel === 'mini' ? 'Мини-босс' : 'Финальный босс') + '</h3></div><div class="level-card" style="text-align:center;"><p style="color:var(--status-green);">✅ Все участники готовы!</p><p>Брось кубик чтобы выбрать босса:</p><div id="dndDiceWrapper" style="margin:15px 0;"><div id="dndDice" class="dnd-dice" onclick="rollForTeamBoss(\'' + bossLevel + '\')"><div class="dice-face front"><span class="dot dot1"></span></div><div class="dice-face back"><span class="dot dot1"></span><span class="dot dot2"></span></div><div class="dice-face right"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span></div><div class="dice-face left"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span></div><div class="dice-face top"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span><span class="dot dot5"></span></div><div class="dice-face bottom"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span><span class="dot dot5"></span><span class="dot dot6"></span></div></div></div></div></div>';
-                    } else {
+                    } else if (data.all_ready) {
                         // Ждём лидера
-                        container.innerHTML = '<div class="branch-task-card"><div class="branch-header"><h3>⏳ Ожидание лидера</h3></div><div class="level-card" style="text-align:center;"><p>Все участники готовы!</p><p style="color:var(--text-gray);">Ожидаем, пока лидер выберет босса...</p><button class="task-submit-btn" onclick="showWaitingForTeam(\'' + bossLevel + '\')" style="margin-top:15px;">🔄 Проверить</button></div></div>';
-                    }
-                } else {
-                    // Ждём остальных
-                    var membersHtml = '';
-                    for (var i = 0; i < data.members.length; i++) {
-                        var m = data.members[i];
-                        membersHtml += '<div style="display:flex;align-items:center;gap:10px;padding:8px;margin-bottom:5px;background:var(--bg);border-radius:8px;"><span>' + (m.ready ? '✅' : '⏳') + '</span><span>' + escapeHtml(m.name) + '</span></div>';
-                    }
-                    container.innerHTML = '<div class="branch-task-card"><div class="branch-header"><h3>⏳ Ожидание команды</h3></div><div class="level-card"><p>Все должны достичь уровня босса:</p>' + membersHtml + '<button class="task-submit-btn" onclick="showWaitingForTeam(\'' + bossLevel + '\')" style="margin-top:15px;">🔄 Проверить</button></div></div>';
-                }
-            }
-        })
-        .catch(function(err) {
-            console.error('❌ Ошибка:', err);
-            container.innerHTML = '<p>Ошибка загрузки. Попробуйте обновить страницу.</p>';
-        });
-}
-
-        function showDndLobby() {
-    document.getElementById('dndMainMenu').style.display = 'none';
-    document.getElementById('dndLobby').style.display = 'block';
-    dndMode = 'team';
-    refreshTeamList();
-    loadMyTeam();
-    startTeamPolling();  // ← добавить
-}
-// Переменная для интервала
-var teamPollingInterval = null;
-
-function startTeamPolling() {
-    if (teamPollingInterval) clearInterval(teamPollingInterval);
-    
-    teamPollingInterval = setInterval(function() {
-        if (dndMode !== 'team') {
-            clearInterval(teamPollingInterval);
-            return;
-        }
-        
-        fetch(SERVER_URL + '/api/dnd/team/status?user_id=' + userId)
-            .then(r => r.json())
-            .then(data => {
-                if (data.status === 'ok' && data.game_started) {
-                    // Игра началась — переключаемся
-                    var gameScreen = document.getElementById('dndGame');
-                    if (gameScreen.style.display === 'none') {
-                        document.getElementById('dndLobby').style.display = 'none';
-                        document.getElementById('dndMainMenu').style.display = 'none';
-                        gameScreen.style.display = 'block';
-                        dndMode = 'team';
-                        
-                        var myself = (data.members || []).find(function(m) { return m.user_id == userId || m.id == userId; });
-                        dndCharacter = myself?.character || myself?.character_class;
-                        
-                        if (dndCharacter) {
-                            loadDndProgress().then(function() {
-                                checkSkipAvailability();
-                                renderDndCard(dndCardHistory[dndCardHistory.length - 1] || 0);
-                            });
-                        }
-                    }
-                    
-                    // Обновляем список команды
-                    if (document.getElementById('myTeamSection').style.display === 'block') {
-                        loadMyTeam();
+                        container.innerHTML = '<div class="branch-task-card"><div class="branch-header"><h3>⏳ Ожидание лидера</h3></div><div class="level-card" style="text-align:center;"><p>Все участники готовы!</p><p style="color:var(--text-gray);">Лидер выбирает босса...</p><button class="task-submit-btn" onclick="showWaitingForTeam(\'' + bossLevel + '\')" style="margin-top:15px;">🔄 Проверить</button></div></div>';
+                    } else {
+                        // Ждём — просто кнопка проверки
+                        container.innerHTML = '<div class="branch-task-card"><div class="branch-header"><h3>⏳ Ожидание команды</h3></div><div class="level-card" style="text-align:center;"><p>Все участники должны достичь уровня босса</p><button class="task-submit-btn" onclick="showWaitingForTeam(\'' + bossLevel + '\')" style="margin-top:15px;">🔄 Проверить</button></div></div>';
                     }
                 }
             });
-    }, 3000);
+    }
+    
+    // Показываем и запускаем авто-проверку каждые 5 секунд
+    container.innerHTML = '<div class="branch-task-card"><div class="branch-header"><h3>⏳ Ожидание команды</h3></div><div class="level-card" style="text-align:center;"><p>Все участники должны достичь уровня босса</p><p style="color:var(--text-gray);">Авто-проверка каждые 5 сек...</p></div></div>';
+    checkStatus();
+    var interval = setInterval(function() {
+        if (dndMode !== 'team' || !dndCardHistory.includes(parseInt(bossLevel === 'mini' ? '101' : '203'))) {
+            checkStatus();
+        } else {
+            clearInterval(interval);
+        }
+    }, 5000);
+}
+      function showDndLobby() {
+    document.getElementById('dndMainMenu').style.display = 'none';
+    
+    // ✅ Сначала проверяем, не идёт ли уже игра
+    fetch(SERVER_URL + '/api/dnd/team/status?user_id=' + userId)
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'ok' && data.game_started) {
+                // Игра уже идёт — сразу в игру
+                document.getElementById('dndLobby').style.display = 'none';
+                document.getElementById('dndGame').style.display = 'block';
+                dndMode = 'team';
+                var myself = (data.members || []).find(function(m) { return m.user_id == userId || m.id == userId; });
+                dndCharacter = myself?.character || myself?.character_class;
+                if (dndCharacter) {
+                    loadDndProgress().then(function() {
+                        checkSkipAvailability();
+                        renderDndCard(dndCardHistory[dndCardHistory.length - 1] || 0);
+                    });
+                }
+                startApprovalPolling();
+            } else {
+                // Игра не началась — показываем лобби
+                document.getElementById('dndLobby').style.display = 'block';
+                dndMode = 'team';
+                refreshTeamList();
+                loadMyTeam();
+                startTeamPolling();
+            }
+        });
 }
 function refreshTeamList() {
     fetch(SERVER_URL + '/api/dnd/teams/list?user_id=' + userId)
