@@ -16570,19 +16570,25 @@ function checkDndPaymentStatus() {
         .then(r => r.json())
         .then(data => {
             if (data.status === 'ok' && data.is_paid === true) {
-                // ✅ Доступ открыт — показываем меню
                 document.getElementById('dndPaySection').style.display = 'none';
                 document.getElementById('dndMainMenu').style.display = 'block';
                 document.getElementById('dndLobby').style.display = 'none';
                 document.getElementById('dndGame').style.display = 'none';
                 document.getElementById('dndSoloGame').style.display = 'none';
             } else {
-                // ❌ Доступ не открыт — показываем заглушку
                 document.getElementById('dndPaySection').style.display = 'block';
                 document.getElementById('dndMainMenu').style.display = 'none';
                 document.getElementById('dndLobby').style.display = 'none';
                 document.getElementById('dndGame').style.display = 'none';
                 document.getElementById('dndSoloGame').style.display = 'none';
+                
+                // ✅ Принудительно скрываем меню ещё раз через 100ms
+                setTimeout(function() {
+                    document.getElementById('dndMainMenu').style.display = 'none';
+                    document.getElementById('dndLobby').style.display = 'none';
+                    document.getElementById('dndGame').style.display = 'none';
+                    document.getElementById('dndSoloGame').style.display = 'none';
+                }, 100);
             }
         });
 }
