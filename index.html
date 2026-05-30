@@ -16559,7 +16559,7 @@ function toggleDnDEvent() {
         if (arrow) arrow.style.transform = 'rotate(0deg)';
     } else {
         content.style.display = 'block';
-        if (arrow) arrow.style.transform = 'rotate(180deg)');
+        if (arrow) arrow.style.transform = 'rotate(180deg)';
         checkDndPaymentStatus();
         // Всегда проверяем активные игры при открытии
         fetch(SERVER_URL + '/api/dnd/payment_status?user_id=' + userId)
