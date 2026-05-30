@@ -14657,14 +14657,74 @@ var DND_CARDS = {
         99: { title: "Гнездо москитов", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k99.png", task: "Раскрась картинку из подземелья!", level: 4 },
         100: { title: "Зал мух", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k100.png", task: "Раскрась картинку из подземелья!", level: 4 },
         
-        // УРОВЕНЬ 5: МИНИ-БОССЫ 101-106
-        101: { title: "Хранитель подземелья", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k101.png", task: "Раскрась картинку с боссом или эпической битвой!", level: 5 },
-        102: { title: "Теневой дракон", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k102.png", task: "Раскрась картинку с драконом или тенью!", level: 5 },
-        103: { title: "Король гоблинов", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k103.png", task: "Раскрась картинку с гоблином или короной!", level: 5 },
-        104: { title: "Дух тьмы", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k104.png", task: "Раскрась картинку с духом или тьмой!", level: 5 },
-        105: { title: "Маг хаоса", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k105.png", task: "Раскрась картинку с магом или хаосом!", level: 5 },
-        106: { title: "Железный голем", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k106.png", task: "Раскрась картинку с големом или металлом!", level: 5 },
-        
+       // В DND_CARDS.knight замени карты 101-106 и 203-208:
+
+101: { 
+    title: "Хранитель подземелья", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k101.png", 
+    level: 5,
+    bossTasks: [
+        "Раскрась картинку с боссом",
+        "Раскрась картинку с эпической битвой",
+        "Раскрась картинку с оружием",
+        "Раскрась картинку с магией"
+    ]
+},
+102: { 
+    title: "Теневой дракон", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k102.png", 
+    level: 5,
+    bossTasks: [
+        "Раскрась картинку с драконом",
+        "Раскрась картинку с тенью",
+        "Раскрась картинку с пещерой",
+        "Раскрась картинку с сокровищем"
+    ]
+},
+103: { 
+    title: "Король гоблинов", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k103.png", 
+    level: 5,
+    bossTasks: [
+        "Раскрась картинку с гоблином",
+        "Раскрась картинку с короной",
+        "Раскрась картинку с троном",
+        "Раскрась картинку с армией гоблинов"
+    ]
+},
+104: { 
+    title: "Дух тьмы", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k104.png", 
+    level: 5,
+    bossTasks: [
+        "Раскрась картинку с духом",
+        "Раскрась картинку с тьмой",
+        "Раскрась картинку со свечой",
+        "Раскрась картинку с призраком"
+    ]
+},
+105: { 
+    title: "Маг хаоса", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k105.png", 
+    level: 5,
+    bossTasks: [
+        "Раскрась картинку с магом",
+        "Раскрась картинку с хаосом",
+        "Раскрась картинку с заклинанием",
+        "Раскрась картинку с посохом"
+    ]
+},
+106: { 
+    title: "Железный голем", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k106.png", 
+    level: 5,
+    bossTasks: [
+        "Раскрась картинку с големом",
+        "Раскрась картинку с металлом",
+        "Раскрась картинку с кузницей",
+        "Раскрась картинку с механизмом"
+    ]
+},
         // УРОВЕНЬ 6: 107-112
         107: { title: "Возрождение", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k107.png", task: "Раскрась картинку с возрождением или светом!", level: 6 },
         108: { title: "Новая сила", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k108.png", task: "Раскрась картинку с силой или энергией!", level: 6 },
@@ -14769,14 +14829,79 @@ var DND_CARDS = {
         201: { title: "Зал славы", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k201.png", task: "Раскрась картинку на пути к финалу!", level: 9 },
         202: { title: "Преддверие финала", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k202.png", task: "Раскрась картинку на пути к финалу!", level: 9 },
         
-        // УРОВЕНЬ 10: ФИНАЛЬНЫЕ БОССЫ 203-208
-        203: { title: "Демон Бездны", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k203.png", task: "Раскрась картинку с демоном!", level: 10, isFinal: true },
-        204: { title: "Архилич", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k204.png", task: "Раскрась картинку с личом или некромантом!", level: 10, isFinal: true },
-        205: { title: "Древний дракон", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k205.png", task: "Раскрась картинку с древним драконом!", level: 10, isFinal: true },
-        206: { title: "Король демонов", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k206.png", task: "Раскрась картинку с королём демонов!", level: 10, isFinal: true },
-        207: { title: "Титан бездны", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k207.png", task: "Раскрась картинку с титаном!", level: 10, isFinal: true },
-        208: { title: "Властелин тьмы", image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k208.png", task: "Раскрась картинку с властелином тьмы!", level: 10, isFinal: true }
-    }
+        // Финальные боссы
+203: { 
+    title: "Демон Бездны", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k203.png", 
+    level: 10, 
+    isFinal: true,
+    bossTasks: [
+        "Раскрась картинку с демоном",
+        "Раскрась картинку с бездной",
+        "Раскрась картинку с пламенем",
+        "Раскрась картинку с рогами"
+    ]
+},
+204: { 
+    title: "Архилич", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k204.png", 
+    level: 10, 
+    isFinal: true,
+    bossTasks: [
+        "Раскрась картинку с личом",
+        "Раскрась картинку с некромантом",
+        "Раскрась картинку с черепом",
+        "Раскрась картинку с кладбищем"
+    ]
+},
+205: { 
+    title: "Древний дракон", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k205.png", 
+    level: 10, 
+    isFinal: true,
+    bossTasks: [
+        "Раскрась картинку с древним драконом",
+        "Раскрась картинку с драконьим огнём",
+        "Раскрась картинку с крыльями",
+        "Раскрась картинку с сокровищницей"
+    ]
+},
+206: { 
+    title: "Король демонов", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k206.png", 
+    level: 10, 
+    isFinal: true,
+    bossTasks: [
+        "Раскрась картинку с королём демонов",
+        "Раскрась картинку с троном тьмы",
+        "Раскрась картинку с адским пламенем",
+        "Раскрась картинку с легионом"
+    ]
+},
+207: { 
+    title: "Титан бездны", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k207.png", 
+    level: 10, 
+    isFinal: true,
+    bossTasks: [
+        "Раскрась картинку с титаном",
+        "Раскрась картинку с разрушением",
+        "Раскрась картинку с молниями",
+        "Раскрась картинку с землетрясением"
+    ]
+},
+208: { 
+    title: "Властелин тьмы", 
+    image: "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/dnd/k208.png", 
+    level: 10, 
+    isFinal: true,
+    bossTasks: [
+        "Раскрась картинку с властелином тьмы",
+        "Раскрась картинку с армией тьмы",
+        "Раскрась картинку с чёрным замком",
+        "Раскрась картинку с последней битвой"
+    ]
+}
 };
 
 // ==========================================
@@ -16547,8 +16672,14 @@ var dndIsRolling = false;
 var dndSkipUsed = false; 
 var pendingSkipCard = null;
 
-        function getBossWorkRequired() {
-    return dndMode === 'team' ? 20 : 10;
+       function getBossWorkRequired() {
+    return dndMode === 'team' ? 4 : 2; // количество заданий
+}
+        function getBossPointsPerTask() {
+    return 5; // очков за задание
+}
+        function getBossTotalPoints() {
+    return getBossWorkRequired() * getBossPointsPerTask(); // 10 или 20
 }
 // ==========================================
 // НАВИГАЦИЯ
@@ -16908,16 +17039,26 @@ function rollForTeamBoss(bossLevel) {
 function renderCardHTML(card, showDice, isStart) {
     var cardNumber = currentRenderCardNumber;
     var isBoss = (cardNumber >= 101 && cardNumber <= 106) || (cardNumber >= 203 && cardNumber <= 208);
-    var bossWorkRequired = getBossWorkRequired();
+    var tasksRequired = getBossWorkRequired();
+    var pointsPerTask = getBossPointsPerTask();
     
     var diceHTML = showDice ? '<div id="dndDiceWrapper" style="margin:15px 0;"><div id="dndDice" class="dnd-dice" onclick="rollDndDice()"><div class="dice-face front"><span class="dot dot1"></span></div><div class="dice-face back"><span class="dot dot1"></span><span class="dot dot2"></span></div><div class="dice-face right"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span></div><div class="dice-face left"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span></div><div class="dice-face top"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span><span class="dot dot5"></span></div><div class="dice-face bottom"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><span class="dot dot4"></span><span class="dot dot5"></span><span class="dot dot6"></span></div></div></div>' : '';
     
     var bossLabel = '';
     if (isBoss) {
-        bossLabel = '<div style="font-size:12px;opacity:0.7;margin-top:4px;">👑 ' + (cardNumber <= 106 ? 'Мини-босс' : 'Финальный босс') + ' · ' + bossWorkRequired + ' очков</div>';
+        bossLabel = '<div style="font-size:12px;opacity:0.7;margin-top:4px;">👑 ' + (cardNumber <= 106 ? 'Мини-босс' : 'Финальный босс') + ' · ' + tasksRequired + ' заданий по ' + pointsPerTask + ' очков</div>';
     }
     
-    var cardHTML = '<div class="branch-task-card ' + (isStart ? 'start-card' : '') + '"><div class="branch-header"><h3>' + card.title + '</h3>' + bossLabel + '</div><div class="level-card" id="card-level-' + cardNumber + '">' + (card.image ? '<img src="' + card.image + '" class="card-image" style="width:100%;border-radius:12px;margin-bottom:15px;" onerror="this.style.display=\'none\'">' : '') + (isStart ? '<p style="text-align:center;font-weight:600;">Брось кубик, чтобы начать!</p>' : '<p style="font-weight:600;margin-bottom:15px;">📋 ' + (card.task || '') + '</p>') + '<div id="card-status-' + cardNumber + '"></div>' + diceHTML + '</div></div>';
+    var bossTasksList = '';
+    if (isBoss && card.bossTasks) {
+        bossTasksList = '<div style="margin-top:10px;font-size:12px;color:var(--text-gray);">';
+        for (var i = 0; i < card.bossTasks.length; i++) {
+            bossTasksList += '<div style="margin-bottom:3px;">📋 ' + (i+1) + '. ' + card.bossTasks[i] + ' (' + pointsPerTask + ' очков)</div>';
+        }
+        bossTasksList += '</div>';
+    }
+    
+    var cardHTML = '<div class="branch-task-card ' + (isStart ? 'start-card' : '') + '"><div class="branch-header"><h3>' + card.title + '</h3>' + bossLabel + '</div><div class="level-card" id="card-level-' + cardNumber + '">' + (card.image ? '<img src="' + card.image + '" class="card-image" style="width:100%;border-radius:12px;margin-bottom:15px;" onerror="this.style.display=\'none\'">' : '') + (isStart ? '<p style="text-align:center;font-weight:600;">Брось кубик, чтобы начать!</p>' : '<p style="font-weight:600;margin-bottom:15px;">📋 ' + (card.task || '') + '</p>') + bossTasksList + '<div id="card-status-' + cardNumber + '"></div>' + diceHTML + '</div></div>';
     
     setTimeout(function() {
         var statusContainer = document.getElementById('card-status-' + cardNumber);
@@ -16931,7 +17072,6 @@ function renderCardHTML(card, showDice, isStart) {
         if (showDice) {
             statusContainer.innerHTML = '<div style="text-align:center;color:var(--status-green);margin-bottom:10px;"><i class="fas fa-check-circle"></i> Задание одобрено!</div>';
         } else if (isBoss) {
-            // Останавливаем все предыдущие интервалы
             if (window._bossIntervals) {
                 for (var key in window._bossIntervals) {
                     clearInterval(window._bossIntervals[key]);
@@ -16940,6 +17080,8 @@ function renderCardHTML(card, showDice, isStart) {
             window._bossIntervals = window._bossIntervals || {};
             
             function updateBossProgress() {
+                var totalPoints = tasksRequired * pointsPerTask;
+                
                 if (dndMode === 'team') {
                     fetch(SERVER_URL + '/api/dnd/team_boss_progress?user_id=' + userId + '&card_id=' + cardNumber)
                         .then(r => r.json())
@@ -16952,7 +17094,14 @@ function renderCardHTML(card, showDice, isStart) {
                             }
                             var el = document.getElementById('card-status-' + cardNumber);
                             if (el) {
-                                el.innerHTML = '<div style="text-align:center;margin-bottom:15px;"><p style="color:var(--accent);font-size:12px;">👥 Командный счёт</p><div style="font-size:14px;color:var(--accent);margin-bottom:8px;">📸 Очков: ' + (data.current || 0) + '/' + (data.required || 20) + '</div><div class="progress-bar-container" style="margin-bottom:10px;"><div class="progress-bar-fill" style="width:' + Math.min(100, ((data.current || 0) / (data.required || 20)) * 100) + '%;"></div></div><button class="task-submit-btn" onclick="submitBossWork()"><i class="fas fa-camera"></i> Отправить работу</button></div>';
+                                var submittedCount = data.current || 0;
+                                var tasksHTML = '';
+                                for (var t = 0; t < tasksRequired; t++) {
+                                    var taskPoints = Math.min(pointsPerTask, Math.max(0, submittedCount - t * pointsPerTask));
+                                    var taskDone = taskPoints >= pointsPerTask;
+                                    tasksHTML += '<div style="display:flex;align-items:center;gap:10px;padding:8px;margin-bottom:5px;background:var(--bg);border-radius:8px;' + (taskDone ? 'border:2px solid var(--status-green);' : '') + '"><span>' + (taskDone ? '✅' : '📸') + '</span><span style="flex:1;">Задание ' + (t + 1) + '</span><span style="font-weight:600;">' + taskPoints + '/' + pointsPerTask + '</span></div>';
+                                }
+                                el.innerHTML = '<div style="text-align:center;margin-bottom:15px;"><p style="color:var(--accent);font-size:12px;">👥 Командный счёт</p>' + tasksHTML + '<button class="task-submit-btn" onclick="submitBossWork()"><i class="fas fa-camera"></i> Отправить работу</button></div>';
                             }
                         });
                 } else {
@@ -16961,8 +17110,7 @@ function renderCardHTML(card, showDice, isStart) {
                         .then(function(data) {
                             var bpk = 'boss_points_' + cardNumber;
                             var count = (data.progress && data.progress[bpk]) || 0;
-                            var req = getBossWorkRequired();
-                            if (count >= req) {
+                            if (count >= totalPoints) {
                                 clearInterval(window._bossIntervals[cardNumber]);
                                 dndApproved = true;
                                 renderDndCard(cardNumber);
@@ -16970,7 +17118,13 @@ function renderCardHTML(card, showDice, isStart) {
                             }
                             var el = document.getElementById('card-status-' + cardNumber);
                             if (el) {
-                                el.innerHTML = '<div style="text-align:center;margin-bottom:15px;"><div style="font-size:14px;color:var(--accent);margin-bottom:8px;">📸 Очков: ' + count + '/' + req + '</div><div class="progress-bar-container" style="margin-bottom:10px;"><div class="progress-bar-fill" style="width:' + Math.min(100, (count / req) * 100) + '%;"></div></div><button class="task-submit-btn" onclick="submitBossWork()"><i class="fas fa-camera"></i> Отправить работу</button></div>';
+                                var tasksHTML = '';
+                                for (var t = 0; t < tasksRequired; t++) {
+                                    var taskPoints = Math.min(pointsPerTask, Math.max(0, count - t * pointsPerTask));
+                                    var taskDone = taskPoints >= pointsPerTask;
+                                    tasksHTML += '<div style="display:flex;align-items:center;gap:10px;padding:8px;margin-bottom:5px;background:var(--bg);border-radius:8px;' + (taskDone ? 'border:2px solid var(--status-green);' : '') + '"><span>' + (taskDone ? '✅' : '📸') + '</span><span style="flex:1;">Задание ' + (t + 1) + '</span><span style="font-weight:600;">' + taskPoints + '/' + pointsPerTask + '</span></div>';
+                                }
+                                el.innerHTML = '<div style="text-align:center;margin-bottom:15px;">' + tasksHTML + '<button class="task-submit-btn" onclick="submitBossWork()"><i class="fas fa-camera"></i> Отправить работу</button></div>';
                             }
                         });
                 }
@@ -16991,7 +17145,6 @@ function renderCardHTML(card, showDice, isStart) {
     
     return cardHTML;
 }
-
 // ==========================================
 // БРОСОК КУБИКА
 // ==========================================
