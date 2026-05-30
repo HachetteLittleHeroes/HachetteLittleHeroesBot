@@ -17709,72 +17709,83 @@ function renderCardHTML(card, showDice, isStart) {
             }
             window._bossIntervals = window._bossIntervals || {};
             
-            function updateBossProgress() {
-                var totalPoints = tasksRequired * pointsPerTask;
-                
-                if (dndMode === 'team') {
-                    fetch(SERVER_URL + '/api/dnd/team_boss_progress?user_id=' + userId + '&card_id=' + cardNumber)
-                        .then(r => r.json())
-                        .then(function(data) {
-                            if (data.is_completed) {
-                                clearInterval(window._bossIntervals[cardNumber]);
-                                dndApproved = true;
-                                renderDndCard(cardNumber);
-                                return;
-                            }
-                            var el = document.getElementById('card-status-' + cardNumber);
-                            if (el) {
-                                var submittedCount = data.current || 0;
-                                var tasksHTML = '';
-                                for (var t = 0; t < tasksRequired; t++) {
-                                    var taskPoints = Math.min(pointsPerTask, Math.max(0, submittedCount - t * pointsPerTask));
-                                    var taskDone = taskPoints >= pointsPerTask;
-                                    tasksHTML += '<div style="display:flex;align-items:center;gap:10px;padding:8px;margin-bottom:5px;background:var(--bg);border-radius:8px;' + (taskDone ? 'border:2px solid var(--status-green);' : '') + '"><span>' + (taskDone ? '✅' : '📸') + '</span><span style="flex:1;">Задание ' + (t + 1) + '</span><span style="font-weight:600;">' + taskPoints + '/' + pointsPerTask + '</span></div>';
-                                }
-                                el.innerHTML = '<div style="text-align:center;margin-bottom:15px;"><p style="color:var(--accent);font-size:12px;">👥 Командный счёт</p>' + tasksHTML + '<button class="task-submit-btn" onclick="submitBossWork()"><i class="fas fa-camera"></i> Отправить работу</button></div>';
-                            }
-                        });
-                } else {
-                    fetch(SERVER_URL + '/api/dnd/get_progress?user_id=' + userId + '&character=' + dndCharacter)
-                        .then(r => r.json())
-                        .then(function(data) {
-                            var bpk = 'boss_points_' + cardNumber;
-                            var count = (data.progress && data.progress[bpk]) || 0;
-                            if (count >= totalPoints) {
-                                clearInterval(window._bossIntervals[cardNumber]);
-                                dndApproved = true;
-                                renderDndCard(cardNumber);
-                                return;
-                            }
-                            var el = document.getElementById('card-status-' + cardNumber);
-                            if (el) {
-                                var tasksHTML = '';
-                                for (var t = 0; t < tasksRequired; t++) {
-                                    var taskPoints = Math.min(pointsPerTask, Math.max(0, count - t * pointsPerTask));
-                                    var taskDone = taskPoints >= pointsPerTask;
-                                    tasksHTML += '<div style="display:flex;align-items:center;gap:10px;padding:8px;margin-bottom:5px;background:var(--bg);border-radius:8px;' + (taskDone ? 'border:2px solid var(--status-green);' : '') + '"><span>' + (taskDone ? '✅' : '📸') + '</span><span style="flex:1;">Задание ' + (t + 1) + '</span><span style="font-weight:600;">' + taskPoints + '/' + pointsPerTask + '</span></div>';
-                                }
-                                el.innerHTML = '<div style="text-align:center;margin-bottom:15px;">' + tasksHTML + '<button class="task-submit-btn" onclick="submitBossWork()"><i class="fas fa-camera"></i> Отправить работу</button></div>';
-                            }
-                        });
-                }
-            }
-            
-            updateBossProgress();
-            window._bossIntervals[cardNumber] = setInterval(updateBossProgress, 5000);
-            
-        } else {
-            var skipButtonHTML = '';
-            if (!dndSkipUsed) {
-               skipButtonHTML = '<button class="task-submit-btn" onclick="openSkipTaskModal()" style="background:#ff9800;margin-top:8px;"><i class="fas fa-book-open gold-book"></i> Пропустить (50)</button>';
-            }
-            
-            statusContainer.innerHTML = '<button class="task-submit-btn" onclick="openDndTaskUpload()"><i class="fas fa-camera"></i> Отправить фото</button>' + skipButtonHTML + '<div style="text-align:center;color:var(--text-gray);font-size:12px;margin-top:10px;">⏳ Дождитесь одобрения администратором</div>';
-        }
-    }, 50);
+          function updateBossProgress() {
+    var totalPoints = tasksRequired * pointsPerTask;
     
-    return cardHTML;
+    if (dndMode === 'team') {
+        fetch(SERVER_URL + '/api/dnd/team_boss_progress?user_id=' + userId + '&card_id=' + cardNumber)
+            .then(r => r.json())
+            .then(function(data) {
+                if (data.is_completed) {
+                    clearInterval(window._bossIntervals[cardNumber]);
+                    dndApproved = true;
+                    renderDndCard(cardNumber);
+                    return;
+                }
+                var el = document.getElementById('card-status-' + cardNumber);
+                if (el) {
+                    var submittedCount = data.current || 0;
+                    var tasksHTML = '';
+                    for (var t = 0; t < tasksRequired; t++) {
+                        var taskPoints = Math.min(pointsPerTask, Math.max(0, submittedCount - t * pointsPerTask));
+                        var taskDone = taskPoints >= pointsPerTask;
+                        var taskDesc = card.bossTasks ? card.bossTasks[t] : ('Задание ' + (t + 1));
+                        tasksHTML += '<div style="padding:10px;margin-bottom:8px;background:var(--bg);border-radius:8px;' + (taskDone ? 'border:2px solid var(--status-green);' : 'border:1px solid var(--border-color);') + '">';
+                        tasksHTML += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><span>' + (taskDone ? '✅' : '📸') + '</span><span style="flex:1;font-size:13px;">' + taskDesc + '</span><span style="font-weight:600;font-size:12px;">' + taskPoints + '/' + pointsPerTask + '</span></div>';
+                        if (!taskDone) {
+                            tasksHTML += '<button class="task-submit-btn" onclick="submitBossWork()" style="padding:6px 12px;font-size:12px;width:100%;"><i class="fas fa-camera"></i> Отправить работу</button>';
+                        }
+                        tasksHTML += '</div>';
+                    }
+                    el.innerHTML = '<div style="text-align:center;margin-bottom:15px;"><p style="color:var(--accent);font-size:12px;">👥 Командный счёт</p>' + tasksHTML + '</div>';
+                }
+            });
+    } else {
+        fetch(SERVER_URL + '/api/dnd/get_progress?user_id=' + userId + '&character=' + dndCharacter)
+            .then(r => r.json())
+            .then(function(data) {
+                var bpk = 'boss_points_' + cardNumber;
+                var count = (data.progress && data.progress[bpk]) || 0;
+                if (count >= totalPoints) {
+                    clearInterval(window._bossIntervals[cardNumber]);
+                    dndApproved = true;
+                    renderDndCard(cardNumber);
+                    return;
+                }
+                var el = document.getElementById('card-status-' + cardNumber);
+                if (el) {
+                    var tasksHTML = '';
+                    for (var t = 0; t < tasksRequired; t++) {
+                        var taskPoints = Math.min(pointsPerTask, Math.max(0, count - t * pointsPerTask));
+                        var taskDone = taskPoints >= pointsPerTask;
+                        var taskDesc = card.bossTasks ? card.bossTasks[t] : ('Задание ' + (t + 1));
+                        tasksHTML += '<div style="padding:10px;margin-bottom:8px;background:var(--bg);border-radius:8px;' + (taskDone ? 'border:2px solid var(--status-green);' : 'border:1px solid var(--border-color);') + '">';
+                        tasksHTML += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><span>' + (taskDone ? '✅' : '📸') + '</span><span style="flex:1;font-size:13px;">' + taskDesc + '</span><span style="font-weight:600;font-size:12px;">' + taskPoints + '/' + pointsPerTask + '</span></div>';
+                        if (!taskDone) {
+                            tasksHTML += '<button class="task-submit-btn" onclick="submitBossWork()" style="padding:6px 12px;font-size:12px;width:100%;"><i class="fas fa-camera"></i> Отправить работу</button>';
+                        }
+                        tasksHTML += '</div>';
+                    }
+                    el.innerHTML = '<div style="text-align:center;margin-bottom:15px;">' + tasksHTML + '</div>';
+                }
+            });
+    }
 }
+
+updateBossProgress();
+window._bossIntervals[cardNumber] = setInterval(updateBossProgress, 5000);
+
+} else {
+    var skipButtonHTML = '';
+    if (!dndSkipUsed) {
+       skipButtonHTML = '<button class="task-submit-btn" onclick="openSkipTaskModal()" style="background:#ff9800;margin-top:8px;"><i class="fas fa-book-open gold-book"></i> Пропустить (50)</button>';
+    }
+    
+    statusContainer.innerHTML = '<button class="task-submit-btn" onclick="openDndTaskUpload()"><i class="fas fa-camera"></i> Отправить фото</button>' + skipButtonHTML + '<div style="text-align:center;color:var(--text-gray);font-size:12px;margin-top:10px;">⏳ Дождитесь одобрения администратором</div>';
+}
+}, 50);
+
+return cardHTML;
 // ==========================================
 // БРОСОК КУБИКА
 // ==========================================
