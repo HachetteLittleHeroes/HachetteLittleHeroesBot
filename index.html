@@ -8580,8 +8580,8 @@ async function loadFriendProgressFromServer() {
     }
 }
 function toggleFriendTasks() {
-    const content = document.getElementById('friendTasksContent');
-    const arrow = document.getElementById('friendTasksArrow');
+    var content = document.getElementById('friendTasksContent');
+    var arrow = document.getElementById('friendTasksArrow');
     if (!content) return;
     if (content.style.display === 'block') {
         content.style.display = 'none';
@@ -8589,7 +8589,7 @@ function toggleFriendTasks() {
     } else {
         content.style.display = 'block';
         if (arrow) arrow.style.transform = 'rotate(180deg)';
-        loadFriendProgressFromServer().then(() => renderFriendTasks());
+        // Не вызываем renderFriendTasks
     }
 }
 
@@ -8597,92 +8597,14 @@ function renderFriendTasks() {
     console.log('=== RENDER FRIEND TASKS ===');
     const container = document.getElementById('friendTasksList');
     if (!container) return;
-    container.innerHTML = '';
     
-    const now = new Date();
-    
-    FRIEND_TASKS.forEach((task, taskIdx) => {
-        const isExpired = task.deadline && new Date(task.deadline) < now;
-        const isCompleted = isFriendTaskCompleted(taskIdx);
-        const currentLevelIndex = getCurrentFriendLevelIndex(taskIdx);
-        
-        const taskCard = document.createElement('div');
-        taskCard.className = `branch-task-card ${isCompleted ? 'completed' : ''} ${isExpired && !isCompleted ? 'expired' : ''}`;
-        
-        let html = `
-            <div class="branch-header">
-                <h3>${task.title}</h3>
-                <p>${task.description}</p>
-                ${task.deadline ? `<div style="font-size:12px;margin-top:5px;opacity:0.9;">⏰ До: ${new Date(task.deadline).toLocaleDateString('ru-RU')}</div>` : ''}
-                <div class="friend-reward">🎁 Приз: ${task.reward}</div>
-            </div>
-        `;
-        
-        if (isExpired && !isCompleted) {
-            html += `
-                <div class="level-card">
-                    <div style="text-align: center; padding: 20px; color: var(--text-gray);">
-                        ⏰ Приём работ завершён
-                    </div>
-                </div>
-            `;
-        } else if (isCompleted) {
-            html += `
-                <div class="level-card">
-                    <div style="text-align: center; padding: 20px;">
-                        <div class="completed-badge" style="display: inline-block; margin-bottom: 10px;">✅ Задание выполнено!</div>
-                        <div style="color: var(--status-green);">
-                            <i class="fas fa-ticket-alt"></i> Билет получен!
-                        </div>
-                        ${task.tgLink ? `
-                            <a href="${task.tgLink}" target="_blank" class="friend-channel-btn" style="margin-top: 15px; display: inline-block; text-decoration: none;">
-                                <i class="fab fa-telegram"></i> Написать ${task.tgUsername}
-                            </a>
-                        ` : ''}
-                    </div>
-                </div>
-            `;
-        } else if (currentLevelIndex < task.levels.length) {
-            const level = task.levels[currentLevelIndex];
-            
-            html += `<div class="level-card">`;
-            
-            level.subtasks.forEach((subtask, subtaskIdx) => {
-                const progress = getFriendSubtaskProgress(taskIdx, currentLevelIndex, subtaskIdx);
-                const isSubtaskCompleted = progress >= subtask.required;
-                
-                html += `
-                    <div class="subtask-card">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                            <span style="font-weight: 600; font-size: 14px;">${subtask.name}</span>
-                            <span style="font-size: 12px; color: var(--accent);">${progress}/${subtask.required}</span>
-                        </div>
-                        ${!isSubtaskCompleted ? `
-                            <button class="task-submit-btn" onclick="openFriendSubtaskUpload(${taskIdx}, ${currentLevelIndex}, ${subtaskIdx}, '${subtask.name}')">
-                                <i class="fas fa-camera"></i> Отправить фото
-                            </button>
-                        ` : `
-                            <div style="text-align: center; color: var(--status-green); font-size: 12px; margin-top: 5px;">
-                                <i class="fas fa-check-circle"></i> Выполнено!
-                            </div>
-                        `}
-                    </div>
-                `;
-            });
-            
-            html += `
-                    ${task.tgLink ? `
-                        <a href="${task.tgLink}" target="_blank" class="friend-channel-btn" style="margin-top: 10px; display: inline-block; text-decoration: none;">
-                            <i class="fab fa-telegram"></i> Написать ${task.tgUsername}
-                        </a>
-                    ` : ''}
-                </div>
-            `;
-        }
-        
-        taskCard.innerHTML = html;
-        container.appendChild(taskCard);
-    });
+    container.innerHTML = `
+        <div style="text-align: center; padding: 20px;">
+            <div style="font-size: 36px;">🤝</div>
+            <h3 style="margin: 10px 0;">Пока что это всё!</h3>
+            <p style="color: var(--text-gray);">Но если ты хотела бы предложить своё задание — напиши нам!</p>
+        </div>
+    `;
 }
 
 let currentFriendTaskIdx = null;
