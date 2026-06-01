@@ -28501,8 +28501,20 @@ function renderPublicProfile(profile) {
     container._pubUserId = profile.user_id;
     container.dataset.profile = JSON.stringify(profile);
     
+    console.log('🔵 Перед innerHTML');
     container.innerHTML = html;
-    renderPublicStatsBooks();
+    console.log('🔵 После innerHTML');
+    
+    console.log('🔵 Перед вызовом renderPublicStatsBooks');
+    console.log('🔵 Тип renderPublicStatsBooks:', typeof renderPublicStatsBooks);
+    
+    if (typeof renderPublicStatsBooks === 'function') {
+        console.log('🔵 Вызываю renderPublicStatsBooks...');
+        renderPublicStatsBooks();
+        console.log('🔵 renderPublicStatsBooks выполнен');
+    } else {
+        console.error('❌ renderPublicStatsBooks не является функцией!');
+    }
     
     setTimeout(() => {
        const xp = profile.xp || 0;
@@ -28518,6 +28530,8 @@ function renderPublicProfile(profile) {
             `;
         }
     }, 100);
+    
+    console.log('renderPublicProfile done');
 }
 function switchPublicStats(period) {
     var container = document.getElementById('publicProfileContent');
