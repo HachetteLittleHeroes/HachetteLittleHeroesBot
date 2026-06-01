@@ -28821,16 +28821,15 @@ function viewPublicBook(userId, category, bookName, hasArtworks) {
         return name === bookName;
     });
     
+    // ✅ Для кастомных — из данных, для обычных — из конфига
     let config;
-    if (savedBook && typeof savedBook === 'object') {
+    if (savedBook && typeof savedBook === 'object' && savedBook.custom) {
         config = {
             totalPages: savedBook.totalPages || DEFAULT_PAGES_CONFIG.totalPages,
             spreads: savedBook.spreads || []
         };
-    } else if (BOOK_PAGES_CONFIG[bookName]) {
-        config = BOOK_PAGES_CONFIG[bookName];
     } else {
-        config = DEFAULT_PAGES_CONFIG;
+        config = BOOK_PAGES_CONFIG[bookName] || DEFAULT_PAGES_CONFIG;
     }
     
     window.isViewOnly = true;
