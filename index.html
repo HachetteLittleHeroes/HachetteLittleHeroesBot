@@ -28557,7 +28557,8 @@ function renderPublicStatsBooks() {
         } else if (period === 'month') {
             filteredWorks = stat.works.filter(function(w) { return w.date >= monthAgo; });
         } else if (period === 'custom') {
-            var selMonth = document.getElementById('pub-stats-month-selector')?.value;
+            var sel = document.getElementById('pub-stats-month-selector');
+            var selMonth = sel ? sel.value : 'all';
             if (selMonth && selMonth !== 'all') {
                 selMonth = parseInt(selMonth);
                 var startOfMonth = new Date(currentYear, selMonth, 1).getTime();
@@ -28616,7 +28617,6 @@ function renderPublicStatsBooks() {
     if (!hasBooks) html = '<div class="no-results" style="padding:20px;text-align:center;color:var(--text-gray);">Нет работ за этот период</div>';
     listContainer.innerHTML = html;
 }
-
 function countColoringBooks(books) {
     if (!books) return 0;
     let total = 0;
