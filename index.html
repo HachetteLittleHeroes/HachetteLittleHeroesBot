@@ -30239,7 +30239,7 @@ function showBooksList(category, period) {
             html += '<span style="font-size: 14px; font-weight: 600; width: 20px; color: var(--text-gray);">' + (i + 1) + '.</span>';
             if (coverUrl) html += '<img src="' + coverUrl + '" style="width: 30px; height: 40px; object-fit: cover; border-radius: 4px;" onerror="this.style.display=\'none\'">';
             html += '<span style="flex: 1; font-size: 13px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">' + top5[i].name + '</span>';
-            html += '<span style="font-weight: 600; color: var(--accent); white-space: nowrap;">' + top5[i].pages + ' стр.</span>';
+          html += '<span style="font-weight: 600; color: var(--accent); white-space: nowrap;">' + top5[i].pages + '</span>';
             html += '<span style="font-size: 11px; color: var(--text-gray); white-space: nowrap;">' + bookPercent + '%</span>';
             html += '</div>';
         }
@@ -30283,7 +30283,7 @@ function showBooksList(category, period) {
         
         html += '<div style="display:flex;align-items:center;gap:10px;">';
         if (coverUrl) html += '<img src="' + coverUrl + '" style="width:40px;height:53px;object-fit:cover;border-radius:6px;" onerror="this.style.display=\'none\'">';
-        html += '<div><strong>' + bookName + '</strong><span style="margin-left:10px;font-size:13px;color:var(--text-gray);">' + pagesCount + ' стр.</span></div>';
+       html += '<div><strong>' + bookName + '</strong><span style="margin-left:10px;font-size:13px;color:var(--text-gray);">' + pagesCount + '</span></div>';
         html += '</div>';
         html += '<i class="fas fa-chevron-down" style="color:var(--text-gray);transition:transform 0.3s;"></i>';
         html += '</div>';
@@ -30763,7 +30763,7 @@ function renderPublicStatsBooks() {
         html += '<div class="subblock-header" onclick="toggleStatsBook(this)" style="display:flex;justify-content:space-between;align-items:center;padding:12px 15px;cursor:pointer;">';
         html += '<div style="display:flex;align-items:center;gap:10px;">';
         if (coverUrl) html += '<img src="' + coverUrl + '" style="width:35px;height:47px;object-fit:cover;border-radius:5px;" onerror="this.style.display=\'none\'">';
-        html += '<div><strong>' + bookName + '</strong><span style="margin-left:8px;font-size:13px;color:var(--text-gray);">' + filteredWorks.length + ' работ</span></div>';
+      html += '<div><strong>' + bookName + '</strong><span style="margin-left:8px;font-size:13px;color:var(--text-gray);">' + filteredWorks.length + '</span></div>';
         html += '</div>';
         html += '<i class="fas fa-chevron-down" style="color:var(--text-gray);transition:transform 0.3s;"></i>';
         html += '</div>';
