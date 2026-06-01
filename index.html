@@ -28358,8 +28358,6 @@ async function openPublicProfile(userId) {
     
     const modal = document.getElementById('publicProfileModal');
     modal.style.display = 'flex';
-    
-    // Убеждаемся, что модалка использует текущую тему
     modal.className = 'modal-overlay';
     
     const container = document.getElementById('publicProfileContent');
@@ -28372,7 +28370,9 @@ async function openPublicProfile(userId) {
         const response = await fetch(`${SERVER_URL}/api/public_profile?user_id=${userId}`);
         const profile = await response.json();
         
+        console.log('profile loaded, calling renderPublicProfile');
         renderPublicProfile(profile);
+        console.log('renderPublicProfile done');
         
     } catch (error) {
         console.error('❌ Ошибка:', error);
