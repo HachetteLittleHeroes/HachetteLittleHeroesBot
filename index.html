@@ -28547,40 +28547,67 @@ function renderPublicStatsBooks() {
     var lastMonthEnd = container._lastMonthEnd || 0;
     var monthAgo = container._monthAgo || 0;
     
-    console.log('🔄 RPSB period:', period);
-    console.log('🔄 Диапазон прошлого месяца:', new Date(lastMonthStart), '-', new Date(lastMonthEnd));
-    console.log('🔄 Начало текущего месяца:', new Date(monthAgo));
+    console.log('🔄 RPSB вызвана, period:', period);
+    console.log('🔄 lastMonthStart:', new Date(lastMonthStart), 'timestamp:', lastMonthStart);
+    console.log('🔄 lastMonthEnd:', new Date(lastMonthEnd), 'timestamp:', lastMonthEnd);
+    console.log('🔄 monthAgo:', new Date(monthAgo), 'timestamp:', monthAgo);
+    console.log('🔄 Всего книг в booksStats:', Object.keys(booksStats).length);
     
     var listContainer = document.getElementById('pubStatsBooksList');
+    if (!listContainer) {
+        console.error('❌ pubStatsBooksList не найден!');
+        return;
+    }
+    
     var html = '';
     var hasBooks = false;
-    
-    var firstKey = Object.keys(booksStats)[0];
+    var totalFilteredWorks = 0;
     
     for (var bookName in booksStats) {
         var stat = booksStats[bookName];
         
+        console.log(`📚 Обработка книги "${bookName}":`, {
+            totalWorks: stat.works.length,
+            worksDates: stat.works.map(function(w) { 
+                return { 
+                    date: new Date(w.date).toISOString(), 
+                    timestamp: w.date,
+                    inLastMonth: w.date >= lastMonthStart && w.date <= lastMonthEnd,
+                    inMonth: w.date >= monthAgo
+                }; 
+            })
+        });
+        
         var filteredWorks;
         if (period === 'lastmonth') {
             filteredWorks = stat.works.filter(function(w) { 
-                return w.date > 0 && w.date >= lastMonthStart && w.date <= lastMonthEnd; 
+                var result = w.date > 0 && w.date >= lastMonthStart && w.date <= lastMonthEnd;
+                if (!result && w.date > 0) {
+                    console.log(`  ❌ Отфильтрована работа: дата=${new Date(w.date).toISOString()}, timestamp=${w.date}`);
+                    console.log(`     lastMonthStart=${lastMonthStart} (${new Date(lastMonthStart)})`);
+                    console.log(`     lastMonthEnd=${lastMonthEnd} (${new Date(lastMonthEnd)})`);
+                    console.log(`     w.date >= lastMonthStart: ${w.date >= lastMonthStart}`);
+                    console.log(`     w.date <= lastMonthEnd: ${w.date <= lastMonthEnd}`);
+                }
+                return result;
             });
-            console.log('📚 Книга:', bookName, 'Работ за прошлый месяц:', filteredWorks.length, 
-                       'Даты:', filteredWorks.map(function(w) { return new Date(w.date).toISOString(); }));
+            console.log(`📚 "${bookName}": всего=${stat.works.length}, за прошлый месяц=${filteredWorks.length}`);
         } else if (period === 'month') {
             filteredWorks = stat.works.filter(function(w) { 
                 return w.date > 0 && w.date >= monthAgo; 
             });
-            console.log('📚 Книга:', bookName, 'Работ за месяц:', filteredWorks.length);
+            console.log(`📚 "${bookName}": всего=${stat.works.length}, за месяц=${filteredWorks.length}`);
         } else {
             filteredWorks = stat.works;
+            console.log(`📚 "${bookName}": всего=${stat.works.length}, показаны все`);
         }
         
-        if (bookName === firstKey) {
-            console.log('📚 Первая книга:', bookName, 'отфильтровано:', filteredWorks.length, 'всего:', stat.works.length);
-        }
+        totalFilteredWorks += filteredWorks.length;
         
-        if (filteredWorks.length === 0) continue;
+        if (filteredWorks.length === 0) {
+            console.log(`  ⚠️ Книга "${bookName}" пропущена (нет работ за период)`);
+            continue;
+        }
         hasBooks = true;
         
         var coverUrl = DEFAULT_COVERS[bookName] || '';
@@ -28621,6 +28648,8 @@ function renderPublicStatsBooks() {
         
         html += '</div></div></div>';
     }
+    
+    console.log(`✅ Итого отфильтровано работ: ${totalFilteredWorks}, книг показано: ${hasBooks ? 'да' : 'нет'}`);
     
     if (!hasBooks) html = '<div class="no-results" style="padding:20px;text-align:center;color:var(--text-gray);">Нет работ за этот период</div>';
     listContainer.innerHTML = html;
