@@ -6301,14 +6301,17 @@ body:not([data-theme]) .modal-content,
         <button class="upload-photo-btn" onclick="document.getElementById('customAvatarInput').click()"><i class="fas fa-camera"></i> Загрузить фото</button>
     </div>
 
-    <div class="balance-card">
-        <p class="balance-label">ВАШ БАЛАНС</p>
-        <div class="balance-main"><span id="userBalance">0</span> <i class="fas fa-book-open gold-book"></i></div>
-        <div class="balance-controls">
-            <button class="balance-btn" onclick="toggleSection('rewards-section')">Потратить ашетики 🏆</button>
-            <button class="balance-btn" onclick="toggleSection('earn-section')">Заработать ашетики 💰</button>
-        </div>
+   <div class="balance-card">
+    <p class="balance-label">ВАШ БАЛАНС</p>
+    <div class="balance-main"><span id="userBalance">0</span> <i class="fas fa-book-open gold-book"></i></div>
+    <div class="balance-controls">
+        <button class="balance-btn" onclick="toggleSection('rewards-section')">Потратить ашетики 🏆</button>
+        <button class="balance-btn" onclick="toggleSection('earn-section')">Заработать ашетики 💰</button>
+        <button class="balance-btn" onclick="shareProfileStats()" style="background: var(--accent); margin-top: 10px;">
+            <i class="fas fa-chart-line"></i> 📊 Поделиться статистикой
+        </button>
     </div>
+</div>
 
     <div id="rewards-section" class="rewards-section">
         <h3>Товары за ашетики</h3>
