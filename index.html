@@ -30081,9 +30081,11 @@ function renderStatsCategory(category) {
     var now = new Date();
     var weekAgo = now.getTime() - 7 * 24 * 60 * 60 * 1000;
     var monthAgo = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+    var currentMonth = now.getMonth();
+    var currentYear = now.getFullYear();
+    var monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
     
-    // Собираем статистику по томам
-    var booksStats = {}; // {bookName: {week: 0, month: 0, total: 0, works: []}}
+    var booksStats = {};
     var totalWeek = 0, totalMonth = 0, totalAll = 0;
     
     var userBooks = userColoringBooks[category] || [];
@@ -30104,12 +30106,7 @@ function renderStatsCategory(category) {
             var artworkUrl = getPageArtwork(bookKey, page);
             
             booksStats[bookName].total++;
-            booksStats[bookName].works.push({
-                page: page,
-                date: date,
-                artwork: artworkUrl,
-                bookKey: bookKey
-            });
+            booksStats[bookName].works.push({ page: page, date: date, artwork: artworkUrl, bookKey: bookKey });
             
             totalAll++;
             if (date >= monthAgo) { booksStats[bookName].month++; totalMonth++; }
@@ -30117,21 +30114,25 @@ function renderStatsCategory(category) {
         }
     });
     
-    var categoryNames = {
-        'paint_by_number': '🎨 Раскраски по номерам',
-        'alcohol': '🍷 Спиртовые раскраски'
-    };
-    
     var html = '<div class="stats-numbers">';
     html += '<div class="stats-number-card active" onclick="showBooksList(\'' + category + '\', \'week\')"><div class="number">' + totalWeek + '</div><div class="label">За неделю</div></div>';
     html += '<div class="stats-number-card" onclick="showBooksList(\'' + category + '\', \'month\')"><div class="number">' + totalMonth + '</div><div class="label">За месяц</div></div>';
     html += '<div class="stats-number-card" onclick="showBooksList(\'' + category + '\', \'total\')"><div class="number">' + totalAll + '</div><div class="label">Всего</div></div>';
     html += '</div>';
+    
+    // ✅ Селектор месяца
+    html += '<div style="margin: 10px 0; display: flex; align-items: center; gap: 10px;">';
+    html += '<span style="font-size: 13px; color: var(--text-gray);">📅</span>';
+    html += '<select id="stats-month-selector-' + category + '" onchange="showBooksList(\'' + category + '\', \'custom\')" style="padding: 8px 12px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text); font-size: 14px;">';
+    for (var m = 0; m < 12; m++) {
+        var selected = (m === currentMonth) ? ' selected' : '';
+        html += '<option value="' + m + '"' + selected + '>' + monthNames[m] + ' ' + currentYear + '</option>';
+    }
+    html += '</select></div>';
+    
     html += '<div id="stats-books-' + category + '"></div>';
     
     container.innerHTML = html;
-    
-    // Сохраняем данные для использования
     container._booksStats = booksStats;
     
     showBooksList(category, 'week');
@@ -30498,6 +30499,7 @@ function renderPublicStatsBooks() {
     var now = new Date();
     var weekAgo = now.getTime() - 7 * 24 * 60 * 60 * 1000;
     var monthAgo = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+    var currentYear = now.getFullYear();
     
     var listContainer = document.getElementById('pubStatsBooksList');
     var html = '';
@@ -30506,18 +30508,25 @@ function renderPublicStatsBooks() {
     for (var bookName in booksStats) {
         var stat = booksStats[bookName];
         
-        var filteredWorks = stat.works.filter(function(w) {
-            if (period === 'week') return w.date >= weekAgo;
-            if (period === 'month') return w.date >= monthAgo;
-            return true;
-        });
+        var filteredWorks;
+        if (period === 'week') {
+            filteredWorks = stat.works.filter(function(w) { return w.date >= weekAgo; });
+        } else if (period === 'month') {
+            filteredWorks = stat.works.filter(function(w) { return w.date >= monthAgo; });
+        } else if (period === 'custom') {
+            var selectedMonth = parseInt(document.getElementById('pub-stats-month-selector').value);
+            var startOfMonth = new Date(currentYear, selectedMonth, 1).getTime();
+            var endOfMonth = new Date(currentYear, selectedMonth + 1, 0, 23, 59, 59).getTime();
+            filteredWorks = stat.works.filter(function(w) { return w.date >= startOfMonth && w.date <= endOfMonth; });
+        } else {
+            filteredWorks = stat.works;
+        }
         
         if (filteredWorks.length === 0) continue;
         hasBooks = true;
         
         var coverUrl = DEFAULT_COVERS[bookName] || '';
         
-        // ✅ Ищем обложку в коллекции пользователя для кастомных раскрасок
         if (!coverUrl) {
             var cat = stat.cat || 'paint_by_number';
             var userBooks = profileBooks[cat] || [];
