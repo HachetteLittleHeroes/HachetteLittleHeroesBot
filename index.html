@@ -28528,6 +28528,8 @@ function renderPublicStatsBooks() {
     var profile = JSON.parse(container.dataset.profile || '{}');
     var profileBooks = profile.coloring_books || {};
     
+    console.log('RPSB period:', period);
+    
     var now = new Date();
     var lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1).getTime();
     var lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59).getTime();
@@ -28536,6 +28538,8 @@ function renderPublicStatsBooks() {
     var listContainer = document.getElementById('pubStatsBooksList');
     var html = '';
     var hasBooks = false;
+    
+    var firstKey = Object.keys(booksStats)[0];
     
     for (var bookName in booksStats) {
         var stat = booksStats[bookName];
@@ -28547,6 +28551,10 @@ function renderPublicStatsBooks() {
             filteredWorks = stat.works.filter(function(w) { return w.date > 0 && w.date >= monthAgo; });
         } else {
             filteredWorks = stat.works;
+        }
+        
+        if (bookName === firstKey) {
+            console.log('first book:', bookName, 'filtered:', filteredWorks.length, 'total:', stat.works.length);
         }
         
         if (filteredWorks.length === 0) continue;
