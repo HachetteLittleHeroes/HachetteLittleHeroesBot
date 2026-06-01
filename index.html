@@ -30175,7 +30175,7 @@ function showBooksList(category, period) {
     var html = '';
     var hasBooks = false;
     
-    // ✅ Топ-5 (компактный блок)
+    // ✅ Топ-5 (компактный блок с процентом)
     var topBooks = [];
     for (var bookName in booksStats) {
         var stat = booksStats[bookName];
@@ -30204,11 +30204,22 @@ function showBooksList(category, period) {
         html += '<div style="font-size: 13px; font-weight: 600; margin-bottom: 8px;">🏆 Топ-5</div>';
         for (var i = 0; i < top5.length; i++) {
             var coverUrl = DEFAULT_COVERS[top5[i].name] || '';
-            html += '<div style="display: flex; align-items: center; gap: 10px; padding: 6px 0;">';
+            
+            // Считаем общий процент выполнения раскраски
+            var bookTotalPages = BOOK_PAGES_CONFIG[top5[i].name]?.totalPages || DEFAULT_PAGES_CONFIG.totalPages;
+            var bookCompletedCount = 0;
+            var bookCompletedPages = userCompletedPages[top5[i].bookKey] || {};
+            for (var p in bookCompletedPages) {
+                bookCompletedCount += (p.includes('-') ? 2 : 1);
+            }
+            var bookPercent = bookTotalPages > 0 ? Math.round((bookCompletedCount / bookTotalPages) * 100) : 0;
+            
+            html += '<div style="display: flex; align-items: center; gap: 8px; padding: 6px 0;">';
             html += '<span style="font-size: 14px; font-weight: 600; width: 20px; color: var(--text-gray);">' + (i + 1) + '.</span>';
             if (coverUrl) html += '<img src="' + coverUrl + '" style="width: 30px; height: 40px; object-fit: cover; border-radius: 4px;" onerror="this.style.display=\'none\'">';
-            html += '<span style="flex: 1; font-size: 13px;">' + top5[i].name + '</span>';
-            html += '<span style="font-weight: 600; color: var(--accent);">' + top5[i].count + '</span>';
+            html += '<span style="flex: 1; font-size: 13px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">' + top5[i].name + '</span>';
+            html += '<span style="font-weight: 600; color: var(--accent); white-space: nowrap;">' + top5[i].count + ' раб.</span>';
+            html += '<span style="font-size: 11px; color: var(--text-gray); white-space: nowrap;">' + bookPercent + '%</span>';
             html += '</div>';
         }
         html += '</div>';
