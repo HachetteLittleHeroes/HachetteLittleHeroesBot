@@ -30086,11 +30086,6 @@ function openStatsBlock(category) {
             if (typeof renderBestiaryStats === 'function') {
                 renderBestiaryStats();
             }
-            // ✅ Показываем селектор для "Всего"
-            setTimeout(function() {
-                var selectorWrapper = document.getElementById('bestiary-month-selector-wrapper');
-                if (selectorWrapper) selectorWrapper.style.display = 'flex';
-            }, 100);
         } else if (category === 'chart') {
             renderMonthChart();
         } else {
@@ -30103,7 +30098,6 @@ function openStatsBlock(category) {
         arrow.style.transform = 'rotate(0deg)';
     }
 }
-
 function renderStatsCategory(category) {
     var container = document.getElementById('stats-content-' + category);
     if (!container) return;
