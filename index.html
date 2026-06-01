@@ -31063,12 +31063,10 @@ async function shareProfileStats() {
         const statsResponse = await fetch(`${SERVER_URL}/api/get_stats_for_card?user_id=${userId}`);
         const statsData = await statsResponse.json();
         
-        // ✅ Теперь поле status должно быть 'ok'
         if (statsData.status !== 'ok') {
             throw new Error('Ошибка получения статистики');
         }
         
-        // Отправляем данные для генерации карточки
         const response = await fetch(`${SERVER_URL}/api/share_stats_card`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -31080,20 +31078,15 @@ async function shareProfileStats() {
         const blob = await response.blob();
         const url = URL.createObjectURL(blob);
         
-        if (tg) {
-            tg.sendData(JSON.stringify({
-                action: 'share_stats_card',
-                image_url: url,
-                caption: `📊 Моя статистика`
-            }));
-        } else {
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `stats_${userId}.png`;
-            a.click();
-        }
+        // Скачиваем картинку
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `stats_${userId}.png`;
+        a.click();
         
         URL.revokeObjectURL(url);
+        
+        if (tg) tg.showAlert('✅ Картинка сохранена!');
         
     } catch (error) {
         console.error('Ошибка:', error);
