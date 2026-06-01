@@ -28400,9 +28400,10 @@ function renderPublicProfile(profile) {
     const isFriend = myFriends.some(f => String(f.user_id) === String(profile.user_id));
     const pubUserId = profile.user_id;
     
-    var totalWorks = 0, weekWorks = 0, monthWorks = 0;
+    var totalWorks = 0, lastMonthWorks = 0, monthWorks = 0;
     var now = new Date();
-    var weekAgo = now.getTime() - 7 * 24 * 60 * 60 * 1000;
+    var lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1).getTime();
+    var lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59).getTime();
     var monthAgo = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
     var profileCompletedPages = profile.completed_pages || {};
     var profileCompletedDates = profile.completed_pages_dates || {};
@@ -28414,7 +28415,7 @@ function renderPublicProfile(profile) {
             totalWorks++;
             var dt = profileCompletedDates[bk + '|' + pg] || 0;
             if (dt >= monthAgo) monthWorks++;
-            if (dt >= weekAgo) weekWorks++;
+            if (dt >= lastMonthStart && dt <= lastMonthEnd) lastMonthWorks++;
 
             var cat;
             if (bk.startsWith('paint_by_number_')) cat = 'paint_by_number';
@@ -28423,11 +28424,11 @@ function renderPublicProfile(profile) {
             else cat = 'custom';
 
             var bname = bk.substring(cat.length + 1);
-            if (!booksStats[bname]) booksStats[bname] = { week: 0, month: 0, total: 0, cat: cat, works: [] };
+            if (!booksStats[bname]) booksStats[bname] = { lastmonth: 0, month: 0, total: 0, cat: cat, works: [] };
             
             booksStats[bname].total++;
             if (dt >= monthAgo) booksStats[bname].month++;
-            if (dt >= weekAgo) booksStats[bname].week++;
+            if (dt >= lastMonthStart && dt <= lastMonthEnd) booksStats[bname].lastmonth++;
             
             var artworkUrl = '';
             if (profileArtworks[bk] && profileArtworks[bk][pg]) {
@@ -28458,38 +28459,34 @@ function renderPublicProfile(profile) {
             </div>
         </div>
         
-        <!-- БЛОК СТАТИСТИКА -->
         <div class="inventory-main-block" style="margin-top: 10px;">
             <div class="inventory-header" onclick="toggleBlock('modalStatsContent', 'modalStatsArrow')"><div class="inventory-header-left"><i class="fas fa-chart-bar"></i><span>Статистика</span></div><i class="fas fa-chevron-down" id="modalStatsArrow" style="transform: rotate(180deg);"></i></div>
             <div id="modalStatsContent" class="inventory-content" style="display: block;">
                 <div class="stats-numbers" style="margin-bottom:15px;">
-                    <div class="stats-number-card active" id="pubCardWeek" onclick="switchPublicStats('week')"><div class="number">${weekWorks}</div><div class="label">За неделю</div></div>
+                    <div class="stats-number-card active" id="pubCardLastMonth" onclick="switchPublicStats('lastmonth')"><div class="number">${lastMonthWorks}</div><div class="label">За прошлый месяц</div></div>
                     <div class="stats-number-card" id="pubCardMonth" onclick="switchPublicStats('month')"><div class="number">${monthWorks}</div><div class="label">За месяц</div></div>
                     <div class="stats-number-card" id="pubCardTotal" onclick="switchPublicStats('total')"><div class="number">${totalWorks}</div><div class="label">Всего</div></div>
                 </div>
                 <div id="pubStatsMonthSelector" style="margin: 10px 0; display: none; align-items: center; gap: 10px;">
-                    <span style="font-size: 13px; color: var(--text-gray);">📅</span>
                     <select id="pub-stats-month-selector" onchange="switchPublicStats('custom')" style="padding: 8px 12px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text); font-size: 14px;">
-                        ${monthNames.map((name, m) => `<option value="${m}"${m === currentMonth ? ' selected' : ''}>${name} ${currentYear}</option>`).join('')}
+                        <option value="all">За всё время</option>
+                        ${monthNames.map((name, m) => `<option value="${m}">${name} ${currentYear}</option>`).join('')}
                     </select>
                 </div>
                 <div id="pubStatsBooksList"></div>
             </div>
         </div>
         
-        <!-- БЛОК КОЛЛЕКЦИЯ ПЕРСОНАЖЕЙ -->
         <div class="inventory-main-block" style="margin-top: 10px;">
             <div class="inventory-header" onclick="toggleBlock('modalFiguresContent', 'modalFiguresArrow')"><div class="inventory-header-left"><i class="fas fa-users"></i><span>Коллекция персонажей</span></div><div class="inventory-header-right"><span class="collection-badge">${figuresCount}/50</span><i class="fas fa-chevron-down" id="modalFiguresArrow"></i></div></div>
             <div id="modalFiguresContent" class="inventory-content" style="display: none;"><div id="modalFiguresGrid" class="collection-grid"></div></div>
         </div>
         
-        <!-- БЛОК КОЛЛЕКЦИЯ РАСКРАСОК -->
         <div class="inventory-main-block" style="margin-top: 10px;">
             <div class="inventory-header" onclick="toggleBlock('modalBooksContent', 'modalBooksArrow')"><div class="inventory-header-left"><i class="fas fa-book"></i><span>Коллекция раскрасок</span></div><div class="inventory-header-right"><span class="collection-badge">${booksCount}</span><i class="fas fa-chevron-down" id="modalBooksArrow"></i></div></div>
             <div id="modalBooksContent" class="inventory-content" style="display: none;"><div id="modalBooksList"></div></div>
         </div>
         
-        <!-- БЛОК СПИСОК ЖЕЛАНИЙ -->
         <div class="inventory-main-block" style="margin-top: 10px;">
             <div class="inventory-header" onclick="toggleBlock('modalWishlistContent', 'modalWishlistArrow')"><div class="inventory-header-left"><i class="fas fa-heart"></i><span>Список желаний</span></div><div class="inventory-header-right"><span class="collection-badge">${wishlistCount}</span><i class="fas fa-chevron-down" id="modalWishlistArrow"></i></div></div>
             <div id="modalWishlistContent" class="inventory-content" style="display: none;"><div id="modalWishlistGrid" class="category-items" style="grid-template-columns: repeat(2, 1fr);"></div></div>
@@ -28498,7 +28495,7 @@ function renderPublicProfile(profile) {
     
     container.innerHTML = html;
     container._pubBooksStats = booksStats;
-    container._pubPeriod = 'week';
+    container._pubPeriod = 'lastmonth';
     container._pubUserId = profile.user_id;
     container.dataset.profile = JSON.stringify(profile);
     renderPublicStatsBooks();
@@ -28537,11 +28534,15 @@ function switchPublicStats(period) {
 function renderPublicStatsBooks() {
     var container = document.getElementById('publicProfileContent');
     var booksStats = container._pubBooksStats || {};
-    var period = container._pubPeriod || 'week';
+    var period = container._pubPeriod || 'lastmonth';
+    var profile = JSON.parse(container.dataset.profile || '{}');
+    var profileBooks = profile.coloring_books || {};
     
     var now = new Date();
-    var weekAgo = now.getTime() - 7 * 24 * 60 * 60 * 1000;
+    var lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1).getTime();
+    var lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59).getTime();
     var monthAgo = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+    var currentYear = now.getFullYear();
     
     var listContainer = document.getElementById('pubStatsBooksList');
     var html = '';
@@ -28550,19 +28551,36 @@ function renderPublicStatsBooks() {
     for (var bookName in booksStats) {
         var stat = booksStats[bookName];
         
-        // ✅ Фильтруем работы по периоду
-        var filteredWorks = stat.works.filter(function(w) {
-            if (period === 'week') return w.date >= weekAgo;
-            if (period === 'month') return w.date >= monthAgo;
-            return true;
-        });
+        var filteredWorks;
+        if (period === 'lastmonth') {
+            filteredWorks = stat.works.filter(function(w) { return w.date >= lastMonthStart && w.date <= lastMonthEnd; });
+        } else if (period === 'month') {
+            filteredWorks = stat.works.filter(function(w) { return w.date >= monthAgo; });
+        } else if (period === 'custom') {
+            var selMonth = document.getElementById('pub-stats-month-selector')?.value;
+            if (selMonth && selMonth !== 'all') {
+                selMonth = parseInt(selMonth);
+                var startOfMonth = new Date(currentYear, selMonth, 1).getTime();
+                var endOfMonth = new Date(currentYear, selMonth + 1, 0, 23, 59, 59).getTime();
+                filteredWorks = stat.works.filter(function(w) { return w.date >= startOfMonth && w.date <= endOfMonth; });
+            } else {
+                filteredWorks = stat.works;
+            }
+        } else {
+            filteredWorks = stat.works;
+        }
         
         if (filteredWorks.length === 0) continue;
         hasBooks = true;
         
         var coverUrl = DEFAULT_COVERS[bookName] || '';
+        if (!coverUrl) {
+            var cat = stat.cat || 'paint_by_number';
+            var userBooks = profileBooks[cat] || [];
+            var savedBook = userBooks.find(function(b) { return (typeof b === 'string' ? b : b.name) === bookName; });
+            if (savedBook && typeof savedBook === 'object' && savedBook.cover) { coverUrl = savedBook.cover; }
+        }
         
-        // ✅ Разворачиваемый блок (как в личной статистике)
         html += '<div class="inventory-subblock" style="margin-bottom:10px;background:var(--bg);border-radius:12px;border:1px solid var(--border-color);overflow:hidden;">';
         html += '<div class="subblock-header" onclick="toggleStatsBook(this)" style="display:flex;justify-content:space-between;align-items:center;padding:12px 15px;cursor:pointer;">';
         html += '<div style="display:flex;align-items:center;gap:10px;">';
@@ -28572,7 +28590,6 @@ function renderPublicStatsBooks() {
         html += '<i class="fas fa-chevron-down" style="color:var(--text-gray);transition:transform 0.3s;"></i>';
         html += '</div>';
         
-        // ✅ Сетка с превью работ
         html += '<div class="subblock-content" style="display:none;padding:10px 15px;border-top:1px solid var(--border-color);">';
         html += '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">';
         
@@ -28580,13 +28597,10 @@ function renderPublicStatsBooks() {
         
         filteredWorks.forEach(function(w) {
             var dateStr = w.date ? new Date(w.date).toLocaleDateString('ru-RU') : '';
-            
             if (w.artwork) {
                 html += '<div class="book-page-btn uploaded" style="aspect-ratio:1;overflow:hidden;border-radius:10px;cursor:pointer;position:relative;" onclick="viewArtwork(\'' + w.bookKey.replace(/'/g, "\\'") + '\', \'' + w.page + '\')">';
                 html += '<img src="' + w.artwork + '" style="width:100%;height:100%;object-fit:cover;">';
-                if (dateStr) {
-                    html += '<span style="position:absolute;bottom:2px;right:4px;font-size:9px;background:rgba(0,0,0,0.6);color:white;padding:1px 4px;border-radius:4px;">' + dateStr + '</span>';
-                }
+                if (dateStr) html += '<span style="position:absolute;bottom:2px;right:4px;font-size:9px;background:rgba(0,0,0,0.6);color:white;padding:1px 4px;border-radius:4px;">' + dateStr + '</span>';
                 html += '</div>';
             } else {
                 html += '<div class="book-page-btn completed" style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:12px;position:relative;">';
@@ -28600,7 +28614,6 @@ function renderPublicStatsBooks() {
     }
     
     if (!hasBooks) html = '<div class="no-results" style="padding:20px;text-align:center;color:var(--text-gray);">Нет работ за этот период</div>';
-    
     listContainer.innerHTML = html;
 }
 
@@ -30159,12 +30172,13 @@ function showBooksList(category, period) {
     
     var cards = container.querySelectorAll('.stats-number-card');
     cards.forEach(function(c) { c.classList.remove('active'); });
-    if (period !== 'custom') {
-        var activeCard = container.querySelector('.stats-number-card[onclick*="' + period + '"]');
-        if (activeCard) activeCard.classList.add('active');
-    } else {
+    
+    if (period === 'custom') {
         var totalCard = container.querySelector('.stats-number-card[onclick*="total"]');
         if (totalCard) totalCard.classList.add('active');
+    } else {
+        var activeCard = container.querySelector('.stats-number-card[onclick*="' + period + '"]');
+        if (activeCard) activeCard.classList.add('active');
     }
     
     var selectorWrapper = document.getElementById('stats-month-selector-wrapper-' + category);
@@ -30403,6 +30417,12 @@ function switchBestiaryPeriod(period) {
         if (totalCard) totalCard.classList.add('active');
     }
     
+    // Скрываем селектор кроме "Всего"
+    var selectorWrapper = document.getElementById('bestiary-month-selector-wrapper');
+    if (selectorWrapper) {
+        selectorWrapper.style.display = (period === 'total' || period === 'custom') ? 'flex' : 'none';
+    }
+    
     var data = window._bestiaryStatsData || [];
     var now = new Date();
     var lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1).getTime();
@@ -30410,7 +30430,6 @@ function switchBestiaryPeriod(period) {
     var monthAgo = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
     var currentYear = now.getFullYear();
     
-    // Обновляем счётчики
     var totalLastMonth = data.reduce(function(s, c) { return s + c.lastMonthColored; }, 0);
     var totalMonth = data.reduce(function(s, c) { return s + c.monthColored; }, 0);
     var totalAll = data.reduce(function(s, c) { return s + c.totalColored; }, 0);
@@ -30423,7 +30442,6 @@ function switchBestiaryPeriod(period) {
     var numbersContainer = document.querySelector('#stats-content-bestiary .stats-numbers');
     if (numbersContainer) numbersContainer.innerHTML = numbersHTML;
     
-    // Обновляем топ-5 с учётом периода
     var filtered = [];
     for (var i = 0; i < data.length; i++) {
         var cs = data[i];
@@ -30458,7 +30476,6 @@ function switchBestiaryPeriod(period) {
     }
     document.getElementById('bestiary-top5').innerHTML = topHTML;
     
-    // Обновляем список
     filterBestiaryStats();
 }
 function renderBestiaryStats() {
@@ -30547,7 +30564,7 @@ function renderBestiaryStats() {
     html += '<div class="stats-number-card" onclick="switchBestiaryPeriod(\'total\')"><div class="number">' + totalAll + '</div><div class="label">Всего</div></div>';
     html += '</div>';
     
-    html += '<div id="bestiary-month-selector-wrapper" style="margin: 10px 0; display: flex; align-items: center; gap: 10px;">';
+    html += '<div id="bestiary-month-selector-wrapper" style="margin: 10px 0; display: none; align-items: center; gap: 10px;">';
     html += '<select id="bestiary-month-selector" onchange="switchBestiaryPeriod(this.value === \'all\' ? \'total\' : \'custom\')" style="padding: 8px 12px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text); font-size: 14px;">';
     html += '<option value="all" selected>За всё время</option>';
     for (var m = 0; m < 12; m++) {
@@ -30555,7 +30572,6 @@ function renderBestiaryStats() {
     }
     html += '</select></div>';
     
-    // Топ-5
     var top5 = bestiaryStatsData.slice(0, 5);
     if (top5.length > 0) {
         html += '<div id="bestiary-top5"><div style="font-size: 13px; font-weight: 600; margin-bottom: 8px;">🏆 Топ-5 персонажей</div>';
