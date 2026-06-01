@@ -28522,12 +28522,12 @@ function switchPublicStats(period) {
     var container = document.getElementById('publicProfileContent');
     container._pubPeriod = period;
     
-    var weekEl = document.getElementById('pubCardWeek');
+    var lastMonthEl = document.getElementById('pubCardLastMonth');
     var monthEl = document.getElementById('pubCardMonth');
     var totalEl = document.getElementById('pubCardTotal');
     var selectorEl = document.getElementById('pubStatsMonthSelector');
     
-    if (weekEl) weekEl.classList.toggle('active', period === 'week');
+    if (lastMonthEl) lastMonthEl.classList.toggle('active', period === 'lastmonth');
     if (monthEl) monthEl.classList.toggle('active', period === 'month');
     if (totalEl) totalEl.classList.toggle('active', period === 'total' || period === 'custom');
     if (selectorEl) selectorEl.style.display = (period === 'total' || period === 'custom') ? 'flex' : 'none';
@@ -30096,14 +30096,15 @@ function renderStatsCategory(category) {
     if (!container) return;
     
     var now = new Date();
-    var weekAgo = now.getTime() - 7 * 24 * 60 * 60 * 1000;
+    var lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1).getTime();
+    var lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59).getTime();
     var monthAgo = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
     var currentMonth = now.getMonth();
     var currentYear = now.getFullYear();
     var monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
     
     var booksStats = {};
-    var totalWeek = 0, totalMonth = 0, totalAll = 0;
+    var totalLastMonth = 0, totalMonth = 0, totalAll = 0;
     
     var userBooks = userColoringBooks[category] || [];
     
@@ -30115,7 +30116,7 @@ function renderStatsCategory(category) {
         if (Object.keys(pages).length === 0) return;
         
         if (!booksStats[bookName]) {
-            booksStats[bookName] = { week: 0, month: 0, total: 0, works: [], bookKey: bookKey };
+            booksStats[bookName] = { lastmonth: 0, month: 0, total: 0, works: [], bookKey: bookKey };
         }
         
         for (var page in pages) {
@@ -30127,17 +30128,16 @@ function renderStatsCategory(category) {
             
             totalAll++;
             if (date >= monthAgo) { booksStats[bookName].month++; totalMonth++; }
-            if (date >= weekAgo) { booksStats[bookName].week++; totalWeek++; }
+            if (date >= lastMonthStart && date <= lastMonthEnd) { booksStats[bookName].lastmonth++; totalLastMonth++; }
         }
     });
     
     var html = '<div class="stats-numbers">';
-    html += '<div class="stats-number-card active" onclick="showBooksList(\'' + category + '\', \'week\')"><div class="number">' + totalWeek + '</div><div class="label">За неделю</div></div>';
+    html += '<div class="stats-number-card active" onclick="showBooksList(\'' + category + '\', \'lastmonth\')"><div class="number">' + totalLastMonth + '</div><div class="label">За прошлый месяц</div></div>';
     html += '<div class="stats-number-card" onclick="showBooksList(\'' + category + '\', \'month\')"><div class="number">' + totalMonth + '</div><div class="label">За месяц</div></div>';
     html += '<div class="stats-number-card" onclick="showBooksList(\'' + category + '\', \'total\')"><div class="number">' + totalAll + '</div><div class="label">Всего</div></div>';
     html += '</div>';
     
-    // Селектор месяца — показывается только для "Всего"
     html += '<div id="stats-month-selector-wrapper-' + category + '" style="margin: 10px 0; display: none; align-items: center; gap: 10px;">';
     html += '<select id="stats-month-selector-' + category + '" onchange="showBooksList(\'' + category + '\', this.value === \'all\' ? \'total\' : \'custom\')" style="padding: 8px 12px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text); font-size: 14px;">';
     html += '<option value="all" selected>За всё время</option>';
@@ -30151,9 +30151,8 @@ function renderStatsCategory(category) {
     container.innerHTML = html;
     container._booksStats = booksStats;
     
-    showBooksList(category, 'week');
+    showBooksList(category, 'lastmonth');
 }
-
 function showBooksList(category, period) {
     var container = document.getElementById('stats-content-' + category);
     var booksStats = container._booksStats || {};
@@ -30174,22 +30173,22 @@ function showBooksList(category, period) {
     }
     
     var now = new Date();
-    var weekAgo = now.getTime() - 7 * 24 * 60 * 60 * 1000;
+    var lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1).getTime();
+    var lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59).getTime();
     var monthAgo = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
     var currentYear = now.getFullYear();
-    var monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
     
     var listContainer = document.getElementById('stats-books-' + category);
     var html = '';
     var hasBooks = false;
     
-    // ✅ Топ-5 (компактный блок с процентом)
+    // Топ-5
     var topBooks = [];
     for (var bookName in booksStats) {
         var stat = booksStats[bookName];
         var filteredWorks;
-        if (period === 'week') {
-            filteredWorks = stat.works.filter(function(w) { return w.date >= weekAgo; });
+        if (period === 'lastmonth') {
+            filteredWorks = stat.works.filter(function(w) { return w.date >= lastMonthStart && w.date <= lastMonthEnd; });
         } else if (period === 'month') {
             filteredWorks = stat.works.filter(function(w) { return w.date >= monthAgo; });
         } else if (period === 'custom') {
@@ -30201,10 +30200,12 @@ function showBooksList(category, period) {
             filteredWorks = stat.works;
         }
         if (filteredWorks.length > 0) {
-            topBooks.push({ name: bookName, count: filteredWorks.length, works: filteredWorks, bookKey: stat.bookKey });
+            var pagesCount = 0;
+            filteredWorks.forEach(function(w) { pagesCount += (String(w.page).includes('-') ? 2 : 1); });
+            topBooks.push({ name: bookName, pages: pagesCount, works: filteredWorks, bookKey: stat.bookKey });
         }
     }
-    topBooks.sort(function(a, b) { return b.count - a.count; });
+    topBooks.sort(function(a, b) { return b.pages - a.pages; });
     var top5 = topBooks.slice(0, 5);
     
     if (top5.length > 0) {
@@ -30212,8 +30213,6 @@ function showBooksList(category, period) {
         html += '<div style="font-size: 13px; font-weight: 600; margin-bottom: 8px;">🏆 Топ-5</div>';
         for (var i = 0; i < top5.length; i++) {
             var coverUrl = DEFAULT_COVERS[top5[i].name] || '';
-            
-            // Считаем общий процент выполнения раскраски
             var bookTotalPages = BOOK_PAGES_CONFIG[top5[i].name]?.totalPages || DEFAULT_PAGES_CONFIG.totalPages;
             var bookCompletedCount = 0;
             var bookCompletedPages = userCompletedPages[top5[i].bookKey] || {};
@@ -30226,21 +30225,21 @@ function showBooksList(category, period) {
             html += '<span style="font-size: 14px; font-weight: 600; width: 20px; color: var(--text-gray);">' + (i + 1) + '.</span>';
             if (coverUrl) html += '<img src="' + coverUrl + '" style="width: 30px; height: 40px; object-fit: cover; border-radius: 4px;" onerror="this.style.display=\'none\'">';
             html += '<span style="flex: 1; font-size: 13px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">' + top5[i].name + '</span>';
-            html += '<span style="font-weight: 600; color: var(--accent); white-space: nowrap;">' + top5[i].count + '</span>';
+            html += '<span style="font-weight: 600; color: var(--accent); white-space: nowrap;">' + top5[i].pages + ' стр.</span>';
             html += '<span style="font-size: 11px; color: var(--text-gray); white-space: nowrap;">' + bookPercent + '%</span>';
             html += '</div>';
         }
         html += '</div>';
     }
     
-    // ✅ Все раскраски (разворачиваемые)
+    // Все раскраски
     html += '<div style="font-size: 13px; font-weight: 600; margin-bottom: 8px;">📚 Все раскраски</div>';
     
     for (var bookName in booksStats) {
         var stat = booksStats[bookName];
         var filteredWorks;
-        if (period === 'week') {
-            filteredWorks = stat.works.filter(function(w) { return w.date >= weekAgo; });
+        if (period === 'lastmonth') {
+            filteredWorks = stat.works.filter(function(w) { return w.date >= lastMonthStart && w.date <= lastMonthEnd; });
         } else if (period === 'month') {
             filteredWorks = stat.works.filter(function(w) { return w.date >= monthAgo; });
         } else if (period === 'custom') {
@@ -30255,6 +30254,9 @@ function showBooksList(category, period) {
         if (filteredWorks.length === 0) continue;
         hasBooks = true;
         
+        var pagesCount = 0;
+        filteredWorks.forEach(function(w) { pagesCount += (String(w.page).includes('-') ? 2 : 1); });
+        
         html += '<div class="inventory-subblock" style="margin-bottom:10px;background:var(--bg);border-radius:12px;border:1px solid var(--border-color);overflow:hidden;">';
         html += '<div class="subblock-header" onclick="toggleStatsBook(this)" style="display:flex;justify-content:space-between;align-items:center;padding:12px 15px;cursor:pointer;">';
         
@@ -30268,7 +30270,7 @@ function showBooksList(category, period) {
         
         html += '<div style="display:flex;align-items:center;gap:10px;">';
         if (coverUrl) html += '<img src="' + coverUrl + '" style="width:40px;height:53px;object-fit:cover;border-radius:6px;" onerror="this.style.display=\'none\'">';
-        html += '<div><strong>' + bookName + '</strong><span style="margin-left:10px;font-size:13px;color:var(--text-gray);">' + filteredWorks.length + ' работ</span></div>';
+        html += '<div><strong>' + bookName + '</strong><span style="margin-left:10px;font-size:13px;color:var(--text-gray);">' + pagesCount + ' стр.</span></div>';
         html += '</div>';
         html += '<i class="fas fa-chevron-down" style="color:var(--text-gray);transition:transform 0.3s;"></i>';
         html += '</div>';
@@ -30403,29 +30405,30 @@ function switchBestiaryPeriod(period) {
     
     var data = window._bestiaryStatsData || [];
     var now = new Date();
-    var weekAgo = now.getTime() - 7 * 24 * 60 * 60 * 1000;
+    var lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1).getTime();
+    var lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59).getTime();
     var monthAgo = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
     var currentYear = now.getFullYear();
     
-    // ✅ Обновляем счётчики
-    var totalWeek = data.reduce(function(s, c) { return s + c.weekColored; }, 0);
+    // Обновляем счётчики
+    var totalLastMonth = data.reduce(function(s, c) { return s + c.lastMonthColored; }, 0);
     var totalMonth = data.reduce(function(s, c) { return s + c.monthColored; }, 0);
     var totalAll = data.reduce(function(s, c) { return s + c.totalColored; }, 0);
     
     var numbersHTML = '';
-    numbersHTML += '<div class="stats-number-card' + (period === 'week' ? ' active' : '') + '" onclick="switchBestiaryPeriod(\'week\')"><div class="number">' + totalWeek + '</div><div class="label">За неделю</div></div>';
+    numbersHTML += '<div class="stats-number-card' + (period === 'lastmonth' ? ' active' : '') + '" onclick="switchBestiaryPeriod(\'lastmonth\')"><div class="number">' + totalLastMonth + '</div><div class="label">За прошлый месяц</div></div>';
     numbersHTML += '<div class="stats-number-card' + (period === 'month' ? ' active' : '') + '" onclick="switchBestiaryPeriod(\'month\')"><div class="number">' + totalMonth + '</div><div class="label">За месяц</div></div>';
     numbersHTML += '<div class="stats-number-card' + (period === 'total' || period === 'custom' ? ' active' : '') + '" onclick="switchBestiaryPeriod(\'total\')"><div class="number">' + totalAll + '</div><div class="label">Всего</div></div>';
     
     var numbersContainer = document.querySelector('#stats-content-bestiary .stats-numbers');
     if (numbersContainer) numbersContainer.innerHTML = numbersHTML;
     
-    // ✅ Обновляем топ-5 с учётом периода
+    // Обновляем топ-5 с учётом периода
     var filtered = [];
     for (var i = 0; i < data.length; i++) {
         var cs = data[i];
         var colored;
-        if (period === 'week') colored = cs.weekColored;
+        if (period === 'lastmonth') colored = cs.lastMonthColored;
         else if (period === 'month') colored = cs.monthColored;
         else if (period === 'custom') {
             var selMonth = parseInt(document.getElementById('bestiary-month-selector').value);
@@ -30455,7 +30458,7 @@ function switchBestiaryPeriod(period) {
     }
     document.getElementById('bestiary-top5').innerHTML = topHTML;
     
-    // ✅ Обновляем список
+    // Обновляем список
     filterBestiaryStats();
 }
 function renderBestiaryStats() {
@@ -30463,7 +30466,8 @@ function renderBestiaryStats() {
     if (!container) return;
     
     var now = new Date();
-    var weekAgo = now.getTime() - 7 * 24 * 60 * 60 * 1000;
+    var lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1).getTime();
+    var lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59).getTime();
     var monthAgo = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
     var currentYear = now.getFullYear();
     var monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
@@ -30482,9 +30486,9 @@ function renderBestiaryStats() {
     BESTIARY.forEach(function(character) {
         var totalAppearances = 0;
         var totalColored = 0;
-        var weekColored = 0;
+        var lastMonthColored = 0;
         var monthColored = 0;
-        var coloredDates = []; // ✅ даты раскрашенных появлений
+        var coloredDates = [];
         
         character.appearances.forEach(function(appearance) {
             var bookName = appearance.book;
@@ -30509,7 +30513,7 @@ function renderBestiaryStats() {
                     var date = userPages[pageStr] || 0;
                     coloredDates.push(date);
                     if (date >= monthAgo) monthColored++;
-                    if (date >= weekAgo) weekColored++;
+                    if (date >= lastMonthStart && date <= lastMonthEnd) lastMonthColored++;
                 }
             });
         });
@@ -30522,25 +30526,25 @@ function renderBestiaryStats() {
                 image: character.image,
                 total: totalAppearances,
                 totalColored: totalColored,
-                weekColored: weekColored,
+                lastMonthColored: lastMonthColored,
                 monthColored: monthColored,
-                coloredDates: coloredDates // ✅ массив дат
+                coloredDates: coloredDates
             });
         }
     });
     
     bestiaryStatsData.sort(function(a, b) { return b.totalColored - a.totalColored; });
     
-    var totalWeek = bestiaryStatsData.reduce(function(s, c) { return s + c.weekColored; }, 0);
+    var totalLastMonth = bestiaryStatsData.reduce(function(s, c) { return s + c.lastMonthColored; }, 0);
     var totalMonth = bestiaryStatsData.reduce(function(s, c) { return s + c.monthColored; }, 0);
     var totalAll = bestiaryStatsData.reduce(function(s, c) { return s + c.totalColored; }, 0);
     
     var html = '';
     
     html += '<div class="stats-numbers">';
-    html += '<div class="stats-number-card" onclick="switchBestiaryPeriod(\'week\')"><div class="number">' + totalWeek + '</div><div class="label">За неделю</div></div>';
+    html += '<div class="stats-number-card active" onclick="switchBestiaryPeriod(\'lastmonth\')"><div class="number">' + totalLastMonth + '</div><div class="label">За прошлый месяц</div></div>';
     html += '<div class="stats-number-card" onclick="switchBestiaryPeriod(\'month\')"><div class="number">' + totalMonth + '</div><div class="label">За месяц</div></div>';
-    html += '<div class="stats-number-card active" onclick="switchBestiaryPeriod(\'total\')"><div class="number">' + totalAll + '</div><div class="label">Всего</div></div>';
+    html += '<div class="stats-number-card" onclick="switchBestiaryPeriod(\'total\')"><div class="number">' + totalAll + '</div><div class="label">Всего</div></div>';
     html += '</div>';
     
     html += '<div id="bestiary-month-selector-wrapper" style="margin: 10px 0; display: flex; align-items: center; gap: 10px;">';
@@ -30579,7 +30583,7 @@ function renderBestiaryStats() {
     
     container.innerHTML = html;
     container._bestiaryData = bestiaryStatsData;
-    bestiaryStatsCurrentPeriod = 'total';
+    bestiaryStatsCurrentPeriod = 'lastmonth';
     window._bestiaryStatsData = bestiaryStatsData;
     
     filterBestiaryStats();
@@ -30627,9 +30631,10 @@ function filterBestiaryStats() {
     if (!listContainer) return;
     
     var data = window._bestiaryStatsData || [];
-    var period = bestiaryStatsCurrentPeriod || 'total';
+    var period = bestiaryStatsCurrentPeriod || 'lastmonth';
     var now = new Date();
-    var weekAgo = now.getTime() - 7 * 24 * 60 * 60 * 1000;
+    var lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1).getTime();
+    var lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59).getTime();
     var monthAgo = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
     var currentYear = now.getFullYear();
     
@@ -30640,8 +30645,8 @@ function filterBestiaryStats() {
         var colored, total;
         total = cs.total;
         
-        if (period === 'week') {
-            colored = cs.weekColored;
+        if (period === 'lastmonth') {
+            colored = cs.lastMonthColored;
         } else if (period === 'month') {
             colored = cs.monthColored;
         } else if (period === 'custom') {
@@ -30662,7 +30667,7 @@ function filterBestiaryStats() {
         }
     }
     
-    if (period === 'week') filtered.sort(function(a, b) { return b.colored - a.colored; });
+    if (period === 'lastmonth') filtered.sort(function(a, b) { return b.colored - a.colored; });
     else if (period === 'month') filtered.sort(function(a, b) { return b.colored - a.colored; });
     else if (period === 'custom') filtered.sort(function(a, b) { return b.colored - a.colored; });
     
