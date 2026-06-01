@@ -28483,11 +28483,13 @@ function renderPublicProfile(profile) {
         </div>
     `;
     
-    container.innerHTML = html;
+    // ✅ Сначала свойства, потом innerHTML
     container._pubBooksStats = booksStats;
     container._pubPeriod = 'lastmonth';
     container._pubUserId = profile.user_id;
     container.dataset.profile = JSON.stringify(profile);
+    
+    container.innerHTML = html;
     renderPublicStatsBooks();
     
     setTimeout(() => {
