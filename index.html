@@ -30177,8 +30177,15 @@ function showBooksList(category, period) {
         var totalCard = container.querySelector('.stats-number-card[onclick*="total"]');
         if (totalCard) totalCard.classList.add('active');
     } else {
-        var activeCard = container.querySelector('.stats-number-card[onclick*="' + period + '"]');
-        if (activeCard) activeCard.classList.add('active');
+        // Ищем точное совпадение, а не подстроку
+        var allCards = container.querySelectorAll('.stats-number-card');
+        for (var i = 0; i < allCards.length; i++) {
+            var onclick = allCards[i].getAttribute('onclick') || '';
+            if (onclick.indexOf("'" + period + "'") !== -1) {
+                allCards[i].classList.add('active');
+                break;
+            }
+        }
     }
     
     var selectorWrapper = document.getElementById('stats-month-selector-wrapper-' + category);
@@ -30196,7 +30203,6 @@ function showBooksList(category, period) {
     var html = '';
     var hasBooks = false;
     
-    // Топ-5
     var topBooks = [];
     for (var bookName in booksStats) {
         var stat = booksStats[bookName];
@@ -30246,7 +30252,6 @@ function showBooksList(category, period) {
         html += '</div>';
     }
     
-    // Все раскраски
     html += '<div style="font-size: 13px; font-weight: 600; margin-bottom: 8px;">📚 Все раскраски</div>';
     
     for (var bookName in booksStats) {
