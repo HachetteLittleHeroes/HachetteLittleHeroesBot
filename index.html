@@ -28535,6 +28535,7 @@ function renderPublicStatsBooks() {
     var container = document.getElementById('publicProfileContent');
     var booksStats = container._pubBooksStats || {};
     var period = container._pubPeriod || 'lastmonth';
+    console.log('RPSB period:', period, 'container._pubPeriod:', container._pubPeriod);
     var profile = JSON.parse(container.dataset.profile || '{}');
     var profileBooks = profile.coloring_books || {};
     
