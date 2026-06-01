@@ -28444,10 +28444,6 @@ function renderPublicProfile(profile) {
         }
     }
     
-    var currentMonth = now.getMonth();
-    var currentYear = now.getFullYear();
-    var monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
-    
     let html = `
         <div class="profile-header-block" style="margin: 0; padding: 15px;">
             <div class="avatar-wrapper"><img src="${avatarUrl}" onerror="this.src='https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png'"></div>
@@ -28466,12 +28462,6 @@ function renderPublicProfile(profile) {
                     <div class="stats-number-card active" id="pubCardLastMonth" onclick="switchPublicStats('lastmonth')"><div class="number">${lastMonthWorks}</div><div class="label">За прошлый месяц</div></div>
                     <div class="stats-number-card" id="pubCardMonth" onclick="switchPublicStats('month')"><div class="number">${monthWorks}</div><div class="label">За месяц</div></div>
                     <div class="stats-number-card" id="pubCardTotal" onclick="switchPublicStats('total')"><div class="number">${totalWorks}</div><div class="label">Всего</div></div>
-                </div>
-                <div id="pubStatsMonthSelector" style="margin: 10px 0; display: none; align-items: center; gap: 10px;">
-                    <select id="pub-stats-month-selector" onchange="switchPublicStats('custom')" style="padding: 8px 12px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text); font-size: 14px;">
-                        <option value="all">За всё время</option>
-                        ${monthNames.map((name, m) => `<option value="${m}">${name} ${currentYear}</option>`).join('')}
-                    </select>
                 </div>
                 <div id="pubStatsBooksList"></div>
             </div>
@@ -28535,7 +28525,6 @@ function renderPublicStatsBooks() {
     var container = document.getElementById('publicProfileContent');
     var booksStats = container._pubBooksStats || {};
     var period = container._pubPeriod || 'lastmonth';
-     console.log('RPSB period:', period); 
     var profile = JSON.parse(container.dataset.profile || '{}');
     var profileBooks = profile.coloring_books || {};
     
@@ -28543,7 +28532,6 @@ function renderPublicStatsBooks() {
     var lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1).getTime();
     var lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59).getTime();
     var monthAgo = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
-    var currentYear = now.getFullYear();
     
     var listContainer = document.getElementById('pubStatsBooksList');
     var html = '';
@@ -28557,17 +28545,6 @@ function renderPublicStatsBooks() {
             filteredWorks = stat.works.filter(function(w) { return w.date > 0 && w.date >= lastMonthStart && w.date <= lastMonthEnd; });
         } else if (period === 'month') {
             filteredWorks = stat.works.filter(function(w) { return w.date > 0 && w.date >= monthAgo; });
-        } else if (period === 'custom') {
-            var sel = document.getElementById('pub-stats-month-selector');
-            var selMonth = sel ? sel.value : 'all';
-            if (selMonth && selMonth !== 'all') {
-                selMonth = parseInt(selMonth);
-                var startOfMonth = new Date(currentYear, selMonth, 1).getTime();
-                var endOfMonth = new Date(currentYear, selMonth + 1, 0, 23, 59, 59).getTime();
-                filteredWorks = stat.works.filter(function(w) { return w.date > 0 && w.date >= startOfMonth && w.date <= endOfMonth; });
-            } else {
-                filteredWorks = stat.works;
-            }
         } else {
             filteredWorks = stat.works;
         }
@@ -28591,7 +28568,6 @@ function renderPublicStatsBooks() {
         html += '</div>';
         html += '<i class="fas fa-chevron-down" style="color:var(--text-gray);transition:transform 0.3s;"></i>';
         html += '</div>';
-        
         html += '<div class="subblock-content" style="display:none;padding:10px 15px;border-top:1px solid var(--border-color);">';
         html += '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">';
         
