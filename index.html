@@ -30218,7 +30218,7 @@ function showBooksList(category, period) {
             html += '<span style="font-size: 14px; font-weight: 600; width: 20px; color: var(--text-gray);">' + (i + 1) + '.</span>';
             if (coverUrl) html += '<img src="' + coverUrl + '" style="width: 30px; height: 40px; object-fit: cover; border-radius: 4px;" onerror="this.style.display=\'none\'">';
             html += '<span style="flex: 1; font-size: 13px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">' + top5[i].name + '</span>';
-            html += '<span style="font-weight: 600; color: var(--accent); white-space: nowrap;">' + top5[i].count + ' раб.</span>';
+            html += '<span style="font-weight: 600; color: var(--accent); white-space: nowrap;">' + top5[i].count + '</span>';
             html += '<span style="font-size: 11px; color: var(--text-gray); white-space: nowrap;">' + bookPercent + '%</span>';
             html += '</div>';
         }
