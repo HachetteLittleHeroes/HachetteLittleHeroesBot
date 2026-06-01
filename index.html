@@ -30069,12 +30069,17 @@ function openStatsBlock(category) {
     if (content.style.display === 'none' || content.style.display === '') {
         content.style.display = 'block';
         arrow.style.transform = 'rotate(180deg)';
-        if (category === 'chart') {
-            renderMonthChart();
-        } else if (category === 'bestiary') {
+        if (category === 'bestiary') {
             if (typeof renderBestiaryStats === 'function') {
                 renderBestiaryStats();
             }
+            // ✅ Показываем селектор для "Всего"
+            setTimeout(function() {
+                var selectorWrapper = document.getElementById('bestiary-month-selector-wrapper');
+                if (selectorWrapper) selectorWrapper.style.display = 'flex';
+            }, 100);
+        } else if (category === 'chart') {
+            renderMonthChart();
         } else {
             if (typeof renderStatsCategory === 'function') {
                 renderStatsCategory(category);
