@@ -30401,24 +30401,13 @@ function switchBestiaryPeriod(period) {
         if (totalCard) totalCard.classList.add('active');
     }
     
-    var selectorWrapper = document.getElementById('bestiary-month-selector-wrapper');
-    if (selectorWrapper) {
-        selectorWrapper.style.display = (period === 'total' || period === 'custom') ? 'flex' : 'none';
-    }
+    var data = window._bestiaryStatsData || [];
+    var now = new Date();
+    var weekAgo = now.getTime() - 7 * 24 * 60 * 60 * 1000;
+    var monthAgo = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+    var currentYear = now.getFullYear();
     
-    var container = document.getElementById('stats-content-bestiary');
-    var data = container._bestiaryData || window._bestiaryStatsData || [];
-    
-    var filtered = data;
-    if (period === 'week') {
-        filtered = data.filter(function(c) { return c.weekColored > 0; });
-        filtered.sort(function(a, b) { return b.weekColored - a.weekColored; });
-    } else if (period === 'month') {
-        filtered = data.filter(function(c) { return c.monthColored > 0; });
-        filtered.sort(function(a, b) { return b.monthColored - a.monthColored; });
-    }
-    
-    // Обновляем счётчики
+    // ✅ Обновляем счётчики
     var totalWeek = data.reduce(function(s, c) { return s + c.weekColored; }, 0);
     var totalMonth = data.reduce(function(s, c) { return s + c.monthColored; }, 0);
     var totalAll = data.reduce(function(s, c) { return s + c.totalColored; }, 0);
@@ -30431,25 +30420,42 @@ function switchBestiaryPeriod(period) {
     var numbersContainer = document.querySelector('#stats-content-bestiary .stats-numbers');
     if (numbersContainer) numbersContainer.innerHTML = numbersHTML;
     
-    // Обновляем топ-5
+    // ✅ Обновляем топ-5 с учётом периода
+    var filtered = [];
+    for (var i = 0; i < data.length; i++) {
+        var cs = data[i];
+        var colored;
+        if (period === 'week') colored = cs.weekColored;
+        else if (period === 'month') colored = cs.monthColored;
+        else if (period === 'custom') {
+            var selMonth = parseInt(document.getElementById('bestiary-month-selector').value);
+            var startOfMonth = new Date(currentYear, selMonth, 1).getTime();
+            var endOfMonth = new Date(currentYear, selMonth + 1, 0, 23, 59, 59).getTime();
+            colored = (cs.coloredDates || []).filter(function(d) { return d >= startOfMonth && d <= endOfMonth; }).length;
+        } else colored = cs.totalColored;
+        
+        if (colored > 0) {
+            filtered.push({ id: cs.id, name: cs.name, film: cs.film, image: cs.image, colored: colored });
+        }
+    }
+    filtered.sort(function(a, b) { return b.colored - a.colored; });
     var top5 = filtered.slice(0, 5);
+    
     var topHTML = '';
     if (top5.length > 0) {
         topHTML += '<div style="font-size: 13px; font-weight: 600; margin-bottom: 8px;">🏆 Топ-5 персонажей</div>';
         for (var i = 0; i < top5.length; i++) {
-            var count = period === 'week' ? top5[i].weekColored : period === 'month' ? top5[i].monthColored : top5[i].totalColored;
             topHTML += '<div class="stats-bestiary-card" onclick="openBestiaryStatsDetail(\'' + top5[i].id + '\')" style="cursor: pointer;">';
             topHTML += '<span style="font-size: 14px; font-weight: 600; width: 20px; color: var(--text-gray);">' + (i + 1) + '.</span>';
             topHTML += '<img src="' + top5[i].image + '" style="width: 40px; height: 40px; border-radius: 8px; object-fit: cover;">';
             topHTML += '<div class="stats-bestiary-info" style="flex: 1;"><div class="stats-bestiary-name">' + top5[i].name + '</div><div class="stats-bestiary-film">' + top5[i].film + '</div></div>';
-            topHTML += '<div class="stats-bestiary-progress">' + count + '</div>';
+            topHTML += '<div class="stats-bestiary-progress">' + top5[i].colored + '</div>';
             topHTML += '</div>';
         }
     }
-    var topWrapper = document.querySelector('#stats-content-bestiary > div:nth-child(3)');
-    if (topWrapper) topWrapper.innerHTML = topHTML;
+    document.getElementById('bestiary-top5').innerHTML = topHTML;
     
-    // ✅ Обновляем список всех персонажей
+    // ✅ Обновляем список
     filterBestiaryStats();
 }
 function renderBestiaryStats() {
