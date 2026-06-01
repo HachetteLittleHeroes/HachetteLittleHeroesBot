@@ -30124,44 +30124,19 @@ function renderStatsCategory(category) {
         }
     });
     
-    // Топ-5 раскрасок
-    var topBooks = [];
-    for (var bookName in booksStats) {
-        topBooks.push({ name: bookName, total: booksStats[bookName].total });
-    }
-    topBooks.sort(function(a, b) { return b.total - a.total; });
-    topBooks = topBooks.slice(0, 5);
-    
     var html = '<div class="stats-numbers">';
     html += '<div class="stats-number-card active" onclick="showBooksList(\'' + category + '\', \'week\')"><div class="number">' + totalWeek + '</div><div class="label">За неделю</div></div>';
     html += '<div class="stats-number-card" onclick="showBooksList(\'' + category + '\', \'month\')"><div class="number">' + totalMonth + '</div><div class="label">За месяц</div></div>';
     html += '<div class="stats-number-card" onclick="showBooksList(\'' + category + '\', \'total\')"><div class="number">' + totalAll + '</div><div class="label">Всего</div></div>';
     html += '</div>';
     
-    // Топ-5 раскрасок
-    if (topBooks.length > 0) {
-        html += '<div style="margin: 10px 0; padding: 12px; background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border-color);">';
-        html += '<div style="font-size: 13px; font-weight: 600; margin-bottom: 8px;">🏆 Топ-5 раскрасок</div>';
-        for (var i = 0; i < topBooks.length; i++) {
-            var num = i + 1;
-            var coverUrl = DEFAULT_COVERS[topBooks[i].name] || '';
-            html += '<div style="display: flex; align-items: center; gap: 10px; padding: 6px 0;">';
-            html += '<span style="font-size: 14px; font-weight: 600; width: 20px; color: var(--text-gray);">' + num + '.</span>';
-            if (coverUrl) html += '<img src="' + coverUrl + '" style="width: 30px; height: 40px; object-fit: cover; border-radius: 4px;" onerror="this.style.display=\'none\'">';
-            html += '<span style="flex: 1; font-size: 13px;">' + topBooks[i].name + '</span>';
-            html += '<span style="font-weight: 600; color: var(--accent);">' + topBooks[i].total + '</span>';
-            html += '</div>';
-        }
-        html += '</div>';
-    }
-    
-    // Селектор месяца — скрыт по умолчанию
+    // Селектор месяца — показывается только для "Всего"
     html += '<div id="stats-month-selector-wrapper-' + category + '" style="margin: 10px 0; display: none; align-items: center; gap: 10px;">';
     html += '<span style="font-size: 13px; color: var(--text-gray);">📅</span>';
     html += '<select id="stats-month-selector-' + category + '" onchange="showBooksList(\'' + category + '\', \'custom\')" style="padding: 8px 12px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text); font-size: 14px;">';
+    html += '<option value="all" selected>За всё время</option>';
     for (var m = 0; m < 12; m++) {
-        var selected = (m === currentMonth) ? ' selected' : '';
-        html += '<option value="' + m + '"' + selected + '>' + monthNames[m] + ' ' + currentYear + '</option>';
+        html += '<option value="' + m + '">' + monthNames[m] + ' ' + currentYear + '</option>';
     }
     html += '</select></div>';
     
@@ -30215,49 +30190,66 @@ function showBooksList(category, period) {
         html += '<div style="font-size:12px;color:var(--text-gray);margin-bottom:10px;">📅 Всё время</div>';
     }
     
+    // ✅ Собираем топ-5 раскрасок для этого периода
+    var topBooks = [];
     for (var bookName in booksStats) {
         var stat = booksStats[bookName];
-        
         var filteredWorks;
         if (period === 'week') {
             filteredWorks = stat.works.filter(function(w) { return w.date >= weekAgo; });
         } else if (period === 'month') {
             filteredWorks = stat.works.filter(function(w) { return w.date >= monthAgo; });
         } else if (period === 'custom') {
-            var selectedMonth = parseInt(document.getElementById('stats-month-selector-' + category).value);
-            var startOfMonth = new Date(currentYear, selectedMonth, 1).getTime();
-            var endOfMonth = new Date(currentYear, selectedMonth + 1, 0, 23, 59, 59).getTime();
+            var selMonth = parseInt(document.getElementById('stats-month-selector-' + category).value);
+            var startOfMonth = new Date(currentYear, selMonth, 1).getTime();
+            var endOfMonth = new Date(currentYear, selMonth + 1, 0, 23, 59, 59).getTime();
             filteredWorks = stat.works.filter(function(w) { return w.date >= startOfMonth && w.date <= endOfMonth; });
         } else {
             filteredWorks = stat.works;
         }
-        
-        if (filteredWorks.length === 0) continue;
+        if (filteredWorks.length > 0) {
+            topBooks.push({ name: bookName, count: filteredWorks.length, works: filteredWorks, bookKey: stat.bookKey });
+        }
+    }
+    topBooks.sort(function(a, b) { return b.count - a.count; });
+    var top5 = topBooks.slice(0, 5);
+    
+    // ✅ Заголовок топа
+    if (top5.length > 0) {
+        var topCount = Math.min(top5.length, 5);
+        var periodLabel = period === 'week' ? 'за неделю' : period === 'month' ? 'за ' + monthNames[now.getMonth()].toLowerCase() : period === 'custom' ? 'за ' + monthNames[selectedMonth].toLowerCase() : 'за всё время';
+        html += '<div style="font-weight:600;font-size:14px;margin-bottom:10px;color:var(--accent);">🏆 Топ-' + topCount + ' ' + periodLabel + '</div>';
+    }
+    
+    // ✅ Отрисовка топ-5
+    for (var i = 0; i < top5.length; i++) {
+        var book = top5[i];
         hasBooks = true;
         
         html += '<div class="inventory-subblock" style="margin-bottom:10px;background:var(--bg);border-radius:12px;border:1px solid var(--border-color);overflow:hidden;">';
         html += '<div class="subblock-header" onclick="toggleStatsBook(this)" style="display:flex;justify-content:space-between;align-items:center;padding:12px 15px;cursor:pointer;">';
         
-        var coverUrl = DEFAULT_COVERS[bookName] || '';
+        var coverUrl = DEFAULT_COVERS[book.name] || '';
         if (!coverUrl) {
             var userBooks = userColoringBooks[category] || [];
-            var savedBook = userBooks.find(function(b) { return (typeof b === 'string' ? b : b.name) === bookName; });
+            var savedBook = userBooks.find(function(b) { return (typeof b === 'string' ? b : b.name) === book.name; });
             if (savedBook && typeof savedBook === 'object' && savedBook.cover) { coverUrl = savedBook.cover; }
         }
         if (coverUrl && !coverUrl.startsWith('http')) coverUrl = '';
         
         html += '<div style="display:flex;align-items:center;gap:10px;">';
+        html += '<span style="font-weight:800;font-size:18px;color:var(--accent);min-width:25px;">#' + (i + 1) + '</span>';
         if (coverUrl) html += '<img src="' + coverUrl + '" style="width:40px;height:53px;object-fit:cover;border-radius:6px;" onerror="this.style.display=\'none\'">';
-        html += '<div><strong>' + bookName + '</strong><span style="margin-left:10px;font-size:13px;color:var(--text-gray);">' + filteredWorks.length + ' работ</span></div>';
+        html += '<div><strong>' + book.name + '</strong><span style="margin-left:10px;font-size:13px;color:var(--text-gray);">' + book.count + ' работ</span></div>';
         html += '</div>';
         html += '<i class="fas fa-chevron-down" style="color:var(--text-gray);transition:transform 0.3s;"></i>';
         html += '</div>';
         html += '<div class="subblock-content" style="display:none;padding:10px 15px;border-top:1px solid var(--border-color);">';
         html += '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">';
         
-        filteredWorks.sort(function(a, b) { return b.date - a.date; });
+        book.works.sort(function(a, b) { return b.date - a.date; });
         
-        filteredWorks.forEach(function(w) {
+        book.works.forEach(function(w) {
             var dateStr = w.date ? new Date(w.date).toLocaleDateString('ru-RU') : '';
             if (w.artwork) {
                 html += '<div class="book-page-btn uploaded" style="aspect-ratio:1;overflow:hidden;border-radius:10px;cursor:pointer;position:relative;" onclick="viewArtwork(\'' + w.bookKey.replace(/'/g, "\\'") + '\', \'' + w.page + '\')">';
@@ -30277,7 +30269,6 @@ function showBooksList(category, period) {
     if (!hasBooks) html += '<div class="no-results" style="padding:20px;text-align:center;color:var(--text-gray);">Нет работ за этот период</div>';
     listContainer.innerHTML = html;
 }
-
 function uploadFromStats(category, bookName, bookKey, page) {
     currentBook = bookName;
     currentCategory = category;
