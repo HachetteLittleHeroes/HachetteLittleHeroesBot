@@ -30131,8 +30131,7 @@ function renderStatsCategory(category) {
     
     // Селектор месяца — показывается только для "Всего"
     html += '<div id="stats-month-selector-wrapper-' + category + '" style="margin: 10px 0; display: none; align-items: center; gap: 10px;">';
-    html += '<span style="font-size: 13px; color: var(--text-gray);">📅</span>';
-    html += '<select id="stats-month-selector-' + category + '" onchange="showBooksList(\'' + category + '\', \'custom\')" style="padding: 8px 12px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text); font-size: 14px;">';
+    html += '<select id="stats-month-selector-' + category + '" onchange="showBooksList(\'' + category + '\', this.value === \'all\' ? \'total\' : \'custom\')" style="padding: 8px 12px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text); font-size: 14px;">';
     html += '<option value="all" selected>За всё время</option>';
     for (var m = 0; m < 12; m++) {
         html += '<option value="' + m + '">' + monthNames[m] + ' ' + currentYear + '</option>';
