@@ -28400,7 +28400,6 @@ function renderPublicProfile(profile) {
     const isFriend = myFriends.some(f => String(f.user_id) === String(profile.user_id));
     const pubUserId = profile.user_id;
     
-    // ✅ Статистика
     var totalWorks = 0, weekWorks = 0, monthWorks = 0;
     var now = new Date();
     var weekAgo = now.getTime() - 7 * 24 * 60 * 60 * 1000;
@@ -28444,7 +28443,11 @@ function renderPublicProfile(profile) {
         }
     }
     
-   let html = `
+    var currentMonth = now.getMonth();
+    var currentYear = now.getFullYear();
+    var monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+    
+    let html = `
         <div class="profile-header-block" style="margin: 0; padding: 15px;">
             <div class="avatar-wrapper"><img src="${avatarUrl}" onerror="this.src='https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png'"></div>
             <div class="profile-info">
@@ -28463,6 +28466,12 @@ function renderPublicProfile(profile) {
                     <div class="stats-number-card active" id="pubCardWeek" onclick="switchPublicStats('week')"><div class="number">${weekWorks}</div><div class="label">За неделю</div></div>
                     <div class="stats-number-card" id="pubCardMonth" onclick="switchPublicStats('month')"><div class="number">${monthWorks}</div><div class="label">За месяц</div></div>
                     <div class="stats-number-card" id="pubCardTotal" onclick="switchPublicStats('total')"><div class="number">${totalWorks}</div><div class="label">Всего</div></div>
+                </div>
+                <div id="pubStatsMonthSelector" style="margin: 10px 0; display: none; align-items: center; gap: 10px;">
+                    <span style="font-size: 13px; color: var(--text-gray);">📅</span>
+                    <select id="pub-stats-month-selector" onchange="switchPublicStats('custom')" style="padding: 8px 12px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text); font-size: 14px;">
+                        ${monthNames.map((name, m) => `<option value="${m}"${m === currentMonth ? ' selected' : ''}>${name} ${currentYear}</option>`).join('')}
+                    </select>
                 </div>
                 <div id="pubStatsBooksList"></div>
             </div>
@@ -28494,7 +28503,6 @@ function renderPublicProfile(profile) {
     container.dataset.profile = JSON.stringify(profile);
     renderPublicStatsBooks();
     
-    // ✅ Отображение уровня в публичном профиле
     setTimeout(() => {
        const xp = profile.xp || 0;
         const levelInfo = getUserLevelInfo(xp);
@@ -28517,13 +28525,15 @@ function switchPublicStats(period) {
     var weekEl = document.getElementById('pubCardWeek');
     var monthEl = document.getElementById('pubCardMonth');
     var totalEl = document.getElementById('pubCardTotal');
+    var selectorEl = document.getElementById('pubStatsMonthSelector');
+    
     if (weekEl) weekEl.classList.toggle('active', period === 'week');
     if (monthEl) monthEl.classList.toggle('active', period === 'month');
-    if (totalEl) totalEl.classList.toggle('active', period === 'total');
+    if (totalEl) totalEl.classList.toggle('active', period === 'total' || period === 'custom');
+    if (selectorEl) selectorEl.style.display = (period === 'total' || period === 'custom') ? 'flex' : 'none';
     
     renderPublicStatsBooks();
 }
-
 function renderPublicStatsBooks() {
     var container = document.getElementById('publicProfileContent');
     var booksStats = container._pubBooksStats || {};
