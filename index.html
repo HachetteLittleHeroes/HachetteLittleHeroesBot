@@ -28727,13 +28727,12 @@ function renderPublicBooks(books, artworks, userId) {
             const bookKey = `${category}_${bookName}`;
             const hasArtworks = artworks[bookKey] ? Object.keys(artworks[bookKey]).length : 0;
             
-            // ✅ Получаем totalPages
-            let totalPages = DEFAULT_PAGES_CONFIG.totalPages;
-            
-            if (typeof book === 'object' && book.totalPages) {
+            // ✅ Получаем totalPages: кастомные из данных, обычные из конфига
+            let totalPages;
+            if (typeof book === 'object' && book.custom && book.totalPages) {
                 totalPages = book.totalPages;
-            } else if (BOOK_PAGES_CONFIG[bookName]) {
-                totalPages = BOOK_PAGES_CONFIG[bookName].totalPages;
+            } else {
+                totalPages = BOOK_PAGES_CONFIG[bookName]?.totalPages || DEFAULT_PAGES_CONFIG.totalPages;
             }
             
             // ✅ Считаем отмеченные страницы (разворот = 2 страницы)
@@ -28742,9 +28741,9 @@ function renderPublicBooks(books, artworks, userId) {
             
             for (const page in bookCompletedPages) {
                 if (page.includes('-')) {
-                    completedCount += 2; // разворот = 2 страницы
+                    completedCount += 2;
                 } else {
-                    completedCount += 1; // обычная страница
+                    completedCount += 1;
                 }
             }
             
@@ -30162,7 +30161,6 @@ function showBooksList(category, period) {
         if (totalCard) totalCard.classList.add('active');
     }
     
-    // ✅ Показываем/скрываем селектор месяца
     var selectorWrapper = document.getElementById('stats-month-selector-wrapper-' + category);
     if (selectorWrapper) {
         selectorWrapper.style.display = (period === 'total' || period === 'custom') ? 'flex' : 'none';
@@ -30178,19 +30176,7 @@ function showBooksList(category, period) {
     var html = '';
     var hasBooks = false;
     
-    // ✅ Заголовок периода
-    if (period === 'week') {
-        html += '<div style="font-size:12px;color:var(--text-gray);margin-bottom:10px;">📅 За неделю</div>';
-    } else if (period === 'month') {
-        html += '<div style="font-size:12px;color:var(--text-gray);margin-bottom:10px;">📅 ' + monthNames[now.getMonth()] + ' ' + currentYear + '</div>';
-    } else if (period === 'custom') {
-        var selectedMonth = parseInt(document.getElementById('stats-month-selector-' + category).value);
-        html += '<div style="font-size:12px;color:var(--text-gray);margin-bottom:10px;">📅 ' + monthNames[selectedMonth] + ' ' + currentYear + '</div>';
-    } else {
-        html += '<div style="font-size:12px;color:var(--text-gray);margin-bottom:10px;">📅 Всё время</div>';
-    }
-    
-    // ✅ Собираем топ-5 раскрасок для этого периода
+    // ✅ Топ-5 (компактный блок)
     var topBooks = [];
     for (var bookName in booksStats) {
         var stat = booksStats[bookName];
@@ -30214,42 +30200,66 @@ function showBooksList(category, period) {
     topBooks.sort(function(a, b) { return b.count - a.count; });
     var top5 = topBooks.slice(0, 5);
     
-    // ✅ Заголовок топа
     if (top5.length > 0) {
-        var topCount = Math.min(top5.length, 5);
-        var periodLabel = period === 'week' ? 'за неделю' : period === 'month' ? 'за ' + monthNames[now.getMonth()].toLowerCase() : period === 'custom' ? 'за ' + monthNames[selectedMonth].toLowerCase() : 'за всё время';
-        html += '<div style="font-weight:600;font-size:14px;margin-bottom:10px;color:var(--accent);">🏆 Топ-' + topCount + ' ' + periodLabel + '</div>';
+        html += '<div style="padding: 12px; background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 15px;">';
+        html += '<div style="font-size: 13px; font-weight: 600; margin-bottom: 8px;">🏆 Топ-5</div>';
+        for (var i = 0; i < top5.length; i++) {
+            var coverUrl = DEFAULT_COVERS[top5[i].name] || '';
+            html += '<div style="display: flex; align-items: center; gap: 10px; padding: 6px 0;">';
+            html += '<span style="font-size: 14px; font-weight: 600; width: 20px; color: var(--text-gray);">' + (i + 1) + '.</span>';
+            if (coverUrl) html += '<img src="' + coverUrl + '" style="width: 30px; height: 40px; object-fit: cover; border-radius: 4px;" onerror="this.style.display=\'none\'">';
+            html += '<span style="flex: 1; font-size: 13px;">' + top5[i].name + '</span>';
+            html += '<span style="font-weight: 600; color: var(--accent);">' + top5[i].count + '</span>';
+            html += '</div>';
+        }
+        html += '</div>';
     }
     
-    // ✅ Отрисовка топ-5
-    for (var i = 0; i < top5.length; i++) {
-        var book = top5[i];
+    // ✅ Все раскраски (разворачиваемые)
+    html += '<div style="font-size: 13px; font-weight: 600; margin-bottom: 8px;">📚 Все раскраски</div>';
+    
+    for (var bookName in booksStats) {
+        var stat = booksStats[bookName];
+        var filteredWorks;
+        if (period === 'week') {
+            filteredWorks = stat.works.filter(function(w) { return w.date >= weekAgo; });
+        } else if (period === 'month') {
+            filteredWorks = stat.works.filter(function(w) { return w.date >= monthAgo; });
+        } else if (period === 'custom') {
+            var selMonth = parseInt(document.getElementById('stats-month-selector-' + category).value);
+            var startOfMonth = new Date(currentYear, selMonth, 1).getTime();
+            var endOfMonth = new Date(currentYear, selMonth + 1, 0, 23, 59, 59).getTime();
+            filteredWorks = stat.works.filter(function(w) { return w.date >= startOfMonth && w.date <= endOfMonth; });
+        } else {
+            filteredWorks = stat.works;
+        }
+        
+        if (filteredWorks.length === 0) continue;
         hasBooks = true;
         
         html += '<div class="inventory-subblock" style="margin-bottom:10px;background:var(--bg);border-radius:12px;border:1px solid var(--border-color);overflow:hidden;">';
         html += '<div class="subblock-header" onclick="toggleStatsBook(this)" style="display:flex;justify-content:space-between;align-items:center;padding:12px 15px;cursor:pointer;">';
         
-        var coverUrl = DEFAULT_COVERS[book.name] || '';
+        var coverUrl = DEFAULT_COVERS[bookName] || '';
         if (!coverUrl) {
             var userBooks = userColoringBooks[category] || [];
-            var savedBook = userBooks.find(function(b) { return (typeof b === 'string' ? b : b.name) === book.name; });
+            var savedBook = userBooks.find(function(b) { return (typeof b === 'string' ? b : b.name) === bookName; });
             if (savedBook && typeof savedBook === 'object' && savedBook.cover) { coverUrl = savedBook.cover; }
         }
         if (coverUrl && !coverUrl.startsWith('http')) coverUrl = '';
         
         html += '<div style="display:flex;align-items:center;gap:10px;">';
-        html += '<span style="font-weight:800;font-size:18px;color:var(--accent);min-width:25px;">#' + (i + 1) + '</span>';
         if (coverUrl) html += '<img src="' + coverUrl + '" style="width:40px;height:53px;object-fit:cover;border-radius:6px;" onerror="this.style.display=\'none\'">';
-        html += '<div><strong>' + book.name + '</strong><span style="margin-left:10px;font-size:13px;color:var(--text-gray);">' + book.count + ' работ</span></div>';
+        html += '<div><strong>' + bookName + '</strong><span style="margin-left:10px;font-size:13px;color:var(--text-gray);">' + filteredWorks.length + ' работ</span></div>';
         html += '</div>';
         html += '<i class="fas fa-chevron-down" style="color:var(--text-gray);transition:transform 0.3s;"></i>';
         html += '</div>';
         html += '<div class="subblock-content" style="display:none;padding:10px 15px;border-top:1px solid var(--border-color);">';
         html += '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">';
         
-        book.works.sort(function(a, b) { return b.date - a.date; });
+        filteredWorks.sort(function(a, b) { return b.date - a.date; });
         
-        book.works.forEach(function(w) {
+        filteredWorks.forEach(function(w) {
             var dateStr = w.date ? new Date(w.date).toLocaleDateString('ru-RU') : '';
             if (w.artwork) {
                 html += '<div class="book-page-btn uploaded" style="aspect-ratio:1;overflow:hidden;border-radius:10px;cursor:pointer;position:relative;" onclick="viewArtwork(\'' + w.bookKey.replace(/'/g, "\\'") + '\', \'' + w.page + '\')">';
