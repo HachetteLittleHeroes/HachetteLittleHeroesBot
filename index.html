@@ -30455,16 +30455,13 @@ function renderBestiaryStats() {
                 image: character.image,
                 total: totalAppearances,
                 totalColored: totalColored,
-                totalPercent: Math.round((totalColored / totalAppearances) * 100),
                 weekColored: weekColored,
-                weekPercent: Math.round((weekColored / totalAppearances) * 100),
-                monthColored: monthColored,
-                monthPercent: Math.round((monthColored / totalAppearances) * 100)
+                monthColored: monthColored
             });
         }
     });
     
-    bestiaryStatsData.sort(function(a, b) { return b.totalPercent - a.totalPercent; });
+    bestiaryStatsData.sort(function(a, b) { return b.totalColored - a.totalColored; });
     
     var totalWeek = bestiaryStatsData.reduce(function(s, c) { return s + c.weekColored; }, 0);
     var totalMonth = bestiaryStatsData.reduce(function(s, c) { return s + c.monthColored; }, 0);
@@ -30479,7 +30476,7 @@ function renderBestiaryStats() {
     html += '<div class="stats-number-card active" onclick="switchBestiaryPeriod(\'total\')"><div class="number">' + totalAll + '</div><div class="label">Всего</div></div>';
     html += '</div>';
     
-    // ✅ Селектор месяца (только для "Всего")
+    // ✅ Селектор месяца
     html += '<div id="bestiary-month-selector-wrapper" style="margin: 10px 0; display: none; align-items: center; gap: 10px;">';
     html += '<select id="bestiary-month-selector" onchange="switchBestiaryPeriod(this.value === \'all\' ? \'total\' : \'custom\')" style="padding: 8px 12px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text); font-size: 14px;">';
     html += '<option value="all" selected>За всё время</option>';
@@ -30488,26 +30485,27 @@ function renderBestiaryStats() {
     }
     html += '</select></div>';
     
-    // ✅ Топ-5 персонажей
+    // ✅ Топ-5 (только число)
     var top5 = bestiaryStatsData.slice(0, 5);
     if (top5.length > 0) {
         html += '<div style="padding: 12px; background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 15px;">';
         html += '<div style="font-size: 13px; font-weight: 600; margin-bottom: 8px;">🏆 Топ-5 персонажей</div>';
         for (var i = 0; i < top5.length; i++) {
-            html += '<div class="stats-bestiary-card" onclick="openBestiaryStatsDetail(\'' + top5[i].id + '\')">';
+            html += '<div class="stats-bestiary-card" onclick="openBestiaryStatsDetail(\'' + top5[i].id + '\')" style="cursor: pointer;">';
             html += '<span style="font-size: 14px; font-weight: 600; width: 20px; color: var(--text-gray);">' + (i + 1) + '.</span>';
-            html += '<img src="' + top5[i].image + '" alt="' + top5[i].name + '" style="width: 40px; height: 40px; border-radius: 8px; object-fit: cover;" onerror="this.src=\'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22%3E%3Crect width=%2240%22 height=%2240%22 fill=%22%23ff9500%22 rx=%228%22/%3E%3Ctext x=%2220%22 y=%2220%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2216%22%3E🦁%3C/text%3E%3C/svg%3E\'">';
+            html += '<img src="' + top5[i].image + '" style="width: 40px; height: 40px; border-radius: 8px; object-fit: cover;" onerror="this.src=\'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22%3E%3Crect width=%2240%22 height=%2240%22 fill=%22%23ff9500%22 rx=%228%22/%3E%3Ctext x=%2220%22 y=%2220%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2216%22%3E🦁%3C/text%3E%3C/svg%3E\'">';
             html += '<div class="stats-bestiary-info" style="flex: 1;">';
             html += '<div class="stats-bestiary-name">' + top5[i].name + '</div>';
             html += '<div class="stats-bestiary-film">' + top5[i].film + '</div>';
             html += '</div>';
-            html += '<div class="stats-bestiary-progress">' + top5[i].totalColored + '/' + top5[i].total + '</div>';
+            html += '<div class="stats-bestiary-progress">' + top5[i].totalColored + '</div>';
             html += '</div>';
         }
         html += '</div>';
     }
     
-    // Поиск
+    // ✅ Полный список
+    html += '<div style="font-size: 13px; font-weight: 600; margin-bottom: 8px;">📚 Все персонажи</div>';
     html += '<div class="search-box" style="margin-bottom: 15px; display: flex; gap: 8px; align-items: center;">';
     html += '<i class="fas fa-search"></i>';
     html += '<input type="text" id="bestiaryStatsSearch" placeholder="Поиск персонажа..." oninput="filterBestiaryStats()" style="flex: 1;">';
@@ -30517,7 +30515,6 @@ function renderBestiaryStats() {
     
     container.innerHTML = html;
     
-    // Сохраняем данные
     container._bestiaryData = bestiaryStatsData;
     bestiaryStatsCurrentPeriod = 'total';
     window._bestiaryStatsData = bestiaryStatsData;
