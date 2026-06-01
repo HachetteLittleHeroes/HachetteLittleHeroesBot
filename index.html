@@ -28553,9 +28553,9 @@ function renderPublicStatsBooks() {
         
         var filteredWorks;
         if (period === 'lastmonth') {
-            filteredWorks = stat.works.filter(function(w) { return w.date >= lastMonthStart && w.date <= lastMonthEnd; });
+            filteredWorks = stat.works.filter(function(w) { return w.date > 0 && w.date >= lastMonthStart && w.date <= lastMonthEnd; });
         } else if (period === 'month') {
-            filteredWorks = stat.works.filter(function(w) { return w.date >= monthAgo; });
+            filteredWorks = stat.works.filter(function(w) { return w.date > 0 && w.date >= monthAgo; });
         } else if (period === 'custom') {
             var sel = document.getElementById('pub-stats-month-selector');
             var selMonth = sel ? sel.value : 'all';
@@ -28563,7 +28563,7 @@ function renderPublicStatsBooks() {
                 selMonth = parseInt(selMonth);
                 var startOfMonth = new Date(currentYear, selMonth, 1).getTime();
                 var endOfMonth = new Date(currentYear, selMonth + 1, 0, 23, 59, 59).getTime();
-                filteredWorks = stat.works.filter(function(w) { return w.date >= startOfMonth && w.date <= endOfMonth; });
+                filteredWorks = stat.works.filter(function(w) { return w.date > 0 && w.date >= startOfMonth && w.date <= endOfMonth; });
             } else {
                 filteredWorks = stat.works;
             }
@@ -28586,7 +28586,7 @@ function renderPublicStatsBooks() {
         html += '<div class="subblock-header" onclick="toggleStatsBook(this)" style="display:flex;justify-content:space-between;align-items:center;padding:12px 15px;cursor:pointer;">';
         html += '<div style="display:flex;align-items:center;gap:10px;">';
         if (coverUrl) html += '<img src="' + coverUrl + '" style="width:35px;height:47px;object-fit:cover;border-radius:5px;" onerror="this.style.display=\'none\'">';
-        html += '<div><strong>' + bookName + '</strong><span style="margin-left:8px;font-size:13px;color:var(--text-gray);">' + filteredWorks.length + ' работ</span></div>';
+        html += '<div><strong>' + bookName + '</strong><span style="margin-left:8px;font-size:13px;color:var(--text-gray);">' + filteredWorks.length + '</span></div>';
         html += '</div>';
         html += '<i class="fas fa-chevron-down" style="color:var(--text-gray);transition:transform 0.3s;"></i>';
         html += '</div>';
