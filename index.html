@@ -30577,18 +30577,19 @@ function renderBestiaryStats() {
     }
     html += '</select></div>';
     
-    var top5 = bestiaryStatsData.slice(0, 5);
-    if (top5.length > 0) {
+    // ✅ Топ-5 по прошлому месяцу
+    var top5ByLastMonth = bestiaryStatsData.slice().sort(function(a, b) { return b.lastMonthColored - a.lastMonthColored; }).slice(0, 5);
+    if (top5ByLastMonth.length > 0) {
         html += '<div id="bestiary-top5"><div style="font-size: 13px; font-weight: 600; margin-bottom: 8px;">🏆 Топ-5 персонажей</div>';
-        for (var i = 0; i < top5.length; i++) {
-            html += '<div class="stats-bestiary-card" onclick="openBestiaryStatsDetail(\'' + top5[i].id + '\')" style="cursor: pointer;">';
+        for (var i = 0; i < top5ByLastMonth.length; i++) {
+            html += '<div class="stats-bestiary-card" onclick="openBestiaryStatsDetail(\'' + top5ByLastMonth[i].id + '\')" style="cursor: pointer;">';
             html += '<span style="font-size: 14px; font-weight: 600; width: 20px; color: var(--text-gray);">' + (i + 1) + '.</span>';
-            html += '<img src="' + top5[i].image + '" style="width: 40px; height: 40px; border-radius: 8px; object-fit: cover;" onerror="this.src=\'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22%3E%3Crect width=%2240%22 height=%2240%22 fill=%22%23ff9500%22 rx=%228%22/%3E%3Ctext x=%2220%22 y=%2220%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2216%22%3E🦁%3C/text%3E%3C/svg%3E\'">';
+            html += '<img src="' + top5ByLastMonth[i].image + '" style="width: 40px; height: 40px; border-radius: 8px; object-fit: cover;" onerror="this.src=\'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22%3E%3Crect width=%2240%22 height=%2240%22 fill=%22%23ff9500%22 rx=%228%22/%3E%3Ctext x=%2220%22 y=%2220%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2216%22%3E🦁%3C/text%3E%3C/svg%3E\'">';
             html += '<div class="stats-bestiary-info" style="flex: 1;">';
-            html += '<div class="stats-bestiary-name">' + top5[i].name + '</div>';
-            html += '<div class="stats-bestiary-film">' + top5[i].film + '</div>';
+            html += '<div class="stats-bestiary-name">' + top5ByLastMonth[i].name + '</div>';
+            html += '<div class="stats-bestiary-film">' + top5ByLastMonth[i].film + '</div>';
             html += '</div>';
-            html += '<div class="stats-bestiary-progress">' + top5[i].totalColored + '</div>';
+            html += '<div class="stats-bestiary-progress">' + top5ByLastMonth[i].lastMonthColored + '</div>';
             html += '</div>';
         }
         html += '</div>';
