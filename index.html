@@ -30478,13 +30478,13 @@ function renderBestiaryStats() {
         var totalColored = 0;
         var weekColored = 0;
         var monthColored = 0;
+        var coloredDates = []; // ✅ даты раскрашенных появлений
         
         character.appearances.forEach(function(appearance) {
-            var bookKey = '';
             var bookName = appearance.book;
             var cat = 'paint_by_number';
             if (DEFAULT_COLORING_BOOKS.alcohol && DEFAULT_COLORING_BOOKS.alcohol.indexOf(bookName) !== -1) cat = 'alcohol';
-            bookKey = cat + '_' + bookName;
+            var bookKey = cat + '_' + bookName;
             
             var userBooks = userColoringBooks[cat] || [];
             var isInCollection = userBooks.some(function(b) {
@@ -30501,6 +30501,7 @@ function renderBestiaryStats() {
                 if (userPages.hasOwnProperty(pageStr)) {
                     totalColored++;
                     var date = userPages[pageStr] || 0;
+                    coloredDates.push(date);
                     if (date >= monthAgo) monthColored++;
                     if (date >= weekAgo) weekColored++;
                 }
@@ -30516,7 +30517,8 @@ function renderBestiaryStats() {
                 total: totalAppearances,
                 totalColored: totalColored,
                 weekColored: weekColored,
-                monthColored: monthColored
+                monthColored: monthColored,
+                coloredDates: coloredDates // ✅ массив дат
             });
         }
     });
@@ -30529,15 +30531,13 @@ function renderBestiaryStats() {
     
     var html = '';
     
-    // Счётчики
     html += '<div class="stats-numbers">';
     html += '<div class="stats-number-card" onclick="switchBestiaryPeriod(\'week\')"><div class="number">' + totalWeek + '</div><div class="label">За неделю</div></div>';
     html += '<div class="stats-number-card" onclick="switchBestiaryPeriod(\'month\')"><div class="number">' + totalMonth + '</div><div class="label">За месяц</div></div>';
     html += '<div class="stats-number-card active" onclick="switchBestiaryPeriod(\'total\')"><div class="number">' + totalAll + '</div><div class="label">Всего</div></div>';
     html += '</div>';
     
-    // ✅ Селектор месяца
-    html += '<div id="bestiary-month-selector-wrapper" style="margin: 10px 0; display: none; align-items: center; gap: 10px;">';
+    html += '<div id="bestiary-month-selector-wrapper" style="margin: 10px 0; display: flex; align-items: center; gap: 10px;">';
     html += '<select id="bestiary-month-selector" onchange="switchBestiaryPeriod(this.value === \'all\' ? \'total\' : \'custom\')" style="padding: 8px 12px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text); font-size: 14px;">';
     html += '<option value="all" selected>За всё время</option>';
     for (var m = 0; m < 12; m++) {
@@ -30545,11 +30545,10 @@ function renderBestiaryStats() {
     }
     html += '</select></div>';
     
-    // ✅ Топ-5 (только число)
+    // Топ-5
     var top5 = bestiaryStatsData.slice(0, 5);
     if (top5.length > 0) {
-        html += '<div style="padding: 12px; background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 15px;">';
-        html += '<div style="font-size: 13px; font-weight: 600; margin-bottom: 8px;">🏆 Топ-5 персонажей</div>';
+        html += '<div id="bestiary-top5"><div style="font-size: 13px; font-weight: 600; margin-bottom: 8px;">🏆 Топ-5 персонажей</div>';
         for (var i = 0; i < top5.length; i++) {
             html += '<div class="stats-bestiary-card" onclick="openBestiaryStatsDetail(\'' + top5[i].id + '\')" style="cursor: pointer;">';
             html += '<span style="font-size: 14px; font-weight: 600; width: 20px; color: var(--text-gray);">' + (i + 1) + '.</span>';
@@ -30564,8 +30563,7 @@ function renderBestiaryStats() {
         html += '</div>';
     }
     
-    // ✅ Полный список
-    html += '<div style="font-size: 13px; font-weight: 600; margin-bottom: 8px;">📚 Все персонажи</div>';
+    html += '<div style="font-size: 13px; font-weight: 600; margin: 15px 0 8px;">📚 Все персонажи</div>';
     html += '<div class="search-box" style="margin-bottom: 15px; display: flex; gap: 8px; align-items: center;">';
     html += '<i class="fas fa-search"></i>';
     html += '<input type="text" id="bestiaryStatsSearch" placeholder="Поиск персонажа..." oninput="filterBestiaryStats()" style="flex: 1;">';
@@ -30574,7 +30572,6 @@ function renderBestiaryStats() {
     html += '<div id="bestiaryStatsList"></div>';
     
     container.innerHTML = html;
-    
     container._bestiaryData = bestiaryStatsData;
     bestiaryStatsCurrentPeriod = 'total';
     window._bestiaryStatsData = bestiaryStatsData;
@@ -30628,57 +30625,64 @@ function filterBestiaryStats() {
     var now = new Date();
     var weekAgo = now.getTime() - 7 * 24 * 60 * 60 * 1000;
     var monthAgo = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+    var currentYear = now.getFullYear();
     
-    // Фильтруем по периоду
-    var filtered = data.filter(function(c) {
-        if (period === 'week') return c.weekColored > 0;
-        if (period === 'month') return c.monthColored > 0;
-        if (period === 'custom') return c.totalColored > 0;
-        return c.totalColored > 0;
-    });
+    var filtered = [];
     
-    // Сортируем
-    if (period === 'week') {
-        filtered.sort(function(a, b) { return b.weekColored - a.weekColored; });
-    } else if (period === 'month') {
-        filtered.sort(function(a, b) { return b.monthColored - a.monthColored; });
+    for (var i = 0; i < data.length; i++) {
+        var cs = data[i];
+        var colored, total;
+        total = cs.total;
+        
+        if (period === 'week') {
+            colored = cs.weekColored;
+        } else if (period === 'month') {
+            colored = cs.monthColored;
+        } else if (period === 'custom') {
+            var selMonth = parseInt(document.getElementById('bestiary-month-selector').value);
+            var startOfMonth = new Date(currentYear, selMonth, 1).getTime();
+            var endOfMonth = new Date(currentYear, selMonth + 1, 0, 23, 59, 59).getTime();
+            colored = (cs.coloredDates || []).filter(function(d) { return d >= startOfMonth && d <= endOfMonth; }).length;
+        } else {
+            colored = cs.totalColored;
+        }
+        
+        if (colored > 0 || period === 'total') {
+            filtered.push({
+                id: cs.id, name: cs.name, film: cs.film, image: cs.image,
+                total: total, colored: colored,
+                percent: total > 0 ? Math.round((colored / total) * 100) : 0
+            });
+        }
     }
     
-    // Фильтр по поиску
+    if (period === 'week') filtered.sort(function(a, b) { return b.colored - a.colored; });
+    else if (period === 'month') filtered.sort(function(a, b) { return b.colored - a.colored; });
+    else if (period === 'custom') filtered.sort(function(a, b) { return b.colored - a.colored; });
+    
     if (query !== '') {
-        filtered = filtered.filter(function(c) {
-            return c.name.toLowerCase().includes(query) || c.film.toLowerCase().includes(query);
-        });
+        filtered = filtered.filter(function(c) { return c.name.toLowerCase().includes(query) || c.film.toLowerCase().includes(query); });
     }
     
     var html = '';
-    
     if (filtered.length === 0) {
         html = '<div class="no-results" style="padding:20px;text-align:center;color:var(--text-gray);">Нет раскрашенных персонажей за этот период</div>';
     } else {
         filtered.forEach(function(cs) {
-            var colored, total;
-            if (period === 'week') { colored = cs.weekColored; }
-            else if (period === 'month') { colored = cs.monthColored; }
-            else { colored = cs.totalColored; }
-            total = cs.total;
-            var percent = total > 0 ? Math.round((colored / total) * 100) : 0;
-            
             html += '<div class="stats-bestiary-card" onclick="openBestiaryStatsDetail(\'' + cs.id + '\')">';
             html += '<img src="' + cs.image + '" alt="' + cs.name + '" onerror="this.src=\'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22%3E%3Crect width=%2240%22 height=%2240%22 fill=%22%23ff9500%22 rx=%228%22/%3E%3Ctext x=%2220%22 y=%2220%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22white%22 font-size=%2216%22%3E🦁%3C/text%3E%3C/svg%3E\'">';
             html += '<div class="stats-bestiary-info">';
             html += '<div class="stats-bestiary-name">' + cs.name + '</div>';
             html += '<div class="stats-bestiary-film">' + cs.film + '</div>';
-            html += '<div class="progress-bar-container" style="margin-top:5px;height:6px;"><div class="progress-bar-fill" style="width:' + percent + '%;height:100%;"></div></div>';
+            html += '<div class="progress-bar-container" style="margin-top:5px;height:6px;"><div class="progress-bar-fill" style="width:' + cs.percent + '%;height:100%;"></div></div>';
             html += '</div>';
-            html += '<div class="stats-bestiary-progress">' + colored + '/' + total + '</div>';
+            html += '<div class="stats-bestiary-progress">' + cs.colored + '/' + cs.total + '</div>';
             html += '</div>';
         });
     }
     
     listContainer.innerHTML = html;
 }
-
 function renderPublicStatsBooks() {
     var container = document.getElementById('publicProfileContent');
     var booksStats = container._pubBooksStats || {};
