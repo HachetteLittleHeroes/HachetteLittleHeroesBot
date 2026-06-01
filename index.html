@@ -28536,7 +28536,14 @@ function switchPublicStats(period) {
     renderPublicStatsBooks();
 }
 function renderPublicStatsBooks() {
+    console.log('🔵🔵🔵 renderPublicStatsBooks ВЫЗВАНА 🔵🔵🔵');
+    
     var container = document.getElementById('publicProfileContent');
+    if (!container) {
+        console.error('❌ container (publicProfileContent) не найден!');
+        return;
+    }
+    
     var booksStats = container._pubBooksStats || {};
     var period = container._pubPeriod || 'lastmonth';
     var profile = JSON.parse(container.dataset.profile || '{}');
@@ -28547,11 +28554,12 @@ function renderPublicStatsBooks() {
     var lastMonthEnd = container._lastMonthEnd || 0;
     var monthAgo = container._monthAgo || 0;
     
-    console.log('🔄 RPSB вызвана, period:', period);
+    console.log('🔄 RPSB period:', period);
     console.log('🔄 lastMonthStart:', new Date(lastMonthStart), 'timestamp:', lastMonthStart);
     console.log('🔄 lastMonthEnd:', new Date(lastMonthEnd), 'timestamp:', lastMonthEnd);
     console.log('🔄 monthAgo:', new Date(monthAgo), 'timestamp:', monthAgo);
     console.log('🔄 Всего книг в booksStats:', Object.keys(booksStats).length);
+    console.log('🔄 booksStats:', JSON.stringify(booksStats, null, 2));
     
     var listContainer = document.getElementById('pubStatsBooksList');
     if (!listContainer) {
@@ -28566,46 +28574,41 @@ function renderPublicStatsBooks() {
     for (var bookName in booksStats) {
         var stat = booksStats[bookName];
         
-        console.log(`📚 Обработка книги "${bookName}":`, {
-            totalWorks: stat.works.length,
-            worksDates: stat.works.map(function(w) { 
-                return { 
-                    date: new Date(w.date).toISOString(), 
-                    timestamp: w.date,
-                    inLastMonth: w.date >= lastMonthStart && w.date <= lastMonthEnd,
-                    inMonth: w.date >= monthAgo
-                }; 
-            })
+        console.log(`📚 Обработка книги "${bookName}":`);
+        console.log(`   Всего работ: ${stat.works.length}`);
+        console.log(`   lastmonth (предподсчитано): ${stat.lastmonth}`);
+        console.log(`   month (предподсчитано): ${stat.month}`);
+        console.log(`   total (предподсчитано): ${stat.total}`);
+        
+        // Показываем первые 3 работы с датами для примера
+        var sampleWorks = stat.works.slice(0, 3);
+        sampleWorks.forEach(function(w, i) {
+            console.log(`   Работа ${i+1}: дата=${new Date(w.date).toISOString()}, timestamp=${w.date}, page=${w.page}`);
+            console.log(`      inLastMonth: ${w.date >= lastMonthStart && w.date <= lastMonthEnd}`);
+            console.log(`      inMonth: ${w.date >= monthAgo}`);
         });
         
         var filteredWorks;
         if (period === 'lastmonth') {
             filteredWorks = stat.works.filter(function(w) { 
                 var result = w.date > 0 && w.date >= lastMonthStart && w.date <= lastMonthEnd;
-                if (!result && w.date > 0) {
-                    console.log(`  ❌ Отфильтрована работа: дата=${new Date(w.date).toISOString()}, timestamp=${w.date}`);
-                    console.log(`     lastMonthStart=${lastMonthStart} (${new Date(lastMonthStart)})`);
-                    console.log(`     lastMonthEnd=${lastMonthEnd} (${new Date(lastMonthEnd)})`);
-                    console.log(`     w.date >= lastMonthStart: ${w.date >= lastMonthStart}`);
-                    console.log(`     w.date <= lastMonthEnd: ${w.date <= lastMonthEnd}`);
-                }
                 return result;
             });
-            console.log(`📚 "${bookName}": всего=${stat.works.length}, за прошлый месяц=${filteredWorks.length}`);
+            console.log(`   📚 "${bookName}": отфильтровано за прошлый месяц=${filteredWorks.length}`);
         } else if (period === 'month') {
             filteredWorks = stat.works.filter(function(w) { 
                 return w.date > 0 && w.date >= monthAgo; 
             });
-            console.log(`📚 "${bookName}": всего=${stat.works.length}, за месяц=${filteredWorks.length}`);
+            console.log(`   📚 "${bookName}": отфильтровано за месяц=${filteredWorks.length}`);
         } else {
             filteredWorks = stat.works;
-            console.log(`📚 "${bookName}": всего=${stat.works.length}, показаны все`);
+            console.log(`   📚 "${bookName}": показаны все=${filteredWorks.length}`);
         }
         
         totalFilteredWorks += filteredWorks.length;
         
         if (filteredWorks.length === 0) {
-            console.log(`  ⚠️ Книга "${bookName}" пропущена (нет работ за период)`);
+            console.log(`   ⚠️ Книга "${bookName}" пропущена (нет работ за период)`);
             continue;
         }
         hasBooks = true;
@@ -28615,7 +28618,11 @@ function renderPublicStatsBooks() {
             var cat = stat.cat || 'paint_by_number';
             var userBooks = profileBooks[cat] || [];
             var savedBook = userBooks.find(function(b) { return (typeof b === 'string' ? b : b.name) === bookName; });
-            if (savedBook && typeof savedBook === 'object' && savedBook.cover) { coverUrl = savedBook.cover; }
+            if (savedBook && typeof savedBook === 'object' && savedBook.cover) { 
+                coverUrl = savedBook.cover;
+                // ✅ Исправляем путь к обложке
+                if (coverUrl.startsWith('/')) coverUrl = SERVER_URL + coverUrl;
+            }
         }
         
         html += '<div class="inventory-subblock" style="margin-bottom:10px;background:var(--bg);border-radius:12px;border:1px solid var(--border-color);overflow:hidden;">';
@@ -28634,8 +28641,14 @@ function renderPublicStatsBooks() {
         filteredWorks.forEach(function(w) {
             var dateStr = w.date ? new Date(w.date).toLocaleDateString('ru-RU') : '';
             if (w.artwork) {
+                // ✅ Исправляем путь к artwork
+                var artworkUrl = w.artwork;
+                if (artworkUrl && artworkUrl.startsWith('/')) {
+                    artworkUrl = SERVER_URL + artworkUrl;
+                }
+                
                 html += '<div class="book-page-btn uploaded" style="aspect-ratio:1;overflow:hidden;border-radius:10px;cursor:pointer;position:relative;" onclick="viewArtwork(\'' + w.bookKey.replace(/'/g, "\\'") + '\', \'' + w.page + '\')">';
-                html += '<img src="' + w.artwork + '" style="width:100%;height:100%;object-fit:cover;">';
+                html += '<img src="' + artworkUrl + '" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display=\'none\';">';
                 if (dateStr) html += '<span style="position:absolute;bottom:2px;right:4px;font-size:9px;background:rgba(0,0,0,0.6);color:white;padding:1px 4px;border-radius:4px;">' + dateStr + '</span>';
                 html += '</div>';
             } else {
@@ -28650,6 +28663,7 @@ function renderPublicStatsBooks() {
     }
     
     console.log(`✅ Итого отфильтровано работ: ${totalFilteredWorks}, книг показано: ${hasBooks ? 'да' : 'нет'}`);
+    console.log('🔵🔵🔵 renderPublicStatsBooks ЗАВЕРШЕНА 🔵🔵🔵');
     
     if (!hasBooks) html = '<div class="no-results" style="padding:20px;text-align:center;color:var(--text-gray);">Нет работ за этот период</div>';
     listContainer.innerHTML = html;
