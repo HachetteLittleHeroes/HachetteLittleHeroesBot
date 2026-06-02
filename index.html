@@ -8565,19 +8565,25 @@ async function loadFriendProgressFromServer() {
         const stats = await response.json();
         
         if (stats) {
-            // ✅ ОЧИЩАЕМ ТОЛЬКО ДАННЫЕ ПО НОВОМУ ЗАДАНИЮ
+            // ✅ Очищаем старый прогресс
+            friendProgress = {};
+            
             for (const [key, value] of Object.entries(stats)) {
-                if (key.startsWith('youtube_level_')) {
-                    // Пропускаем загрузку для нового задания
-                    console.log('⚠️ Пропускаем загрузку старого прогресса для youtube_task:', key);
-                    continue;
-                }
-                if ((key.startsWith('friend_') || key.startsWith('irina_')) && typeof value === 'number') {
+                // Загружаем все ключи с nadya_, irina_, friend_, status_
+                if ((key.startsWith('nadya_') || 
+                     key.startsWith('irina_') || 
+                     key.startsWith('friend_') || 
+                     key.startsWith('status_')) && typeof value === 'number') {
                     friendProgress[key] = value;
                 }
             }
+            
             saveFriendProgress();
+            
+            // ✅ Обновляем отображение заданий
             renderFriendTasks();
+            
+            console.log('✅ Загружен прогресс заданий от друзей:', friendProgress);
         }
     } catch (error) {
         console.error('Error:', error);
@@ -8587,13 +8593,16 @@ function toggleFriendTasks() {
     var content = document.getElementById('friendTasksContent');
     var arrow = document.getElementById('friendTasksArrow');
     if (!content) return;
+    
     if (content.style.display === 'block') {
         content.style.display = 'none';
         if (arrow) arrow.style.transform = 'rotate(0deg)';
     } else {
         content.style.display = 'block';
         if (arrow) arrow.style.transform = 'rotate(180deg)';
-        // Не вызываем renderFriendTasks
+        
+        // ✅ Обновляем прогресс при открытии вкладки
+        loadFriendProgressFromServer();
     }
 }
 
@@ -18007,7 +18016,7 @@ function closeTaskUploadModal() {
     if (modal) modal.style.display = 'none';
     if (previewContainer) previewContainer.innerHTML = '';
     
-    // ✅ Сбрасываем ВСЕ глобальные переменные
+    // Сбрасываем переменные
     currentUploadBranch = null;
     currentUploadLevel = null;
     currentSubtaskData = null;
@@ -18017,6 +18026,9 @@ function closeTaskUploadModal() {
     currentCommunitySubtask = null;
     tempPhotos = [];
     isUploading = false;
+    
+    // ✅ Обновляем прогресс с сервера
+    loadFriendProgressFromServer();
 }
 
 function escapeHtml(text) {
