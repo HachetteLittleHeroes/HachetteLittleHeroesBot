@@ -8601,18 +8601,62 @@ function toggleFriendTasks() {
         content.style.display = 'block';
         if (arrow) arrow.style.transform = 'rotate(180deg)';
         
-        // ✅ Обновляем прогресс при открытии вкладки
-        loadFriendProgressFromServer();
+        // ✅ При открытии вкладки синхронизируем прогресс
+        forceSyncFriendProgress().then(() => {
+            renderFriendTasks();
+        });
     }
 }
-
-function renderFriendTasks() {
+async function forceSyncFriendProgress() {
+    console.log('🔄 Принудительная синхронизация прогресса...');
+    
+    try {
+        const response = await fetch(`${SERVER_URL}/api/sync_friend_progress?user_id=${userId}`);
+        const data = await response.json();
+        
+        if (data.status === 'ok' && data.progress) {
+            // Обновляем friendProgress
+            for (const [key, value] of Object.entries(data.progress)) {
+                friendProgress[key] = value;
+            }
+            saveFriendProgress();
+            
+            console.log('✅ Синхронизировано:', friendProgress);
+            
+            // Перерисовываем задания
+            renderFriendTasks();
+            
+            return true;
+        }
+    } catch (error) {
+        console.error('❌ Ошибка синхронизации:', error);
+    }
+    
+    return false;
+}
+async function renderFriendTasks() {
     console.log('=== RENDER FRIEND TASKS ===');
     const container = document.getElementById('friendTasksList');
     if (!container) return;
     
     const task = FRIEND_TASKS[0];
     if (!task) return;
+    
+    // ✅ ПРИНУДИТЕЛЬНАЯ СИНХРОНИЗАЦИЯ ПРОГРЕССА С СЕРВЕРОМ
+    try {
+        const response = await fetch(`${SERVER_URL}/api/sync_friend_progress?user_id=${userId}`);
+        const data = await response.json();
+        
+        if (data.status === 'ok' && data.progress) {
+            for (const [key, value] of Object.entries(data.progress)) {
+                friendProgress[key] = value;
+            }
+            saveFriendProgress();
+            console.log('✅ Синхронизировано:', friendProgress);
+        }
+    } catch (error) {
+        console.error('❌ Ошибка синхронизации:', error);
+    }
     
     const progress = getFriendSubtaskProgress(0, 0, 0);
     const isCompleted = progress >= 1;
@@ -8766,7 +8810,7 @@ async function submitFriendSubtaskPhoto() {
     try {
         const formData = new FormData();
         formData.append('user', userId.toString());
-        formData.append('taskId', task.id);  // ← 'nadya_task_1'
+        formData.append('taskId', task.id);
         formData.append('levelIdx', currentFriendLevelIdx.toString());
         formData.append('subtaskIdx', currentFriendSubtaskIdx.toString());
         formData.append('subtaskName', subtask.name);
@@ -8788,15 +8832,16 @@ async function submitFriendSubtaskPhoto() {
         const result = await response.json();
         
         if (result && result.status === 'ok') {
-            // ✅ НОВЫЙ ФЛАГ
-            localStorage.setItem(`nadya_task_pending_${userId}`, 'true');
-            localStorage.removeItem(`nadya_task_approved_${userId}`);
-            
             if (tg) {
                 tg.showAlert('✅ Фото отправлено на проверку!');
             }
             closeTaskUploadModal();
-            renderFriendTasks();
+            
+            // ✅ ПЕРЕЗАГРУЖАЕМ ПРОГРЕСС С СЕРВЕРА
+            setTimeout(async () => {
+                await forceSyncFriendProgress();
+                renderFriendTasks();
+            }, 3000);
         } else {
             throw new Error(result?.message || 'Ошибка отправки');
         }
@@ -8807,6 +8852,26 @@ async function submitFriendSubtaskPhoto() {
         isUploading = false;
         tempPhotos = [];
     }
+}
+        async function forceSyncFriendProgress() {
+    console.log('🔄 Принудительная синхронизация прогресса...');
+    
+    try {
+        const response = await fetch(`${SERVER_URL}/api/sync_friend_progress?user_id=${userId}`);
+        const data = await response.json();
+        
+        if (data.status === 'ok' && data.progress) {
+            for (const [key, value] of Object.entries(data.progress)) {
+                friendProgress[key] = value;
+            }
+            saveFriendProgress();
+            console.log('✅ Синхронизировано:', friendProgress);
+            return true;
+        }
+    } catch (error) {
+        console.error('❌ Ошибка синхронизации:', error);
+    }
+    return false;
 }
 function approveNadyaTask() {
     localStorage.removeItem(`nadya_task_pending_${userId}`);
