@@ -7584,15 +7584,17 @@ body:not([data-theme]) .modal-content,
         // ОТПРАВКА ФОТО НА ПРОВЕРКУ (ОБЫЧНЫЕ ЗАДАНИЯ)
         // ==========================================
         
-      function openTaskUpload(branchKey, levelIndex) {
+    function openTaskUpload(branchKey, levelIndex) {
     console.log('📸 openTaskUpload called:', branchKey, levelIndex);
     
-    // ✅ Сбрасываем глобальные переменные
+    // ✅ Сбрасываем ВСЕ переменные
     currentSubtaskData = null;
     currentUploadBranch = branchKey;
     currentUploadLevel = levelIndex;
     currentCommunitySubtask = null;
     currentFriendTaskIdx = null;
+    currentFriendLevelIdx = null;
+    currentFriendSubtaskIdx = null;
     
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
@@ -7611,7 +7613,7 @@ body:not([data-theme]) .modal-content,
     fileInput.click();
 }
         
-      function handleTaskFilesSelected(event) {
+     function handleTaskFilesSelected(event) {
     const files = Array.from(event.target.files);
     console.log('📁 Выбрано файлов:', files.length);
     
@@ -7659,53 +7661,52 @@ body:not([data-theme]) .modal-content,
     if (modal) {
         modal.style.display = 'flex';
         
-        // ✅ Определяем заголовок и действие по глобальным переменным
         const titleEl = modal.querySelector('h3');
         const submitBtn = modal.querySelector('.modal-action-btn');
         
+        // ✅ КРИТИЧЕСКИ ВАЖНО: создаём НОВУЮ кнопку с правильным обработчиком
+        const newBtn = document.createElement('button');
+        newBtn.className = 'modal-action-btn';
+        newBtn.style.cssText = 'background: var(--status-green); color: white; width: 100%; padding: 12px; border-radius: 14px; font-weight: 600; font-size: 14px; margin-top: 10px; cursor: pointer; border: none;';
+        newBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Отправить';
+        
+        // ✅ Определяем, какое задание активно
         if (currentCommunitySubtask !== null && currentCommunitySubtask !== undefined) {
             if (titleEl) titleEl.innerText = 'Отправка работы (Испытание сообщества)';
-            if (submitBtn) {
-                const newBtn = submitBtn.cloneNode(true);
-                submitBtn.parentNode.replaceChild(newBtn, submitBtn);
-                newBtn.onclick = (e) => {
-                    e.preventDefault();
-                    submitCommunityTaskPhoto();
-                };
-            }
+            newBtn.onclick = (e) => {
+                e.preventDefault();
+                submitCommunityTaskPhoto();
+            };
+            console.log('✅ Кнопка настроена на ИСПЫТАНИЕ СООБЩЕСТВА');
         } else if (currentSubtaskData) {
             if (titleEl) titleEl.innerText = `Отправка подзадания: ${currentSubtaskData.subtaskName}`;
-            if (submitBtn) {
-                const newBtn = submitBtn.cloneNode(true);
-                submitBtn.parentNode.replaceChild(newBtn, submitBtn);
-                newBtn.onclick = (e) => {
-                    e.preventDefault();
-                    submitSubtaskPhoto();
-                };
-            }
+            newBtn.onclick = (e) => {
+                e.preventDefault();
+                submitSubtaskPhoto();
+            };
+            console.log('✅ Кнопка настроена на ПОДЗАДАНИЕ');
         } else if (currentUploadBranch !== null) {
             if (titleEl) titleEl.innerText = 'Отправка задания на проверку';
-            if (submitBtn) {
-                const newBtn = submitBtn.cloneNode(true);
-                submitBtn.parentNode.replaceChild(newBtn, submitBtn);
-                newBtn.onclick = (e) => {
-                    e.preventDefault();
-                    submitTaskPhoto();
-                };
-            }
+            newBtn.onclick = (e) => {
+                e.preventDefault();
+                submitTaskPhoto();
+            };
+            console.log('✅ Кнопка настроена на ОБЫЧНОЕ ЗАДАНИЕ');
         } else if (currentFriendTaskIdx !== null) {
             if (titleEl) titleEl.innerText = `Отправка задания от друзей: ${currentFriendSubtaskName}`;
-            if (submitBtn) {
-                const newBtn = submitBtn.cloneNode(true);
-                submitBtn.parentNode.replaceChild(newBtn, submitBtn);
-                newBtn.onclick = (e) => {
-                    e.preventDefault();
-                    submitFriendSubtaskPhoto();
-                };
-            }
+            newBtn.onclick = (e) => {
+                e.preventDefault();
+                submitFriendSubtaskPhoto();
+            };
+            console.log('✅ Кнопка настроена на ЗАДАНИЕ ОТ ДРУЗЕЙ');
         }
         
-        console.log('✅ Модальное окно открыто, фото:', tempPhotos.length);
+        // ✅ Заменяем старую кнопку на новую
+        if (submitBtn) {
+            submitBtn.parentNode.replaceChild(newBtn, submitBtn);
+        }
+        
+        console.log('✅ Модальное окно открыто, тип задания определён');
     }
 }
         
@@ -7805,7 +7806,7 @@ body:not([data-theme]) .modal-content,
             }
         }
         
-       function closeTaskUploadModal() {
+      function closeTaskUploadModal() {
     console.log('🔒 Закрытие модального окна');
     
     const modal = document.getElementById('taskUploadModal');
