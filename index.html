@@ -8511,15 +8511,15 @@ function getFriendSubtaskProgress(taskIdx, levelIdx, subtaskIdx) {
     let key;
     
     if (task && task.id === 'nadya_task_1') {
-        key = `nadya_level_${levelIdx}_subtask_${subtaskIdx}`;
+        key = 'nadya_level_' + levelIdx + '_subtask_' + subtaskIdx;
     } else if (task && task.id === 'irina_task_1') {
-        key = `irina_level_${levelIdx}_subtask_${subtaskIdx}`;
+        key = 'irina_level_' + levelIdx + '_subtask_' + subtaskIdx;
     } else {
-        key = `friend_level_${levelIdx}_subtask_${subtaskIdx}`;
+        key = 'friend_level_' + levelIdx + '_subtask_' + subtaskIdx;
     }
     
     const value = friendProgress[key] || 0;
-    console.log(`getFriendSubtaskProgress: ${key} = ${value}`);
+    console.log('getFriendSubtaskProgress:', key, '=', value);
     return value;
 }
 
@@ -8614,11 +8614,10 @@ function renderFriendTasks() {
     const task = FRIEND_TASKS[0];
     if (!task) return;
     
-    // ✅ Используем правильную функцию для получения прогресса
     const progress = getFriendSubtaskProgress(0, 0, 0);
     const isCompleted = progress >= 1;
     
-    console.log('Progress for nadya_task_1:', progress);
+    console.log('Progress:', progress);
     console.log('isCompleted:', isCompleted);
     
     if (isCompleted) {
@@ -8639,7 +8638,6 @@ function renderFriendTasks() {
         return;
     }
     
-    // Не выполнено — показываем кнопки
     container.innerHTML = `
         <div class="friend-task-card">
             <div class="friend-header">
