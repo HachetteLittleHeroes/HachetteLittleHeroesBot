@@ -9329,33 +9329,51 @@ function openSupportDialog() {
             return `${stock} шт.`;
         }
         
-        function updateMarkerCart(num, delta) {
-            const cartKey = `marker_${num}`;
-            const currentCount = cart[cartKey] || 0;
-            const newCount = currentCount + delta;
-            const marker = markersDB.find(m => m.num === num);
-            if (!marker) return;
-            
-            if (newCount > marker.stock) {
-                if (tg) tg.showAlert(`Максимум доступно: ${marker.stock} шт.`);
-                return;
-            }
-            if (newCount < 0) return;
-            
-            if (newCount === 0) {
-                delete cart[cartKey];
-            } else {
-                cart[cartKey] = newCount;
-            }
-            
-            const countSpan = document.getElementById(`marker-count-${num}`);
-            if (countSpan) countSpan.innerText = newCount;
-            
-            saveUserData();
-            renderCart();
-            updateCartBadge();
-        }
+     function updateMarkerCart(num, delta) {
+    const cartKey = `marker_${num}`;
+    const currentCount = cart[cartKey] || 0;
+    const newCount = currentCount + delta;
+    const marker = markersDB.find(m => m.num === num);
+    
+    if (!marker) return;
+    
+    // Проверка на превышение остатка
+    if (newCount > marker.stock) {
+        if (tg) tg.showAlert(`Максимум доступно: ${marker.stock} шт.`);
+        return;
+    }
+    
+    // Проверка на отрицательное значение
+    if (newCount < 0) return;
+    
+    // Обновляем корзину
+    if (newCount === 0) {
+        delete cart[cartKey];
+    } else {
+        cart[cartKey] = newCount;
+    }
+    
+    // Обновляем отображение в маркерах
+    const countSpan = document.getElementById(`marker-count-${num}`);
+    if (countSpan) {
+        countSpan.innerText = newCount;
+    }
+    
+    // Обновляем кнопки (блокируем если достигли лимита)
+    const markerItem = document.querySelector(`.marker-item[data-num="${num}"]`);
+    if (markerItem) {
+        const minusBtn = markerItem.querySelector('.minus');
+        const plusBtn = markerItem.querySelector('button:last-child');
         
+        if (minusBtn) minusBtn.disabled = newCount === 0;
+        if (plusBtn) plusBtn.disabled = newCount >= marker.stock;
+    }
+    
+    // Сохраняем и обновляем корзину
+    saveUserData();
+    renderCart();
+    updateCartBadge();
+}
         function searchMarkers() {
             const query = document.getElementById('markerSearch');
             if (!query) return;
@@ -9484,82 +9502,115 @@ function openSupportDialog() {
             updateCartBadge();
         }
         
-        function checkout() {
-            if (!cart || Object.keys(cart).length === 0) {
-                if (tg) tg.showAlert('Корзина пуста');
-                return;
-            }
-            
-            if (tg) {
-                tg.showConfirm('Оформить заказ?', async (confirm) => {
-                    if (confirm) {
-                        await sendOrderToServer();
-                    }
-                });
-            } else {
-                if (confirm('Оформить заказ?')) {
-                    sendOrderToServer();
-                }
-            }
+      function checkout() {
+    if (!cart || Object.keys(cart).length === 0) {
+        if (tg) tg.showAlert('Корзина пуста');
+        return;
+    }
+    
+    // ✅ ПОДСЧИТЫВАЕМ КОЛИЧЕСТВО МАРКЕРОВ В КОРЗИНЕ
+    let markersCount = 0;
+    let hasBook = false;
+    
+    for (let key in cart) {
+        if (key.startsWith('marker_')) {
+            markersCount += cart[key];
+        } else if (key.startsWith('volume_')) {
+            hasBook = true;
         }
+    }
+    
+    // ✅ ПРОВЕРКА: если есть маркеры, но нет раскрасок, то маркеров должно быть >= 3
+    if (markersCount > 0 && !hasBook && markersCount < 3) {
+        if (tg) {
+            tg.showAlert('❌ При заказе только маркеров необходимо добавить минимум 3 маркера!\n\nДобавьте ещё маркеры или раскраску для оформления заказа.');
+        }
+        return;
+    }
+    
+    // ✅ Если есть хотя бы одна раскраска, маркеры можно заказать в любом количестве (включая 1)
+    if (tg) {
+        tg.showConfirm('Оформить заказ?', async (confirm) => {
+            if (confirm) {
+                await sendOrderToServer();
+            }
+        });
+    } else {
+        if (confirm('Оформить заказ?')) {
+            sendOrderToServer();
+        }
+    }
+}
         
-        async function sendOrderToServer() {
-            let orderText = '🛍 ЗАКАЗ:\n\n';
-            let total = 0;
-            let bonusAchetiki = 0;
-            
-            for (let key in cart) {
-                const count = cart[key];
-                if (key.startsWith('marker_')) {
-                    const num = key.replace('marker_', '');
-                    const marker = markersDB.find(m => m.num === num);
-                    if (marker) {
-                        orderText += `Маркер №${num} x${count} = ${MARKER_PRICE * count} ₽\n`;
-                        total += MARKER_PRICE * count;
-                    }
-                } else if (key.startsWith('volume_')) {
-                    const volumeId = key.replace('volume_', '');
-                    const volume = VOLUMES_DATA.find(v => v.id === volumeId);
-                    if (volume) {
-                        orderText += `${volume.name} x${count} = ${volume.price * count} ₽\n`;
-                        total += volume.price * count;
-                    }
-                }
+      async function sendOrderToServer() {
+    let orderText = '🛍 ЗАКАЗ:\n\n';
+    let total = 0;
+    let bonusAchetiki = 0;
+    let markersCount = 0;
+    let hasBook = false;
+    
+    for (let key in cart) {
+        const count = cart[key];
+        if (key.startsWith('marker_')) {
+            const num = key.replace('marker_', '');
+            const marker = markersDB.find(m => m.num === num);
+            if (marker) {
+                orderText += `Маркер №${num} x${count} = ${MARKER_PRICE * count} ₽\n`;
+                total += MARKER_PRICE * count;
+                markersCount += count;
             }
-            
-            if (total >= 10000) {
-                bonusAchetiki = 50;
-            } else if (total >= 7500) {
-                bonusAchetiki = 40;
-            } else if (total >= 5000) {
-                bonusAchetiki = 30;
-            } else if (total >= 3000) {
-                bonusAchetiki = 20;
-            }
-            
-            orderText += `\n💰 ИТОГО: ${total} ₽`;
-            if (bonusAchetiki > 0) {
-                orderText += `\n🎁 ПОТЕНЦИАЛЬНЫЙ БОНУС: +${bonusAchetiki} ашетиков (начисляется после подтверждения заказа)`;
-            }
-            
-            const result = await fetchAPI('/api/new_order', {
-                user_id: userId,
-                text_details: orderText,
-                total: total,
-                potential_bonus: bonusAchetiki
-            });
-            
-            if (result && result.status === 'ok') {
-                if (tg) tg.showAlert('✅ Заказ отправлен администратору!');
-                cart = {};
-                saveUserData();
-                renderCart();
-                updateCartBadge();
-                renderVolumes();
-            } else {
-                if (tg) tg.showAlert('❌ Ошибка отправки заказа. Попробуйте позже.');
+        } else if (key.startsWith('volume_')) {
+            const volumeId = key.replace('volume_', '');
+            const volume = VOLUMES_DATA.find(v => v.id === volumeId);
+            if (volume) {
+                orderText += `${volume.name} x${count} = ${volume.price * count} ₽\n`;
+                total += volume.price * count;
+                hasBook = true;
             }
         }
+    }
+    
+    // ✅ ДВОЙНАЯ ПРОВЕРКА ПЕРЕД ОТПРАВКОЙ
+    if (markersCount > 0 && !hasBook && markersCount < 3) {
+        if (tg) tg.showAlert('❌ При заказе только маркеров необходимо минимум 3 маркера!');
+        return;
+    }
+    
+    // Бонус за большую сумму
+    if (total >= 10000) {
+        bonusAchetiki = 50;
+    } else if (total >= 7500) {
+        bonusAchetiki = 40;
+    } else if (total >= 5000) {
+        bonusAchetiki = 30;
+    } else if (total >= 3000) {
+        bonusAchetiki = 20;
+    }
+    
+    orderText += `\n💰 ИТОГО: ${total} ₽`;
+    if (bonusAchetiki > 0) {
+        orderText += `\n🎁 ПОТЕНЦИАЛЬНЫЙ БОНУС: +${bonusAchetiki} ашетиков (начисляется после подтверждения заказа)`;
+    }
+    
+    const result = await fetchAPI('/api/new_order', {
+        user_id: userId,
+        text_details: orderText,
+        total: total,
+        potential_bonus: bonusAchetiki
+    });
+    
+    if (result && result.status === 'ok') {
+        if (tg) tg.showAlert('✅ Заказ отправлен администратору!');
+        cart = {};
+        saveUserData();
+        renderCart();
+        updateCartBadge();
+        renderVolumes();
+        renderMarkers(); // Обновляем маркеры, чтобы сбросить счётчики
+    } else {
+        if (tg) tg.showAlert('❌ Ошибка отправки заказа. Попробуйте позже.');
+    }
+}
         
         // ==========================================
         // ТОМА И ОТВЕТЫ (СВАЙПЫ)
