@@ -8472,7 +8472,7 @@ async function submitTimeTaskPhoto() {
 
 const FRIEND_TASKS = [
     {
-        id: 'youtube_task_1',
+        id: 'nadya_task_1',
         title: 'Задание от Нади',
         description: 'Раскрась разворот, у которого цветовой код состоит из 50 и более цветов и получи билет на розыгрыш польского издания Hachette А4!',
         reward: 'Билет на розыгрыш польского издания Hachette А4',
@@ -8482,7 +8482,7 @@ const FRIEND_TASKS = [
             {
                 title: 'Отправь работу (ДО/ПОСЛЕ)',
                 subtasks: [
-                    { id: 'youtube_work_1', name: 'Отправить фото на проверку', required: 1 }
+                    { id: 'nadya_work_1', name: 'Отправить фото на проверку', required: 1 }
                 ]
             }
         ]
@@ -8601,7 +8601,7 @@ function renderFriendTasks() {
     const task = FRIEND_TASKS[0];
     if (!task) return;
     
-    const subtaskKey = `youtube_level_0_subtask_0`;
+   const subtaskKey = `nadya_level_0_subtask_0`;
     
     // ✅ Проверяем реальный прогресс с сервера (не трогаем его принудительно)
     const progressFromServer = friendProgress[subtaskKey] || 0;
@@ -8770,7 +8770,7 @@ async function submitFriendSubtaskPhoto() {
     try {
         const formData = new FormData();
         formData.append('user', userId.toString());
-        formData.append('taskId', task.id);
+        formData.append('taskId', task.id);  // ← 'nadya_task_1'
         formData.append('levelIdx', currentFriendLevelIdx.toString());
         formData.append('subtaskIdx', currentFriendSubtaskIdx.toString());
         formData.append('subtaskName', subtask.name);
@@ -8792,14 +8792,15 @@ async function submitFriendSubtaskPhoto() {
         const result = await response.json();
         
         if (result && result.status === 'ok') {
-            // ✅ Сохраняем флаг, что задание отправлено на проверку (НО НЕ ВЫПОЛНЕНО)
-            localStorage.setItem(`youtube_task_pending_${userId}`, 'true');
+            // ✅ НОВЫЙ ФЛАГ
+            localStorage.setItem(`nadya_task_pending_${userId}`, 'true');
+            localStorage.removeItem(`nadya_task_approved_${userId}`);
             
             if (tg) {
                 tg.showAlert('✅ Фото отправлено на проверку!');
-                if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
             }
             closeTaskUploadModal();
+            renderFriendTasks();
         } else {
             throw new Error(result?.message || 'Ошибка отправки');
         }
@@ -8811,7 +8812,13 @@ async function submitFriendSubtaskPhoto() {
         tempPhotos = [];
     }
 }
-
+function approveNadyaTask() {
+    localStorage.removeItem(`nadya_task_pending_${userId}`);
+    localStorage.setItem(`nadya_task_approved_${userId}`, 'true');
+    renderFriendTasks();
+    
+    if (tg) tg.showAlert('🎉 Задание выполнено! Вы получили билет!');
+}
         // ==========================================
         // ПРОФИЛЬ И UI
         // ==========================================
