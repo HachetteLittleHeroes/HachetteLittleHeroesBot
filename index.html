@@ -8661,11 +8661,12 @@ function openFriendSubtaskUpload(taskIdx, levelIdx, subtaskIdx, subtaskName) {
     const task = FRIEND_TASKS[taskIdx];
     if (!task) return;
     
-    const currentLevel = getCurrentFriendLevelIndex(taskIdx);
-    if (currentLevel !== levelIdx) {
-        if (tg) tg.showAlert('Этот уровень ещё не доступен! Выполните предыдущий уровень.');
-        return;
-    }
+    // ✅ Убираем проверку уровня — для задания с одним уровнем она не нужна
+    // const currentLevel = getCurrentFriendLevelIndex(taskIdx);
+    // if (currentLevel !== levelIdx) {
+    //     if (tg) tg.showAlert('Этот уровень ещё не доступен! Выполните предыдущий уровень.');
+    //     return;
+    // }
     
     const progress = getFriendSubtaskProgress(taskIdx, levelIdx, subtaskIdx);
     const subtask = task.levels[levelIdx].subtasks[subtaskIdx];
@@ -8687,7 +8688,6 @@ function openFriendSubtaskUpload(taskIdx, levelIdx, subtaskIdx, subtaskName) {
     fileInput.onchange = handleFriendSubtaskFilesSelected;
     fileInput.click();
 }
-
 function handleFriendSubtaskFilesSelected(event) {
     const files = Array.from(event.target.files);
     if (files.length === 0) return;
