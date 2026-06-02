@@ -8561,8 +8561,13 @@ async function loadFriendProgressFromServer() {
         const stats = await response.json();
         
         if (stats) {
+            // ✅ ОЧИЩАЕМ ТОЛЬКО ДАННЫЕ ПО НОВОМУ ЗАДАНИЮ
             for (const [key, value] of Object.entries(stats)) {
-                // Загружаем friend_, irina_, и status_ ключи
+                if (key.startsWith('youtube_level_')) {
+                    // Пропускаем загрузку для нового задания
+                    console.log('⚠️ Пропускаем загрузку старого прогресса для youtube_task:', key);
+                    continue;
+                }
                 if ((key.startsWith('friend_') || key.startsWith('irina_')) && typeof value === 'number') {
                     friendProgress[key] = value;
                 }
@@ -8594,13 +8599,23 @@ function renderFriendTasks() {
     if (!container) return;
     
     const task = FRIEND_TASKS[0];
-    if (!task) {
-        container.innerHTML = `<div class="no-results">Нет заданий</div>`;
-        return;
-    }
+    if (!task) return;
     
-    // Проверяем, выполнено ли задание
-    const isCompleted = friendProgress[`youtube_level_0_subtask_0`] >= 1;
+    const subtaskKey = `youtube_level_0_subtask_0`;
+    
+    // ✅ Проверяем реальный прогресс с сервера (не трогаем его принудительно)
+    const progressFromServer = friendProgress[subtaskKey] || 0;
+    
+    // ✅ Проверяем, есть ли флаг "отправлено на проверку"
+    const isPending = localStorage.getItem(`youtube_task_pending_${userId}`) === 'true';
+    
+    // ✅ Задание выполнено ТОЛЬКО если прогресс >= 1 И нет флага ожидания
+    const isCompleted = (progressFromServer >= 1) && !isPending;
+    
+    // ✅ Если админ одобрил — удаляем флаг ожидания
+    if (progressFromServer >= 1 && isPending) {
+        localStorage.removeItem(`youtube_task_pending_${userId}`);
+    }
     
     if (isCompleted) {
         container.innerHTML = `
@@ -8632,14 +8647,20 @@ function renderFriendTasks() {
                 <div class="subtask-card">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                         <span style="font-weight: 600; font-size: 14px;">Отправить фото на проверку</span>
-                        <span style="font-size: 12px; color: var(--accent);">0/1</span>
+                        <span style="font-size: 12px; color: var(--accent);">${isPending ? '⏳ На проверке' : '0/1'}</span>
                     </div>
                     <div class="progress-bar-container" style="height: 6px; margin: 0 0 12px 0;">
-                        <div class="progress-bar-fill" style="width: 0%; height: 100%;"></div>
+                        <div class="progress-bar-fill" style="width: ${isPending ? '50%' : '0%'}; height: 100%;"></div>
                     </div>
-                    <button class="task-submit-btn" onclick="openFriendSubtaskUpload(0, 0, 0, 'Отправить фото на проверку')">
-                        <i class="fas fa-camera"></i> Отправить фото
-                    </button>
+                    ${!isPending ? `
+                        <button class="task-submit-btn" onclick="openFriendSubtaskUpload(0, 0, 0, 'Отправить фото на проверку')">
+                            <i class="fas fa-camera"></i> Отправить фото
+                        </button>
+                    ` : `
+                        <div style="text-align: center; padding: 8px; color: var(--accent);">
+                            <i class="fas fa-clock"></i> Ожидает проверки администратором
+                        </div>
+                    `}
                     <button class="friend-channel-btn" onclick="window.open('${task.tgLink}', '_blank')" style="background: #ff0000; margin-top: 8px;">
                         <i class="fab fa-youtube"></i> YouTube канал Нади
                     </button>
@@ -8771,6 +8792,9 @@ async function submitFriendSubtaskPhoto() {
         const result = await response.json();
         
         if (result && result.status === 'ok') {
+            // ✅ Сохраняем флаг, что задание отправлено на проверку (НО НЕ ВЫПОЛНЕНО)
+            localStorage.setItem(`youtube_task_pending_${userId}`, 'true');
+            
             if (tg) {
                 tg.showAlert('✅ Фото отправлено на проверку!');
                 if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
@@ -8787,7 +8811,6 @@ async function submitFriendSubtaskPhoto() {
         tempPhotos = [];
     }
 }
-
 
         // ==========================================
         // ПРОФИЛЬ И UI
