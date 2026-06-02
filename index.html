@@ -1998,7 +1998,6 @@
 #inventoryContent {
     padding: 0 20px 20px;
 }
-
 #organizersList {
     max-height: 60vh;
     overflow-y: auto;
@@ -6278,21 +6277,21 @@ body:not([data-theme]) .modal-content,
         </div>
     </div>
 
-  <!-- Блок с аватаркой, именем и статусом -->
-<div class="profile-header-block">
-    <div class="avatar-wrapper" onclick="toggleAvatarEditor()">
-        <img id="user-avatar" src="https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av2.png">
-        <div class="avatar-edit-icon"><i class="fas fa-pencil-alt"></i></div>
-    </div>
-    <div class="profile-info">
-        <div class="name-row" onclick="changeNickname()">
-            <h2 id="displayUsername">Без имени</h2>
-            <i class="fas fa-pencil-alt" style="color: var(--text-gray); font-size: 14px;"></i>
+    <!-- Блок с аватаркой, именем и статусом -->
+    <div class="profile-header-block">
+        <div class="avatar-wrapper" onclick="toggleAvatarEditor()">
+            <img id="user-avatar" src="https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av2.png">
+            <div class="avatar-edit-icon"><i class="fas fa-pencil-alt"></i></div>
         </div>
-       <button id="currentStatus" class="status-badge" onclick="openStatusInfo()">Без статуса</button>
-        <div id="userLevelDisplay" style="margin-top: 8px;"></div>
+        <div class="profile-info">
+            <div class="name-row" onclick="changeNickname()">
+                <h2 id="displayUsername">Без имени</h2>
+                <i class="fas fa-pencil-alt" style="color: var(--text-gray); font-size: 14px;"></i>
+            </div>
+            <button id="currentStatus" class="status-badge" onclick="openStatusInfo()">Без статуса</button>
+            <div id="userLevelDisplay" style="margin-top: 8px;"></div>
+        </div>
     </div>
-</div>
 
     <div id="avatarEditor" class="avatar-editor">
         <p>Выберите аватарку:</p>
@@ -6307,9 +6306,6 @@ body:not([data-theme]) .modal-content,
     <div class="balance-controls">
         <button class="balance-btn" onclick="toggleSection('rewards-section')">Потратить ашетики 🏆</button>
         <button class="balance-btn" onclick="toggleSection('earn-section')">Заработать ашетики 💰</button>
-        <button class="balance-btn" onclick="shareProfileStats()" style="background: var(--accent); margin-top: 10px;">
-            <i class="fas fa-chart-line"></i> 📊 Поделиться статистикой
-        </button>
     </div>
 </div>
 
@@ -6359,7 +6355,6 @@ body:not([data-theme]) .modal-content,
             <div class="earn-item"><div class="earn-left"><i class="fas fa-shopping-cart"></i><span>За покупку от 10 000 ₽</span></div><div class="earn-right"><span class="earn-amount">+50</span><i class="fas fa-book-open gold-book"></i></div></div>
         </div>
     </div>
-
    <!-- ========== ЗАДАНИЯ НА СТАТУСЫ ========== -->
 <div class="tasks-section">
     <button class="tasks-header" onclick="toggleTasks()">
@@ -8478,19 +8473,19 @@ async function submitTimeTaskPhoto() {
 
 const FRIEND_TASKS = [
     {
-        id: 'nadya_task_1',
-        title: 'Ящик Пандоры',
-        description: 'Раскрась разворот, где цветовой код состоит из 50 и более цветов',
-        reward: 'Билет на розыгрыш тома А4 Hachette польского издания',
-        deadline: '2026-06-30T23:59:59',
-        tgLink: 'https://www.youtube.com/@Надежда_Хоббитерапия',
-        tgUsername: '@Nadia_Dv',
+        id: 'irina_task_1',
+        title: 'Цвет настроения серый',
+        description: 'Раскрась картинку с 1 серым персонажем и получи билет на розыгрыш набора маркеров Flysea Grey!',
+        reward: 'Билет на розыгрыш набора маркеров Flysea Grey',
+        deadline: '2026-06-01T23:59:59',
+        tgLink: 'https://t.me/irishka344',
+        tgUsername: '@irishka344',
         completed: false,
         levels: [
             {
-                title: 'Кодовое слово',
+                title: 'Цвет настроения серый',
                 subtasks: [
-                    { id: 'nadya_task_1', name: 'Отправь готовую работу на проверку', required: 1 }
+                    { id: 'irina_1', name: 'Раскрась картинку с 1 серым персонажем', required: 1 }
                 ]
             }
         ]
@@ -8601,76 +8596,13 @@ function renderFriendTasks() {
     const container = document.getElementById('friendTasksList');
     if (!container) return;
     
-    // Задание от YouTube канала
-    const task = {
-         id: 'nadya_task_1',
-        title: 'Ящик Пандоры',
-        description: 'Раскрась разворот, где цветовой код состоит из 50 и более цветов',
-        reward: 'Билет на розыгрыш тома А4 Hachette польского издания',
-        deadline: '2026-06-30T23:59:59',
-        tgLink: 'https://www.youtube.com/@Надежда_Хоббитерапия',
-        tgUsername: '@Nadia_Dv',
-        completed: false,
-        levels: [
-            {
-                title: 'Кодовое слово',
-                subtasks: [
-                    { id: 'nadya_task_1', name: 'Отправь готовую работу на проверку', required: 1 }
-                ]
-            }
-        ]
-];
-    
-    // Проверяем, выполнено ли задание
-    const isCompleted = friendProgress[`youtube_level_0_subtask_0`] >= 1;
-    
-    let html = '';
-    
-    if (isCompleted) {
-        html = `
-            <div class="friend-task-card completed">
-                <div class="friend-header">
-                    <h3>${task.title}</h3>
-                    <p>${task.description}</p>
-                    <div class="friend-reward">🎁 ${task.reward}</div>
-                </div>
-                <div class="level-card">
-                    <div style="text-align: center; padding: 12px; color: var(--status-green);">
-                        <i class="fas fa-check-circle"></i> Задание выполнено! Билет получен.
-                    </div>
-                </div>
-            </div>
-        `;
-    } else {
-        html = `
-            <div class="friend-task-card">
-                <div class="friend-header">
-                    <h3>${task.title}</h3>
-                    <p>${task.description}</p>
-                    <div class="friend-reward">🎁 ${task.reward}</div>
-                </div>
-                <div class="level-card">
-                    <div class="subtask-card">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                            <span style="font-weight: 600; font-size: 14px;">Отправить фото на проверку</span>
-                            <span style="font-size: 12px; color: var(--accent);">0/1</span>
-                        </div>
-                        <div class="progress-bar-container" style="height: 6px; margin: 0 0 12px 0;">
-                            <div class="progress-bar-fill" style="width: 0%; height: 100%;"></div>
-                        </div>
-                        <button class="task-submit-btn" onclick="openFriendSubtaskUpload(0, 0, 0, 'Отправить фото на проверку')">
-                            <i class="fas fa-camera"></i> Отправить фото
-                        </button>
-                        <button class="friend-channel-btn" onclick="window.open('${task.tgLink}', '_blank')" style="background: #ff0000; margin-top: 8px;">
-                            <i class="fab fa-youtube"></i> Наш YouTube канал
-                        </button>
-                    </div>
-                </div>
-            </div>
-        `;
-    }
-    
-    container.innerHTML = html;
+    container.innerHTML = `
+        <div style="text-align: center; padding: 20px;">
+            <div style="font-size: 36px;">🤝</div>
+            <h3 style="margin: 10px 0;">Пока что это всё!</h3>
+            <p style="color: var(--text-gray);">Но если ты хотела бы предложить своё задание — напиши нам!</p>
+        </div>
+    `;
 }
 
 let currentFriendTaskIdx = null;
@@ -18539,6 +18471,7 @@ function confirmSkipTask() {
             });
         });
 }
+
 // ==========================================
 // ИНИЦИАЛИЗАЦИЯ
 // ==========================================
@@ -28186,7 +28119,16 @@ function viewArtwork(bookKey, page) {
     const artwork = getPageArtwork(bookKey, page);
     if (!artwork) return;
     
-    const isOwnProfile = !window.isViewOnly;
+    // ✅ Жесткая проверка: если открыт чужой профиль или режим просмотра - не показываем удаление
+    const isOwnProfile = !currentPublicUserId && !window.isViewOnly;
+    
+    console.log('viewArtwork вызвана:', {
+        bookKey,
+        page,
+        currentPublicUserId,
+        isViewOnly: window.isViewOnly,
+        isOwnProfile
+    });
     
     const modal = document.createElement('div');
     modal.className = 'artwork-viewer-modal';
@@ -28419,6 +28361,7 @@ function searchUsers() {
 // Публичный профиль
 async function openPublicProfile(userId) {
     currentPublicUserId = userId;
+    window.isViewOnly = true; // ✅ Блокируем кнопки удаления при просмотре чужого профиля
     
     closeUserSearch();
     
@@ -28449,6 +28392,7 @@ async function openPublicProfile(userId) {
 function closePublicProfile() {
     document.getElementById('publicProfileModal').style.display = 'none';
     currentPublicUserId = null;
+    window.isViewOnly = false; // ✅ Возвращаем возможность удаления в своем профиле
     
     // ✅ Восстанавливаем свои работы
     loadUserArtworks();
@@ -31115,50 +31059,6 @@ function addStatsButton() {
     }
 }
 
-// ==========================================
-// ПОДЕЛИТЬСЯ СТАТИСТИКОЙ
-// ==========================================
-
-async function shareProfileStats() {
-    try {
-        if (tg) tg.showAlert('🔄 Формирование статистики...');
-        
-        const statsResponse = await fetch(`${SERVER_URL}/api/get_stats_for_card?user_id=${userId}`);
-        const statsData = await statsResponse.json();
-        
-        if (statsData.status !== 'ok') {
-            throw new Error('Ошибка получения статистики');
-        }
-        
-        const response = await fetch(`${SERVER_URL}/api/share_stats_card`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(statsData)
-        });
-        
-        if (!response.ok) throw new Error('Ошибка генерации карточки');
-        
-        const blob = await response.blob();
-        const url = URL.createObjectURL(blob);
-        
-        // Скачиваем картинку
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `stats_${userId}.png`;
-        a.click();
-        
-        URL.revokeObjectURL(url);
-        
-        if (tg) tg.showAlert('✅ Картинка сохранена!');
-        
-    } catch (error) {
-        console.error('Ошибка:', error);
-        if (tg) tg.showAlert('❌ Ошибка формирования статистики');
-    }
-}
-
-// Запускаем добавление кнопки после загрузки страницы
-setTimeout(addStatsButton, 1000);
 </script>
     
 <!-- Модалка поиска пользователей -->
