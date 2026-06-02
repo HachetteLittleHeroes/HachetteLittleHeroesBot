@@ -7673,10 +7673,10 @@ body:not([data-theme]) .modal-content,
         // ✅ Определяем, какое задание активно
         if (currentCommunitySubtask !== null && currentCommunitySubtask !== undefined) {
             if (titleEl) titleEl.innerText = 'Отправка работы (Испытание сообщества)';
-            newBtn.onclick = (e) => {
-                e.preventDefault();
-                submitCommunityTaskPhoto();
-            };
+          newBtn.onclick = (e) => {
+    e.preventDefault();
+    submitTaskPhoto(); 
+};
             console.log('✅ Кнопка настроена на ИСПЫТАНИЕ СООБЩЕСТВА');
         } else if (currentSubtaskData) {
             if (titleEl) titleEl.innerText = `Отправка подзадания: ${currentSubtaskData.subtaskName}`;
