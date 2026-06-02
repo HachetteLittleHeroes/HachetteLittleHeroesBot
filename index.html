@@ -7584,106 +7584,130 @@ body:not([data-theme]) .modal-content,
         // ОТПРАВКА ФОТО НА ПРОВЕРКУ (ОБЫЧНЫЕ ЗАДАНИЯ)
         // ==========================================
         
-        function openTaskUpload(branchKey, levelIndex) {
-            console.log('📸 openTaskUpload called:', branchKey, levelIndex);
-             // ✅ Сбрасываем глобальные переменные
+      function openTaskUpload(branchKey, levelIndex) {
+    console.log('📸 openTaskUpload called:', branchKey, levelIndex);
+    
+    // ✅ Сбрасываем глобальные переменные
     currentSubtaskData = null;
-    currentUploadBranch = null;
-    currentUploadLevel = null;
-            if (!branchKey || levelIndex === undefined) {
-                console.error('Invalid parameters:', branchKey, levelIndex);
-                if (tg) tg.showAlert('Ошибка: задание не выбрано');
-                return;
-            }
-            
-            const branch = TASK_BRANCHES[branchKey];
-            if (!branch) {
-                console.error('Branch not found:', branchKey);
-                if (tg) tg.showAlert('Ошибка: ветка задания не найдена');
-                return;
-            }
-            
-            const currentLevel = getCurrentLevelIndex(branchKey);
-            if (currentLevel !== levelIndex) {
-                console.warn('Wrong level! Current:', currentLevel, 'Attempted:', levelIndex);
-                if (tg) tg.showAlert('Этот уровень уже пройден или заблокирован!');
-                return;
-            }
-            
-            currentUploadBranch = branchKey;
-            currentUploadLevel = levelIndex;
-            currentSubtaskData = null;
-            
-            const fileInput = document.createElement('input');
-            fileInput.type = 'file';
-            fileInput.accept = 'image/*';
-            fileInput.multiple = true;
-            fileInput.style.position = 'absolute';
-            fileInput.style.opacity = '0';
-            fileInput.style.pointerEvents = 'none';
-            document.body.appendChild(fileInput);
-            
-            fileInput.onchange = function(event) {
-                handleTaskFilesSelected(event);
-                document.body.removeChild(fileInput);
+    currentUploadBranch = branchKey;
+    currentUploadLevel = levelIndex;
+    currentCommunitySubtask = null;
+    currentFriendTaskIdx = null;
+    
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/*';
+    fileInput.multiple = true;
+    fileInput.style.position = 'absolute';
+    fileInput.style.opacity = '0';
+    fileInput.style.pointerEvents = 'none';
+    document.body.appendChild(fileInput);
+    
+    fileInput.onchange = function(event) {
+        handleTaskFilesSelected(event);
+        document.body.removeChild(fileInput);
+    };
+    
+    fileInput.click();
+}
+        
+      function handleTaskFilesSelected(event) {
+    const files = Array.from(event.target.files);
+    console.log('📁 Выбрано файлов:', files.length);
+    
+    if (files.length === 0) return;
+    
+    const maxSize = 10 * 1024 * 1024;
+    const oversizedFiles = files.filter(f => f.size > maxSize);
+    
+    if (oversizedFiles.length > 0) {
+        if (tg) tg.showAlert(`❌ Файл(ы) слишком большие. Максимум 10MB на фото.`);
+        return;
+    }
+    
+    tempPhotos = files;
+    
+    const previewContainer = document.getElementById('taskPhotoPreviewContainer');
+    if (previewContainer) {
+        previewContainer.innerHTML = '';
+        files.forEach((file, index) => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.style.cssText = 'width: 70px; height: 70px; object-fit: cover; border-radius: 12px; margin: 5px; border: 2px solid var(--accent); cursor: pointer;';
+                img.onclick = () => removePhoto(index);
+                previewContainer.appendChild(img);
             };
-            
-            fileInput.click();
+            reader.readAsDataURL(file);
+        });
+        
+        if (files.length > 1) {
+            const clearBtn = document.createElement('button');
+            clearBtn.innerHTML = '<i class="fas fa-trash"></i> Очистить все';
+            clearBtn.style.cssText = 'width: 100%; margin-top: 10px; padding: 8px; background: var(--status-red); color: white; border: none; border-radius: 12px; cursor: pointer;';
+            clearBtn.onclick = () => {
+                tempPhotos = [];
+                previewContainer.innerHTML = '';
+                if (tg) tg.showAlert('Все фото удалены');
+            };
+            previewContainer.appendChild(clearBtn);
+        }
+    }
+    
+    const modal = document.getElementById('taskUploadModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        
+        // ✅ Определяем заголовок и действие по глобальным переменным
+        const titleEl = modal.querySelector('h3');
+        const submitBtn = modal.querySelector('.modal-action-btn');
+        
+        if (currentCommunitySubtask !== null && currentCommunitySubtask !== undefined) {
+            if (titleEl) titleEl.innerText = 'Отправка работы (Испытание сообщества)';
+            if (submitBtn) {
+                const newBtn = submitBtn.cloneNode(true);
+                submitBtn.parentNode.replaceChild(newBtn, submitBtn);
+                newBtn.onclick = (e) => {
+                    e.preventDefault();
+                    submitCommunityTaskPhoto();
+                };
+            }
+        } else if (currentSubtaskData) {
+            if (titleEl) titleEl.innerText = `Отправка подзадания: ${currentSubtaskData.subtaskName}`;
+            if (submitBtn) {
+                const newBtn = submitBtn.cloneNode(true);
+                submitBtn.parentNode.replaceChild(newBtn, submitBtn);
+                newBtn.onclick = (e) => {
+                    e.preventDefault();
+                    submitSubtaskPhoto();
+                };
+            }
+        } else if (currentUploadBranch !== null) {
+            if (titleEl) titleEl.innerText = 'Отправка задания на проверку';
+            if (submitBtn) {
+                const newBtn = submitBtn.cloneNode(true);
+                submitBtn.parentNode.replaceChild(newBtn, submitBtn);
+                newBtn.onclick = (e) => {
+                    e.preventDefault();
+                    submitTaskPhoto();
+                };
+            }
+        } else if (currentFriendTaskIdx !== null) {
+            if (titleEl) titleEl.innerText = `Отправка задания от друзей: ${currentFriendSubtaskName}`;
+            if (submitBtn) {
+                const newBtn = submitBtn.cloneNode(true);
+                submitBtn.parentNode.replaceChild(newBtn, submitBtn);
+                newBtn.onclick = (e) => {
+                    e.preventDefault();
+                    submitFriendSubtaskPhoto();
+                };
+            }
         }
         
-        function handleTaskFilesSelected(event) {
-            const files = Array.from(event.target.files);
-            console.log('📁 Выбрано файлов:', files.length);
-            
-            if (files.length === 0) return;
-            
-            const maxSize = 10 * 1024 * 1024;
-            const oversizedFiles = files.filter(f => f.size > maxSize);
-            
-            if (oversizedFiles.length > 0) {
-                const msg = `❌ Файл(ы) слишком большие. Максимум 10MB на фото.`;
-                if (tg) tg.showAlert(msg);
-                return;
-            }
-            
-            tempPhotos = files;
-            
-            const previewContainer = document.getElementById('taskPhotoPreviewContainer');
-            if (previewContainer) {
-                previewContainer.innerHTML = '';
-                files.forEach((file, index) => {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const img = document.createElement('img');
-                        img.src = e.target.result;
-                        img.style.cssText = 'width: 70px; height: 70px; object-fit: cover; border-radius: 12px; margin: 5px; border: 2px solid var(--accent); cursor: pointer;';
-                        img.onclick = () => removePhoto(index);
-                        previewContainer.appendChild(img);
-                    };
-                    reader.readAsDataURL(file);
-                });
-                
-                if (files.length > 1) {
-                    const clearBtn = document.createElement('button');
-                    clearBtn.innerHTML = '<i class="fas fa-trash"></i> Очистить все';
-                    clearBtn.style.cssText = 'width: 100%; margin-top: 10px; padding: 8px; background: var(--status-red); color: white; border: none; border-radius: 12px; cursor: pointer;';
-                    clearBtn.onclick = () => {
-                        tempPhotos = [];
-                        previewContainer.innerHTML = '';
-                        if (tg) tg.showAlert('Все фото удалены');
-                    };
-                    previewContainer.appendChild(clearBtn);
-                }
-            }
-            
-            const modal = document.getElementById('taskUploadModal');
-            if (modal) {
-                const titleEl = modal.querySelector('h3');
-                if (titleEl) titleEl.innerText = 'Отправка на проверку';
-                modal.style.display = 'flex';
-                console.log('✅ Модальное окно открыто, фото:', tempPhotos.length);
-            }
-        }
+        console.log('✅ Модальное окно открыто, фото:', tempPhotos.length);
+    }
+}
         
         function removePhoto(index) {
             if (index >= 0 && index < tempPhotos.length) {
@@ -7781,20 +7805,23 @@ body:not([data-theme]) .modal-content,
             }
         }
         
-        function closeTaskUploadModal() {
+       function closeTaskUploadModal() {
     console.log('🔒 Закрытие модального окна');
+    
     const modal = document.getElementById('taskUploadModal');
     const previewContainer = document.getElementById('taskPhotoPreviewContainer');
     
     if (modal) modal.style.display = 'none';
     if (previewContainer) previewContainer.innerHTML = '';
     
+    // ✅ Сбрасываем ВСЕ глобальные переменные
     currentUploadBranch = null;
     currentUploadLevel = null;
     currentSubtaskData = null;
     currentFriendTaskIdx = null;
     currentFriendLevelIdx = null;
     currentFriendSubtaskIdx = null;
+    currentCommunitySubtask = null;
     tempPhotos = [];
     isUploading = false;
 }
