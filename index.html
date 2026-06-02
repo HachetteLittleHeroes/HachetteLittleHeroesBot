@@ -7586,7 +7586,10 @@ body:not([data-theme]) .modal-content,
         
         function openTaskUpload(branchKey, levelIndex) {
             console.log('📸 openTaskUpload called:', branchKey, levelIndex);
-            
+             // ✅ Сбрасываем глобальные переменные
+    currentSubtaskData = null;
+    currentUploadBranch = null;
+    currentUploadLevel = null;
             if (!branchKey || levelIndex === undefined) {
                 console.error('Invalid parameters:', branchKey, levelIndex);
                 if (tg) tg.showAlert('Ошибка: задание не выбрано');
@@ -7802,7 +7805,9 @@ body:not([data-theme]) .modal-content,
         
         function openSubtaskUpload(branchKey, levelIndex, subtaskIndex, subtaskName) {
             console.log('📸 openSubtaskUpload called:', branchKey, levelIndex, subtaskIndex, subtaskName);
-            
+              // ✅ Сбрасываем глобальные переменные
+    currentUploadBranch = null;
+    currentUploadLevel = null;
             const branch = TASK_BRANCHES[branchKey];
             if (!branch) {
                 console.error('Branch not found:', branchKey);
@@ -8657,7 +8662,13 @@ let currentFriendSubtaskName = null;
 
 function openFriendSubtaskUpload(taskIdx, levelIdx, subtaskIdx, subtaskName) {
     console.log('📸 openFriendSubtaskUpload called:', taskIdx, levelIdx, subtaskIdx, subtaskName);
-    
+    // ✅ Сбрасываем глобальные переменные
+    currentSubtaskData = null;
+    currentUploadBranch = null;
+    currentUploadLevel = null;
+    currentFriendTaskIdx = null;
+    currentFriendLevelIdx = null;
+    currentFriendSubtaskIdx = null;
     const task = FRIEND_TASKS[taskIdx];
     if (!task) return;
     
@@ -14358,6 +14369,10 @@ function showLeagueLeaderboard(league) {
 let currentCommunitySubtask = null;
 
 function openCommunityTaskUpload(subtaskIdx) {
+   // ✅ Сбрасываем глобальные переменные
+    currentSubtaskData = null;
+    currentUploadBranch = null;
+    currentUploadLevel = null;
     currentCommunitySubtask = subtaskIdx;
     
     const fileInput = document.createElement('input');
@@ -17975,8 +17990,24 @@ function getCharacterName(char) {
 }
 
 function closeTaskUploadModal() {
-    var modal = document.getElementById('taskUploadModal');
+    console.log('🔒 Закрытие модального окна');
+    
+    const modal = document.getElementById('taskUploadModal');
+    const previewContainer = document.getElementById('taskPhotoPreviewContainer');
+    
     if (modal) modal.style.display = 'none';
+    if (previewContainer) previewContainer.innerHTML = '';
+    
+    // ✅ Сбрасываем ВСЕ глобальные переменные
+    currentUploadBranch = null;
+    currentUploadLevel = null;
+    currentSubtaskData = null;
+    currentFriendTaskIdx = null;
+    currentFriendLevelIdx = null;
+    currentFriendSubtaskIdx = null;
+    currentCommunitySubtask = null;
+    tempPhotos = [];
+    isUploading = false;
 }
 
 function escapeHtml(text) {
