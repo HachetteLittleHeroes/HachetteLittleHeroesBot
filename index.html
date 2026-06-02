@@ -8509,11 +8509,15 @@ function saveFriendProgress() {
 function getFriendSubtaskProgress(taskIdx, levelIdx, subtaskIdx) {
     const task = FRIEND_TASKS[taskIdx];
     let key;
-    if (task && task.id === 'irina_task_1') {
+    
+    if (task && task.id === 'nadya_task_1') {
+        key = `nadya_level_${levelIdx}_subtask_${subtaskIdx}`;
+    } else if (task && task.id === 'irina_task_1') {
         key = `irina_level_${levelIdx}_subtask_${subtaskIdx}`;
     } else {
         key = `friend_level_${levelIdx}_subtask_${subtaskIdx}`;
     }
+    
     const value = friendProgress[key] || 0;
     console.log(`getFriendSubtaskProgress: ${key} = ${value}`);
     return value;
@@ -8601,21 +8605,12 @@ function renderFriendTasks() {
     const task = FRIEND_TASKS[0];
     if (!task) return;
     
-   const subtaskKey = `nadya_level_0_subtask_0`;
+    // ✅ Используем правильную функцию для получения прогресса
+    const progress = getFriendSubtaskProgress(0, 0, 0);
+    const isCompleted = progress >= 1;
     
-    // ✅ Проверяем реальный прогресс с сервера (не трогаем его принудительно)
-    const progressFromServer = friendProgress[subtaskKey] || 0;
-    
-    // ✅ Проверяем, есть ли флаг "отправлено на проверку"
-    const isPending = localStorage.getItem(`youtube_task_pending_${userId}`) === 'true';
-    
-    // ✅ Задание выполнено ТОЛЬКО если прогресс >= 1 И нет флага ожидания
-    const isCompleted = (progressFromServer >= 1) && !isPending;
-    
-    // ✅ Если админ одобрил — удаляем флаг ожидания
-    if (progressFromServer >= 1 && isPending) {
-        localStorage.removeItem(`youtube_task_pending_${userId}`);
-    }
+    console.log('Progress for nadya_task_1:', progress);
+    console.log('isCompleted:', isCompleted);
     
     if (isCompleted) {
         container.innerHTML = `
@@ -8647,20 +8642,14 @@ function renderFriendTasks() {
                 <div class="subtask-card">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                         <span style="font-weight: 600; font-size: 14px;">Отправить фото на проверку</span>
-                        <span style="font-size: 12px; color: var(--accent);">${isPending ? '⏳ На проверке' : '0/1'}</span>
+                        <span style="font-size: 12px; color: var(--accent);">${progress}/1</span>
                     </div>
                     <div class="progress-bar-container" style="height: 6px; margin: 0 0 12px 0;">
-                        <div class="progress-bar-fill" style="width: ${isPending ? '50%' : '0%'}; height: 100%;"></div>
+                        <div class="progress-bar-fill" style="width: ${progress * 100}%; height: 100%;"></div>
                     </div>
-                    ${!isPending ? `
-                        <button class="task-submit-btn" onclick="openFriendSubtaskUpload(0, 0, 0, 'Отправить фото на проверку')">
-                            <i class="fas fa-camera"></i> Отправить фото
-                        </button>
-                    ` : `
-                        <div style="text-align: center; padding: 8px; color: var(--accent);">
-                            <i class="fas fa-clock"></i> Ожидает проверки администратором
-                        </div>
-                    `}
+                    <button class="task-submit-btn" onclick="openFriendSubtaskUpload(0, 0, 0, 'Отправить фото на проверку')">
+                        <i class="fas fa-camera"></i> Отправить фото
+                    </button>
                     <button class="friend-channel-btn" onclick="window.open('${task.tgLink}', '_blank')" style="background: #ff0000; margin-top: 8px;">
                         <i class="fab fa-youtube"></i> YouTube канал Нади
                     </button>
