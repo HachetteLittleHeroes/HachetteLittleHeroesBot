@@ -14166,57 +14166,30 @@ function renderBookPagesGrid(bookKey, config) {
         reader.readAsDataURL(file);
     });
 }
-   function uploadPageArtwork(bookKey, page) {
+ function uploadPageArtwork(bookKey, page) {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
     
-    input.onchange = async function(e) {
+    input.onchange = function(e) {
         const file = e.target.files[0];
         if (!file) return;
         
-        console.log(`📸 Загрузка фото для ${bookKey}, страница ${page}`);
-        console.log(`📦 Размер файла: ${Math.round(file.size / 1024)} KB, тип: ${file.type}`);
-        
-        openPhotoEditor(file, async function(editedBlob) {
-            if (tg && tg.MainButton) {
-                tg.MainButton.setText('⏳ СЖАТИЕ...').show();
-                tg.MainButton.showProgress();
-            }
+        openPhotoEditor(file, function(editedBlob) {
+            if (tg && tg.MainButton) tg.MainButton.setText('Загрузка...').show();
             
-            try {
-                // Сжатие
-                const compressed = await compressImage(editedBlob, 1200, 0.7);
-                console.log(`📦 После сжатия: ${Math.round(compressed.size / 1024)} KB`);
-                
-                if (tg && tg.MainButton) {
-                    tg.MainButton.setText('⏳ ЗАГРУЗКА...').show();
-                }
-                
-                const formData = new FormData();
-                formData.append('user_id', userId.toString());
-                formData.append('book_key', bookKey);
-                formData.append('page', String(page));
-                formData.append('photo', compressed, 'artwork.jpg');
-                
-                // Увеличенный таймаут (60 секунд)
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 60000);
-                
-                const response = await fetch(SERVER_URL + '/api/artworks/upload', {
-                    method: 'POST',
-                    body: formData,
-                    signal: controller.signal
-                });
-                
-                clearTimeout(timeoutId);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}`);
-                }
-                
-                const result = await response.json();
-                
+            var formData = new FormData();
+            formData.append('user_id', userId.toString());
+            formData.append('book_key', bookKey);
+            formData.append('page', String(page));
+            formData.append('photo', editedBlob, 'artwork.jpg');
+            
+            fetch(SERVER_URL + '/api/artworks/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(r => r.json())
+            .then(function(result) {
                 if (result.status === 'ok') {
                     if (!userArtworks[bookKey]) userArtworks[bookKey] = {};
                     userArtworks[bookKey][String(page)] = result.url;
@@ -14232,29 +14205,13 @@ function renderBookPagesGrid(bookKey, config) {
                     updateAllCategoriesProgress();
                     
                     renderBookPagesGrid(bookKey, BOOK_PAGES_CONFIG[currentBook] || DEFAULT_PAGES_CONFIG);
-                    
-                    if (tg) {
-                        tg.MainButton.hide();
-                        tg.showPopup({ message: '✅ Фото загружено!' });
-                    }
-                } else {
-                    throw new Error(result.message || 'Ошибка сервера');
+                    if (tg) { tg.MainButton.hide(); tg.showAlert('Фото загружено!'); }
                 }
-            } catch (error) {
-                console.error('❌ Ошибка загрузки:', error);
-                if (tg && tg.MainButton) tg.MainButton.hide();
-                
-                if (error.name === 'AbortError') {
-                    if (tg) tg.showAlert('❌ Превышено время ожидания. Файл слишком большой, попробуйте отправить скриншот.');
-                } else {
-                    if (tg) tg.showAlert(`❌ Ошибка: ${error.message}`);
-                }
-            } finally {
-                if (tg && tg.MainButton) {
-                    tg.MainButton.hideProgress();
-                    tg.MainButton.hide();
-                }
-            }
+            })
+            .catch(function(error) {
+                console.error('Ошибка:', error);
+                if (tg) { tg.MainButton.hide(); tg.showAlert('Ошибка загрузки'); }
+            });
         });
     };
     
