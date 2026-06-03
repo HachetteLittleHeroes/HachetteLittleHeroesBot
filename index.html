@@ -6284,6 +6284,28 @@ body:not([data-theme]) .modal-content,
 .difficulty-option:hover {
     background: rgba(255, 149, 0, 0.1);
 }
+        /* Минимальная высота для контейнера с заданиями, чтобы было место для дропдаунов */
+#tasksContent {
+    min-height: 300px;
+    overflow: visible !important;
+}
+
+/* Чтобы дропдауны были поверх всего */
+#categoryDropdown,
+#difficultyDropdown {
+    position: fixed !important;
+    z-index: 99999 !important;
+    background: var(--bg-secondary) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
+    max-height: 280px;
+    overflow-y: auto;
+}
+
+.tasks-section {
+    overflow: visible !important;
+}
     </style>
 </head>
 <body>
