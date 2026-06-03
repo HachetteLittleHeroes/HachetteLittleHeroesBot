@@ -6252,6 +6252,38 @@ body:not([data-theme]) .modal-content,
     color: var(--accent);
     font-weight: 600;
 }
+        /* Чтобы выпадающие списки были поверх всего */
+#categoryDropdown,
+#difficultyDropdown {
+    position: fixed !important;
+    z-index: 99999 !important;
+    background: var(--bg-secondary) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+/* Чтобы контейнер не обрезал дропдауны */
+.tasks-content {
+    overflow: visible !important;
+}
+
+.tasks-section {
+    overflow: visible !important;
+}
+
+/* Стили для элементов списка */
+.category-option,
+.difficulty-option {
+    transition: background 0.2s;
+}
+
+.category-option:hover,
+.difficulty-option:hover {
+    background: rgba(255, 149, 0, 0.1);
+}
     </style>
 </head>
 <body>
@@ -31544,14 +31576,39 @@ function filterTasksByDifficulty(difficulty) {
 
 function toggleCategoryDropdown() {
     const dropdown = document.getElementById('categoryDropdown');
-    dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+    const btn = document.getElementById('categoryFilterBtn');
+    
+    if (!btn) return;
+    
+    const rect = btn.getBoundingClientRect();
+    
+    if (dropdown.style.display === 'block') {
+        dropdown.style.display = 'none';
+    } else {
+        dropdown.style.display = 'block';
+        dropdown.style.top = (rect.bottom + 5) + 'px';
+        dropdown.style.left = rect.left + 'px';
+        dropdown.style.width = rect.width + 'px';
+    }
 }
 
 function toggleDifficultyDropdown() {
     const dropdown = document.getElementById('difficultyDropdown');
-    dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+    const btn = document.getElementById('difficultyFilterBtn');
+    
+    if (!btn) return;
+    
+    const rect = btn.getBoundingClientRect();
+    
+    if (dropdown.style.display === 'block') {
+        dropdown.style.display = 'none';
+    } else {
+        dropdown.style.display = 'block';
+        dropdown.style.top = (rect.bottom + 5) + 'px';
+        dropdown.style.left = rect.left + 'px';
+        dropdown.style.width = rect.width + 'px';
+    }
 }
-
 function selectCategory(category) {
     currentCategoryFilter = category;
     
