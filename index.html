@@ -6367,43 +6367,43 @@ body:not([data-theme]) .modal-content,
         <div id="statusFilters"></div>
         
         <!-- Выпадающие меню для категорий и сложности -->
-        <div style="display: flex; justify-content: space-between; gap: 10px; margin-bottom: 15px; padding: 0 15px;">
-            
-            <!-- Кнопка выбора категории (слева) -->
-            <div style="position: relative; flex: 1;">
-                <button id="categoryFilterBtn" class="filter-btn" style="width: 100%; display: flex; justify-content: space-between; align-items: center;" onclick="toggleCategoryDropdown()">
-                    <span>📂 Все категории</span>
-                    <i class="fas fa-chevron-down"></i>
-                </button>
-                <div id="categoryDropdown" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; margin-top: 5px; z-index: 100; max-height: 200px; overflow-y: auto;">
-                    <div style="padding: 8px;">
-                        <div class="category-option" data-category="all" onclick="selectCategory('all')" style="padding: 8px 12px; cursor: pointer; border-radius: 8px;">📂 Все категории</div>
-                        <div class="category-option" data-category="princess" onclick="selectCategory('princess')" style="padding: 8px 12px; cursor: pointer; border-radius: 8px;">👑 Принцессы</div>
-                        <div class="category-option" data-category="animals" onclick="selectCategory('animals')" style="padding: 8px 12px; cursor: pointer; border-radius: 8px;">🐾 Животные</div>
-                        <div class="category-option" data-category="villains" onclick="selectCategory('villains')" style="padding: 8px 12px; cursor: pointer; border-radius: 8px;">👿 Злодеи</div>
-                        <div class="category-option" data-category="special" onclick="selectCategory('special')" style="padding: 8px 12px; cursor: pointer; border-radius: 8px;">⭐ Особые</div>
-                        <div class="category-option" data-category="stories" onclick="selectCategory('stories')" style="padding: 8px 12px; cursor: pointer; border-radius: 8px;">📖 Истории</div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Кнопка выбора сложности (справа) -->
-            <div style="position: relative; flex: 1;">
-                <button id="difficultyFilterBtn" class="filter-btn" style="width: 100%; display: flex; justify-content: space-between; align-items: center;" onclick="toggleDifficultyDropdown()">
-                    <span>⭐ Все сложности</span>
-                    <i class="fas fa-chevron-down"></i>
-                </button>
-                <div id="difficultyDropdown" style="display: none; position: absolute; top: 100%; right: 0; left: 0; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; margin-top: 5px; z-index: 100;">
-                    <div style="padding: 8px;">
-                        <div class="difficulty-option" data-difficulty="all" onclick="selectDifficulty('all')" style="padding: 8px 12px; cursor: pointer; border-radius: 8px;">⭐ Все сложности</div>
-                        <div class="difficulty-option" data-difficulty="1" onclick="selectDifficulty(1)" style="padding: 8px 12px; cursor: pointer; border-radius: 8px;">⭐ Лёгкие</div>
-                        <div class="difficulty-option" data-difficulty="2" onclick="selectDifficulty(2)" style="padding: 8px 12px; cursor: pointer; border-radius: 8px;">⭐⭐ Средние</div>
-                        <div class="difficulty-option" data-difficulty="3" onclick="selectDifficulty(3)" style="padding: 8px 12px; cursor: pointer; border-radius: 8px;">⭐⭐⭐ Сложные</div>
-                        <div class="difficulty-option" data-difficulty="4" onclick="selectDifficulty(4)" style="padding: 8px 12px; cursor: pointer; border-radius: 8px;">⭐⭐⭐⭐ Экстра</div>
-                    </div>
-                </div>
+<div style="display: flex; gap: 10px; margin-bottom: 15px; padding: 0 15px;">
+    
+    <!-- Кнопка выбора категории (слева) -->
+    <div style="position: relative; flex: 1; min-width: 0;">
+        <button id="categoryFilterBtn" class="filter-btn" style="width: 100%; display: flex; justify-content: space-between; align-items: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" onclick="toggleCategoryDropdown()">
+            <span>📂 Все категории</span>
+            <i class="fas fa-chevron-down" style="margin-left: 8px; flex-shrink: 0;"></i>
+        </button>
+        <div id="categoryDropdown" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; margin-top: 5px; z-index: 1000; max-height: 250px; overflow-y: auto; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+            <div style="padding: 8px;">
+                <div class="category-option" data-category="all" onclick="selectCategory('all')" style="padding: 10px 12px; cursor: pointer; border-radius: 8px;">📂 Все категории</div>
+                <div class="category-option" data-category="princess" onclick="selectCategory('princess')" style="padding: 10px 12px; cursor: pointer; border-radius: 8px;">👑 Принцессы</div>
+                <div class="category-option" data-category="animals" onclick="selectCategory('animals')" style="padding: 10px 12px; cursor: pointer; border-radius: 8px;">🐾 Животные</div>
+                <div class="category-option" data-category="villains" onclick="selectCategory('villains')" style="padding: 10px 12px; cursor: pointer; border-radius: 8px;">👿 Злодеи</div>
+                <div class="category-option" data-category="special" onclick="selectCategory('special')" style="padding: 10px 12px; cursor: pointer; border-radius: 8px;">✨ Особые</div>
+                <div class="category-option" data-category="stories" onclick="selectCategory('stories')" style="padding: 10px 12px; cursor: pointer; border-radius: 8px;">📖 Истории</div>
             </div>
         </div>
+    </div>
+    
+    <!-- Кнопка выбора сложности (справа) -->
+    <div style="position: relative; flex: 1; min-width: 0;">
+        <button id="difficultyFilterBtn" class="filter-btn" style="width: 100%; display: flex; justify-content: space-between; align-items: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" onclick="toggleDifficultyDropdown()">
+            <span>⭐ Все сложности</span>
+            <i class="fas fa-chevron-down" style="margin-left: 8px; flex-shrink: 0;"></i>
+        </button>
+        <div id="difficultyDropdown" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; margin-top: 5px; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+            <div style="padding: 8px;">
+                <div class="difficulty-option" data-difficulty="all" onclick="selectDifficulty('all')" style="padding: 10px 12px; cursor: pointer; border-radius: 8px;">⭐ Все сложности</div>
+                <div class="difficulty-option" data-difficulty="1" onclick="selectDifficulty(1)" style="padding: 10px 12px; cursor: pointer; border-radius: 8px;">⭐ Лёгкие</div>
+                <div class="difficulty-option" data-difficulty="2" onclick="selectDifficulty(2)" style="padding: 10px 12px; cursor: pointer; border-radius: 8px;">⭐⭐ Средние</div>
+                <div class="difficulty-option" data-difficulty="3" onclick="selectDifficulty(3)" style="padding: 10px 12px; cursor: pointer; border-radius: 8px;">⭐⭐⭐ Сложные</div>
+                <div class="difficulty-option" data-difficulty="4" onclick="selectDifficulty(4)" style="padding: 10px 12px; cursor: pointer; border-radius: 8px;">⭐⭐⭐⭐ Экстра</div>
+            </div>
+        </div>
+    </div>
+</div>
         
         <div id="branchTasksList"></div>
     </div>
@@ -7957,7 +7957,7 @@ const STATUS_CATEGORIES = {
     'princess': { name: '👑 Принцессы', keys: ['krasavica', 'sirena', 'rapuncelprincessa', 'agraba'] },
     'animals': { name: '🐾 Животные', keys: ['lion', 'fauna', 'bear', 'sea', 'anaconda', 'dragons'] },
     'villains': { name: '👿 Злодеи', keys: ['queen'] },
-    'special': { name: '⭐ Особые', keys: ['shock', 'pempudu', 'alcohol'] },
+    'special': { name: '✨ Особые', keys: ['shock', 'pempudu', 'alcohol'] },
     'stories': { name: '📖 Истории', keys: ['trainer', 'mystery', 'lubitelfentesi'] }
 };
 
@@ -7983,30 +7983,13 @@ function renderStatusFilters() {
     }
     
     container.innerHTML = `
-        <div style="display: flex; gap: 10px; margin-bottom: 10px; overflow-x: auto;">
-            <button class="filter-btn active" onclick="filterBranchTasks('all')" id="filterAll">
-                <i class="fas fa-list"></i> Все
-            </button>
-            <button class="filter-btn" onclick="filterBranchTasks('started')" id="filterStarted">
-                <i class="fas fa-play"></i> Начатые
-            </button>
-            <button class="filter-btn" onclick="filterBranchTasks('notStarted')" id="filterNotStarted">
-                <i class="fas fa-circle"></i> Не начатые
-            </button>
-        </div>
-        <div style="display: flex; gap: 10px; overflow-x: auto;">
-            <button class="filter-btn active" onclick="filterBranchCategory('all')" id="filterCatAll">
-                Все
-            </button>
-            ${Object.entries(STATUS_CATEGORIES).map(([key, cat]) => `
-                <button class="filter-btn" onclick="filterBranchCategory('${key}')" id="filterCat${key}">
-                    ${cat.name}
-                </button>
-            `).join('')}
+        <div style="display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; white-space: nowrap; padding: 0 15px;">
+            <button class="filter-btn active" onclick="filterBranchTasks('all')" id="filterAll">Все</button>
+            <button class="filter-btn" onclick="filterBranchTasks('started')" id="filterStarted">▶ Начатые</button>
+            <button class="filter-btn" onclick="filterBranchTasks('notStarted')" id="filterNotStarted">○ Не начатые</button>
         </div>
     `;
 }
-
 function filterBranchTasks(filter) {
     currentStatusFilter = filter;
     
@@ -31573,16 +31556,16 @@ function toggleDifficultyDropdown() {
 function selectCategory(category) {
     currentCategoryFilter = category;
     
-    const btnText = document.querySelector('#categoryFilterBtn span');
+    const btnSpan = document.querySelector('#categoryFilterBtn span');
     const categoryNames = {
         'all': '📂 Все категории',
         'princess': '👑 Принцессы',
         'animals': '🐾 Животные',
         'villains': '👿 Злодеи',
-        'special': '⭐ Особые',
+        'special': '✨ Особые',
         'stories': '📖 Истории'
     };
-    if (btnText) btnText.innerText = categoryNames[category] || '📂 Все категории';
+    if (btnSpan) btnSpan.innerText = categoryNames[category] || '📂 Все категории';
     
     document.getElementById('categoryDropdown').style.display = 'none';
     applyAllFilters();
@@ -31591,7 +31574,7 @@ function selectCategory(category) {
 function selectDifficulty(difficulty) {
     currentDifficultyFilter = difficulty;
     
-    const btnText = document.querySelector('#difficultyFilterBtn span');
+    const btnSpan = document.querySelector('#difficultyFilterBtn span');
     const difficultyNames = {
         'all': '⭐ Все сложности',
         1: '⭐ Лёгкие',
@@ -31599,12 +31582,11 @@ function selectDifficulty(difficulty) {
         3: '⭐⭐⭐ Сложные',
         4: '⭐⭐⭐⭐ Экстра'
     };
-    if (btnText) btnText.innerText = difficultyNames[difficulty] || '⭐ Все сложности';
+    if (btnSpan) btnSpan.innerText = difficultyNames[difficulty] || '⭐ Все сложности';
     
     document.getElementById('difficultyDropdown').style.display = 'none';
     applyAllFilters();
 }
-
 // Закрытие дропдаунов при клике вне их
 document.addEventListener('click', function(event) {
     if (!event.target.closest('#categoryFilterBtn')) {
