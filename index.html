@@ -6375,33 +6375,27 @@ body:not([data-theme]) .modal-content,
             <span>📂 Все категории</span>
             <i class="fas fa-chevron-down" style="margin-left: 8px; flex-shrink: 0;"></i>
         </button>
-        <div id="categoryDropdown" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; margin-top: 5px; z-index: 1000; max-height: 250px; overflow-y: auto; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
-            <div style="padding: 8px;">
-                <div class="category-option" data-category="all" onclick="selectCategory('all')" style="padding: 10px 12px; cursor: pointer; border-radius: 8px;">📂 Все категории</div>
-                <div class="category-option" data-category="princess" onclick="selectCategory('princess')" style="padding: 10px 12px; cursor: pointer; border-radius: 8px;">👑 Принцессы</div>
-                <div class="category-option" data-category="animals" onclick="selectCategory('animals')" style="padding: 10px 12px; cursor: pointer; border-radius: 8px;">🐾 Животные</div>
-                <div class="category-option" data-category="villains" onclick="selectCategory('villains')" style="padding: 10px 12px; cursor: pointer; border-radius: 8px;">👿 Злодеи</div>
-                <div class="category-option" data-category="special" onclick="selectCategory('special')" style="padding: 10px 12px; cursor: pointer; border-radius: 8px;">✨ Особые</div>
-                <div class="category-option" data-category="stories" onclick="selectCategory('stories')" style="padding: 10px 12px; cursor: pointer; border-radius: 8px;">📖 Истории</div>
-            </div>
-        </div>
+      <!-- Дропдауны (вне контейнера tasks-content) -->
+<div id="categoryDropdown" style="display: none; position: fixed; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; z-index: 10000; min-width: 180px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+    <div style="padding: 8px;">
+        <div onclick="selectCategory('all')" style="padding: 10px 12px; cursor: pointer;">📂 Все категории</div>
+        <div onclick="selectCategory('princess')" style="padding: 10px 12px; cursor: pointer;">👑 Принцессы</div>
+        <div onclick="selectCategory('animals')" style="padding: 10px 12px; cursor: pointer;">🐾 Животные</div>
+        <div onclick="selectCategory('villains')" style="padding: 10px 12px; cursor: pointer;">👿 Злодеи</div>
+        <div onclick="selectCategory('special')" style="padding: 10px 12px; cursor: pointer;">✨ Особые</div>
+        <div onclick="selectCategory('stories')" style="padding: 10px 12px; cursor: pointer;">📖 Истории</div>
     </div>
-    
-    <!-- Кнопка выбора сложности (справа) -->
-    <div style="position: relative; flex: 1; min-width: 0;">
-        <button id="difficultyFilterBtn" class="filter-btn" style="width: 100%; display: flex; justify-content: space-between; align-items: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" onclick="toggleDifficultyDropdown()">
-            <span>⭐ Все сложности</span>
-            <i class="fas fa-chevron-down" style="margin-left: 8px; flex-shrink: 0;"></i>
-        </button>
-        <div id="difficultyDropdown" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; margin-top: 5px; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
-            <div style="padding: 8px;">
-                <div class="difficulty-option" data-difficulty="all" onclick="selectDifficulty('all')" style="padding: 10px 12px; cursor: pointer; border-radius: 8px;">⭐ Все сложности</div>
-                <div class="difficulty-option" data-difficulty="1" onclick="selectDifficulty(1)" style="padding: 10px 12px; cursor: pointer; border-radius: 8px;">⭐ Лёгкие</div>
-                <div class="difficulty-option" data-difficulty="2" onclick="selectDifficulty(2)" style="padding: 10px 12px; cursor: pointer; border-radius: 8px;">⭐⭐ Средние</div>
-                <div class="difficulty-option" data-difficulty="3" onclick="selectDifficulty(3)" style="padding: 10px 12px; cursor: pointer; border-radius: 8px;">⭐⭐⭐ Сложные</div>
-                <div class="difficulty-option" data-difficulty="4" onclick="selectDifficulty(4)" style="padding: 10px 12px; cursor: pointer; border-radius: 8px;">⭐⭐⭐⭐ Экстра</div>
-            </div>
-        </div>
+</div>
+
+<div id="difficultyDropdown" style="display: none; position: fixed; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; z-index: 10000; min-width: 180px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+    <div style="padding: 8px;">
+        <div onclick="selectDifficulty('all')" style="padding: 10px 12px; cursor: pointer;">⭐ Все сложности</div>
+        <div onclick="selectDifficulty(1)" style="padding: 10px 12px; cursor: pointer;">⭐ Лёгкие</div>
+        <div onclick="selectDifficulty(2)" style="padding: 10px 12px; cursor: pointer;">⭐⭐ Средние</div>
+        <div onclick="selectDifficulty(3)" style="padding: 10px 12px; cursor: pointer;">⭐⭐⭐ Сложные</div>
+        <div onclick="selectDifficulty(4)" style="padding: 10px 12px; cursor: pointer;">⭐⭐⭐⭐ Экстра</div>
+    </div>
+</div>
     </div>
 </div>
         
@@ -31545,12 +31539,32 @@ function filterTasksByDifficulty(difficulty) {
 
 function toggleCategoryDropdown() {
     const dropdown = document.getElementById('categoryDropdown');
-    dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+    const btn = document.getElementById('categoryFilterBtn');
+    const rect = btn.getBoundingClientRect();
+    
+    if (dropdown.style.display === 'block') {
+        dropdown.style.display = 'none';
+    } else {
+        dropdown.style.display = 'block';
+        dropdown.style.top = (rect.bottom + window.scrollY) + 'px';
+        dropdown.style.left = rect.left + 'px';
+        dropdown.style.width = rect.width + 'px';
+    }
 }
 
 function toggleDifficultyDropdown() {
     const dropdown = document.getElementById('difficultyDropdown');
-    dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+    const btn = document.getElementById('difficultyFilterBtn');
+    const rect = btn.getBoundingClientRect();
+    
+    if (dropdown.style.display === 'block') {
+        dropdown.style.display = 'none';
+    } else {
+        dropdown.style.display = 'block';
+        dropdown.style.top = (rect.bottom + window.scrollY) + 'px';
+        dropdown.style.left = rect.left + 'px';
+        dropdown.style.width = rect.width + 'px';
+    }
 }
 
 function selectCategory(category) {
@@ -31588,6 +31602,20 @@ function selectDifficulty(difficulty) {
     applyAllFilters();
 }
 // Закрытие дропдаунов при клике вне их
+document.addEventListener('click', function(event) {
+    if (!event.target.closest('#categoryFilterBtn')) {
+        const catDropdown = document.getElementById('categoryDropdown');
+        if (catDropdown) catDropdown.style.display = 'none';
+    }
+    if (!event.target.closest('#difficultyFilterBtn')) {
+        const diffDropdown = document.getElementById('difficultyDropdown');
+        if (diffDropdown) diffDropdown.style.display = 'none';
+    }
+});
+        // ==========================================
+// ЗАКРЫТИЕ ДРОПДАУНОВ ПРИ КЛИКЕ ВНЕ
+// ==========================================
+
 document.addEventListener('click', function(event) {
     if (!event.target.closest('#categoryFilterBtn')) {
         const catDropdown = document.getElementById('categoryDropdown');
