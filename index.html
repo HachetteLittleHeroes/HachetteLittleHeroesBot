@@ -8010,11 +8010,13 @@ function renderStatusFilters() {
 function filterBranchTasks(filter) {
     currentStatusFilter = filter;
     
-    const filterMap = { 'all': 'All', 'started': 'Started', 'notStarted': 'NotStarted' };
-    
-    document.querySelectorAll('#statusFilters .filter-btn').forEach(btn => btn.classList.remove('active'));
-    document.getElementById('filter' + filterMap[filter])?.classList.add('active');
-    document.getElementById(currentCategoryFilter === 'all' ? 'filterCatAll' : 'filterCat' + currentCategoryFilter)?.classList.add('active');
+    // Обновляем активное состояние кнопок
+    document.querySelectorAll('#statusFilters .filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    if (filter === 'all') document.getElementById('filterAll')?.classList.add('active');
+    if (filter === 'started') document.getElementById('filterStarted')?.classList.add('active');
+    if (filter === 'notStarted') document.getElementById('filterNotStarted')?.classList.add('active');
     
     applyAllFilters();
 }
