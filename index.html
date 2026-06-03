@@ -6355,13 +6355,22 @@ body:not([data-theme]) .modal-content,
             <div class="earn-item"><div class="earn-left"><i class="fas fa-shopping-cart"></i><span>За покупку от 10 000 ₽</span></div><div class="earn-right"><span class="earn-amount">+50</span><i class="fas fa-book-open gold-book"></i></div></div>
         </div>
     </div>
-   <!-- ========== ЗАДАНИЯ НА СТАТУСЫ ========== -->
+  <!-- ========== ЗАДАНИЯ НА СТАТУСЫ ========== -->
 <div class="tasks-section">
     <button class="tasks-header" onclick="toggleTasks()">
         <span>🏅 Задания на статусы</span>
         <i class="fas fa-chevron-down" id="tasksArrow"></i>
     </button>
     <div id="tasksContent" class="tasks-content">
+        <!-- Фильтр по сложности (звёзды) -->
+       <div class="difficulty-filters" style="display: flex; gap: 8px; margin-bottom: 15px; margin-top: 10px; overflow-x: auto; white-space: nowrap; padding: 0;">
+    <button class="filter-btn active" data-difficulty="all" onclick="filterTasksByDifficulty('all')">Все</button>
+    <button class="filter-btn" data-difficulty="1" onclick="filterTasksByDifficulty(1)">⭐</button>
+    <button class="filter-btn" data-difficulty="2" onclick="filterTasksByDifficulty(2)">⭐⭐</button>
+    <button class="filter-btn" data-difficulty="3" onclick="filterTasksByDifficulty(3)">⭐⭐⭐</button>
+    <button class="filter-btn" data-difficulty="4" onclick="filterTasksByDifficulty(4)">⭐⭐⭐⭐</button>
+</div>
+        
         <div id="branchTasksList"></div>
     </div>
 </div>
@@ -7146,12 +7155,43 @@ body:not([data-theme]) .modal-content,
 </div>
 
     <script>
+         let currentDifficultyFilter = 'all';
         // ==========================================
         // КОНФИГУРАЦИЯ И ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ
         // ==========================================
         
         const SERVER_URL = 'https://bot-hachettelittleheroes.amvera.io';
         const MARKER_PRICE = 75;
+        // ==========================================
+// СЛОЖНОСТЬ ЗАДАНИЙ (звёзды)
+// ==========================================
+
+const TASK_DIFFICULTY = {
+    // ⭐ ЛЁГКИЕ (1 звезда)
+    'mystery': 1,
+    'queen': 1,
+    'lion': 1,
+    'sirena': 1,
+    'trainer': 1,
+    
+    // ⭐⭐ СРЕДНИЕ (2 звезды)
+    'bear': 2,
+    'alcohol': 2,
+    
+    // ⭐⭐⭐ СЛОЖНЫЕ (3 звезды)
+    'anaconda': 3,
+    'fauna': 3,
+    'sea': 3,
+    'dragons': 3,
+    'krasavica': 3,
+    'rapuncelprincessa': 3,
+    'agraba': 3,
+    'lubitelfentesi': 3,
+    
+    // ⭐⭐⭐⭐ ЭКСТРА-СЛОЖНЫЕ (4 звезды)
+    'shock': 4,
+    'pempudu': 4
+};
         
         // Telegram WebApp
         const tg = window.Telegram?.WebApp || {
@@ -7699,78 +7739,93 @@ body:not([data-theme]) .modal-content,
             }
         }
         
-        async function submitTaskPhoto(event) {
-            if (event) event.preventDefault();
-            
-            console.log('=== НАЧАЛО ОТПРАВКИ ЗАДАНИЯ ===');
-            
-            if (isUploading) return;
-            if (!tempPhotos || tempPhotos.length === 0) {
-                if (tg) tg.showAlert('❌ Выберите хотя бы одно фото');
-                return;
-            }
-            
-            isUploading = true;
-            
-            if (tg && tg.MainButton) {
-                tg.MainButton.setText("⏳ ОТПРАВКА ФОТО...").show();
-                tg.MainButton.showProgress();
-            }
-            
-            try {
-                const formData = new FormData();
-                formData.append('user', userId.toString());
-                if (currentSubtaskData) {
-                    formData.append('branchKey', currentSubtaskData.branchKey);
-                    formData.append('levelIndex', currentSubtaskData.levelIndex.toString());
-                    formData.append('subtaskIndex', currentSubtaskData.subtaskIndex.toString());
-                    formData.append('subtaskName', currentSubtaskData.subtaskName);
-                    formData.append('type', 'subtask');
-                } else {
-                    formData.append('branchKey', currentUploadBranch);
-                    formData.append('levelIndex', currentUploadLevel.toString());
-                    formData.append('type', 'regular');
-                }
-                
-                for (let i = 0; i < tempPhotos.length; i++) {
-                    formData.append('photos', tempPhotos[i]);
-                }
-                
-                const endpoint = currentSubtaskData ? '/api/check_subtask' : '/api/check_achievement';
-                const response = await fetch(`${SERVER_URL}${endpoint}`, {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`Ошибка сервера: ${response.status} ${response.statusText}`);
-                }
-                
-                const text = await response.text();
-                const result = JSON.parse(text);
-                
-                if (result && result.status === 'ok') {
-                    if (tg) {
-                        tg.showAlert('✅ Фото успешно отправлено на проверку!');
-                        if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-                    }
-                    await refreshUserProgress();
-                    closeTaskUploadModal();
-                } else {
-                    throw new Error(result?.message || 'Сервер вернул ошибку');
-                }
-                
-            } catch (error) {
-                console.error('❌ Ошибка при отправке:', error);
-                if (tg) tg.showAlert(`❌ Ошибка: ${error.message}`);
-            } finally {
-                isUploading = false;
-                if (tg && tg.MainButton) {
-                    tg.MainButton.hideProgress();
-                    tg.MainButton.hide();
-                }
-            }
+      // ==========================================
+// ОТПРАВКА ФОТО В ОБЫЧНЫЕ ЗАДАНИЯ (С СЖАТИЕМ)
+// ==========================================
+
+async function submitTaskPhoto(event) {
+    if (event) event.preventDefault();
+    
+    console.log('=== SUBMIT TASK PHOTO ===');
+    
+    if (!tempPhotos || tempPhotos.length === 0) {
+        if (tg) tg.showAlert('❌ Выберите хотя бы одно фото');
+        return;
+    }
+    
+    if (isUploading) return;
+    isUploading = true;
+    
+    if (tg && tg.MainButton) {
+        tg.MainButton.setText("⏳ ОТПРАВКА ФОТО...").show();
+        tg.MainButton.showProgress();
+    }
+    
+    try {
+        // ✅ СЖИМАЕМ ФОТО
+        const compressedPhotos = await compressImages(tempPhotos, 1200, 0.7);
+        
+        const formData = new FormData();
+        formData.append('user', userId.toString());
+        if (currentSubtaskData) {
+            formData.append('branchKey', currentSubtaskData.branchKey);
+            formData.append('levelIndex', currentSubtaskData.levelIndex.toString());
+            formData.append('subtaskIndex', currentSubtaskData.subtaskIndex.toString());
+            formData.append('subtaskName', currentSubtaskData.subtaskName);
+            formData.append('type', 'subtask');
+        } else {
+            formData.append('branchKey', currentUploadBranch);
+            formData.append('levelIndex', currentUploadLevel.toString());
+            formData.append('type', 'regular');
         }
+        
+        for (let i = 0; i < compressedPhotos.length; i++) {
+            formData.append('photos', compressedPhotos[i]);
+        }
+        
+        // ✅ УВЕЛИЧЕННЫЙ ТАЙМАУТ
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 60000);
+        
+        const endpoint = currentSubtaskData ? '/api/check_subtask' : '/api/check_achievement';
+        const response = await fetch(`${SERVER_URL}${endpoint}`, {
+            method: 'POST',
+            body: formData,
+            signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+        
+        if (!response.ok) {
+            throw new Error(`Ошибка сервера: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        
+        if (result && result.status === 'ok') {
+            if (tg) {
+                tg.showAlert('✅ Фото отправлено на проверку!');
+                if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+            }
+            closeTaskUploadModal();
+        } else {
+            throw new Error(result?.message || 'Сервер вернул ошибку');
+        }
+    } catch (error) {
+        console.error('❌ Ошибка:', error);
+        if (error.name === 'AbortError') {
+            if (tg) tg.showAlert('❌ Превышено время ожидания. Попробуйте отправить меньше фото.');
+        } else {
+            if (tg) tg.showAlert(`❌ Ошибка: ${error.message}`);
+        }
+    } finally {
+        isUploading = false;
+        if (tg && tg.MainButton) {
+            tg.MainButton.hideProgress();
+            tg.MainButton.hide();
+        }
+    }
+}
         
       function closeTaskUploadModal() {
     console.log('🔒 Закрытие модального окна');
@@ -7949,27 +8004,40 @@ function applyAllFilters() {
         const branchKey = card.getAttribute('data-branch-key');
         const isCompleted = card.classList.contains('completed');
         
+        // 1. Фильтр по категориям
         let showByCategory = currentCategoryFilter === 'all';
         if (!showByCategory && STATUS_CATEGORIES[currentCategoryFilter]) {
             showByCategory = STATUS_CATEGORIES[currentCategoryFilter].keys.includes(branchKey);
         }
         
+        // 2. Фильтр по статусу (начатые/не начатые)
         let showByStatus = true;
         if (currentStatusFilter === 'started') {
-            // Ветка начата: не завершена И (есть прогресс ИЛИ пройден хотя бы первый уровень)
             const progressBar = card.querySelector('.progress-bar-fill');
             const hasProgress = progressBar && progressBar.style.width && progressBar.style.width !== '0%';
             const currentLevel = getCurrentLevelIndex(branchKey);
             showByStatus = !isCompleted && (hasProgress || currentLevel > 0);
         } else if (currentStatusFilter === 'notStarted') {
-            // Ветка не начата: не завершена И нет прогресса И не пройден первый уровень
             const progressBar = card.querySelector('.progress-bar-fill');
             const hasProgress = progressBar && progressBar.style.width && progressBar.style.width !== '0%';
             const currentLevel = getCurrentLevelIndex(branchKey);
             showByStatus = !isCompleted && !hasProgress && currentLevel === 0;
         }
         
-        card.style.display = showByCategory && showByStatus ? '' : 'none';
+        // 3. ✅ НОВЫЙ ФИЛЬТР ПО СЛОЖНОСТИ (звёзды)
+        let showByDifficulty = true;
+        if (currentDifficultyFilter !== 'all') {
+            const starsSpan = card.querySelector('.stars');
+            if (starsSpan) {
+                const cardDifficulty = parseInt(starsSpan.getAttribute('data-difficulty'));
+                if (cardDifficulty !== currentDifficultyFilter) {
+                    showByDifficulty = false;
+                }
+            }
+        }
+        
+        // Применяем все фильтры
+        card.style.display = (showByCategory && showByStatus && showByDifficulty) ? '' : 'none';
     });
 }
 
@@ -7983,19 +8051,28 @@ function renderBranchTasks() {
     container.innerHTML = '';
     
     for (const [branchKey, branch] of Object.entries(TASK_BRANCHES)) {
+        // Пропускаем сезонный пропуск
         if (branchKey === 'season_pass') continue;
+        
+        // Пропускаем Скруджа и Благодетеля (не показываем в заданиях на статусы)
+        if (branchKey === 'scrooge' || branchKey === 'benefactor') continue;
         
         const isCompleted = isBranchCompleted(branchKey);
         const currentLevelIndex = getCurrentLevelIndex(branchKey);
         const levels = branch.levels;
         
+       // Получаем сложность ветки (по умолчанию 1 звезда)
+const difficulty = TASK_DIFFICULTY[branchKey] || 1;
+const starsHtml = '<span class="stars" data-difficulty="' + difficulty + '" style="display: inline-flex; align-items: center; gap: 2px; margin-left: 8px;">' + renderStars(difficulty) + '</span>';
+        
         const branchCard = document.createElement('div');
         branchCard.className = `branch-task-card ${isCompleted ? 'completed' : ''}`;
         branchCard.setAttribute('data-branch-key', branchKey);
         
+        // Добавляем звёзды в заголовок
         branchCard.innerHTML = `
             <div class="branch-header">
-                <h3>${branch.name}</h3>
+                <h3>${branch.name} ${starsHtml}</h3>
                 <p>${branch.desc}</p>
             </div>
         `;
@@ -8015,42 +8092,7 @@ function renderBranchTasks() {
         } else if (currentLevelIndex < levels.length) {
             const level = levels[currentLevelIndex];
             
-            if (branchKey === 'scrooge') {
-                const currentProgress = user.balance;
-                const percent = (currentProgress / level.maxProgress) * 100;
-                const levelCard = document.createElement('div');
-                levelCard.className = 'level-card';
-                levelCard.innerHTML = `
-                    <div class="level-header">
-                        <span class="level-title">${level.title}</span>
-                        <span class="level-progress">${currentProgress}/${level.maxProgress} ашетиков</span>
-                    </div>
-                    <div class="level-desc">${level.desc}</div>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar-fill" style="width: ${Math.min(percent, 100)}%"></div>
-                    </div>
-                    <div class="level-desc" style="color: var(--accent); margin-top: 10px;">
-                        <i class="fas fa-coins"></i> Текущий баланс: ${user.balance} ашетиков
-                    </div>
-                `;
-                branchCard.appendChild(levelCard);
-            } else if (branchKey === 'benefactor') {
-                const levelCard = document.createElement('div');
-                levelCard.className = 'level-card';
-                levelCard.innerHTML = `
-                    <div class="level-header">
-                        <span class="level-title">${level.title}</span>
-                    </div>
-                    <div class="level-desc">${level.desc}</div>
-                    <button class="task-submit-btn" onclick="openSupportForStatus()">
-                        <i class="fas fa-heart"></i> Поддержать проект
-                    </button>
-                    <div class="level-desc" style="font-size: 12px; margin-top: 10px; color: var(--text-gray);">
-                        После подтверждения пожертвования статус будет разблокирован автоматически
-                    </div>
-                `;
-                branchCard.appendChild(levelCard);
-            } else if (level.subtasks && level.subtasks.length > 0) {
+            if (level.subtasks && level.subtasks.length > 0) {
                 if (level.subtasks.length === 1) {
                     const subtask = level.subtasks[0];
                     const currentProgress = getSubtaskProgress(branchKey, currentLevelIndex, 0);
@@ -8473,8 +8515,8 @@ async function submitTimeTaskPhoto() {
 const FRIEND_TASKS = [
     {
         id: 'nadya_task_1',
-        title: 'Задание от Нади',
-        description: 'Раскрась разворот, у которого цветовой код состоит из 50 и более цветов, и получи билет на розыгрыш польского издания Hachette А4!',
+        title: '50 оттенков разворота',
+        description: 'Наша Надя предлагает тебе испытать 50 эмоций во время раскрашивания разворота, у которого цветовой код состоит из 50 и более цветов. В награду за это ты получишь билет на розыгрыш польского издания Hachette А4!',
         reward: 'Билет на розыгрыш польского издания Hachette А4',
         tgLink: 'https://www.youtube.com/@%D0%9D%D0%B0%D0%B4%D0%B5%D0%B6%D0%B4%D0%B0_%D0%A5%D0%BE%D0%B1%D0%B1%D0%B8%D1%82%D0%B5%D1%80%D0%B0%D0%BF%D0%B8%D1%8F',
         tgUsername: '@Nadia_Dv',
@@ -12336,8 +12378,8 @@ function openFigureModal(figure, isUnlocked) {
         levels: [
             { title: "Знакомство с фауной", maxProgress: 1, desc: "Раскрась 1 картинку с оленем", subtasks: [{ id: 'deer_1', name: 'Олень', required: 1 }] },
             { title: "Любитель животных", maxProgress: 2, desc: "Раскрась 1 картинку с мышью (Микки Маус, Минни Маус и подобные не подходят) и 1 с медведем", subtasks: [{ id: 'mouse_1', name: 'Мышь', required: 1 }, { id: 'bear_1', name: 'Медведь', required: 1 }] },
-            { title: "Друг животных", maxProgress: 3, desc: "Раскрась 1 с лисом, 1 с медведем, 1 с мышью (Микки Маус, Минни Макс и подобные не подходят)", subtasks: [{ id: 'fox_1', name: 'Лиса', required: 1 }, { id: 'bear_2', name: 'Медведь', required: 1 }, { id: 'mouse_2', name: 'Мышь', required: 1 }] },
-            { title: "Зоолог", maxProgress: 5, desc: "Раскрась 2 со скунсом, 2 картинки с зайцем, 1 картинку со львом", subtasks: [{ id: 'skunk', name: 'Скунс', required: 2 }, { id: 'hare', name: 'Заяц', required: 2 }, { id: 'lion', name: 'Лев', required: 1 }] },
+            { title: "Друг животных", maxProgress: 3, desc: "Раскрась 1 с лисом, 1 со слоном, 1 с енотом", subtasks: [{ id: 'fox_1', name: 'Лиса', required: 1 }, { id: 'bear_2', name: 'Слон', required: 1 }, { id: 'mouse_2', name: 'Енот', required: 1 }] },
+            { title: "Зоолог", maxProgress: 5, desc: "Раскрась 2 со скунсом, 2 картинки с обезьяной, 1 картинку со львом", subtasks: [{ id: 'skunk', name: 'Скунс', required: 2 }, { id: 'hare', name: 'Обезьяна', required: 2 }, { id: 'lion', name: 'Лев', required: 1 }] },
             { title: "Знаток фауны", maxProgress: 9, desc: "Раскрась 2 картинки с коровой, 2 картинки с волком, 3 картинки с козлом, 2 картинки с лосём", subtasks: [{ id: 'cow', name: 'Корова', required: 2 }, { id: 'wolf', name: 'Волк', required: 2 }, { id: 'crocodile', name: 'Козел', required: 3 }, { id: 'moose', name: 'Лось', required: 2 }] }
         ]
     },
@@ -12443,11 +12485,12 @@ function openFigureModal(figure, isUnlocked) {
         name: "Анаконда",
         desc: "Раскрасить картинки со змеей (фото ДО/ПОСЛЕ)",
         levels: [
-            { title: "Исследователь змей", maxProgress: 1, desc: "Раскрась 1 картинку со змеей" },
-            { title: "Добытчик яда", maxProgress: 3, desc: "Раскрась 3 картинки со змеей" },
-            { title: "Заклинатель змей", maxProgress: 3, desc: "Раскрась ещё 3 картинки со змеей" },
-            { title: "Василиск", maxProgress: 5, desc: "Раскрась 5 картинок со змеей" },
-            { title: "Анаконда", maxProgress: 8, desc: "Раскрась 8 картинок со змеей" }
+           { title: "Исследователь змей", maxProgress: 1, desc: "Раскрась 1 картинку со змеей" },
+            { title: "Добытчик яда", maxProgress: 2, desc: "Раскрась 1 картинку с Каа, 1 с Сэром Хиссом", subtasks: [{ id: 'kaa_1', name: 'Каа', required: 1 }, { id: 'sirhiss_1', name: 'Сэр Хисс', required: 1 }] },
+            { title: "Заклинатель змей", maxProgress: 3, desc: "Раскрась 1 картинку с жезлом Джафара, 1 картинку, где змея гипнотизирует (действие), 1 картинку с Антонио Мадригаль", subtasks: [{ id: 'djafarzmeya', name: 'Жзл Джафара', required: 1 }, { id: 'gipnozzmeya_1', name: 'Змея гипнотизирует', required: 1 }, { id: 'antoniomadrigalzmeya_1', name: 'Антони Мадригаль', required: 1 }] },
+            { title: "Василиск", maxProgress: 5, desc: "Раскрась 2 картинки с драконом без крыльев, 2 картинки с муренами, 1 картинка злодея в образе змеи", subtasks: [{ id: 'kitdragon', name: 'Дракон без крыльев', required: 2 }, { id: 'merenizmeyi', name: 'Мурены', required: 2 }, { id: 'zlodeizmeya', name: 'Злодей в образе змеи', required: 1 }] },
+            { title: "Анаконда", maxProgress: 5, desc: "Раскрась 5 картинок со змеями не из Disney/Pixar", subtasks: [{ id: 'zmeyanature', name: 'Змея не из Disney/Pixar', required: 5 }] }
+            
         ]
     },
    
@@ -13798,7 +13841,7 @@ const BOOK_PAGES_CONFIG = {
         "Cozy&Cute Coco Wyo": { totalPages: 50, spreads: [] },
         "Cute&groovy Coco Wyo": { totalPages: 50, spreads: [] },
         "Fashion vibes Coco Wyo": { totalPages: 50, spreads: [] },
-        "Cozy romantasy Jade Summer": { totalPages: 50, spreads: [] },
+        "Cozy romantasy Jade Summer": { totalPages: 40, spreads: [] },
         "Cozy Japan Jade Summer": { totalPages: 50, spreads: [] },
         "Cozy France Jade Summer": { totalPages: 50, spreads: [] },
         "Cozy Europe Jade Summer": { totalPages: 40, spreads: [] },
@@ -14076,22 +14119,52 @@ function renderBookPagesGrid(bookKey, config) {
     input.type = 'file';
     input.accept = 'image/*';
     
-    input.onchange = function(e) {
+    input.onchange = async function(e) {
         const file = e.target.files[0];
         if (!file) return;
         
-        openPhotoEditor(file, function(editedBlob) {
-            if (tg && tg.MainButton) tg.MainButton.setText('Загрузка...').show();
+        console.log(`📸 Загрузка фото для ${bookKey}, страница ${page}`);
+        console.log(`📦 Размер файла: ${Math.round(file.size / 1024)} KB, тип: ${file.type}`);
+        
+        openPhotoEditor(file, async function(editedBlob) {
+            if (tg && tg.MainButton) {
+                tg.MainButton.setText('⏳ СЖАТИЕ...').show();
+                tg.MainButton.showProgress();
+            }
             
-            compressImage(editedBlob, 800, 0.7).then(function(compressed) {
-                var formData = new FormData();
+            try {
+                // Сжатие
+                const compressed = await compressImage(editedBlob, 1200, 0.7);
+                console.log(`📦 После сжатия: ${Math.round(compressed.size / 1024)} KB`);
+                
+                if (tg && tg.MainButton) {
+                    tg.MainButton.setText('⏳ ЗАГРУЗКА...').show();
+                }
+                
+                const formData = new FormData();
                 formData.append('user_id', userId.toString());
                 formData.append('book_key', bookKey);
                 formData.append('page', String(page));
                 formData.append('photo', compressed, 'artwork.jpg');
                 
-                return fetch(SERVER_URL + '/api/artworks/upload', { method: 'POST', body: formData });
-            }).then(function(r) { return r.json(); }).then(function(result) {
+                // Увеличенный таймаут (60 секунд)
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 60000);
+                
+                const response = await fetch(SERVER_URL + '/api/artworks/upload', {
+                    method: 'POST',
+                    body: formData,
+                    signal: controller.signal
+                });
+                
+                clearTimeout(timeoutId);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const result = await response.json();
+                
                 if (result.status === 'ok') {
                     if (!userArtworks[bookKey]) userArtworks[bookKey] = {};
                     userArtworks[bookKey][String(page)] = result.url;
@@ -14099,7 +14172,6 @@ function renderBookPagesGrid(bookKey, config) {
                     if (!userCompletedPages[bookKey]) userCompletedPages[bookKey] = {};
                     userCompletedPages[bookKey][String(page)] = true;
                     
-                    // ✅ Сохраняем дату
                     if (!window.completedPagesDates) window.completedPagesDates = {};
                     window.completedPagesDates[bookKey + '|' + page] = Date.now();
                     localStorage.setItem('completed_pages_dates_' + userId, JSON.stringify(window.completedPagesDates));
@@ -14108,12 +14180,29 @@ function renderBookPagesGrid(bookKey, config) {
                     updateAllCategoriesProgress();
                     
                     renderBookPagesGrid(bookKey, BOOK_PAGES_CONFIG[currentBook] || DEFAULT_PAGES_CONFIG);
-                    if (tg) { tg.MainButton.hide(); tg.showPopup({ message: 'Фото загружено!' }); }
+                    
+                    if (tg) {
+                        tg.MainButton.hide();
+                        tg.showPopup({ message: '✅ Фото загружено!' });
+                    }
+                } else {
+                    throw new Error(result.message || 'Ошибка сервера');
                 }
-            }).catch(function(error) {
-                console.error('Ошибка:', error);
-                if (tg) { tg.MainButton.hide(); tg.showAlert('Ошибка загрузки'); }
-            });
+            } catch (error) {
+                console.error('❌ Ошибка загрузки:', error);
+                if (tg && tg.MainButton) tg.MainButton.hide();
+                
+                if (error.name === 'AbortError') {
+                    if (tg) tg.showAlert('❌ Превышено время ожидания. Файл слишком большой, попробуйте отправить скриншот.');
+                } else {
+                    if (tg) tg.showAlert(`❌ Ошибка: ${error.message}`);
+                }
+            } finally {
+                if (tg && tg.MainButton) {
+                    tg.MainButton.hideProgress();
+                    tg.MainButton.hide();
+                }
+            }
         });
     };
     
@@ -14553,32 +14642,70 @@ function openCommunityTaskUpload(subtaskIdx) {
     fileInput.click();
 }
 
+// ==========================================
+// ОТПРАВКА ФОТО В ИСПЫТАНИЕ СООБЩЕСТВА (С СЖАТИЕМ)
+// ==========================================
+
 async function submitCommunityTaskPhoto() {
+    console.log('=== SUBMIT COMMUNITY TASK PHOTO ===');
+    console.log('currentCommunitySubtask:', currentCommunitySubtask);
+    console.log('tempPhotos length:', tempPhotos?.length);
+    
     if (!tempPhotos || tempPhotos.length === 0) {
         if (tg) tg.showAlert('❌ Выберите хотя бы одно фото');
         return;
     }
     
+    // Логируем размеры оригиналов
+    tempPhotos.forEach((file, i) => {
+        console.log(`📸 Оригинал ${i + 1}: ${Math.round(file.size / 1024)}KB, тип: ${file.type}`);
+    });
+    
     if (isUploading) return;
     isUploading = true;
     
+    // Показываем индикатор загрузки
+    if (tg && tg.MainButton) {
+        tg.MainButton.setText("⏳ ОТПРАВКА ФОТО...").show();
+        tg.MainButton.showProgress();
+    }
+    
     try {
+        // ✅ СЖИМАЕМ ФОТО ПЕРЕД ОТПРАВКОЙ
+        const compressedPhotos = await compressImages(tempPhotos, 1200, 0.7);
+        
         const formData = new FormData();
         formData.append('user', userId.toString());
         formData.append('subtask', currentCommunitySubtask?.toString() || '0');
         
-        for (let i = 0; i < tempPhotos.length; i++) {
-            formData.append('photos', tempPhotos[i]);
+        for (let i = 0; i < compressedPhotos.length; i++) {
+            formData.append('photos', compressedPhotos[i]);
         }
+        
+        // ✅ УВЕЛИЧЕННЫЙ ТАЙМАУТ (60 секунд)
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 60000);
+        
+        console.log('📤 Отправка запроса на /api/check_community_task');
+        const startTime = Date.now();
         
         const response = await fetch(`${SERVER_URL}/api/check_community_task`, {
             method: 'POST',
-            body: formData
+            body: formData,
+            signal: controller.signal
         });
         
-        if (!response.ok) throw new Error(`Ошибка сервера: ${response.status}`);
+        clearTimeout(timeoutId);
+        const endTime = Date.now();
+        
+        console.log(`📥 Статус ответа: ${response.status} (${endTime - startTime}ms)`);
+        
+        if (!response.ok) {
+            throw new Error(`Ошибка сервера: ${response.status}`);
+        }
         
         const result = await response.json();
+        console.log('📥 Результат:', result);
         
         if (result && result.status === 'ok') {
             if (tg) {
@@ -14591,11 +14718,80 @@ async function submitCommunityTaskPhoto() {
         }
     } catch (error) {
         console.error('❌ Ошибка:', error);
-        if (tg) tg.showAlert(`❌ Ошибка: ${error.message}`);
+        if (error.name === 'AbortError') {
+            if (tg) tg.showAlert('❌ Превышено время ожидания. Файлы слишком большие, попробуйте отправить меньше фото или скриншоты.');
+        } else {
+            if (tg) tg.showAlert(`❌ Ошибка: ${error.message}`);
+        }
     } finally {
         isUploading = false;
         tempPhotos = [];
+        if (tg && tg.MainButton) {
+            tg.MainButton.hideProgress();
+            tg.MainButton.hide();
+        }
     }
+}
+        // ==========================================
+// СЖАТИЕ ИЗОБРАЖЕНИЙ ПЕРЕД ОТПРАВКОЙ
+// ==========================================
+
+async function compressImage(file, maxWidth = 1200, quality = 0.7) {
+    return new Promise((resolve, reject) => {
+        // Если файл меньше 1MB — не сжимаем
+        if (file.size < 1024 * 1024) {
+            resolve(file);
+            return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+                
+                if (width > maxWidth) {
+                    height = (height * maxWidth) / width;
+                    width = maxWidth;
+                }
+                
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                
+                canvas.toBlob((blob) => {
+                    const compressedFile = new File([blob], file.name.replace(/\.[^/.]+$/, '.jpg'), { 
+                        type: 'image/jpeg',
+                        lastModified: Date.now()
+                    });
+                    console.log(`📦 Сжатие: ${Math.round(file.size / 1024)}KB → ${Math.round(compressedFile.size / 1024)}KB`);
+                    resolve(compressedFile);
+                }, 'image/jpeg', quality);
+            };
+            img.onerror = reject;
+            img.src = e.target.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+
+// Сжатие нескольких файлов
+async function compressImages(files, maxWidth = 1200, quality = 0.7) {
+    const compressed = [];
+    for (const file of files) {
+        try {
+            const compressedFile = await compressImage(file, maxWidth, quality);
+            compressed.push(compressedFile);
+        } catch (error) {
+            console.error('Ошибка сжатия файла:', error);
+            compressed.push(file);
+        }
+    }
+    return compressed;
 }
      function calculateUserXP() {
     return userProgress.xp || 0;
@@ -31269,7 +31465,63 @@ function addStatsButton() {
         }
     }
 }
-
+function renderStars(difficulty) {
+    let html = '';
+    for (let i = 0; i < difficulty; i++) {
+        html += '<i class="fas fa-star" style="color: #ffd700; font-size: 12px;"></i>';
+    }
+    for (let i = difficulty; i < 4; i++) {
+        html += '<i class="far fa-star" style="color: #ffd700; font-size: 12px;"></i>';
+    }
+    return html;
+}
+       
+function filterTasksByDifficulty(difficulty) {
+    console.log('🔍 Фильтр по звёздам, выбрано:', difficulty);
+    
+    currentDifficultyFilter = difficulty;
+    
+    const cards = document.querySelectorAll('#branchTasksList .branch-task-card');
+    console.log('📊 Найдено карточек:', cards.length);
+    
+    let visibleCount = 0;
+    
+    cards.forEach(card => {
+        let starsSpan = card.querySelector('.stars');
+        if (!starsSpan) {
+            starsSpan = card.querySelector('.branch-header .stars');
+        }
+        if (!starsSpan) {
+            card.style.display = '';
+            return;
+        }
+        
+        const cardDifficulty = parseInt(starsSpan.getAttribute('data-difficulty'));
+        
+        if (difficulty === 'all' || cardDifficulty === difficulty) {
+            card.style.display = '';
+            visibleCount++;
+        } else {
+            card.style.display = 'none';
+        }
+    });
+    
+    console.log(`✅ Показано ${visibleCount} карточек`);
+    
+    // Обновляем активное состояние кнопок
+    document.querySelectorAll('.difficulty-filters .filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.getAttribute('data-difficulty') == difficulty || 
+            (difficulty === 'all' && btn.getAttribute('data-difficulty') === 'all')) {
+            btn.classList.add('active');
+        }
+    });
+    
+    // ✅ ПЕРЕДАЁМ ФИЛЬТР СЛОЖНОСТИ В applyAllFilters
+    if (typeof applyAllFilters === 'function') {
+        applyAllFilters(currentDifficultyFilter);
+    }
+}
 </script>
     
 <!-- Модалка поиска пользователей -->
