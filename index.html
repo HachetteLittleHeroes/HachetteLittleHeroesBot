@@ -6252,45 +6252,12 @@ body:not([data-theme]) .modal-content,
     color: var(--accent);
     font-weight: 600;
 }
-        /* Чтобы выпадающие списки были поверх всего */
-#categoryDropdown,
-#difficultyDropdown {
-    position: fixed !important;
-    z-index: 99999 !important;
-    background: var(--bg-secondary) !important;
-    border: 1px solid var(--border-color) !important;
-    border-radius: 12px !important;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
-    max-height: 300px;
-    overflow-y: auto;
-}
-
-/* Чтобы контейнер не обрезал дропдауны */
-.tasks-content {
-    overflow: visible !important;
-}
-
-.tasks-section {
-    overflow: visible !important;
-}
-
-/* Стили для элементов списка */
-.category-option,
-.difficulty-option {
-    transition: background 0.2s;
-}
-
-.category-option:hover,
-.difficulty-option:hover {
-    background: rgba(255, 149, 0, 0.1);
-}
-        /* Минимальная высота для контейнера с заданиями, чтобы было место для дропдаунов */
+  /* Минимальная высота для контейнера с заданиями */
 #tasksContent {
     min-height: 300px;
-    overflow: visible !important;
 }
 
-/* Чтобы дропдауны были поверх всего */
+/* Выпадающие списки — position fixed, не зависят от родителя */
 #categoryDropdown,
 #difficultyDropdown {
     position: fixed !important;
@@ -6303,8 +6270,16 @@ body:not([data-theme]) .modal-content,
     overflow-y: auto;
 }
 
-.tasks-section {
-    overflow: visible !important;
+/* Стили для элементов списка */
+.category-option,
+.difficulty-option {
+    transition: background 0.2s;
+    cursor: pointer;
+}
+
+.category-option:hover,
+.difficulty-option:hover {
+    background: rgba(255, 149, 0, 0.1);
 }
     </style>
 </head>
