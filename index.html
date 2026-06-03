@@ -8036,6 +8036,13 @@ function renderStatusFilters() {
         }
     }
     
+    // ✅ Устанавливаем минимальную высоту, чтобы дропдауны не обрезались
+    const tasksContent = document.getElementById('tasksContent');
+    if (tasksContent) {
+        tasksContent.style.minHeight = '350px';
+        tasksContent.style.overflow = 'visible';
+    }
+    
     container.innerHTML = `
         <div style="display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; white-space: nowrap; padding: 0 15px;">
             <button class="filter-btn active" onclick="filterBranchTasks('all')" id="filterAll">Все</button>
