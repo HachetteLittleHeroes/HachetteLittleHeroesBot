@@ -14443,11 +14443,19 @@ function renderCommunityEvent() {
     const userPoints = data.user_points || 0;
     const userLeague = data.user_league;
     const isDonater = data.is_donater;
-    const targetPoints = data.target_points || 500;
+    const targetPoints = data.target_points || 2500;
     const tasks = data.tasks || [];
     const tasksProgress = data.tasks_progress || {};
-    const levelProgressData = tasksProgress["1"] || {};
     const rewards = data.rewards || {};
+    
+    // ✅ НОВЫЕ ДАННЫЕ О РАУНДАХ
+    const currentRound = data.current_round || 1;
+    const currentRoundName = data.current_round_name || "🏁 Стартовый раунд";
+    const roundPoints = data.round_points || 0;
+    const pointsToNextRound = data.points_to_next_round || 500;
+    const roundProgress = data.round_progress || 0;
+    const maxRound = data.max_round || 5;
+    
     const isCompleted = totalPoints >= targetPoints;
     
     const leagueNames = { 'bronze': 'Бронзовая', 'silver': 'Серебряная', 'gold': 'Золотая', 'platinum': 'Алмазная' };
@@ -14462,45 +14470,66 @@ function renderCommunityEvent() {
             <div class="level-card">
     `;
     
+    // ✅ НОВЫЙ БЛОК С РАУНДАМИ
+    html += `
+        <div style="text-align: center; margin-bottom: 15px;">
+            <div style="font-size: 14px; font-weight: 600; color: var(--accent);">${currentRoundName}</div>
+            <div style="font-size: 12px; color: var(--text-gray); margin-bottom: 8px;">Раунд ${currentRound} из ${maxRound}</div>
+            <div class="progress-bar-container" style="margin: 8px 0;">
+                <div class="progress-bar-fill" style="width: ${roundProgress}%;"></div>
+            </div>
+            <div style="font-size: 12px; display: flex; justify-content: center; gap: 20px;">
+                <span>📊 ${roundPoints} / 500 очков</span>
+                <span>🎯 До следующего раунда: ${pointsToNextRound}</span>
+            </div>
+        </div>
+    `;
+    
+    // Задания текущего раунда
     html += `<div style="margin-bottom: 15px;">`;
-    tasks.forEach((task, idx) => {
+    
+    // Показываем только задания текущего раунда
+    const currentRoundTasks = tasks.filter(t => t.round === currentRound || (!t.round && currentRound === 1));
+    
+    currentRoundTasks.forEach((task, idx) => {
         const taskPoints = task.points || 50;
-        const currentTaskPoints = levelProgressData[idx] || 0;
+        const currentTaskPoints = (tasksProgress[currentRound] && tasksProgress[currentRound][idx]) || 0;
         const isTaskDone = currentTaskPoints >= taskPoints;
         const taskPercent = Math.min(100, Math.round((currentTaskPoints / taskPoints) * 100));
         
-
-html += `
-    <div style="margin-bottom: 12px; padding: 12px; background: var(--bg); border-radius: 12px; border: 1px solid var(--border-color);">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-            <span style="font-weight: 700; font-size: 15px;">${task.name}</span>
-            <span style="font-size: 12px; color: var(--accent); font-weight: 600;">${currentTaskPoints}/${taskPoints}</span>
-        </div>
-        ${task.desc ? `<div style="font-size: 12px; color: var(--text-gray); margin-bottom: 6px;">${task.desc}</div>` : ''}
-        <div class="progress-bar-container" style="height: 6px;">
-            <div class="progress-bar-fill" style="width: ${taskPercent}%;"></div>
-        </div>
-        ${isTaskDone ? `
-            <div style="text-align: center; color: var(--status-green); font-size: 12px; margin-top: 5px;">
-                <i class="fas fa-check-circle"></i> Выполнено!
+        html += `
+            <div style="margin-bottom: 12px; padding: 12px; background: var(--bg); border-radius: 12px; border: 1px solid var(--border-color);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                    <span style="font-weight: 700; font-size: 15px;">${task.name}</span>
+                    <span style="font-size: 12px; color: var(--accent); font-weight: 600;">${currentTaskPoints}/${taskPoints}</span>
+                </div>
+                ${task.desc ? `<div style="font-size: 12px; color: var(--text-gray); margin-bottom: 6px;">${task.desc}</div>` : ''}
+                <div class="progress-bar-container" style="height: 6px;">
+                    <div class="progress-bar-fill" style="width: ${taskPercent}%;"></div>
+                </div>
+                ${!isTaskDone ? `
+                    <button class="task-submit-btn" style="padding: 8px; font-size: 12px; margin-top: 8px;" onclick="openCommunityTaskUpload(${idx})">
+                        <i class="fas fa-camera"></i> Отправить фото
+                    </button>
+                ` : `
+                    <div style="text-align: center; color: var(--status-green); font-size: 12px; margin-top: 5px;">
+                        <i class="fas fa-check-circle"></i> Выполнено!
+                    </div>
+                `}
             </div>
-        ` : `
-            <button class="task-submit-btn" style="padding: 8px; font-size: 12px; margin-top: 8px;" onclick="openCommunityTaskUpload(${idx})">
-                <i class="fas fa-camera"></i> Отправить фото
-            </button>
-        `}
-    </div>
-`;
+        `;
     });
+    
     html += `</div>`;
     
-    const levelProgress = Math.min(100, Math.round((totalPoints / targetPoints) * 100));
+    // Общий прогресс
+    const totalProgress = Math.min(100, Math.round((totalPoints / targetPoints) * 100));
     
     html += `
                 <div style="font-size: 32px; font-weight: 900; color: var(--accent); text-align: center;">${totalPoints}</div>
                 <div style="text-align: center; font-size: 14px; color: var(--text-gray); margin-bottom: 10px;">из ${targetPoints} очков</div>
                 <div class="progress-bar-container">
-                    <div class="progress-bar-fill" style="width: ${levelProgress}%;"></div>
+                    <div class="progress-bar-fill" style="width: ${totalProgress}%;"></div>
                 </div>
                 <div style="text-align: center; font-size: 13px; color: var(--text-gray); margin-top: 8px;">
                     ${isCompleted ? '🎉 Цель достигнута!' : `Осталось: ${targetPoints - totalPoints} очков`}
