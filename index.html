@@ -8038,13 +8038,7 @@ function applyAllFilters() {
         const branchKey = card.getAttribute('data-branch-key');
         const isCompleted = card.classList.contains('completed');
         
-        // 1. Фильтр по категориям
-        let showByCategory = currentCategoryFilter === 'all';
-        if (!showByCategory && STATUS_CATEGORIES[currentCategoryFilter]) {
-            showByCategory = STATUS_CATEGORIES[currentCategoryFilter].keys.includes(branchKey);
-        }
-        
-        // 2. Фильтр по статусу (начатые/не начатые)
+        // 1. Фильтр по статусу (Все, Начатые, Не начатые)
         let showByStatus = true;
         if (currentStatusFilter === 'started') {
             const progressBar = card.querySelector('.progress-bar-fill');
@@ -8058,20 +8052,24 @@ function applyAllFilters() {
             showByStatus = !isCompleted && !hasProgress && currentLevel === 0;
         }
         
-        // 3. ✅ НОВЫЙ ФИЛЬТР ПО СЛОЖНОСТИ (звёзды)
-        let showByDifficulty = true;
-        if (currentDifficultyFilter !== 'all') {
+        // 2. Фильтр по категории (используем currentCategoryFilter)
+        let showByCategory = currentCategoryFilter === 'all';
+        if (!showByCategory && STATUS_CATEGORIES[currentCategoryFilter]) {
+            showByCategory = STATUS_CATEGORIES[currentCategoryFilter].keys.includes(branchKey);
+        }
+        
+        // 3. Фильтр по сложности (используем currentDifficultyFilter)
+        let showByDifficulty = currentDifficultyFilter === 'all';
+        if (!showByDifficulty) {
             const starsSpan = card.querySelector('.stars');
             if (starsSpan) {
                 const cardDifficulty = parseInt(starsSpan.getAttribute('data-difficulty'));
-                if (cardDifficulty !== currentDifficultyFilter) {
-                    showByDifficulty = false;
-                }
+                showByDifficulty = cardDifficulty === currentDifficultyFilter;
             }
         }
         
         // Применяем все фильтры
-        card.style.display = (showByCategory && showByStatus && showByDifficulty) ? '' : 'none';
+        card.style.display = (showByStatus && showByCategory && showByDifficulty) ? '' : 'none';
     });
 }
 
