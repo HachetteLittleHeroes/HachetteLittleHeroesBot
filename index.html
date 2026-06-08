@@ -14573,30 +14573,30 @@ function renderCommunityEvent() {
         </div>
     `;
     
-    // ========== БЛОК: АЛМАЗНАЯ ЛИГА (ВИДИМА ДЛЯ ВСЕХ) ==========
-    let platinumBlockHtml = `
-        <div style="background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%); border-radius: 16px; padding: 12px 15px; margin-bottom: 15px; text-align: center;">
-            <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 5px;">
-                <span style="font-size: 20px;">💎</span>
-                <span style="font-weight: 700; font-size: 15px; color: #ffd700;">Алмазная лига</span>
-            </div>
-            <div style="font-size: 12px; color: #cbd5e0; margin: 5px 0;">🎁 Награда: Набор маркеров InfiArt 288 шт.</div>
+ // ========== БЛОК: АЛМАЗНАЯ ЛИГА (ГАРМОНИЧНЫЙ) ==========
+let platinumBlockHtml = `
+    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 16px; padding: 12px 15px; margin-bottom: 15px; text-align: center;">
+        <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 5px;">
+            <span style="font-size: 20px;">💎</span>
+            <span style="font-weight: 700; font-size: 15px; color: var(--accent);">Алмазная лига</span>
+        </div>
+        <div style="font-size: 12px; color: var(--text-gray); margin: 5px 0;">🎁 Награда: Набор маркеров InfiArt 288 шт.</div>
+`;
+
+if (!isDonater) {
+    platinumBlockHtml += `
+        <div style="font-size: 11px; color: var(--text-gray); margin-top: 6px;">✨ Чтобы попасть в Алмазную лигу, необходимо стать спонсором проекта</div>
+        <button onclick="openSupportDialog()" style="background: var(--accent); color: white; border: none; padding: 6px 14px; border-radius: 20px; font-weight: 600; font-size: 12px; margin-top: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+            <i class="fas fa-heart"></i> Поддержать
+        </button>
     `;
-    
-    if (!isDonater) {
-        platinumBlockHtml += `
-            <div style="font-size: 11px; color: #a0aec0; margin-top: 6px;">✨ Чтобы попасть в Алмазную лигу, необходимо стать спонсором проекта</div>
-            <button onclick="openSupportDialog()" style="background: #ff9500; color: white; border: none; padding: 6px 14px; border-radius: 20px; font-weight: 600; font-size: 12px; margin-top: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
-                <i class="fas fa-heart"></i> Поддержать
-            </button>
-        `;
-    } else {
-        platinumBlockHtml += `
-            <div style="font-size: 11px; color: #ffd700; margin-top: 6px;">✅ Спасибо за поддержку! Алмазная лига доступна</div>
-        `;
-    }
-    
-    platinumBlockHtml += `</div>`;
+} else {
+    platinumBlockHtml += `
+        <div style="font-size: 11px; color: var(--status-green); margin-top: 6px;">✅ Спасибо за поддержку! Алмазная лига доступна</div>
+    `;
+}
+
+platinumBlockHtml += `</div>`;
     
     // Добавляем блок с алмазной лигой
     html += platinumBlockHtml;
