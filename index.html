@@ -15106,13 +15106,14 @@ function renderCommunityEvent() {
     const userPoints = data.user_points || 0;
     const userLeague = data.user_league;
     const isDonater = data.is_donater || false;
-    const targetPoints = data.target_points || 2500;
+    const targetPoints = data.target_points || 2000;
     const tasks = data.tasks || [];
     const tasksProgress = data.tasks_progress || {};
     const rewards = data.rewards || {};
     
     // Данные о раундах
     const currentRound = data.current_round || 1;
+    const roundKey = String(currentRound);  // ✅ ПРИВОДИМ К СТРОКЕ
     const currentRoundName = data.current_round_name || "🏁 Стартовый раунд";
     const roundPoints = data.round_points || 0;
     const pointsToNextRound = data.points_to_next_round || 500;
@@ -15155,7 +15156,8 @@ function renderCommunityEvent() {
     
     currentRoundTasks.forEach((task, idx) => {
         const taskPoints = task.points || 50;
-        const currentTaskPoints = (tasksProgress[currentRound] && tasksProgress[currentRound][idx]) || 0;
+        // ✅ ИСПОЛЬЗУЕМ roundKey (строка) вместо currentRound (число)
+        const currentTaskPoints = (tasksProgress[roundKey] && tasksProgress[roundKey][idx]) || 0;
         const isTaskDone = currentTaskPoints >= taskPoints;
         const taskPercent = Math.min(100, Math.round((currentTaskPoints / taskPoints) * 100));
         
@@ -15212,35 +15214,34 @@ function renderCommunityEvent() {
         </div>
     `;
     
- // ========== БЛОК: АЛМАЗНАЯ ЛИГА (ГАРМОНИЧНЫЙ) ==========
-let platinumBlockHtml = `
-    <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 16px; padding: 12px 15px; margin-bottom: 15px; text-align: center;">
-        <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 5px;">
-            <span style="font-size: 20px;">💎</span>
-            <span style="font-weight: 700; font-size: 15px; color: var(--accent);">Алмазная лига</span>
-        </div>
-        <div style="font-size: 12px; color: var(--text-gray); margin: 5px 0;">🎁 Награда: Набор маркеров InfiArt 288 шт.</div>
-`;
-
-if (!isDonater) {
-    platinumBlockHtml += `
-        <div style="font-size: 11px; color: var(--text-gray); margin-top: 6px;">✨ Чтобы попасть в Алмазную лигу, необходимо стать спонсором проекта</div>
-        <button onclick="openSupportDialog()" style="background: var(--accent); color: white; border: none; padding: 6px 14px; border-radius: 20px; font-weight: 600; font-size: 12px; margin-top: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
-            <i class="fas fa-heart"></i> Поддержать
-        </button>
+    // ========== БЛОК: АЛМАЗНАЯ ЛИГА ==========
+    let platinumBlockHtml = `
+        <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 16px; padding: 12px 15px; margin-bottom: 15px; text-align: center;">
+            <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 5px;">
+                <span style="font-size: 20px;">💎</span>
+                <span style="font-weight: 700; font-size: 15px; color: var(--accent);">Алмазная лига</span>
+            </div>
+            <div style="font-size: 12px; color: var(--text-gray); margin: 5px 0;">🎁 Награда: Набор маркеров InfiArt 288 шт.</div>
     `;
-} else {
-    platinumBlockHtml += `
-        <div style="font-size: 11px; color: var(--status-green); margin-top: 6px;">✅ Спасибо за поддержку! Алмазная лига доступна</div>
-    `;
-}
 
-platinumBlockHtml += `</div>`;
+    if (!isDonater) {
+        platinumBlockHtml += `
+            <div style="font-size: 11px; color: var(--text-gray); margin-top: 6px;">✨ Чтобы попасть в Алмазную лигу, необходимо стать спонсором проекта</div>
+            <button onclick="openSupportDialog()" style="background: var(--accent); color: white; border: none; padding: 6px 14px; border-radius: 20px; font-weight: 600; font-size: 12px; margin-top: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                <i class="fas fa-heart"></i> Поддержать
+            </button>
+        `;
+    } else {
+        platinumBlockHtml += `
+            <div style="font-size: 11px; color: var(--status-green); margin-top: 6px;">✅ Спасибо за поддержку! Алмазная лига доступна</div>
+        `;
+    }
+
+    platinumBlockHtml += `</div>`;
     
-    // Добавляем блок с алмазной лигой
     html += platinumBlockHtml;
     
-    // Кнопки лиг (Алмазная показывается всем, но счётчик только для донатеров)
+    // Кнопки лиг
     html += `
         <div style="display: flex; gap: 10px; margin-bottom: 10px; overflow-x: auto;">
             <button class="filter-btn ${userLeague === 'bronze' ? 'active' : ''}" onclick="showLeagueLeaderboard('bronze')">
