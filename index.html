@@ -9237,7 +9237,21 @@ async function saveAvatarToServer(avatarUrl) {
     
     list.innerHTML = '';
     
-    const allStatuses = ['Без статуса', ...Object.values(BRANCH_REWARDS), 'Феечка'];
+    // ✅ Добавляем все статусы (старые + новые из магазина)
+    const allStatuses = [
+        'Без статуса', 
+        ...Object.values(BRANCH_REWARDS),
+        'Феечка',
+        // ✅ Новые уникальные статусы
+        '🌈 Мастер радуги',
+        '🌙 Ночной страж',
+        '✨ Ткач звёздной пыли',
+        '🔥 Вечное пламя',
+        '💎 Хрустальный мечтатель',
+        '🌌 Путешественник пустоты',
+        '🎨 Космический художник'
+    ];
+    
     console.log('allStatuses:', allStatuses);
     
     allStatuses.forEach(status => {
@@ -9267,7 +9281,13 @@ async function saveAvatarToServer(avatarUrl) {
                 rightSpan.appendChild(btn);
             }
         } else {
-            rightSpan.innerHTML = `<span style="color:var(--text-gray); font-size:12px; white-space:nowrap;"><i class="fas fa-lock"></i> Выполните все уровни ветки</span>`;
+            // Для статусов из магазина показываем цену
+            const shopStatus = STATUS_SHOP.find(s => s.name === status);
+            if (shopStatus) {
+                rightSpan.innerHTML = `<span style="color:var(--text-gray); font-size:12px;"><i class="fas fa-shopping-cart"></i> Купить в магазине за ${shopStatus.price} 🪙</span>`;
+            } else {
+                rightSpan.innerHTML = `<span style="color:var(--text-gray); font-size:12px;"><i class="fas fa-lock"></i> Выполните все уровни ветки</span>`;
+            }
         }
         
         div.appendChild(leftSpan);
