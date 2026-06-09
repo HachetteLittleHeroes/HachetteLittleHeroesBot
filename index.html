@@ -6425,16 +6425,15 @@ body:not([data-theme]) .modal-content,
         <button class="upload-photo-btn" onclick="document.getElementById('customAvatarInput').click()"><i class="fas fa-camera"></i> Загрузить фото</button>
     </div>
 
-    <!-- Счетчик пропусков и статус буста -->
-    <div style="display: flex; gap: 10px; margin: 10px 15px;">
-        <div class="skip-counter" style="background: var(--bg-header); padding: 8px 15px; border-radius: 20px; display: flex; align-items: center; gap: 8px;">
-            <i class="fas fa-skip-forward" style="color: var(--accent);"></i>
-            <span>Пропусков:</span>
-            <span id="skipCountDisplay" style="font-weight: 700; color: var(--accent);">0</span>
-        </div>
-        <div id="boostStatusContainer" style="flex: 1;"></div>
+  <!-- Счетчик скипов и статус буста -->
+<div style="display: flex; gap: 10px; margin: 10px 15px;">
+    <div class="skip-counter" style="background: var(--bg-header); border-radius: 20px; padding: 8px 15px; display: flex; align-items: center; gap: 8px; border: 1px solid var(--border-color);">
+        <i class="fas fa-skip-forward" style="color: var(--accent);"></i>
+        <span>Скип:</span>
+        <span id="skipCountDisplay" style="font-weight: 700; color: var(--accent);">0</span>
     </div>
-
+    <div id="boostStatusContainer" style="flex: 1;"></div>
+</div>
     <div class="balance-card">
         <p class="balance-label">ВАШ БАЛАНС</p>
         <div class="balance-main"><span id="userBalance">0</span> <i class="fas fa-book-open gold-book"></i></div>
@@ -8319,6 +8318,9 @@ async function addXPWithBoost(amount, reason) {
     let finalAmount = amount;
     let boostUsed = false;
     
+    console.log(`📊 addXPWithBoost: исходный XP = ${amount}, reason = ${reason}`);
+    console.log(`📊 Текущий буст: active=${userBoosts.active}, remaining=${userBoosts.remainingWorks}`);
+    
     // Проверяем активный буст
     if (userBoosts && userBoosts.active && userBoosts.remainingWorks > 0) {
         finalAmount = amount * 2;  // x2 буст
@@ -8327,6 +8329,7 @@ async function addXPWithBoost(amount, reason) {
         
         if (userBoosts.remainingWorks === 0) {
             userBoosts.active = false;
+            console.log('🔥 Буст закончился!');
         }
         
         localStorage.setItem(`user_boosts_${userId}`, JSON.stringify(userBoosts));
@@ -8335,8 +8338,13 @@ async function addXPWithBoost(amount, reason) {
         if (typeof updateBoostDisplay === 'function') {
             updateBoostDisplay();
         }
+        if (typeof renderBoostShop === 'function' && currentShopTab === 'boosts') {
+            renderBoostShop();
+        }
         
         console.log(`🔥 Буст применён! ${amount} XP → ${finalAmount} XP (осталось: ${userBoosts.remainingWorks} работ)`);
+    } else {
+        console.log(`❌ Буст не активен, XP остаётся ${finalAmount}`);
     }
     
     try {
@@ -8356,12 +8364,16 @@ async function addXPWithBoost(amount, reason) {
             if (typeof renderUserLevel === 'function') {
                 renderUserLevel();
             }
+            console.log(`✅ XP добавлено: ${finalAmount}`);
             return finalAmount;
+        } else {
+            console.error('Ошибка сервера:', result);
+            return amount;
         }
     } catch (error) {
         console.error('Ошибка добавления XP:', error);
+        return amount;
     }
-    return amount;
 }
 // Функция пропуска задания
 async function addProgressWithoutPhoto(branchKey, levelIndex) {
@@ -8426,9 +8438,9 @@ function renderBoostStatus() {
     
     if (userBoosts && userBoosts.active && userBoosts.remainingWorks > 0) {
         container.innerHTML = `
-            <div style="background: linear-gradient(135deg, rgba(255,149,0,0.2), rgba(255,149,0,0.05)); border-radius: 20px; padding: 8px 15px; display: flex; align-items: center; gap: 8px;">
-                <i class="fas fa-fire" style="color: var(--accent);"></i>
-                <span style="color: var(--accent); font-weight: 600;">🔥 x2 буст активен!</span>
+            <div style="background: linear-gradient(135deg, rgba(255,149,0,0.2), rgba(255,149,0,0.05)); border-radius: 20px; padding: 8px 15px; display: flex; align-items: center; gap: 8px; border: 1px solid rgba(255,149,0,0.3);">
+                <i class="fas fa-rocket" style="color: var(--accent);"></i>
+                <span style="color: var(--accent); font-weight: 600;">x2 буст активен!</span>
                 <span style="color: var(--text-gray);">Осталось: ${userBoosts.remainingWorks} работ</span>
             </div>
         `;
@@ -15639,15 +15651,17 @@ function renderStatusShop() {
 function renderSkipShop() {
     const container = document.getElementById('skipShopGrid');
     if (!container) return;
+    
     container.innerHTML = '';
+    
     SKIP_SHOP.forEach(s => {
         const canBuy = user.balance >= s.price;
         container.innerHTML += `
             <div class="shop-item-card">
-                <div class="shop-item-title">${s.name}</div>
+                <div class="shop-item-title">🎫 ${s.name}</div>
                 <div class="shop-item-desc">${s.desc}</div>
                 <div class="shop-item-price">${s.price} <i class="fas fa-book-open gold-book"></i></div>
-                <button class="shop-item-btn" onclick="buySkip(${s.amount}, ${s.price})" ${!canBuy ? 'disabled' : ''}>${canBuy ? '🎫 Купить' : '❌ Недостаточно'}</button>
+                <button class="shop-item-btn" onclick="buySkip(${s.amount}, ${s.price})" ${!canBuy ? 'disabled' : ''}>${canBuy ? '🎫 Купить скип' : '❌ Недостаточно'}</button>
             </div>
         `;
     });
