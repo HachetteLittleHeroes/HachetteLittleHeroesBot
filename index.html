@@ -7432,12 +7432,16 @@ body:not([data-theme]) .modal-content,
 
     <script>
          let currentDifficultyFilter = 'all';
+       
         // ==========================================
         // КОНФИГУРАЦИЯ И ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ
         // ==========================================
         
         const SERVER_URL = 'https://bot-hachettelittleheroes.amvera.io';
         const MARKER_PRICE = 75;
+        // Хранилище
+let userBoosts = { active: false, remainingWorks: 0 };
+let userSkips = 0;
         // ==========================================
 // СЛОЖНОСТЬ ЗАДАНИЙ (звёзды)
 // ==========================================
@@ -8312,29 +8316,34 @@ function applyAllFilters() {
 
 // Функция для добавления XP с учётом буста
 async function addXPWithBoost(amount, reason) {
-    // Применяем буст если активен
+    // Проверяем, есть ли активный буст
     let finalAmount = amount;
+    let boostUsed = false;
     
     if (userBoosts.active && userBoosts.remainingWorks > 0) {
         finalAmount = amount * 2;
         userBoosts.remainingWorks--;
+        boostUsed = true;
         
         if (userBoosts.remainingWorks === 0) {
             userBoosts.active = false;
             console.log('🔥 Буст закончился!');
         }
         
+        // Сохраняем обновлённый буст
         localStorage.setItem(`user_boosts_${userId}`, JSON.stringify(userBoosts));
         
-        // Обновляем отображение буста
-        if (typeof renderBoostStatus === 'function') {
-            renderBoostStatus();
+        // Обновляем отображение буста в профиле
+        if (typeof updateBoostDisplay === 'function') {
+            updateBoostDisplay();
         }
+        
+        // Обновляем отображение в магазине если открыт
         if (typeof renderBoostShop === 'function' && currentShopTab === 'boosts') {
             renderBoostShop();
         }
         
-        console.log(`🔥 Буст активирован! ${amount} XP → ${finalAmount} XP`);
+        console.log(`🔥 Буст применён! ${amount} XP → ${finalAmount} XP (осталось: ${userBoosts.remainingWorks} работ)`);
     }
     
     try {
@@ -8344,7 +8353,7 @@ async function addXPWithBoost(amount, reason) {
             body: JSON.stringify({
                 user_id: userId,
                 amount: finalAmount,
-                reason: reason
+                reason: reason + (boostUsed ? ' (x2 буст)' : '')
             })
         });
         
@@ -8356,11 +8365,14 @@ async function addXPWithBoost(amount, reason) {
                 renderUserLevel();
             }
             return finalAmount;
+        } else {
+            console.error('Ошибка сервера:', result);
+            return amount;
         }
     } catch (error) {
         console.error('Ошибка добавления XP:', error);
+        return amount;
     }
-    return amount;
 }
 
 // Функция пропуска задания
@@ -15558,6 +15570,7 @@ async function buyStatus(id, name, price) {
     } catch(e) { tg.showAlert('❌ Ошибка'); }
 }
 
+// Покупка пропуска
 async function buySkip(amount, price) {
     if (user.balance < price) {
         alert(`❌ Недостаточно ашетиков! Нужно ${price}`);
@@ -15573,20 +15586,119 @@ async function buySkip(amount, price) {
         });
         let res = await r.json();
         if (res.status === 'ok') {
-            let skips = parseInt(localStorage.getItem(`user_skips_${userId}`) || '0');
-            skips += amount;
-            localStorage.setItem(`user_skips_${userId}`, skips);
+            userSkips += amount;
+            saveSkipData();
+            updateSkipDisplay();
             user.balance = res.new_balance;
             saveUserData(); 
             updateUI();
-            updateSkipCounter();
-            alert(`✅ Куплено пропусков: ${amount}! Всего: ${skips}`);
+            alert(`✅ Куплено пропусков: ${amount}! Всего: ${userSkips}`);
         } else {
             alert('❌ Ошибка при покупке');
         }
     } catch(e) { 
         console.error(e);
         alert('❌ Ошибка при покупке');
+    }
+}
+
+// Покупка буста
+async function buyBoost(duration, price) {
+    if (user.balance < price) {
+        alert(`❌ Недостаточно ашетиков! Нужно ${price}`);
+        return;
+    }
+    if (!confirm(`Активировать x2 буст на ${duration} работ за ${price} ашетиков?`)) return;
+    
+    try {
+        let r = await fetch(`${SERVER_URL}/api/add_balance`, { 
+            method: 'POST', 
+            headers: { 'Content-Type': 'application/json' }, 
+            body: JSON.stringify({ user_id: userId, amount: -price, reason: `Покупка x2 буста на ${duration} работ` }) 
+        });
+        let res = await r.json();
+        if (res.status === 'ok') {
+            if (userBoosts.active) {
+                userBoosts.remainingWorks += duration;
+            } else {
+                userBoosts.active = true;
+                userBoosts.remainingWorks = duration;
+            }
+            saveBoostData();
+            updateBoostDisplay();
+            user.balance = res.new_balance;
+            saveUserData(); 
+            updateUI();
+            if (typeof renderBoostShop === 'function') renderBoostShop();
+            alert(`✅ x2 буст активирован на ${duration} работ!`);
+        } else {
+            alert('❌ Ошибка при покупке');
+        }
+    } catch(e) { 
+        console.error(e);
+        alert('❌ Ошибка при покупке');
+    }
+}
+        async function useSkipForTask(branchKey, levelIndex, subtaskIndex, currentProgress, required) {
+    // Проверка: Шок контент нельзя пропускать
+    if (branchKey === 'shock') {
+        alert('⚠️ Задания ветки "Шок контент" нельзя пропускать!');
+        return false;
+    }
+    
+    // Проверка наличия пропусков
+    if (userSkips <= 0) {
+        alert('❌ Нет пропусков! Купите в магазине.');
+        return false;
+    }
+    
+    // Проверка что задание ещё не выполнено
+    if (currentProgress >= required) {
+        alert('✅ Это задание уже выполнено!');
+        return false;
+    }
+    
+    if (!confirm(`Использовать пропуск? (1 пропуск = +1 очко). Осталось пропусков: ${userSkips}`)) {
+        return false;
+    }
+    
+    try {
+        // Отправляем запрос на добавление прогресса
+        const response = await fetch(`${SERVER_URL}/api/add_progress`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                user_id: userId,
+                branch_key: branchKey,
+                level_index: levelIndex,
+                subtask_index: subtaskIndex,
+                amount: 1
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.status === 'ok') {
+            // Списываем пропуск
+            userSkips--;
+            saveSkipData();
+            updateSkipDisplay();
+            
+            alert(`✅ Задание пропущено! +1 очко. Осталось пропусков: ${userSkips}`);
+            
+            // Обновляем прогресс
+            await refreshUserProgress();
+            renderBranchTasks();
+            
+            return true;
+        } else {
+            alert('❌ Ошибка: ' + (result.message || 'Неизвестная ошибка'));
+            return false;
+        }
+    } catch (error) {
+        console.error('Ошибка:', error);
+        alert('❌ Ошибка при пропуске задания');
+        return false;
     }
 }
 // Функция добавления кнопки пропуска в карточку задания
@@ -19829,7 +19941,45 @@ window.onload = async () => {
         });
     };
     
-      console.log('✅ APP READY');
+    // ✅ ЗАГРУЖАЕМ ДАННЫЕ О БУСТАХ И ПРОПУСКАХ
+    if (typeof loadBoostData === 'function') {
+        loadBoostData();
+    } else {
+        // Если функция не определена, загружаем напрямую
+        const savedBoosts = localStorage.getItem(`user_boosts_${userId}`);
+        if (savedBoosts) {
+            try { userBoosts = JSON.parse(savedBoosts); } catch(e) {}
+        }
+        const savedSkips = localStorage.getItem(`user_skips_${userId}`);
+        if (savedSkips) {
+            userSkips = parseInt(savedSkips) || 0;
+        }
+    }
+    
+    // ✅ ОБНОВЛЯЕМ ОТОБРАЖЕНИЕ
+    if (typeof updateSkipDisplay === 'function') {
+        updateSkipDisplay();
+    } else {
+        const skipDisplay = document.getElementById('skipCountDisplay');
+        if (skipDisplay) {
+            skipDisplay.innerText = userSkips || 0;
+        }
+    }
+    
+    if (typeof updateBoostDisplay === 'function') {
+        updateBoostDisplay();
+    } else {
+        const boostContainer = document.getElementById('boostStatusContainer');
+        if (boostContainer && userBoosts && userBoosts.active && userBoosts.remainingWorks > 0) {
+            boostContainer.innerHTML = `<div style="background: rgba(255,149,0,0.2); border-radius: 20px; padding: 8px 15px; display: flex; align-items: center; gap: 8px;">
+                <i class="fas fa-fire" style="color: var(--accent);"></i>
+                <span style="color: var(--accent); font-weight: 600;">🔥 x2 буст активен!</span>
+                <span>Осталось: ${userBoosts.remainingWorks} работ</span>
+            </div>`;
+        }
+    }
+    
+    console.log('✅ APP READY');
     
     // ✅ D&D: авто-восстановление при загрузке (только если оплачено)
     setTimeout(function() {
