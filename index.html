@@ -6425,44 +6425,57 @@ body:not([data-theme]) .modal-content,
         <button class="upload-photo-btn" onclick="document.getElementById('customAvatarInput').click()"><i class="fas fa-camera"></i> Загрузить фото</button>
     </div>
 
-<div class="balance-card">
-    <p class="balance-label">ВАШ БАЛАНС</p>
-    <div class="balance-main"><span id="userBalance">0</span> <i class="fas fa-book-open gold-book"></i></div>
-    <div class="balance-controls">
-        <button class="balance-btn" onclick="toggleSection('rewards-section')">Потратить ашетики 🏆</button>
+    <!-- Счетчик пропусков и статус буста -->
+    <div style="display: flex; gap: 10px; margin: 10px 15px;">
+        <div class="skip-counter" style="background: var(--bg-header); padding: 8px 15px; border-radius: 20px; display: flex; align-items: center; gap: 8px;">
+            <i class="fas fa-skip-forward" style="color: var(--accent);"></i>
+            <span>Пропусков:</span>
+            <span id="skipCountDisplay" style="font-weight: 700; color: var(--accent);">0</span>
+        </div>
+        <div id="boostStatusContainer" style="flex: 1;"></div>
     </div>
-</div>
 
-<div id="rewards-section" class="rewards-section">
-    <h3>💰 Магазин</h3>
-    
-    <!-- Вкладки -->
-    <div style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color);">
-        <button class="shop-tab active" data-tab="statuses" onclick="switchShopTab('statuses')">
-            <i class="fas fa-crown"></i> Статусы
-        </button>
-        <button class="shop-tab" data-tab="skips" onclick="switchShopTab('skips')">
-            <i class="fas fa-skip-forward"></i> Пропуски
-        </button>
-        <button class="shop-tab" data-tab="boosts" onclick="switchShopTab('boosts')">
-            <i class="fas fa-rocket"></i> Бусты XP
-        </button>
+    <div class="balance-card">
+        <p class="balance-label">ВАШ БАЛАНС</p>
+        <div class="balance-main"><span id="userBalance">0</span> <i class="fas fa-book-open gold-book"></i></div>
+        <div class="balance-controls">
+            <button class="balance-btn" onclick="toggleSection('rewards-section')">Потратить ашетики 🏆</button>
+        </div>
     </div>
-    
-    <!-- Статусы -->
-    <div id="shop-statuses" class="shop-tab-content active">
-        <div class="rewards-grid" id="statusShopGrid"></div>
+
+    <div id="rewards-section" class="rewards-section">
+        <h3>💰 Магазин</h3>
+        
+        <!-- Вкладки -->
+        <div style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color);">
+            <button class="shop-tab active" data-tab="statuses" onclick="switchShopTab('statuses')">
+                <i class="fas fa-crown"></i> Статусы
+            </button>
+            <button class="shop-tab" data-tab="skips" onclick="switchShopTab('skips')">
+                <i class="fas fa-skip-forward"></i> Пропуски
+            </button>
+            <button class="shop-tab" data-tab="boosts" onclick="switchShopTab('boosts')">
+                <i class="fas fa-rocket"></i> Бусты XP
+            </button>
+        </div>
+        
+        <!-- Статусы -->
+        <div id="shop-statuses" class="shop-tab-content active">
+            <div class="rewards-grid" id="statusShopGrid"></div>
+        </div>
+        
+        <!-- Пропуски -->
+        <div id="shop-skips" class="shop-tab-content" style="display: none;">
+            <div class="rewards-grid" id="skipShopGrid"></div>
+        </div>
+        
+        <!-- Бусты -->
+        <div id="shop-boosts" class="shop-tab-content" style="display: none;">
+            <div class="rewards-grid" id="boostShopGrid"></div>
+        </div>
     </div>
-    
-    <!-- Пропуски -->
-    <div id="shop-skips" class="shop-tab-content" style="display: none;">
-        <div class="rewards-grid" id="skipShopGrid"></div>
-    </div>
-    
-    <!-- Бусты -->
-    <div id="shop-boosts" class="shop-tab-content" style="display: none;">
-        <div class="rewards-grid" id="boostShopGrid"></div>
-    </div>
+
+    <!-- Остальные секции (задания, испытания и т.д.) -->
 </div>
 
  <!-- ========== ЗАДАНИЯ НА СТАТУСЫ ========== -->
@@ -6892,6 +6905,39 @@ body:not([data-theme]) .modal-content,
 .shop-item-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+}
+    /* Счетчик пропусков */
+.skip-counter {
+    background: var(--bg-header);
+    border-radius: 20px;
+    padding: 8px 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid var(--border-color);
+}
+
+/* Статус буста */
+#boostStatusContainer {
+    background: var(--bg-header);
+    border-radius: 20px;
+    border: 1px solid rgba(255,149,0,0.3);
+}
+
+.boost-active {
+    background: linear-gradient(135deg, rgba(255,149,0,0.2), rgba(255,149,0,0.05));
+    border-radius: 20px;
+    padding: 8px 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    animation: boostPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes boostPulse {
+    0% { box-shadow: 0 0 0px rgba(255,149,0,0); }
+    50% { box-shadow: 0 0 10px rgba(255,149,0,0.5); }
+    100% { box-shadow: 0 0 0px rgba(255,149,0,0); }
 }
 </style>
         
@@ -8260,7 +8306,211 @@ function applyAllFilters() {
         card.style.display = (showByStatus && showByCategory && showByDifficulty) ? '' : 'none';
     });
 }
+// ==========================================
+// ПРОПУСК ЗАДАНИЙ И БУСТЫ XP
+// ==========================================
 
+// Функция для добавления XP с учётом буста
+async function addXPWithBoost(amount, reason) {
+    // Применяем буст если активен
+    let finalAmount = amount;
+    
+    if (userBoosts.active && userBoosts.remainingWorks > 0) {
+        finalAmount = amount * 2;
+        userBoosts.remainingWorks--;
+        
+        if (userBoosts.remainingWorks === 0) {
+            userBoosts.active = false;
+            console.log('🔥 Буст закончился!');
+        }
+        
+        localStorage.setItem(`user_boosts_${userId}`, JSON.stringify(userBoosts));
+        
+        // Обновляем отображение буста
+        if (typeof renderBoostStatus === 'function') {
+            renderBoostStatus();
+        }
+        if (typeof renderBoostShop === 'function' && currentShopTab === 'boosts') {
+            renderBoostShop();
+        }
+        
+        console.log(`🔥 Буст активирован! ${amount} XP → ${finalAmount} XP`);
+    }
+    
+    try {
+        const response = await fetch(`${SERVER_URL}/api/add_xp`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                user_id: userId,
+                amount: finalAmount,
+                reason: reason
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.status === 'ok') {
+            // Обновляем отображение уровня
+            if (typeof renderUserLevel === 'function') {
+                renderUserLevel();
+            }
+            return finalAmount;
+        }
+    } catch (error) {
+        console.error('Ошибка добавления XP:', error);
+    }
+    return amount;
+}
+
+// Функция пропуска задания
+async function addProgressWithoutPhoto(branchKey, levelIndex) {
+    // Проверка: Шок контент нельзя пропускать
+    if (branchKey === 'shock') {
+        if (tg) tg.showAlert('⚠️ Задания ветки "Шок контент" нельзя пропускать!');
+        return false;
+    }
+    
+    // Проверяем наличие пропусков
+    let skips = parseInt(localStorage.getItem(`user_skips_${userId}`) || '0');
+    if (skips <= 0) {
+        if (tg) tg.showAlert('❌ Нет доступных пропусков! Купите в магазине.');
+        return false;
+    }
+    
+    try {
+        // Отправляем запрос на добавление прогресса
+        const response = await fetch(`${SERVER_URL}/api/add_progress`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                user_id: userId,
+                branch_key: branchKey,
+                level_index: levelIndex,
+                amount: 1
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.status === 'ok') {
+            // Списываем пропуск
+            skips--;
+            localStorage.setItem(`user_skips_${userId}`, skips);
+            
+            // Добавляем XP с бустом
+            await addXPWithBoost(5, `Пропуск задания в ветке ${branchKey}`);
+            
+            // Обновляем отображения
+            if (tg) tg.showAlert('✅ Задание пропущено! Прогресс и XP зачислены.');
+            
+            if (typeof refreshUserProgress === 'function') {
+                await refreshUserProgress();
+            }
+            
+            if (typeof renderBranchTasks === 'function') {
+                renderBranchTasks();
+            }
+            
+            if (typeof updateSkipCounter === 'function') {
+                updateSkipCounter();
+            }
+            
+            if (typeof renderBoostStatus === 'function') {
+                renderBoostStatus();
+            }
+            
+            return true;
+        } else {
+            throw new Error(result.message || 'Ошибка сервера');
+        }
+    } catch (error) {
+        console.error('Ошибка при пропуске задания:', error);
+        if (tg) tg.showAlert('❌ Ошибка при пропуске задания');
+        return false;
+    }
+}
+
+// Функция обновления счетчика пропусков
+function updateSkipCounter() {
+    const skips = parseInt(localStorage.getItem(`user_skips_${userId}`) || '0');
+    const display = document.getElementById('skipCountDisplay');
+    if (display) {
+        display.innerText = skips;
+        display.style.color = skips > 0 ? 'var(--status-green)' : 'var(--text-gray)';
+    }
+}
+
+// Функция отображения статуса буста
+function renderBoostStatus() {
+    const container = document.getElementById('boostStatusContainer');
+    if (!container) return;
+    
+    if (userBoosts.active && userBoosts.remainingWorks > 0) {
+        container.innerHTML = `
+            <div class="boost-active" style="background: linear-gradient(135deg, rgba(255,149,0,0.2), rgba(255,149,0,0.05)); border-radius: 20px; padding: 8px 15px; display: flex; align-items: center; gap: 8px; animation: boostPulse 1.5s ease-in-out infinite;">
+                <i class="fas fa-fire" style="color: var(--accent);"></i>
+                <span style="color: var(--accent); font-weight: 600;">x2 буст активен!</span>
+                <span style="color: var(--text-gray); font-size: 12px;">Осталось: ${userBoosts.remainingWorks} работ</span>
+            </div>
+        `;
+    } else {
+        container.innerHTML = '';
+    }
+}
+
+// Функция проверки возможности пропуска (для кнопки в задании)
+function canUseSkipForTask(branchKey) {
+    if (branchKey === 'shock') {
+        if (tg) tg.showAlert('⚠️ Шок контент нельзя пропускать!');
+        return false;
+    }
+    
+    let skips = parseInt(localStorage.getItem(`user_skips_${userId}`) || '0');
+    if (skips <= 0) {
+        if (tg) tg.showAlert('❌ Нет пропусков! Купите в магазине.');
+        return false;
+    }
+    
+    return confirm('Использовать пропуск для выполнения этого задания?');
+}
+
+// Функция применения буста (уже есть, но добавим логирование)
+function applyBoost(xpAmount) {
+    if (userBoosts.active && userBoosts.remainingWorks > 0) {
+        userBoosts.remainingWorks--;
+        if (userBoosts.remainingWorks === 0) {
+            userBoosts.active = false;
+            console.log('🔥 Буст закончился!');
+        }
+        localStorage.setItem(`user_boosts_${userId}`, JSON.stringify(userBoosts));
+        
+        // Обновляем отображение буста в магазине
+        if (currentShopTab === 'boosts') {
+            renderBoostShop();
+        }
+        
+        return xpAmount * 2;
+    }
+    return xpAmount;
+}
+
+// Обновление отображения буста (добавить в профиль)
+function renderBoostStatus() {
+    const boostContainer = document.getElementById('boostStatusContainer');
+    if (!boostContainer) return;
+    
+    if (userBoosts.active && userBoosts.remainingWorks > 0) {
+        boostContainer.innerHTML = `
+            <div style="background: rgba(255,149,0,0.2); border-radius: 12px; padding: 8px 12px; margin: 5px 15px; text-align: center;">
+                <i class="fas fa-fire" style="color: var(--accent);"></i>
+                <span style="color: var(--accent); font-weight: 600;">x2 буст активен! Осталось: ${userBoosts.remainingWorks} работ</span>
+            </div>
+        `;
+    } else {
+        boostContainer.innerHTML = '';
+    }
+}
 function renderBranchTasks() {
     const container = document.getElementById('branchTasksList');
     if (!container) {
