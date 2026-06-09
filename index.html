@@ -6427,11 +6427,11 @@ body:not([data-theme]) .modal-content,
 
   <!-- Счетчик скипов и статус буста -->
 <div style="display: flex; gap: 10px; margin: 10px 15px;">
-    <div class="skip-counter" style="background: var(--bg-header); border-radius: 20px; padding: 8px 15px; display: flex; align-items: center; gap: 8px; border: 1px solid var(--border-color);">
-        <i class="fas fa-skip-forward" style="color: var(--accent);"></i>
-        <span>Скип:</span>
-        <span id="skipCountDisplay" style="font-weight: 700; color: var(--accent);">0</span>
-    </div>
+  <div class="skip-counter" style="background: linear-gradient(135deg, rgba(255,149,0,0.2), rgba(255,149,0,0.05)); border-radius: 20px; padding: 8px 15px; display: flex; align-items: center; gap: 8px; border: 1px solid rgba(255,149,0,0.3);">
+    <i class="fas fa-skip-forward" style="color: var(--accent);"></i>
+    <span>Скипы:</span>
+    <span id="skipCountDisplay" style="font-weight: 700; color: var(--accent);">0</span>
+</div>
     <div id="boostStatusContainer" style="flex: 1;"></div>
 </div>
     <div class="balance-card">
@@ -6450,9 +6450,9 @@ body:not([data-theme]) .modal-content,
             <button class="shop-tab active" data-tab="statuses" onclick="switchShopTab('statuses')">
                 <i class="fas fa-crown"></i> Статусы
             </button>
-            <button class="shop-tab" data-tab="skips" onclick="switchShopTab('skips')">
-                <i class="fas fa-skip-forward"></i> Пропуски
-            </button>
+           <button class="shop-tab" data-tab="skips" onclick="switchShopTab('skips')">
+    <i class="fas fa-skip-forward"></i> Скипы
+</button>
             <button class="shop-tab" data-tab="boosts" onclick="switchShopTab('boosts')">
                 <i class="fas fa-rocket"></i> Бусты XP
             </button>
@@ -8470,15 +8470,12 @@ function updateSkipDisplay() {
     const display = document.getElementById('skipCountDisplay');
     if (display) {
         display.innerText = userSkips;
-        if (userSkips > 0) {
-            display.style.color = 'var(--status-green)';
-        } else {
-            display.style.color = 'var(--text-gray)';
-        }
+        display.style.color = 'var(--accent)';  
     }
 }
 
 async function updateBoostDisplay() {
+    // ✅ Всегда загружаем актуальный буст с сервера
     try {
         const response = await fetch(`${SERVER_URL}/api/get_boost_status?user_id=${userId}`);
         const boost = await response.json();
@@ -8503,7 +8500,12 @@ async function updateBoostDisplay() {
             </div>
         `;
     } else {
-        container.innerHTML = '';
+        container.innerHTML = `
+            <div style="background: linear-gradient(135deg, rgba(255,149,0,0.2), rgba(255,149,0,0.05)); border-radius: 20px; padding: 8px 15px; display: flex; align-items: center; gap: 8px; border: 1px solid rgba(255,149,0,0.3);">
+                <i class="fas fa-rocket" style="color: var(--text-gray);"></i>
+                <span style="color: var(--text-gray);">Нет активных бустов</span>
+            </div>
+        `;
     }
 }
 
@@ -15573,9 +15575,9 @@ const STATUS_SHOP = [
 ];
 
 const SKIP_SHOP = [
-    { id: 'skip_1', name: 'Пропуск 1 очка', desc: 'Пропустить одно задание (кроме Шок контент)', price: 100, amount: 1 },
-    { id: 'skip_3', name: 'Пропуск 3 очков', desc: 'Пропустить три задания (кроме Шок контент)', price: 250, amount: 3 },
-    { id: 'skip_5', name: 'Пропуск 5 очков', desc: 'Пропустить пять заданий (кроме Шок контент)', price: 400, amount: 5 }
+    { id: 'skip_1', name: 'Скип на 1 очко', desc: 'Пропустить одно задание (кроме Шок контент)', price: 100, amount: 1 },
+    { id: 'skip_3', name: 'Скип на 3 очка', desc: 'Пропустить три задания (кроме Шок контент)', price: 250, amount: 3 },
+    { id: 'skip_5', name: 'Скип на 5 очков', desc: 'Пропустить пять заданий (кроме Шок контент)', price: 400, amount: 5 }
 ];
 
 const BOOST_SHOP = [
@@ -20036,13 +20038,13 @@ window.onload = async () => {
         }
     }
     
-    // ✅ ЗАГРУЖАЕМ ПРОПУСКИ (из localStorage, т.к. серверного API нет)
+    // ✅ ЗАГРУЖАЕМ СКИПЫ (из localStorage)
     const savedSkips = localStorage.getItem(`user_skips_${userId}`);
     if (savedSkips) {
         userSkips = parseInt(savedSkips) || 0;
     }
     
-    // ✅ ОБНОВЛЯЕМ ОТОБРАЖЕНИЕ ПРОПУСКОВ
+    // ✅ ОБНОВЛЯЕМ ОТОБРАЖЕНИЕ СКИПОВ
     if (typeof updateSkipDisplay === 'function') {
         updateSkipDisplay();
     } else {
@@ -20057,12 +20059,19 @@ window.onload = async () => {
         updateBoostDisplay();
     } else {
         const boostContainer = document.getElementById('boostStatusContainer');
-        if (boostContainer && userBoosts && userBoosts.active && userBoosts.remainingWorks > 0) {
-            boostContainer.innerHTML = `<div style="background: rgba(255,149,0,0.2); border-radius: 20px; padding: 8px 15px; display: flex; align-items: center; gap: 8px;">
-                <i class="fas fa-fire" style="color: var(--accent);"></i>
-                <span style="color: var(--accent); font-weight: 600;">🔥 x2 буст активен!</span>
-                <span>Осталось: ${userBoosts.remainingWorks} работ</span>
-            </div>`;
+        if (boostContainer) {
+            if (userBoosts && userBoosts.active && userBoosts.remainingWorks > 0) {
+                boostContainer.innerHTML = `<div style="background: linear-gradient(135deg, rgba(255,149,0,0.2), rgba(255,149,0,0.05)); border-radius: 20px; padding: 8px 15px; display: flex; align-items: center; gap: 8px; border: 1px solid rgba(255,149,0,0.3);">
+                    <i class="fas fa-rocket" style="color: var(--accent);"></i>
+                    <span style="color: var(--accent); font-weight: 600;">x2 буст активен!</span>
+                    <span style="color: var(--text-gray);">Осталось: ${userBoosts.remainingWorks} работ</span>
+                </div>`;
+            } else {
+                boostContainer.innerHTML = `<div style="background: linear-gradient(135deg, rgba(255,149,0,0.2), rgba(255,149,0,0.05)); border-radius: 20px; padding: 8px 15px; display: flex; align-items: center; gap: 8px; border: 1px solid rgba(255,149,0,0.3);">
+                    <i class="fas fa-rocket" style="color: var(--text-gray);"></i>
+                    <span style="color: var(--text-gray);">Нет активных бустов</span>
+                </div>`;
+            }
         }
     }
     
