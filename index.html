@@ -15750,32 +15750,36 @@ async function buyBoost(duration, price) {
     if (!confirm(`Активировать x2 буст на ${duration} работ за ${price} ашетиков?`)) return;
     
     try {
-        let r = await fetch(`${SERVER_URL}/api/add_balance`, { 
+        let r = await fetch(`${SERVER_URL}/api/buy_boost`, { 
             method: 'POST', 
             headers: { 'Content-Type': 'application/json' }, 
-            body: JSON.stringify({ user_id: userId, amount: -price, reason: `Покупка x2 буста на ${duration} работ` }) 
+            body: JSON.stringify({ user_id: userId, duration: duration, price: price }) 
         });
         let res = await r.json();
         if (res.status === 'ok') {
-            if (userBoosts.active) {
-                userBoosts.remainingWorks += duration;
-            } else {
-                userBoosts.active = true;
-                userBoosts.remainingWorks = duration;
-            }
-            saveBoostData();
-            updateBoostDisplay();
             user.balance = res.new_balance;
-            saveUserData(); 
+            userBoosts = res.boost;
+            saveUserData();
             updateUI();
             if (typeof renderBoostShop === 'function') renderBoostShop();
+            if (typeof updateBoostDisplay === 'function') updateBoostDisplay();
             alert(`✅ x2 буст активирован на ${duration} работ!`);
         } else {
-            alert('❌ Ошибка при покупке');
+            alert('❌ Ошибка: ' + (res.message || 'Неизвестная ошибка'));
         }
     } catch(e) { 
         console.error(e);
         alert('❌ Ошибка при покупке');
+    }
+}
+        async function loadBoostStatus() {
+    try {
+        const response = await fetch(`${SERVER_URL}/api/get_boost_status?user_id=${userId}`);
+        const boost = await response.json();
+        userBoosts = boost;
+        if (typeof updateBoostDisplay === 'function') updateBoostDisplay();
+    } catch (error) {
+        console.error('Ошибка загрузки буста:', error);
     }
 }
         async function useSkipForTask(branchKey, levelIndex, subtaskIndex, currentProgress, required) {
