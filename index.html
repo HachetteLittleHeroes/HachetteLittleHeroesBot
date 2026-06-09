@@ -6940,39 +6940,6 @@ body:not([data-theme]) .modal-content,
     opacity: 0.5;
     cursor: not-allowed;
 }
-    /* Счетчик пропусков */
-.skip-counter {
-    background: var(--bg-header);
-    border-radius: 20px;
-    padding: 8px 15px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    border: 1px solid var(--border-color);
-}
-
-/* Статус буста */
-#boostStatusContainer {
-    background: var(--bg-header);
-    border-radius: 20px;
-    border: 1px solid rgba(255,149,0,0.3);
-}
-
-.boost-active {
-    background: linear-gradient(135deg, rgba(255,149,0,0.2), rgba(255,149,0,0.05));
-    border-radius: 20px;
-    padding: 8px 15px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    animation: boostPulse 1.5s ease-in-out infinite;
-}
-
-@keyframes boostPulse {
-    0% { box-shadow: 0 0 0px rgba(255,149,0,0); }
-    50% { box-shadow: 0 0 10px rgba(255,149,0,0.5); }
-    100% { box-shadow: 0 0 0px rgba(255,149,0,0); }
-}
 </style>
         
         <!-- Экран игры -->
