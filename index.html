@@ -8315,37 +8315,10 @@ function applyAllFilters() {
 
 // Функция для добавления XP с учётом буста
 async function addXPWithBoost(amount, reason) {
-    let finalAmount = amount;
-    let boostUsed = false;
+    // ✅ Буст тратится ТОЛЬКО на бекенде при одобрении админом
+    // Здесь мы НЕ трогаем userBoosts
     
-    console.log(`📊 addXPWithBoost: исходный XP = ${amount}, reason = ${reason}`);
-    console.log(`📊 Текущий буст: active=${userBoosts.active}, remaining=${userBoosts.remainingWorks}`);
-    
-    // Проверяем активный буст
-    if (userBoosts && userBoosts.active && userBoosts.remainingWorks > 0) {
-        finalAmount = amount * 2;  // x2 буст
-        userBoosts.remainingWorks--;
-        boostUsed = true;
-        
-        if (userBoosts.remainingWorks === 0) {
-            userBoosts.active = false;
-            console.log('🔥 Буст закончился!');
-        }
-        
-        localStorage.setItem(`user_boosts_${userId}`, JSON.stringify(userBoosts));
-        
-        // Обновляем отображение буста
-        if (typeof updateBoostDisplay === 'function') {
-            updateBoostDisplay();
-        }
-        if (typeof renderBoostShop === 'function' && currentShopTab === 'boosts') {
-            renderBoostShop();
-        }
-        
-        console.log(`🔥 Буст применён! ${amount} XP → ${finalAmount} XP (осталось: ${userBoosts.remainingWorks} работ)`);
-    } else {
-        console.log(`❌ Буст не активен, XP остаётся ${finalAmount}`);
-    }
+    console.log(`📊 addXPWithBoost: отправка XP = ${amount}, reason = ${reason}`);
     
     try {
         const response = await fetch(`${SERVER_URL}/api/add_xp`, {
@@ -8353,8 +8326,8 @@ async function addXPWithBoost(amount, reason) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 user_id: userId,
-                amount: finalAmount,
-                reason: reason + (boostUsed ? ' (x2 буст)' : '')
+                amount: amount,
+                reason: reason
             })
         });
         
@@ -8364,8 +8337,8 @@ async function addXPWithBoost(amount, reason) {
             if (typeof renderUserLevel === 'function') {
                 renderUserLevel();
             }
-            console.log(`✅ XP добавлено: ${finalAmount}`);
-            return finalAmount;
+            console.log(`✅ XP добавлено: ${amount}`);
+            return amount;
         } else {
             console.error('Ошибка сервера:', result);
             return amount;
