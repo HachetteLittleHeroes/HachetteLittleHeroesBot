@@ -15534,8 +15534,6 @@ const BOOST_SHOP = [
     { id: 'boost_30', name: 'x2 буст (30 работ)', desc: 'Удвоение опыта за 30 работ', price: 700, duration: 30 }
 ];
 
-let userBoosts = { active: false, remainingWorks: 0 };
-
 function switchShopTab(tab) {
     currentShopTab = tab;
     document.querySelectorAll('.shop-tab').forEach(btn => {
