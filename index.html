@@ -15414,7 +15414,6 @@ async function submitCommunityTaskPhoto() {
         const timeoutId = setTimeout(() => controller.abort(), 60000);
         
         console.log('📤 Отправка запроса на /api/check_community_task');
-        const startTime = Date.now();
         
         const response = await fetch(`${SERVER_URL}/api/check_community_task`, {
             method: 'POST',
@@ -15423,9 +15422,8 @@ async function submitCommunityTaskPhoto() {
         });
         
         clearTimeout(timeoutId);
-        const endTime = Date.now();
         
-        console.log(`📥 Статус ответа: ${response.status} (${endTime - startTime}ms)`);
+        console.log(`📥 Статус ответа: ${response.status}`);
         
         if (!response.ok) {
             throw new Error(`Ошибка сервера: ${response.status}`);
@@ -15435,22 +15433,7 @@ async function submitCommunityTaskPhoto() {
         console.log('📥 Результат:', result);
         
         if (result && result.status === 'ok') {
-            // ✅ Добавляем XP с бустом за очки испытания
-            const pointsEarned = 1; // за одно задание даётся 1 XP
-            if (typeof addXPWithBoost === 'function') {
-                await addXPWithBoost(pointsEarned, `Испытание сообщества: задание ${currentCommunitySubtask}`);
-            } else {
-                // fallback если функция не определена
-                await fetch(`${SERVER_URL}/api/add_xp`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        user_id: userId,
-                        amount: pointsEarned,
-                        reason: `Испытание сообщества: задание ${currentCommunitySubtask}`
-                    })
-                });
-            }
+            // ✅ XP начисляется ТОЛЬКО при одобрении админом, не здесь!
             
             if (tg) {
                 tg.showAlert('✅ Фото отправлено на проверку!');
