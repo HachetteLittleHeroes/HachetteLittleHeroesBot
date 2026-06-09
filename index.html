@@ -8319,8 +8319,9 @@ async function addXPWithBoost(amount, reason) {
     let finalAmount = amount;
     let boostUsed = false;
     
-    if (userBoosts.active && userBoosts.remainingWorks > 0) {
-        finalAmount = amount * 2;  // 2 * 2 = 4, а не 5 * 2 = 10
+    // Проверяем активный буст
+    if (userBoosts && userBoosts.active && userBoosts.remainingWorks > 0) {
+        finalAmount = amount * 2;  // x2 буст
         userBoosts.remainingWorks--;
         boostUsed = true;
         
@@ -8330,11 +8331,12 @@ async function addXPWithBoost(amount, reason) {
         
         localStorage.setItem(`user_boosts_${userId}`, JSON.stringify(userBoosts));
         
+        // Обновляем отображение буста
         if (typeof updateBoostDisplay === 'function') {
             updateBoostDisplay();
         }
         
-        console.log(`🔥 Буст применён! ${amount} XP → ${finalAmount} XP`);
+        console.log(`🔥 Буст применён! ${amount} XP → ${finalAmount} XP (осталось: ${userBoosts.remainingWorks} работ)`);
     }
     
     try {
@@ -8422,12 +8424,12 @@ function renderBoostStatus() {
     const container = document.getElementById('boostStatusContainer');
     if (!container) return;
     
-    if (userBoosts.active && userBoosts.remainingWorks > 0) {
+    if (userBoosts && userBoosts.active && userBoosts.remainingWorks > 0) {
         container.innerHTML = `
             <div style="background: linear-gradient(135deg, rgba(255,149,0,0.2), rgba(255,149,0,0.05)); border-radius: 20px; padding: 8px 15px; display: flex; align-items: center; gap: 8px;">
                 <i class="fas fa-fire" style="color: var(--accent);"></i>
-                <span style="color: var(--accent); font-weight: 600;">x2 буст активен!</span>
-                <span style="color: var(--text-gray); font-size: 12px;">Осталось: ${userBoosts.remainingWorks} работ</span>
+                <span style="color: var(--accent); font-weight: 600;">🔥 x2 буст активен!</span>
+                <span style="color: var(--text-gray);">Осталось: ${userBoosts.remainingWorks} работ</span>
             </div>
         `;
     } else {
@@ -15376,22 +15378,15 @@ async function submitCommunityTaskPhoto() {
         return;
     }
     
-    // Логируем размеры оригиналов
-    tempPhotos.forEach((file, i) => {
-        console.log(`📸 Оригинал ${i + 1}: ${Math.round(file.size / 1024)}KB, тип: ${file.type}`);
-    });
-    
     if (isUploading) return;
     isUploading = true;
     
-    // Показываем индикатор загрузки
     if (tg && tg.MainButton) {
         tg.MainButton.setText("⏳ ОТПРАВКА ФОТО...").show();
         tg.MainButton.showProgress();
     }
     
     try {
-        // ✅ СЖИМАЕМ ФОТО ПЕРЕД ОТПРАВКОЙ
         const compressedPhotos = await compressImages(tempPhotos, 1200, 0.7);
         
         const formData = new FormData();
@@ -15402,7 +15397,6 @@ async function submitCommunityTaskPhoto() {
             formData.append('photos', compressedPhotos[i]);
         }
         
-        // ✅ УВЕЛИЧЕННЫЙ ТАЙМАУТ (60 секунд)
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 60000);
         
@@ -15428,6 +15422,23 @@ async function submitCommunityTaskPhoto() {
         console.log('📥 Результат:', result);
         
         if (result && result.status === 'ok') {
+            // ✅ Добавляем XP с бустом за очки испытания
+            const pointsEarned = 1; // за одно задание даётся 1 XP
+            if (typeof addXPWithBoost === 'function') {
+                await addXPWithBoost(pointsEarned, `Испытание сообщества: задание ${currentCommunitySubtask}`);
+            } else {
+                // fallback если функция не определена
+                await fetch(`${SERVER_URL}/api/add_xp`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        user_id: userId,
+                        amount: pointsEarned,
+                        reason: `Испытание сообщества: задание ${currentCommunitySubtask}`
+                    })
+                });
+            }
+            
             if (tg) {
                 tg.showAlert('✅ Фото отправлено на проверку!');
                 if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
@@ -15439,7 +15450,7 @@ async function submitCommunityTaskPhoto() {
     } catch (error) {
         console.error('❌ Ошибка:', error);
         if (error.name === 'AbortError') {
-            if (tg) tg.showAlert('❌ Превышено время ожидания. Файлы слишком большие, попробуйте отправить меньше фото или скриншоты.');
+            if (tg) tg.showAlert('❌ Превышено время ожидания. Попробуйте отправить меньше фото.');
         } else {
             if (tg) tg.showAlert(`❌ Ошибка: ${error.message}`);
         }
