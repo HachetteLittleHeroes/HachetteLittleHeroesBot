@@ -6367,6 +6367,16 @@ body:not([data-theme]) .modal-content,
     50% { box-shadow: 0 0 30px #ff69b4, 0 0 10px #ff1493; }
     100% { box-shadow: 0 0 5px #ff69b4; }
 }
+        /* Простые стили для статусов */
+.status-badge {
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 20px;
+    background: rgba(0,0,0,0.05);
+    color: var(--text-gray);
+    font-size: 13px;
+    font-weight: 600;
+}
     </style>
 </head>
 <body>
@@ -9227,7 +9237,6 @@ async function saveAvatarToServer(avatarUrl) {
         
        function openStatusInfo() {
     console.log('openStatusInfo called');
-    console.log('user.unlockedStatuses:', user.unlockedStatuses);
     
     const list = document.getElementById('availableStatusesList');
     if (!list) {
@@ -9237,20 +9246,14 @@ async function saveAvatarToServer(avatarUrl) {
     
     list.innerHTML = '';
     
-    // ✅ Добавляем все статусы (старые + новые из магазина)
-    const allStatuses = [
-        'Без статуса', 
-        ...Object.values(BRANCH_REWARDS),
-        'Феечка',
-        // ✅ Новые уникальные статусы
-        '🌈 Мастер радуги',
-        '🌙 Ночной страж',
-        '✨ Ткач звёздной пыли',
-        '🔥 Вечное пламя',
-        '💎 Хрустальный мечтатель',
-        '🌌 Путешественник пустоты',
-        '🎨 Космический художник'
-    ];
+    // Собираем все статусы из BRANCH_REWARDS
+    const branchStatuses = Object.values(BRANCH_REWARDS);
+    
+    // Добавляем статусы из магазина
+    const shopStatuses = STATUS_SHOP.map(s => s.name);
+    
+    // Объединяем все статусы
+    const allStatuses = ['Без статуса', ...branchStatuses, 'Феечка', ...shopStatuses];
     
     console.log('allStatuses:', allStatuses);
     
@@ -9274,17 +9277,18 @@ async function saveAvatarToServer(avatarUrl) {
             } else {
                 const btn = document.createElement('button');
                 btn.innerText = 'Выбрать';
-                btn.style.cssText = `background:var(--accent); color:white; border:none; padding:6px 16px; border-radius:20px; font-size:13px; font-weight:500; cursor:pointer; transition:all 0.2s; white-space:nowrap;`;
+                btn.style.cssText = `background:var(--accent); color:white; border:none; padding:6px 16px; border-radius:20px; font-size:13px; font-weight:500; cursor:pointer;`;
                 btn.onclick = (function(s) {
                     return function() { selectStatus(s); };
                 })(status);
                 rightSpan.appendChild(btn);
             }
         } else {
-            // Для статусов из магазина показываем цену
-            const shopStatus = STATUS_SHOP.find(s => s.name === status);
-            if (shopStatus) {
-                rightSpan.innerHTML = `<span style="color:var(--text-gray); font-size:12px;"><i class="fas fa-shopping-cart"></i> Купить в магазине за ${shopStatus.price} 🪙</span>`;
+            // Проверяем, статус из магазина или из веток
+            const isShopStatus = shopStatuses.includes(status);
+            if (isShopStatus) {
+                const shopStatus = STATUS_SHOP.find(s => s.name === status);
+                rightSpan.innerHTML = `<span style="color:var(--text-gray); font-size:12px;"><i class="fas fa-shopping-cart"></i> ${shopStatus.price} 🪙</span>`;
             } else {
                 rightSpan.innerHTML = `<span style="color:var(--text-gray); font-size:12px;"><i class="fas fa-lock"></i> Выполните все уровни ветки</span>`;
             }
@@ -9298,7 +9302,6 @@ async function saveAvatarToServer(avatarUrl) {
     const modal = document.getElementById('statusSelectModal');
     if (modal) {
         modal.style.display = 'flex';
-        console.log('Status modal opened');
     }
 }
         
@@ -15025,69 +15028,13 @@ function renderUserLevel() {
 // ==========================================
 
 const STATUS_SHOP = [
-    {
-        id: 'rainbow_master',
-        name: '🌈 Мастер радуги',
-        description: 'Тот, кто видит мир во всех цветах',
-        price: 500,
-        icon: '🌈',
-        gradient: 'linear-gradient(135deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3)',
-        rarity: 'common'
-    },
-    {
-        id: 'night_watcher',
-        name: '🌙 Ночной страж',
-        description: 'Хранитель тайн ночи',
-        price: 800,
-        icon: '🌙',
-        gradient: 'linear-gradient(135deg, #1a1a2e, #16213e, #0f3460)',
-        rarity: 'rare'
-    },
-    {
-        id: 'stardust_weaver',
-        name: '✨ Ткач звёздной пыли',
-        description: 'Сплетает судьбы из звёзд',
-        price: 1200,
-        icon: '✨',
-        gradient: 'linear-gradient(135deg, #2d1b4e, #1a0f2e)',
-        rarity: 'epic'
-    },
-    {
-        id: 'eternal_flame',
-        name: '🔥 Вечное пламя',
-        description: 'Чей творческий огонь не угасает',
-        price: 1500,
-        icon: '🔥',
-        gradient: 'linear-gradient(135deg, #ff4500, #ff0000, #8b0000)',
-        rarity: 'epic'
-    },
-    {
-        id: 'crystal_dreamer',
-        name: '💎 Хрустальный мечтатель',
-        description: 'Видит сны в кристально чистом свете',
-        price: 2000,
-        icon: '💎',
-        gradient: 'linear-gradient(135deg, #00ced1, #20b2aa, #008b8b)',
-        rarity: 'legendary'
-    },
-    {
-        id: 'void_traveler',
-        name: '🌌 Путешественник пустоты',
-        description: 'Исследователь неизведанных миров',
-        price: 3000,
-        icon: '🌌',
-        gradient: 'linear-gradient(135deg, #4b0082, #2e0047, #1a0030)',
-        rarity: 'legendary'
-    },
-    {
-        id: 'cosmic_artist',
-        name: '🎨 Космический художник',
-        description: 'Рисующий галактики на холсте',
-        price: 5000,
-        icon: '🎨',
-        gradient: 'linear-gradient(135deg, #ff69b4, #ff1493, #c71585)',
-        rarity: 'mythic'
-    }
+    { id: 'master_of_rainbow', name: 'Мастер радуги', price: 500 },
+    { id: 'night_guardian', name: 'Ночной страж', price: 800 },
+    { id: 'stardust_weaver', name: 'Ткач звёздной пыли', price: 1200 },
+    { id: 'eternal_flame', name: 'Вечное пламя', price: 1500 },
+    { id: 'crystal_dreamer', name: 'Хрустальный мечтатель', price: 2000 },
+    { id: 'void_traveler', name: 'Путешественник пустоты', price: 3000 },
+    { id: 'cosmic_artist', name: 'Космический художник', price: 5000 }
 ];
 
 function renderStatusShop() {
@@ -15100,52 +15047,19 @@ function renderStatusShop() {
         const isOwned = user.unlockedStatuses.includes(status.name);
         const canBuy = !isOwned && user.balance >= status.price;
         
-        let rarityClass = '';
-        let rarityText = '';
-        switch(status.rarity) {
-            case 'common': rarityText = 'Обычный'; rarityClass = 'status-common'; break;
-            case 'rare': rarityText = 'Редкий'; rarityClass = 'status-rare'; break;
-            case 'epic': rarityText = 'Эпический'; rarityClass = 'status-epic'; break;
-            case 'legendary': rarityText = 'Легендарный'; rarityClass = 'status-legendary'; break;
-            case 'mythic': rarityText = 'Мифический'; rarityClass = 'status-mythic'; break;
-        }
-        
         const card = document.createElement('div');
         card.className = `reward-card ${isOwned ? 'owned' : ''}`;
-        card.style.cssText = `
-            background: linear-gradient(135deg, var(--card-bg) 0%, ${status.gradient}15 100%);
-            border: ${isOwned ? '2px solid var(--status-green)' : '1px solid var(--border-color)'};
-        `;
-        
-        // Превью статуса с градиентом
-        const statusPreviewStyle = `
-            background: ${status.gradient};
-            color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            display: inline-block;
-            margin-top: 8px;
-        `;
         
         card.innerHTML = `
-            <div class="reward-img" style="font-size: 48px; display: flex; align-items: center; justify-content: center; background: ${status.gradient}20; border-radius: 16px;">
-                ${status.icon}
-            </div>
-            <h4 style="margin: 10px 0 5px; background: ${status.gradient}; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
-                ${status.name}
-            </h4>
-            <p style="font-size: 11px; color: var(--text-gray); margin-bottom: 8px;">${status.description}</p>
+            <h4 style="margin: 10px 0 5px; color: var(--text);">${status.name}</h4>
             <div class="reward-price">
                 <span class="price-amount">${status.price}</span> 
                 <i class="fas fa-book-open gold-book"></i>
             </div>
-            <div style="font-size: 10px; color: ${status.gradient.split(',')[0].replace('linear-gradient(', '').trim()}; margin-bottom: 10px;">⭐ ${rarityText}</div>
-            <div style="${statusPreviewStyle}">${status.icon} ${status.name}</div>
             ${isOwned ? 
-                '<div class="status-owned-badge" style="background: var(--status-green); color: white; padding: 8px; border-radius: 30px; font-size: 12px; margin-top: 10px;">✅ Уже есть</div>' :
+                '<div style="background: var(--status-green); color: white; padding: 8px; border-radius: 30px; font-size: 12px; margin-top: 10px;">✅ Уже открыт</div>' :
                 `<button class="reward-buy-btn" onclick="buyStatus('${status.id}', '${status.name}', ${status.price})" ${!canBuy ? 'disabled' : ''}>
-                    ${canBuy ? '🎁 Приобрести' : '❌ Недостаточно ашетиков'}
+                    ${canBuy ? '🔓 Открыть' : '❌ Недостаточно ашетиков'}
                 </button>`
             }
         `;
@@ -15153,7 +15067,6 @@ function renderStatusShop() {
         container.appendChild(card);
     });
 }
-
 // Покупка статуса
 // Покупка статуса
 async function buyStatus(statusId, statusName, price) {
