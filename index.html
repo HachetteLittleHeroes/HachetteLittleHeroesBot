@@ -6425,17 +6425,44 @@ body:not([data-theme]) .modal-content,
         <button class="upload-photo-btn" onclick="document.getElementById('customAvatarInput').click()"><i class="fas fa-camera"></i> Загрузить фото</button>
     </div>
 
-  <div class="balance-card">
+<div class="balance-card">
     <p class="balance-label">ВАШ БАЛАНС</p>
     <div class="balance-main"><span id="userBalance">0</span> <i class="fas fa-book-open gold-book"></i></div>
     <div class="balance-controls">
-        <button class="balance-btn" onclick="toggleSection('rewards-section')">Магазин статусов 🏆</button>
+        <button class="balance-btn" onclick="toggleSection('rewards-section')">Потратить ашетики 🏆</button>
     </div>
 </div>
-  <div id="rewards-section" class="rewards-section">
-    <h3>✨ Уникальные статусы ✨</h3>
-    <p style="color: var(--text-gray); font-size: 13px; margin-bottom: 15px;">Приобретите эксклюзивный статус, который будет отображаться в вашем профиле!</p>
-    <div class="rewards-grid" id="statusShopGrid"></div>
+
+<div id="rewards-section" class="rewards-section">
+    <h3>💰 Магазин</h3>
+    
+    <!-- Вкладки -->
+    <div style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color);">
+        <button class="shop-tab active" data-tab="statuses" onclick="switchShopTab('statuses')">
+            <i class="fas fa-crown"></i> Статусы
+        </button>
+        <button class="shop-tab" data-tab="skips" onclick="switchShopTab('skips')">
+            <i class="fas fa-skip-forward"></i> Пропуски
+        </button>
+        <button class="shop-tab" data-tab="boosts" onclick="switchShopTab('boosts')">
+            <i class="fas fa-rocket"></i> Бусты XP
+        </button>
+    </div>
+    
+    <!-- Статусы -->
+    <div id="shop-statuses" class="shop-tab-content active">
+        <div class="rewards-grid" id="statusShopGrid"></div>
+    </div>
+    
+    <!-- Пропуски -->
+    <div id="shop-skips" class="shop-tab-content" style="display: none;">
+        <div class="rewards-grid" id="skipShopGrid"></div>
+    </div>
+    
+    <!-- Бусты -->
+    <div id="shop-boosts" class="shop-tab-content" style="display: none;">
+        <div class="rewards-grid" id="boostShopGrid"></div>
+    </div>
 </div>
 
  <!-- ========== ЗАДАНИЯ НА СТАТУСЫ ========== -->
@@ -6779,6 +6806,92 @@ body:not([data-theme]) .modal-content,
     font-size: 24px;
     cursor: pointer;
     color: #888;
+}
+    /* Вкладки магазина */
+.shop-tab {
+    background: none;
+    border: none;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-gray);
+    cursor: pointer;
+    transition: all 0.2s;
+    border-radius: 8px 8px 0 0;
+}
+
+.shop-tab.active {
+    color: var(--accent);
+    border-bottom: 2px solid var(--accent);
+}
+
+.shop-tab:hover {
+    color: var(--accent);
+}
+
+.shop-tab-content {
+    animation: fadeIn 0.2s ease;
+}
+
+/* Карточки товаров */
+.shop-item-card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 15px;
+    border: 1px solid var(--border-color);
+    transition: all 0.2s;
+    text-align: center;
+}
+
+.shop-item-card.owned {
+    opacity: 0.7;
+    background: var(--bg);
+}
+
+.shop-item-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 8px;
+}
+
+.shop-item-desc {
+    font-size: 12px;
+    color: var(--text-gray);
+    margin-bottom: 12px;
+}
+
+.shop-item-price {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--accent);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.shop-item-btn {
+    width: 100%;
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.shop-item-btn:active {
+    transform: scale(0.96);
+}
+
+.shop-item-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 </style>
         
@@ -15023,9 +15136,11 @@ function renderUserLevel() {
     
     return xp;
 }
-        // ==========================================
-// МАГАЗИН СТАТУСОВ (ЦИФРОВЫЕ ТОВАРЫ)
+       // ==========================================
+// МАГАЗИН
 // ==========================================
+
+let currentShopTab = 'statuses';
 
 const STATUS_SHOP = [
     { id: 'master_of_rainbow', name: 'Мастер радуги', price: 500 },
@@ -15037,140 +15152,177 @@ const STATUS_SHOP = [
     { id: 'cosmic_artist', name: 'Космический художник', price: 5000 }
 ];
 
+const SKIP_SHOP = [
+    { id: 'skip_1', name: 'Пропуск 1 очка', desc: 'Пропустить одно задание (кроме Шок контент)', price: 100, amount: 1 },
+    { id: 'skip_3', name: 'Пропуск 3 очков', desc: 'Пропустить три задания (кроме Шок контент)', price: 250, amount: 3 },
+    { id: 'skip_5', name: 'Пропуск 5 очков', desc: 'Пропустить пять заданий (кроме Шок контент)', price: 400, amount: 5 }
+];
+
+const BOOST_SHOP = [
+    { id: 'boost_5', name: 'x2 буст (5 работ)', desc: 'Удвоение опыта за 5 работ', price: 200, duration: 5 },
+    { id: 'boost_10', name: 'x2 буст (10 работ)', desc: 'Удвоение опыта за 10 работ', price: 350, duration: 10 },
+    { id: 'boost_15', name: 'x2 буст (15 работ)', desc: 'Удвоение опыта за 15 работ', price: 450, duration: 15 },
+    { id: 'boost_30', name: 'x2 буст (30 работ)', desc: 'Удвоение опыта за 30 работ', price: 700, duration: 30 }
+];
+
+let userBoosts = { active: false, remainingWorks: 0 };
+
+function switchShopTab(tab) {
+    currentShopTab = tab;
+    document.querySelectorAll('.shop-tab').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.tab === tab) btn.classList.add('active');
+    });
+    document.getElementById('shop-statuses').style.display = tab === 'statuses' ? 'block' : 'none';
+    document.getElementById('shop-skips').style.display = tab === 'skips' ? 'block' : 'none';
+    document.getElementById('shop-boosts').style.display = tab === 'boosts' ? 'block' : 'none';
+    if (tab === 'statuses') renderStatusShop();
+    if (tab === 'skips') renderSkipShop();
+    if (tab === 'boosts') renderBoostShop();
+}
+
 function renderStatusShop() {
     const container = document.getElementById('statusShopGrid');
     if (!container) return;
-    
     container.innerHTML = '';
-    
-    STATUS_SHOP.forEach(status => {
-        const isOwned = user.unlockedStatuses.includes(status.name);
-        const canBuy = !isOwned && user.balance >= status.price;
-        
-        const card = document.createElement('div');
-        card.className = `reward-card ${isOwned ? 'owned' : ''}`;
-        
-        card.innerHTML = `
-            <h4 style="margin: 10px 0 5px; color: var(--text);">${status.name}</h4>
-            <div class="reward-price">
-                <span class="price-amount">${status.price}</span> 
-                <i class="fas fa-book-open gold-book"></i>
+    STATUS_SHOP.forEach(s => {
+        const owned = user.unlockedStatuses && user.unlockedStatuses.includes(s.name);
+        const canBuy = !owned && user.balance >= s.price;
+        container.innerHTML += `
+            <div class="shop-item-card ${owned ? 'owned' : ''}">
+                <div class="shop-item-title">${s.name}</div>
+                <div class="shop-item-price">${s.price} <i class="fas fa-book-open gold-book"></i></div>
+                ${owned ? '<div style="color:green;font-size:12px;">✅ Уже открыт</div>' : 
+                    `<button class="shop-item-btn" onclick="buyStatus('${s.id}', '${s.name}', ${s.price})" ${!canBuy ? 'disabled' : ''}>${canBuy ? '🔓 Открыть' : '❌ Недостаточно'}</button>`}
             </div>
-            ${isOwned ? 
-                '<div style="background: var(--status-green); color: white; padding: 8px; border-radius: 30px; font-size: 12px; margin-top: 10px;">✅ Уже открыт</div>' :
-                `<button class="reward-buy-btn" onclick="buyStatus('${status.id}', '${status.name}', ${status.price})" ${!canBuy ? 'disabled' : ''}>
-                    ${canBuy ? '🔓 Открыть' : '❌ Недостаточно ашетиков'}
-                </button>`
-            }
         `;
-        
-        container.appendChild(card);
     });
 }
-// Покупка статуса
-// Покупка статуса
-async function buyStatus(statusId, statusName, price) {
-    if (user.balance < price) {
-        if (tg && tg.showAlert) {
-            tg.showAlert(`❌ Недостаточно ашетиков! Нужно ${price}, у вас ${user.balance}`);
-        } else {
-            alert(`❌ Недостаточно ашетиков! Нужно ${price}, у вас ${user.balance}`);
-        }
-        return;
-    }
-    
-    if (user.unlockedStatuses.includes(statusName)) {
-        if (tg && tg.showAlert) {
-            tg.showAlert('❌ У вас уже есть этот статус!');
-        } else {
-            alert('❌ У вас уже есть этот статус!');
-        }
-        return;
-    }
-    
-    // Используем обычный confirm
-    const userConfirmed = confirm(`Приобрести статус "${statusName}" за ${price} ашетиков?`);
-    
-    if (userConfirmed) {
-        await processStatusPurchase(statusName, price);
-    }
+
+function renderSkipShop() {
+    const container = document.getElementById('skipShopGrid');
+    if (!container) return;
+    container.innerHTML = '';
+    SKIP_SHOP.forEach(s => {
+        const canBuy = user.balance >= s.price;
+        container.innerHTML += `
+            <div class="shop-item-card">
+                <div class="shop-item-title">${s.name}</div>
+                <div class="shop-item-desc">${s.desc}</div>
+                <div class="shop-item-price">${s.price} <i class="fas fa-book-open gold-book"></i></div>
+                <button class="shop-item-btn" onclick="buySkip(${s.amount}, ${s.price})" ${!canBuy ? 'disabled' : ''}>${canBuy ? '🎫 Купить' : '❌ Недостаточно'}</button>
+            </div>
+        `;
+    });
 }
 
-async function processStatusPurchase(statusName, price) {
+function renderBoostShop() {
+    const container = document.getElementById('boostShopGrid');
+    if (!container) return;
+    container.innerHTML = '';
+    if (userBoosts.active && userBoosts.remainingWorks > 0) {
+        container.innerHTML += `
+            <div class="shop-item-card" style="border-color:var(--accent);background:rgba(255,149,0,0.1);">
+                <div class="shop-item-title">🔥 Активный буст x2</div>
+                <div class="shop-item-desc">Осталось работ: ${userBoosts.remainingWorks}</div>
+            </div>
+        `;
+    }
+    BOOST_SHOP.forEach(b => {
+        const canBuy = user.balance >= b.price;
+        container.innerHTML += `
+            <div class="shop-item-card">
+                <div class="shop-item-title">${b.name}</div>
+                <div class="shop-item-desc">${b.desc}</div>
+                <div class="shop-item-price">${b.price} <i class="fas fa-book-open gold-book"></i></div>
+                <button class="shop-item-btn" onclick="buyBoost(${b.duration}, ${b.price})" ${!canBuy ? 'disabled' : ''}>${canBuy ? '⚡ Активировать' : '❌ Недостаточно'}</button>
+            </div>
+        `;
+    });
+}
+
+async function buyStatus(id, name, price) {
+    if (user.balance < price) return tg.showAlert(`❌ Нужно ${price} ашетиков`);
+    if (!confirm(`Купить статус "${name}" за ${price} ашетиков?`)) return;
     try {
-        const response = await fetch(`${SERVER_URL}/api/add_balance`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                user_id: userId,
-                amount: -price,
-                reason: `Покупка статуса "${statusName}" в магазине`
-            })
-        });
-        
-        const result = await response.json();
-        
-        if (result.status === 'ok') {
-            // Разблокируем статус
-            await fetch(`${SERVER_URL}/api/sync_status`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    user_id: userId,
-                    status: statusName,
-                    action: 'unlock'
-                })
-            });
-            
-            user.balance = result.new_balance;
-            if (!user.unlockedStatuses.includes(statusName)) {
-                user.unlockedStatuses.push(statusName);
-            }
-            saveUserData();
-            updateUI();
-            renderStatusShop();
-            
-            if (tg && tg.showAlert) {
-                tg.showAlert(`✅ Статус "${statusName}" успешно приобретён!`);
-            } else {
-                alert(`✅ Статус "${statusName}" успешно приобретён!`);
-            }
-            
-            // Обновляем список статусов в профиле
-            await loadUnlockedStatuses();
-            updateUI();
-        } else {
-            throw new Error(result.message || 'Ошибка');
+        let r = await fetch(`${SERVER_URL}/api/add_balance`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user_id: userId, amount: -price, reason: `Покупка статуса "${name}"` }) });
+        let res = await r.json();
+        if (res.status === 'ok') {
+            await fetch(`${SERVER_URL}/api/sync_status`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user_id: userId, status: name, action: 'unlock' }) });
+            user.balance = res.new_balance;
+            if (!user.unlockedStatuses) user.unlockedStatuses = [];
+            if (!user.unlockedStatuses.includes(name)) user.unlockedStatuses.push(name);
+            saveUserData(); updateUI(); renderStatusShop();
+            tg.showAlert(`✅ Статус "${name}" приобретён!`);
         }
-    } catch (error) {
-        console.error('Ошибка покупки статуса:', error);
-        if (tg && tg.showAlert) {
-            tg.showAlert(`❌ Ошибка: ${error.message}`);
-        } else {
-            alert(`❌ Ошибка: ${error.message}`);
-        }
-    }
+    } catch(e) { tg.showAlert('❌ Ошибка'); }
 }
 
-// Обновляем toggleSection чтобы при открытии рендерить магазин
-function toggleSection(sectionId) {
-    const section = document.getElementById(sectionId);
-    if (section) {
-        if (section.style.display === 'none' || section.style.display === '') {
-            document.querySelectorAll('.rewards-section').forEach(el => {
-                if (el && el !== section) el.style.display = 'none';
-            });
-            section.style.display = 'block';
-            
-            // Если открыли магазин статусов — рендерим
-            if (sectionId === 'rewards-section') {
-                renderStatusShop();
-            }
-        } else {
-            section.style.display = 'none';
+async function buySkip(amount, price) {
+    if (user.balance < price) return tg.showAlert(`❌ Нужно ${price} ашетиков`);
+    if (!confirm(`Купить пропуск на ${amount} очк(а) за ${price} ашетиков?`)) return;
+    try {
+        let r = await fetch(`${SERVER_URL}/api/add_balance`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user_id: userId, amount: -price, reason: `Покупка пропуска на ${amount} очков` }) });
+        let res = await r.json();
+        if (res.status === 'ok') {
+            let skips = parseInt(localStorage.getItem(`user_skips_${userId}`) || '0');
+            skips += amount;
+            localStorage.setItem(`user_skips_${userId}`, skips);
+            user.balance = res.new_balance;
+            saveUserData(); updateUI();
+            tg.showAlert(`✅ Куплено пропусков: ${amount}!`);
         }
-    }
+    } catch(e) { tg.showAlert('❌ Ошибка'); }
 }
+
+async function buyBoost(duration, price) {
+    if (user.balance < price) return tg.showAlert(`❌ Нужно ${price} ашетиков`);
+    if (!confirm(`Активировать x2 буст на ${duration} работ за ${price} ашетиков?`)) return;
+    try {
+        let r = await fetch(`${SERVER_URL}/api/add_balance`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user_id: userId, amount: -price, reason: `Покупка x2 буста на ${duration} работ` }) });
+        let res = await r.json();
+        if (res.status === 'ok') {
+            if (userBoosts.active) userBoosts.remainingWorks += duration;
+            else { userBoosts.active = true; userBoosts.remainingWorks = duration; }
+            localStorage.setItem(`user_boosts_${userId}`, JSON.stringify(userBoosts));
+            user.balance = res.new_balance;
+            saveUserData(); updateUI(); renderBoostShop();
+            tg.showAlert(`✅ x2 буст активирован на ${duration} работ!`);
+        }
+    } catch(e) { tg.showAlert('❌ Ошибка'); }
+}
+
+function loadUserBoosts() {
+    let saved = localStorage.getItem(`user_boosts_${userId}`);
+    if (saved) { try { userBoosts = JSON.parse(saved); } catch(e) {} }
+}
+
+function applyBoost(xp) {
+    if (userBoosts.active && userBoosts.remainingWorks > 0) {
+        userBoosts.remainingWorks--;
+        if (userBoosts.remainingWorks === 0) userBoosts.active = false;
+        localStorage.setItem(`user_boosts_${userId}`, JSON.stringify(userBoosts));
+        return xp * 2;
+    }
+    return xp;
+}
+
+function canUseSkip(branchKey) {
+    if (branchKey === 'shock') { alert('⚠️ Шок контент нельзя пропускать!'); return false; }
+    let skips = parseInt(localStorage.getItem(`user_skips_${userId}`) || '0');
+    if (skips <= 0) { alert('❌ Нет пропусков! Купите в магазине.'); return false; }
+    if (confirm('Использовать пропуск?')) {
+        localStorage.setItem(`user_skips_${userId}`, skips - 1);
+        return true;
+    }
+    return false;
+}
+
+const originalToggleSection = toggleSection;
+toggleSection = function(sectionId) {
+    originalToggleSection(sectionId);
+    if (sectionId === 'rewards-section') { loadUserBoosts(); renderStatusShop(); }
+};
      
 var teamPollingInterval = null;
 var approvalPollingInterval = null;
