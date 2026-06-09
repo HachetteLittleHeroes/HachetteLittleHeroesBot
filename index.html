@@ -15175,7 +15175,7 @@ async function buyStatus(statusId, statusName, price) {
         return;
     }
     
-    // ✅ Используем обычный confirm вместо tg.showConfirm
+    // Используем обычный confirm
     const userConfirmed = confirm(`Приобрести статус "${statusName}" за ${price} ашетиков?`);
     
     if (userConfirmed) {
@@ -15184,14 +15184,7 @@ async function buyStatus(statusId, statusName, price) {
 }
 
 async function processStatusPurchase(statusName, price) {
-    // Показываем индикатор загрузки
-    if (tg && tg.MainButton) {
-        tg.MainButton.setText("⏳ Обработка...").show();
-        tg.MainButton.showProgress();
-    }
-    
     try {
-        // Списываем ашетики
         const response = await fetch(`${SERVER_URL}/api/add_balance`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -15230,26 +15223,18 @@ async function processStatusPurchase(statusName, price) {
                 alert(`✅ Статус "${statusName}" успешно приобретён!`);
             }
             
-            // Обновляем отображение статусов в профиле
-            if (typeof openStatusInfo === 'function') {
-                // Обновляем список доступных статусов
-                await loadUnlockedStatuses();
-                updateUI();
-            }
+            // Обновляем список статусов в профиле
+            await loadUnlockedStatuses();
+            updateUI();
         } else {
             throw new Error(result.message || 'Ошибка');
         }
     } catch (error) {
         console.error('Ошибка покупки статуса:', error);
         if (tg && tg.showAlert) {
-            tg.showAlert('❌ Ошибка при покупке статуса');
+            tg.showAlert(`❌ Ошибка: ${error.message}`);
         } else {
-            alert('❌ Ошибка при покупке статуса');
-        }
-    } finally {
-        if (tg && tg.MainButton) {
-            tg.MainButton.hideProgress();
-            tg.MainButton.hide();
+            alert(`❌ Ошибка: ${error.message}`);
         }
     }
 }
