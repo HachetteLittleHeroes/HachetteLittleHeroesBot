@@ -6458,56 +6458,57 @@ body:not([data-theme]) .modal-content,
         <button class="upload-photo-btn" onclick="document.getElementById('customAvatarInput').click()"><i class="fas fa-camera"></i> Загрузить фото</button>
     </div>
 
-  <!-- Счетчик скипов и статус буста -->
-<div style="display: flex; gap: 10px; margin: 10px 15px;">
-<div class="skip-counter" style="background: linear-gradient(135deg, rgba(255,149,0,0.25), rgba(255,149,0,0.1)); border-radius: 20px; padding: 8px 15px; display: flex; align-items: center; gap: 8px; border: 1px solid rgba(255,149,0,0.4);">
-    <i class="fas fa-skip-forward" style="color: var(--accent);"></i>
-    <span>Скипы:</span>
-    <span id="skipCountDisplay" style="font-weight: 700; color: var(--accent);">0</span>
-</div>
-    <div id="boostStatusContainer" style="flex: 1;"></div>
-</div>
-    <div class="balance-card">
-        <p class="balance-label">ВАШ БАЛАНС</p>
-        <div class="balance-main"><span id="userBalance">0</span> <i class="fas fa-book-open gold-book"></i></div>
-        <div class="balance-controls">
-            <button class="balance-btn" onclick="toggleSection('rewards-section')">Потратить ашетики 🏆</button>
-        </div>
+<!-- Объединённый блок скипов и бустов -->
+<div style="background: linear-gradient(135deg, rgba(255,149,0,0.25), rgba(255,149,0,0.1)); border-radius: 20px; padding: 12px 15px; margin: 10px 15px; display: flex; align-items: center; gap: 15px; border: 1px solid rgba(255,149,0,0.4);">
+    <div style="flex: 1; display: flex; align-items: center; gap: 8px;">
+        <i class="fas fa-forward" style="color: var(--accent); font-size: 18px;"></i>
+        <span style="font-size: 13px; color: var(--text);">Скипы:</span>
+        <span id="skipCountDisplay" style="font-weight: 700; color: var(--accent); font-size: 16px;">0</span>
     </div>
-
-    <div id="rewards-section" class="rewards-section">
-        <h3>💰 Магазин</h3>
-        
-        <!-- Вкладки -->
-        <div style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color);">
-            <button class="shop-tab active" data-tab="statuses" onclick="switchShopTab('statuses')">
-                <i class="fas fa-crown"></i> Статусы
-            </button>
-          <button class="shop-tab" data-tab="skips" onclick="switchShopTab('skips')">
-    <i class="fas fa-forward"></i> Скипы
-</button>
-            <button class="shop-tab" data-tab="boosts" onclick="switchShopTab('boosts')">
-                <i class="fas fa-rocket"></i> Бусты XP
-            </button>
-        </div>
-        
-        <!-- Статусы -->
-        <div id="shop-statuses" class="shop-tab-content active">
-            <div class="rewards-grid" id="statusShopGrid"></div>
-        </div>
-        
-        <!-- Пропуски -->
-        <div id="shop-skips" class="shop-tab-content" style="display: none;">
-            <div class="rewards-grid" id="skipShopGrid"></div>
-        </div>
-        
-        <!-- Бусты -->
-        <div id="shop-boosts" class="shop-tab-content" style="display: none;">
-            <div class="rewards-grid" id="boostShopGrid"></div>
-        </div>
+    <div style="width: 1px; height: 30px; background: rgba(255,149,0,0.3);"></div>
+    <div id="boostStatusContainer" style="flex: 1; display: flex; align-items: center; gap: 8px;">
+        <!-- Заполняется через updateBoostDisplay -->
     </div>
+</div>
 
-    <!-- Остальные секции (задания, испытания и т.д.) -->
+<div class="balance-card">
+    <p class="balance-label">ВАШ БАЛАНС</p>
+    <div class="balance-main"><span id="userBalance">0</span> <i class="fas fa-book-open gold-book"></i></div>
+    <div class="balance-controls">
+        <button class="balance-btn" onclick="toggleSection('rewards-section')">Потратить ашетики 🏆</button>
+    </div>
+</div>
+
+<div id="rewards-section" class="rewards-section">
+    <h3>💰 Магазин</h3>
+    
+    <!-- Вкладки -->
+    <div style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color);">
+        <button class="shop-tab active" data-tab="statuses" onclick="switchShopTab('statuses')">
+            <i class="fas fa-crown"></i> Статусы
+        </button>
+        <button class="shop-tab" data-tab="skips" onclick="switchShopTab('skips')">
+            <i class="fas fa-forward"></i> Скипы
+        </button>
+        <button class="shop-tab" data-tab="boosts" onclick="switchShopTab('boosts')">
+            <i class="fas fa-rocket"></i> Бусты XP
+        </button>
+    </div>
+    
+    <!-- Статусы -->
+    <div id="shop-statuses" class="shop-tab-content active">
+        <div class="rewards-grid" id="statusShopGrid"></div>
+    </div>
+    
+    <!-- Скипы -->
+    <div id="shop-skips" class="shop-tab-content" style="display: none;">
+        <div class="rewards-grid" id="skipShopGrid"></div>
+    </div>
+    
+    <!-- Бусты -->
+    <div id="shop-boosts" class="shop-tab-content" style="display: none;">
+        <div class="rewards-grid" id="boostShopGrid"></div>
+    </div>
 </div>
 
  <!-- ========== ЗАДАНИЯ НА СТАТУСЫ ========== -->
@@ -8503,12 +8504,11 @@ function updateSkipDisplay() {
     const display = document.getElementById('skipCountDisplay');
     if (display) {
         display.innerText = userSkips;
-        display.style.color = 'var(--accent)';  
+        display.style.color = 'var(--accent)';
     }
 }
 
 async function updateBoostDisplay() {
-    // ✅ Всегда загружаем актуальный буст с сервера
     try {
         const response = await fetch(`${SERVER_URL}/api/get_boost_status?user_id=${userId}`);
         const boost = await response.json();
@@ -8526,18 +8526,15 @@ async function updateBoostDisplay() {
     
     if (userBoosts.active && userBoosts.remainingWorks > 0) {
         container.innerHTML = `
-            <div style="background: linear-gradient(135deg, rgba(255,149,0,0.2), rgba(255,149,0,0.05)); border-radius: 20px; padding: 8px 15px; display: flex; align-items: center; gap: 8px; border: 1px solid rgba(255,149,0,0.3);">
-                <i class="fas fa-rocket" style="color: var(--accent);"></i>
-                <span style="color: var(--accent); font-weight: 600;">x2 буст активен!</span>
-                <span style="color: var(--text-gray);">Осталось: ${userBoosts.remainingWorks} работ</span>
-            </div>
+            <i class="fas fa-rocket" style="color: var(--accent); font-size: 18px;"></i>
+            <span style="font-size: 13px; color: var(--text);">Буст x2:</span>
+            <span style="font-weight: 700; color: var(--accent); font-size: 16px;">${userBoosts.remainingWorks} работ</span>
         `;
     } else {
         container.innerHTML = `
-            <div style="background: linear-gradient(135deg, rgba(255,149,0,0.2), rgba(255,149,0,0.05)); border-radius: 20px; padding: 8px 15px; display: flex; align-items: center; gap: 8px; border: 1px solid rgba(255,149,0,0.3);">
-                <i class="fas fa-rocket" style="color: var(--text-gray);"></i>
-                <span style="color: var(--text-gray);">Нет активных бустов</span>
-            </div>
+            <i class="fas fa-rocket" style="color: var(--text-gray); font-size: 18px;"></i>
+            <span style="font-size: 13px; color: var(--text-gray);">Буст x2:</span>
+            <span style="font-weight: 700; color: var(--text-gray); font-size: 16px;">—</span>
         `;
     }
 }
@@ -8829,17 +8826,17 @@ function renderBranchTasks() {
     applyAllFilters();
     console.log('✅ Задания отрисованы');
 }
-        async function useSkipForSubtask(branchKey, levelIndex, subtaskIndex, currentProgress, required, subtaskName) {
+      async function useSkipForSubtask(branchKey, levelIndex, subtaskIndex, currentProgress, required, subtaskName) {
     // Проверка: Шок контент нельзя пропускать
     if (branchKey === 'shock') {
         alert('⚠️ Задания ветки "Шок контент" нельзя пропускать!');
         return false;
     }
     
-    // Проверка наличия пропусков
+    // Проверка наличия скипов
     let skips = parseInt(localStorage.getItem(`user_skips_${userId}`) || '0');
     if (skips <= 0) {
-        alert('❌ Нет пропусков! Купите в магазине.');
+        alert('❌ Нет скипов! Купите в магазине.');
         return false;
     }
     
@@ -8849,7 +8846,7 @@ function renderBranchTasks() {
         return false;
     }
     
-    if (!confirm(`Использовать пропуск для подзадания "${subtaskName}"? (1 пропуск = +1 очко). Осталось пропусков: ${skips}`)) {
+    if (!confirm(`Использовать скип для подзадания "${subtaskName}"? (1 скип = +1 очко). Осталось скипов: ${skips}`)) {
         return false;
     }
     
@@ -8869,17 +8866,17 @@ function renderBranchTasks() {
         const result = await response.json();
         
         if (result.status === 'ok') {
-            // Списываем пропуск
+            // Списываем скип
             skips--;
             localStorage.setItem(`user_skips_${userId}`, skips);
             if (typeof updateSkipDisplay === 'function') updateSkipDisplay();
             
-            // Добавляем XP за пропуск (2 XP, с бустом 4 XP)
+            // Добавляем XP за скип (2 XP, с бустом 4 XP)
             if (typeof addXPWithBoost === 'function') {
-                await addXPWithBoost(2, `Пропуск подзадания "${subtaskName}" в ветке ${branchKey}`);
+                await addXPWithBoost(2, `Скип подзадания "${subtaskName}" в ветке ${branchKey}`);
             }
             
-            alert(`✅ Подзадание пропущено! +1 очко. Осталось пропусков: ${skips}`);
+            alert(`✅ Подзадание пропущено! +1 очко. Осталось скипов: ${skips}`);
             
             // Обновляем прогресс
             if (typeof refreshUserProgress === 'function') {
@@ -20102,16 +20099,17 @@ window.onload = async () => {
         const boostContainer = document.getElementById('boostStatusContainer');
         if (boostContainer) {
             if (userBoosts && userBoosts.active && userBoosts.remainingWorks > 0) {
-                boostContainer.innerHTML = `<div style="background: linear-gradient(135deg, rgba(255,149,0,0.25), rgba(255,149,0,0.1)); border-radius: 20px; padding: 8px 15px; display: flex; align-items: center; gap: 8px; border: 1px solid rgba(255,149,0,0.4);">
-                    <i class="fas fa-rocket" style="color: var(--accent);"></i>
-                    <span style="color: var(--accent); font-weight: 600;">x2 буст активен!</span>
-                    <span style="color: var(--text-gray);">Осталось: ${userBoosts.remainingWorks} работ</span>
-                </div>`;
+                boostContainer.innerHTML = `
+                    <i class="fas fa-rocket" style="color: var(--accent); font-size: 18px;"></i>
+                    <span style="font-size: 13px; color: var(--text);">Буст x2:</span>
+                    <span style="font-weight: 700; color: var(--accent); font-size: 16px;">${userBoosts.remainingWorks} работ</span>
+                `;
             } else {
-                boostContainer.innerHTML = `<div style="background: linear-gradient(135deg, rgba(255,149,0,0.25), rgba(255,149,0,0.1)); border-radius: 20px; padding: 8px 15px; display: flex; align-items: center; gap: 8px; border: 1px solid rgba(255,149,0,0.4);">
-                    <i class="fas fa-rocket" style="color: var(--text-gray);"></i>
-                    <span style="color: var(--text-gray);">Нет активных бустов</span>
-                </div>`;
+                boostContainer.innerHTML = `
+                    <i class="fas fa-rocket" style="color: var(--text-gray); font-size: 18px;"></i>
+                    <span style="font-size: 13px; color: var(--text-gray);">Буст x2:</span>
+                    <span style="font-weight: 700; color: var(--text-gray); font-size: 16px;">—</span>
+                `;
             }
         }
     }
