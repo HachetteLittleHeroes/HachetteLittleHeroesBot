@@ -6377,6 +6377,39 @@ body:not([data-theme]) .modal-content,
     font-size: 13px;
     font-weight: 600;
 }
+        /* Контейнер для кнопок в подзадании */
+.subtask-card .task-submit-btn {
+    display: inline-flex !important;
+    width: auto !important;
+    padding: 8px 14px !important;
+    font-size: 12px !important;
+    margin-top: 8px !important;
+    margin-right: 8px !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+}
+
+/* Контейнер для кнопок — в одну строку */
+.subtask-card .task-buttons-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 8px;
+}
+
+/* Кнопка отправки фото — основная */
+.subtask-card .task-submit-btn.send-photo-btn {
+    background: var(--accent);
+    flex: 1;
+    min-width: 120px;
+}
+
+/* Кнопка пропуска — компактная */
+.subtask-card .task-submit-btn.skip-btn {
+    background: #ff9800;
+    flex-shrink: 0;
+}
     </style>
 </head>
 <body>
@@ -6427,7 +6460,7 @@ body:not([data-theme]) .modal-content,
 
   <!-- Счетчик скипов и статус буста -->
 <div style="display: flex; gap: 10px; margin: 10px 15px;">
-  <div class="skip-counter" style="background: linear-gradient(135deg, rgba(255,149,0,0.2), rgba(255,149,0,0.05)); border-radius: 20px; padding: 8px 15px; display: flex; align-items: center; gap: 8px; border: 1px solid rgba(255,149,0,0.3);">
+<div class="skip-counter" style="background: linear-gradient(135deg, rgba(255,149,0,0.25), rgba(255,149,0,0.1)); border-radius: 20px; padding: 8px 15px; display: flex; align-items: center; gap: 8px; border: 1px solid rgba(255,149,0,0.4);">
     <i class="fas fa-skip-forward" style="color: var(--accent);"></i>
     <span>Скипы:</span>
     <span id="skipCountDisplay" style="font-weight: 700; color: var(--accent);">0</span>
@@ -6450,8 +6483,8 @@ body:not([data-theme]) .modal-content,
             <button class="shop-tab active" data-tab="statuses" onclick="switchShopTab('statuses')">
                 <i class="fas fa-crown"></i> Статусы
             </button>
-           <button class="shop-tab" data-tab="skips" onclick="switchShopTab('skips')">
-    <i class="fas fa-skip-forward"></i> Скипы
+          <button class="shop-tab" data-tab="skips" onclick="switchShopTab('skips')">
+    <i class="fas fa-forward"></i> Скипы
 </button>
             <button class="shop-tab" data-tab="boosts" onclick="switchShopTab('boosts')">
                 <i class="fas fa-rocket"></i> Бусты XP
@@ -8555,17 +8588,13 @@ function renderBranchTasks() {
     container.innerHTML = '';
     
     for (const [branchKey, branch] of Object.entries(TASK_BRANCHES)) {
-        // Пропускаем сезонный пропуск
         if (branchKey === 'season_pass') continue;
-        
-        // Пропускаем Скруджа и Благодетеля (не показываем в заданиях на статусы)
         if (branchKey === 'scrooge' || branchKey === 'benefactor') continue;
         
         const isCompleted = isBranchCompleted(branchKey);
         const currentLevelIndex = getCurrentLevelIndex(branchKey);
         const levels = branch.levels;
         
-        // Получаем сложность ветки (по умолчанию 1 звезда)
         const difficulty = TASK_DIFFICULTY[branchKey] || 1;
         const starsHtml = '<span class="stars" data-difficulty="' + difficulty + '" style="display: inline-flex; align-items: center; gap: 2px; margin-left: 8px;">' + renderStars(difficulty) + '</span>';
         
@@ -8573,7 +8602,6 @@ function renderBranchTasks() {
         branchCard.className = `branch-task-card ${isCompleted ? 'completed' : ''}`;
         branchCard.setAttribute('data-branch-key', branchKey);
         
-        // Добавляем звёзды в заголовок
         branchCard.innerHTML = `
             <div class="branch-header">
                 <h3>${branch.name} ${starsHtml}</h3>
@@ -8597,7 +8625,6 @@ function renderBranchTasks() {
             const level = levels[currentLevelIndex];
             
             if (level.subtasks && level.subtasks.length > 0) {
-                // Множественные подзадания
                 const levelCard = document.createElement('div');
                 levelCard.className = 'level-card';
                 levelCard.setAttribute('data-level-index', currentLevelIndex);
@@ -8645,29 +8672,33 @@ function renderBranchTasks() {
                     `;
                     
                     if (!isSubtaskCompleted) {
-                        // Кнопка отправки фото
+                        // ✅ КНОПКИ В ОДНУ СТРОКУ
+                        const buttonsRow = document.createElement('div');
+                        buttonsRow.style.cssText = 'display: flex; gap: 8px; align-items: center; margin-top: 8px;';
+                        
                         const uploadBtn = document.createElement('button');
                         uploadBtn.className = 'task-submit-btn';
-                        uploadBtn.style.cssText = 'padding: 8px; font-size: 12px; margin-top: 5px; margin-right: 8px; display: inline-block; width: auto;';
+                        uploadBtn.style.cssText = 'padding: 8px 12px; font-size: 12px; flex: 1; min-width: 0;';
                         uploadBtn.innerHTML = '<i class="fas fa-camera"></i> Отправить фото';
                         uploadBtn.onclick = function() {
                             openSubtaskUpload(branchKey, currentLevelIndex, idx, subtaskName);
                         };
-                        subtaskDiv.appendChild(uploadBtn);
+                        buttonsRow.appendChild(uploadBtn);
                         
-                        // Кнопка пропуска (только если не Шок контент)
                         if (branchKey !== 'shock') {
                             const skipBtn = document.createElement('button');
                             skipBtn.className = 'task-submit-btn';
-                            skipBtn.style.cssText = 'background: #ff9800; padding: 8px; font-size: 12px; margin-top: 5px; display: inline-block; width: auto;';
-                            skipBtn.innerHTML = '<i class="fas fa-skip-forward"></i> Пропустить (1 скип)';
+                            skipBtn.style.cssText = 'background: #ff9800; padding: 8px 12px; font-size: 12px; flex-shrink: 0; white-space: nowrap;';
+                            skipBtn.innerHTML = '<i class="fas fa-skip-forward"></i> Скип';
                             skipBtn.onclick = (function(b, l, s, cp, req, sn) {
                                 return async function() {
                                     await useSkipForSubtask(b, l, s, cp, req, sn);
                                 };
                             })(branchKey, currentLevelIndex, idx, currentProgress, subtask.required, subtaskName);
-                            subtaskDiv.appendChild(skipBtn);
+                            buttonsRow.appendChild(skipBtn);
                         }
+                        
+                        subtaskDiv.appendChild(buttonsRow);
                     } else {
                         subtaskDiv.innerHTML += `
                             <div style="text-align: center; color: var(--status-green); font-size: 12px; margin-top: 5px;">
@@ -8681,7 +8712,6 @@ function renderBranchTasks() {
                 
                 branchCard.appendChild(levelCard);
             } else if (level.subtasks && level.subtasks.length === 1) {
-                // Одно подзадание
                 const subtask = level.subtasks[0];
                 const currentProgress = getSubtaskProgress(branchKey, currentLevelIndex, 0);
                 const isSubtaskCompleted = currentProgress >= subtask.required;
@@ -8702,29 +8732,33 @@ function renderBranchTasks() {
                 `;
                 
                 if (!isSubtaskCompleted) {
-                    // Кнопка отправки фото
+                    // ✅ КНОПКИ В ОДНУ СТРОКУ
+                    const buttonsRow = document.createElement('div');
+                    buttonsRow.style.cssText = 'display: flex; gap: 8px; align-items: center; margin-top: 10px;';
+                    
                     const uploadBtn = document.createElement('button');
                     uploadBtn.className = 'task-submit-btn';
-                    uploadBtn.style.cssText = 'margin-top: 10px; display: inline-block; width: auto; margin-right: 8px;';
-                    uploadBtn.innerHTML = '<i class="fas fa-camera"></i> Отправить фото на проверку';
+                    uploadBtn.style.cssText = 'padding: 8px 12px; font-size: 12px; flex: 1; min-width: 0;';
+                    uploadBtn.innerHTML = '<i class="fas fa-camera"></i> Отправить фото';
                     uploadBtn.onclick = function() {
                         openSubtaskUpload(branchKey, currentLevelIndex, 0, subtask.name);
                     };
-                    levelCard.appendChild(uploadBtn);
+                    buttonsRow.appendChild(uploadBtn);
                     
-                    // Кнопка пропуска (только если не Шок контент)
                     if (branchKey !== 'shock') {
                         const skipBtn = document.createElement('button');
                         skipBtn.className = 'task-submit-btn';
-                        skipBtn.style.cssText = 'background: #ff9800; margin-top: 10px; display: inline-block; width: auto;';
-                        skipBtn.innerHTML = '<i class="fas fa-skip-forward"></i> Пропустить (1 скип)';
+                        skipBtn.style.cssText = 'background: #ff9800; padding: 8px 12px; font-size: 12px; flex-shrink: 0; white-space: nowrap;';
+                        skipBtn.innerHTML = '<i class="fas fa-skip-forward"></i> Скип';
                         skipBtn.onclick = (function(b, l, s, cp, req, sn) {
                             return async function() {
                                 await useSkipForSubtask(b, l, s, cp, req, sn);
                             };
                         })(branchKey, currentLevelIndex, 0, currentProgress, subtask.required, subtask.name);
-                        levelCard.appendChild(skipBtn);
+                        buttonsRow.appendChild(skipBtn);
                     }
+                    
+                    levelCard.appendChild(buttonsRow);
                 } else {
                     levelCard.innerHTML += `
                         <div style="text-align: center; padding: 12px; color: var(--status-green); margin-top: 10px;">
@@ -8735,7 +8769,6 @@ function renderBranchTasks() {
                 
                 branchCard.appendChild(levelCard);
             } else {
-                // Обычный уровень без подзаданий
                 const currentProgress = getLevelProgress(branchKey, currentLevelIndex);
                 const percent = (currentProgress / level.maxProgress) * 100;
                 const levelCard = document.createElement('div');
@@ -8750,34 +8783,45 @@ function renderBranchTasks() {
                     <div class="progress-bar-container">
                         <div class="progress-bar-fill" style="width: ${percent}%"></div>
                     </div>
-                    <button class="task-submit-btn" onclick="openTaskUpload('${branchKey}', ${currentLevelIndex})">
-                        <i class="fas fa-camera"></i> Отправить фото на проверку
-                    </button>
                 `;
-                branchCard.appendChild(levelCard);
                 
-                // Добавляем кнопку пропуска (кроме Шок контент)
+                // ✅ КНОПКИ В ОДНУ СТРОКУ
+                const buttonsRow = document.createElement('div');
+                buttonsRow.style.cssText = 'display: flex; gap: 8px; align-items: center; margin-top: 10px;';
+                
+                const uploadBtn = document.createElement('button');
+                uploadBtn.className = 'task-submit-btn';
+                uploadBtn.style.cssText = 'padding: 8px 12px; font-size: 12px; flex: 1; min-width: 0;';
+                uploadBtn.innerHTML = '<i class="fas fa-camera"></i> Отправить фото';
+                uploadBtn.onclick = function() {
+                    openTaskUpload(branchKey, currentLevelIndex);
+                };
+                buttonsRow.appendChild(uploadBtn);
+                
                 if (branchKey !== 'shock' && currentProgress < level.maxProgress) {
                     const skipBtn = document.createElement('button');
-                    skipBtn.className = 'task-submit-btn skip-task-btn';
-                    skipBtn.style.cssText = 'background: #ff9800; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 8px;';
-                    skipBtn.innerHTML = '<i class="fas fa-skip-forward"></i> Пропустить (1 очко)';
+                    skipBtn.className = 'task-submit-btn';
+                    skipBtn.style.cssText = 'background: #ff9800; padding: 8px 12px; font-size: 12px; flex-shrink: 0; white-space: nowrap;';
+                    skipBtn.innerHTML = '<i class="fas fa-skip-forward"></i> Скип';
                     skipBtn.onclick = async (e) => {
                         e.preventDefault();
                         e.stopPropagation();
                         
                         let skips = parseInt(localStorage.getItem(`user_skips_${userId}`) || '0');
                         if (skips <= 0) {
-                            alert('❌ Нет пропусков! Купите в магазине.');
+                            alert('❌ Нет скипов! Купите в магазине.');
                             return;
                         }
                         
-                        if (confirm(`Использовать пропуск для этого задания? Осталось пропусков: ${skips}`)) {
+                        if (confirm(`Использовать скип для этого задания? Осталось скипов: ${skips}`)) {
                             await addProgressWithoutPhoto(branchKey, currentLevelIndex);
                         }
                     };
-                    levelCard.appendChild(skipBtn);
+                    buttonsRow.appendChild(skipBtn);
                 }
+                
+                levelCard.appendChild(buttonsRow);
+                branchCard.appendChild(levelCard);
             }
         }
         
@@ -20061,13 +20105,13 @@ window.onload = async () => {
         const boostContainer = document.getElementById('boostStatusContainer');
         if (boostContainer) {
             if (userBoosts && userBoosts.active && userBoosts.remainingWorks > 0) {
-                boostContainer.innerHTML = `<div style="background: linear-gradient(135deg, rgba(255,149,0,0.2), rgba(255,149,0,0.05)); border-radius: 20px; padding: 8px 15px; display: flex; align-items: center; gap: 8px; border: 1px solid rgba(255,149,0,0.3);">
+                boostContainer.innerHTML = `<div style="background: linear-gradient(135deg, rgba(255,149,0,0.25), rgba(255,149,0,0.1)); border-radius: 20px; padding: 8px 15px; display: flex; align-items: center; gap: 8px; border: 1px solid rgba(255,149,0,0.4);">
                     <i class="fas fa-rocket" style="color: var(--accent);"></i>
                     <span style="color: var(--accent); font-weight: 600;">x2 буст активен!</span>
                     <span style="color: var(--text-gray);">Осталось: ${userBoosts.remainingWorks} работ</span>
                 </div>`;
             } else {
-                boostContainer.innerHTML = `<div style="background: linear-gradient(135deg, rgba(255,149,0,0.2), rgba(255,149,0,0.05)); border-radius: 20px; padding: 8px 15px; display: flex; align-items: center; gap: 8px; border: 1px solid rgba(255,149,0,0.3);">
+                boostContainer.innerHTML = `<div style="background: linear-gradient(135deg, rgba(255,149,0,0.25), rgba(255,149,0,0.1)); border-radius: 20px; padding: 8px 15px; display: flex; align-items: center; gap: 8px; border: 1px solid rgba(255,149,0,0.4);">
                     <i class="fas fa-rocket" style="color: var(--text-gray);"></i>
                     <span style="color: var(--text-gray);">Нет активных бустов</span>
                 </div>`;
