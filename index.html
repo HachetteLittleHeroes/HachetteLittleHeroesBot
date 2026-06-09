@@ -8316,34 +8316,25 @@ function applyAllFilters() {
 
 // Функция для добавления XP с учётом буста
 async function addXPWithBoost(amount, reason) {
-    // Проверяем, есть ли активный буст
     let finalAmount = amount;
     let boostUsed = false;
     
     if (userBoosts.active && userBoosts.remainingWorks > 0) {
-        finalAmount = amount * 2;
+        finalAmount = amount * 2;  // 2 * 2 = 4, а не 5 * 2 = 10
         userBoosts.remainingWorks--;
         boostUsed = true;
         
         if (userBoosts.remainingWorks === 0) {
             userBoosts.active = false;
-            console.log('🔥 Буст закончился!');
         }
         
-        // Сохраняем обновлённый буст
         localStorage.setItem(`user_boosts_${userId}`, JSON.stringify(userBoosts));
         
-        // Обновляем отображение буста в профиле
         if (typeof updateBoostDisplay === 'function') {
             updateBoostDisplay();
         }
         
-        // Обновляем отображение в магазине если открыт
-        if (typeof renderBoostShop === 'function' && currentShopTab === 'boosts') {
-            renderBoostShop();
-        }
-        
-        console.log(`🔥 Буст применён! ${amount} XP → ${finalAmount} XP (осталось: ${userBoosts.remainingWorks} работ)`);
+        console.log(`🔥 Буст применён! ${amount} XP → ${finalAmount} XP`);
     }
     
     try {
@@ -8360,21 +8351,16 @@ async function addXPWithBoost(amount, reason) {
         const result = await response.json();
         
         if (result.status === 'ok') {
-            // Обновляем отображение уровня
             if (typeof renderUserLevel === 'function') {
                 renderUserLevel();
             }
             return finalAmount;
-        } else {
-            console.error('Ошибка сервера:', result);
-            return amount;
         }
     } catch (error) {
         console.error('Ошибка добавления XP:', error);
-        return amount;
     }
+    return amount;
 }
-
 // Функция пропуска задания
 async function addProgressWithoutPhoto(branchKey, levelIndex) {
     let skips = parseInt(localStorage.getItem(`user_skips_${userId}`) || '0');
@@ -8610,141 +8596,145 @@ function renderBranchTasks() {
             const level = levels[currentLevelIndex];
             
             if (level.subtasks && level.subtasks.length > 0) {
-                if (level.subtasks.length === 1) {
-                    const subtask = level.subtasks[0];
-                    const currentProgress = getSubtaskProgress(branchKey, currentLevelIndex, 0);
+                // Множественные подзадания
+                const levelCard = document.createElement('div');
+                levelCard.className = 'level-card';
+                levelCard.setAttribute('data-level-index', currentLevelIndex);
+                
+                let totalCompleted = 0;
+                let totalRequired = 0;
+                
+                level.subtasks.forEach((subtask, idx) => {
+                    const prog = getSubtaskProgress(branchKey, currentLevelIndex, idx);
+                    totalCompleted += Math.min(prog, subtask.required);
+                    totalRequired += subtask.required;
+                });
+                
+                const totalPercent = (totalCompleted / totalRequired) * 100;
+                
+                levelCard.innerHTML = `
+                    <div class="level-header">
+                        <span class="level-title">Уровень ${currentLevelIndex + 1}: ${level.title}</span>
+                        <span class="level-progress">${totalCompleted}/${totalRequired}</span>
+                    </div>
+                    <div class="level-desc">${level.desc}</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" style="width: ${totalPercent}%"></div>
+                    </div>
+                    <div style="margin-top: 15px;"></div>
+                `;
+                
+                level.subtasks.forEach((subtask, idx) => {
+                    const currentProgress = getSubtaskProgress(branchKey, currentLevelIndex, idx);
                     const isSubtaskCompleted = currentProgress >= subtask.required;
-                    const percent = (currentProgress / subtask.required) * 100;
+                    const subtaskPercent = (currentProgress / subtask.required) * 100;
+                    const subtaskName = subtask.name;
                     
-                    const levelCard = document.createElement('div');
-                    levelCard.className = 'level-card';
-                    levelCard.setAttribute('data-level-index', currentLevelIndex);
-                    levelCard.innerHTML = `
-                        <div class="level-header">
-                            <span class="level-title">${level.title}</span>
-                            <span class="level-progress">${currentProgress}/${subtask.required}</span>
+                    const subtaskDiv = document.createElement('div');
+                    subtaskDiv.style.cssText = 'margin-bottom: 15px; padding: 10px; background: var(--bg); border-radius: 12px;';
+                    
+                    subtaskDiv.innerHTML = `
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                            <span style="font-weight: 600; font-size: 14px;">${subtask.name}</span>
+                            <span style="font-size: 12px; color: var(--accent);">${currentProgress}/${subtask.required}</span>
                         </div>
-                        <div class="level-desc">${level.desc}</div>
-                        <div class="progress-bar-container">
-                            <div class="progress-bar-fill" style="width: ${percent}%"></div>
+                        <div class="progress-bar-container" style="height: 6px; margin: 0 0 8px 0;">
+                            <div class="progress-bar-fill" style="width: ${subtaskPercent}%; height: 100%;"></div>
                         </div>
-                        ${!isSubtaskCompleted ? `
-                            <button class="task-submit-btn" onclick="openSubtaskUpload('${branchKey}', ${currentLevelIndex}, 0, '${subtask.name}')">
-                                <i class="fas fa-camera"></i> Отправить фото на проверку
-                            </button>
-                        ` : `
-                            <div style="text-align: center; padding: 12px; color: var(--status-green);">
-                                <i class="fas fa-check-circle"></i> Задание выполнено!
-                            </div>
-                        `}
                     `;
-                    branchCard.appendChild(levelCard);
                     
-                    // Добавляем кнопку пропуска (кроме Шок контент)
-                    if (branchKey !== 'shock' && !isSubtaskCompleted) {
-                        const skipBtn = document.createElement('button');
-                        skipBtn.className = 'task-submit-btn skip-task-btn';
-                        skipBtn.style.cssText = 'background: #ff9800; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 8px;';
-                        skipBtn.innerHTML = '<i class="fas fa-skip-forward"></i> Пропустить (1 очко)';
-                        skipBtn.onclick = async (e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            
-                            let skips = parseInt(localStorage.getItem(`user_skips_${userId}`) || '0');
-                            if (skips <= 0) {
-                                alert('❌ Нет пропусков! Купите в магазине.');
-                                return;
-                            }
-                            
-                            if (confirm(`Использовать пропуск для этого задания? Осталось пропусков: ${skips}`)) {
-                                await addProgressWithoutPhoto(branchKey, currentLevelIndex);
-                            }
+                    if (!isSubtaskCompleted) {
+                        // Кнопка отправки фото
+                        const uploadBtn = document.createElement('button');
+                        uploadBtn.className = 'task-submit-btn';
+                        uploadBtn.style.cssText = 'padding: 8px; font-size: 12px; margin-top: 5px; margin-right: 8px; display: inline-block; width: auto;';
+                        uploadBtn.innerHTML = '<i class="fas fa-camera"></i> Отправить фото';
+                        uploadBtn.onclick = function() {
+                            openSubtaskUpload(branchKey, currentLevelIndex, idx, subtaskName);
                         };
+                        subtaskDiv.appendChild(uploadBtn);
+                        
+                        // Кнопка пропуска (только если не Шок контент)
+                        if (branchKey !== 'shock') {
+                            const skipBtn = document.createElement('button');
+                            skipBtn.className = 'task-submit-btn';
+                            skipBtn.style.cssText = 'background: #ff9800; padding: 8px; font-size: 12px; margin-top: 5px; display: inline-block; width: auto;';
+                            skipBtn.innerHTML = '<i class="fas fa-skip-forward"></i> Пропустить (1 скип)';
+                            skipBtn.onclick = (function(b, l, s, cp, req, sn) {
+                                return async function() {
+                                    await useSkipForSubtask(b, l, s, cp, req, sn);
+                                };
+                            })(branchKey, currentLevelIndex, idx, currentProgress, subtask.required, subtaskName);
+                            subtaskDiv.appendChild(skipBtn);
+                        }
+                    } else {
+                        subtaskDiv.innerHTML += `
+                            <div style="text-align: center; color: var(--status-green); font-size: 12px; margin-top: 5px;">
+                                <i class="fas fa-check-circle"></i> Выполнено!
+                            </div>
+                        `;
+                    }
+                    
+                    levelCard.appendChild(subtaskDiv);
+                });
+                
+                branchCard.appendChild(levelCard);
+            } else if (level.subtasks && level.subtasks.length === 1) {
+                // Одно подзадание
+                const subtask = level.subtasks[0];
+                const currentProgress = getSubtaskProgress(branchKey, currentLevelIndex, 0);
+                const isSubtaskCompleted = currentProgress >= subtask.required;
+                const percent = (currentProgress / subtask.required) * 100;
+                
+                const levelCard = document.createElement('div');
+                levelCard.className = 'level-card';
+                levelCard.setAttribute('data-level-index', currentLevelIndex);
+                levelCard.innerHTML = `
+                    <div class="level-header">
+                        <span class="level-title">${level.title}</span>
+                        <span class="level-progress">${currentProgress}/${subtask.required}</span>
+                    </div>
+                    <div class="level-desc">${level.desc}</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" style="width: ${percent}%"></div>
+                    </div>
+                `;
+                
+                if (!isSubtaskCompleted) {
+                    // Кнопка отправки фото
+                    const uploadBtn = document.createElement('button');
+                    uploadBtn.className = 'task-submit-btn';
+                    uploadBtn.style.cssText = 'margin-top: 10px; display: inline-block; width: auto; margin-right: 8px;';
+                    uploadBtn.innerHTML = '<i class="fas fa-camera"></i> Отправить фото на проверку';
+                    uploadBtn.onclick = function() {
+                        openSubtaskUpload(branchKey, currentLevelIndex, 0, subtask.name);
+                    };
+                    levelCard.appendChild(uploadBtn);
+                    
+                    // Кнопка пропуска (только если не Шок контент)
+                    if (branchKey !== 'shock') {
+                        const skipBtn = document.createElement('button');
+                        skipBtn.className = 'task-submit-btn';
+                        skipBtn.style.cssText = 'background: #ff9800; margin-top: 10px; display: inline-block; width: auto;';
+                        skipBtn.innerHTML = '<i class="fas fa-skip-forward"></i> Пропустить (1 скип)';
+                        skipBtn.onclick = (function(b, l, s, cp, req, sn) {
+                            return async function() {
+                                await useSkipForSubtask(b, l, s, cp, req, sn);
+                            };
+                        })(branchKey, currentLevelIndex, 0, currentProgress, subtask.required, subtask.name);
                         levelCard.appendChild(skipBtn);
                     }
                 } else {
-                    const levelCard = document.createElement('div');
-                    levelCard.className = 'level-card';
-                    levelCard.setAttribute('data-level-index', currentLevelIndex);
-                    
-                    let totalCompleted = 0;
-                    let totalRequired = 0;
-                    
-                    level.subtasks.forEach((subtask, idx) => {
-                        const prog = getSubtaskProgress(branchKey, currentLevelIndex, idx);
-                        totalCompleted += Math.min(prog, subtask.required);
-                        totalRequired += subtask.required;
-                    });
-                    
-                    const totalPercent = (totalCompleted / totalRequired) * 100;
-                    
-                    levelCard.innerHTML = `
-                        <div class="level-header">
-                            <span class="level-title">Уровень ${currentLevelIndex + 1}: ${level.title}</span>
-                            <span class="level-progress">${totalCompleted}/${totalRequired}</span>
+                    levelCard.innerHTML += `
+                        <div style="text-align: center; padding: 12px; color: var(--status-green); margin-top: 10px;">
+                            <i class="fas fa-check-circle"></i> Задание выполнено!
                         </div>
-                        <div class="level-desc">${level.desc}</div>
-                        <div class="progress-bar-container">
-                            <div class="progress-bar-fill" style="width: ${totalPercent}%"></div>
-                        </div>
-                        <div style="margin-top: 15px;"></div>
                     `;
-                    
-                    level.subtasks.forEach((subtask, idx) => {
-                        const currentProgress = getSubtaskProgress(branchKey, currentLevelIndex, idx);
-                        const isSubtaskCompleted = currentProgress >= subtask.required;
-                        const subtaskPercent = (currentProgress / subtask.required) * 100;
-                        
-                        const subtaskDiv = document.createElement('div');
-                        subtaskDiv.style.cssText = 'margin-bottom: 15px; padding: 10px; background: var(--bg); border-radius: 12px;';
-                        
-                        subtaskDiv.innerHTML = `
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                                <span style="font-weight: 600; font-size: 14px;">${subtask.name}</span>
-                                <span style="font-size: 12px; color: var(--accent);">${currentProgress}/${subtask.required}</span>
-                            </div>
-                            <div class="progress-bar-container" style="height: 6px; margin: 0 0 8px 0;">
-                                <div class="progress-bar-fill" style="width: ${subtaskPercent}%; height: 100%;"></div>
-                            </div>
-                            ${!isSubtaskCompleted ? `
-                                <button class="task-submit-btn" style="padding: 8px; font-size: 12px; margin-top: 5px;" onclick="openSubtaskUpload('${branchKey}', ${currentLevelIndex}, ${idx}, '${subtask.name}')">
-                                    <i class="fas fa-camera"></i> Отправить фото: ${subtask.name}
-                                </button>
-                            ` : `
-                                <div style="text-align: center; color: var(--status-green); font-size: 12px; margin-top: 5px;">
-                                    <i class="fas fa-check-circle"></i> Выполнено!
-                                </div>
-                            `}
-                        `;
-                        levelCard.appendChild(subtaskDiv);
-                    });
-                    
-                    branchCard.appendChild(levelCard);
-                    
-                    // Добавляем кнопку пропуска для всего уровня (кроме Шок контент)
-                    if (branchKey !== 'shock' && totalCompleted < totalRequired) {
-                        const skipBtn = document.createElement('button');
-                        skipBtn.className = 'task-submit-btn skip-task-btn';
-                        skipBtn.style.cssText = 'background: #ff9800; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 8px;';
-                        skipBtn.innerHTML = '<i class="fas fa-skip-forward"></i> Пропустить подзадание (1 очко)';
-                        skipBtn.onclick = async (e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            
-                            let skips = parseInt(localStorage.getItem(`user_skips_${userId}`) || '0');
-                            if (skips <= 0) {
-                                alert('❌ Нет пропусков! Купите в магазине.');
-                                return;
-                            }
-                            
-                            if (confirm(`Использовать пропуск для этого задания? Осталось пропусков: ${skips}`)) {
-                                await addProgressWithoutPhoto(branchKey, currentLevelIndex);
-                            }
-                        };
-                        levelCard.appendChild(skipBtn);
-                    }
                 }
+                
+                branchCard.appendChild(levelCard);
             } else {
+                // Обычный уровень без подзаданий
                 const currentProgress = getLevelProgress(branchKey, currentLevelIndex);
                 const percent = (currentProgress / level.maxProgress) * 100;
                 const levelCard = document.createElement('div');
@@ -8796,6 +8786,75 @@ function renderBranchTasks() {
     renderStatusFilters();
     applyAllFilters();
     console.log('✅ Задания отрисованы');
+}
+        async function useSkipForSubtask(branchKey, levelIndex, subtaskIndex, currentProgress, required, subtaskName) {
+    // Проверка: Шок контент нельзя пропускать
+    if (branchKey === 'shock') {
+        alert('⚠️ Задания ветки "Шок контент" нельзя пропускать!');
+        return false;
+    }
+    
+    // Проверка наличия пропусков
+    let skips = parseInt(localStorage.getItem(`user_skips_${userId}`) || '0');
+    if (skips <= 0) {
+        alert('❌ Нет пропусков! Купите в магазине.');
+        return false;
+    }
+    
+    // Проверка что подзадание ещё не выполнено
+    if (currentProgress >= required) {
+        alert('✅ Это подзадание уже выполнено!');
+        return false;
+    }
+    
+    if (!confirm(`Использовать пропуск для подзадания "${subtaskName}"? (1 пропуск = +1 очко). Осталось пропусков: ${skips}`)) {
+        return false;
+    }
+    
+    try {
+        const response = await fetch(`${SERVER_URL}/api/add_progress`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                user_id: userId,
+                branch_key: branchKey,
+                level_index: levelIndex,
+                subtask_index: subtaskIndex,
+                amount: 1
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.status === 'ok') {
+            // Списываем пропуск
+            skips--;
+            localStorage.setItem(`user_skips_${userId}`, skips);
+            if (typeof updateSkipDisplay === 'function') updateSkipDisplay();
+            
+            // Добавляем XP за пропуск (2 XP, с бустом 4 XP)
+            if (typeof addXPWithBoost === 'function') {
+                await addXPWithBoost(2, `Пропуск подзадания "${subtaskName}" в ветке ${branchKey}`);
+            }
+            
+            alert(`✅ Подзадание пропущено! +1 очко. Осталось пропусков: ${skips}`);
+            
+            // Обновляем прогресс
+            if (typeof refreshUserProgress === 'function') {
+                await refreshUserProgress();
+            }
+            renderBranchTasks();
+            
+            return true;
+        } else {
+            alert('❌ Ошибка: ' + (result.message || 'Неизвестная ошибка'));
+            return false;
+        }
+    } catch (error) {
+        console.error('Ошибка:', error);
+        alert('❌ Ошибка при пропуске задания');
+        return false;
+    }
 }
         // ==========================================
         // ОБНОВЛЕНИЕ ПРОГРЕССА
