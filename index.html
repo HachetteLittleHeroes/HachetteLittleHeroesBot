@@ -15849,42 +15849,7 @@ function addSkipButtonToTask(taskCard, branchKey, levelIndex) {
     
     existingBtn.parentNode.insertBefore(skipBtn, existingBtn.nextSibling);
 } 
-async function buyBoost(duration, price) {
-    if (user.balance < price) {
-        alert(`❌ Недостаточно ашетиков! Нужно ${price}`);
-        return;
-    }
-    if (!confirm(`Активировать x2 буст на ${duration} работ за ${price} ашетиков?`)) return;
-    
-    try {
-        let r = await fetch(`${SERVER_URL}/api/add_balance`, { 
-            method: 'POST', 
-            headers: { 'Content-Type': 'application/json' }, 
-            body: JSON.stringify({ user_id: userId, amount: -price, reason: `Покупка x2 буста на ${duration} работ` }) 
-        });
-        let res = await r.json();
-        if (res.status === 'ok') {
-            if (userBoosts.active) {
-                userBoosts.remainingWorks += duration;
-            } else {
-                userBoosts.active = true;
-                userBoosts.remainingWorks = duration;
-            }
-            localStorage.setItem(`user_boosts_${userId}`, JSON.stringify(userBoosts));
-            user.balance = res.new_balance;
-            saveUserData(); 
-            updateUI(); 
-            renderBoostShop();
-            renderBoostStatus();
-            alert(`✅ x2 буст активирован на ${duration} работ!`);
-        } else {
-            alert('❌ Ошибка при покупке');
-        }
-    } catch(e) { 
-        console.error(e);
-        alert('❌ Ошибка при покупке');
-    }
-}
+
 function loadUserBoosts() {
     let saved = localStorage.getItem(`user_boosts_${userId}`);
     if (saved) { try { userBoosts = JSON.parse(saved); } catch(e) {} }
