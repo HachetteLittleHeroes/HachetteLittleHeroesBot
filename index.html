@@ -8674,11 +8674,11 @@ function renderBranchTasks() {
                     if (!isSubtaskCompleted) {
                         // ✅ КНОПКИ В ОДНУ СТРОКУ
                         const buttonsRow = document.createElement('div');
-                        buttonsRow.style.cssText = 'display: flex; gap: 8px; align-items: center; margin-top: 8px;';
+                        buttonsRow.style.cssText = 'display: flex; gap: 6px; align-items: stretch; margin-top: 8px;';
                         
                         const uploadBtn = document.createElement('button');
                         uploadBtn.className = 'task-submit-btn';
-                        uploadBtn.style.cssText = 'padding: 8px 12px; font-size: 12px; flex: 1; min-width: 0;';
+                        uploadBtn.style.cssText = 'padding: 10px 14px; font-size: 13px; flex: 1; min-width: 0; display: flex; align-items: center; justify-content: center; gap: 6px;';
                         uploadBtn.innerHTML = '<i class="fas fa-camera"></i> Отправить фото';
                         uploadBtn.onclick = function() {
                             openSubtaskUpload(branchKey, currentLevelIndex, idx, subtaskName);
@@ -8688,8 +8688,9 @@ function renderBranchTasks() {
                         if (branchKey !== 'shock') {
                             const skipBtn = document.createElement('button');
                             skipBtn.className = 'task-submit-btn';
-                            skipBtn.style.cssText = 'background: #ff9800; padding: 8px 12px; font-size: 12px; flex-shrink: 0; white-space: nowrap;';
-                            skipBtn.innerHTML = '<i class="fas fa-skip-forward"></i> Скип';
+                            skipBtn.style.cssText = 'background: #ff9800; padding: 10px 10px; font-size: 13px; flex-shrink: 0; white-space: nowrap; min-width: 44px; display: flex; align-items: center; justify-content: center;';
+                            skipBtn.innerHTML = '<i class="fas fa-forward"></i>';
+                            skipBtn.title = 'Скип (1 скип)';
                             skipBtn.onclick = (function(b, l, s, cp, req, sn) {
                                 return async function() {
                                     await useSkipForSubtask(b, l, s, cp, req, sn);
@@ -8734,11 +8735,11 @@ function renderBranchTasks() {
                 if (!isSubtaskCompleted) {
                     // ✅ КНОПКИ В ОДНУ СТРОКУ
                     const buttonsRow = document.createElement('div');
-                    buttonsRow.style.cssText = 'display: flex; gap: 8px; align-items: center; margin-top: 10px;';
+                    buttonsRow.style.cssText = 'display: flex; gap: 6px; align-items: stretch; margin-top: 10px;';
                     
                     const uploadBtn = document.createElement('button');
                     uploadBtn.className = 'task-submit-btn';
-                    uploadBtn.style.cssText = 'padding: 8px 12px; font-size: 12px; flex: 1; min-width: 0;';
+                    uploadBtn.style.cssText = 'padding: 10px 14px; font-size: 13px; flex: 1; min-width: 0; display: flex; align-items: center; justify-content: center; gap: 6px;';
                     uploadBtn.innerHTML = '<i class="fas fa-camera"></i> Отправить фото';
                     uploadBtn.onclick = function() {
                         openSubtaskUpload(branchKey, currentLevelIndex, 0, subtask.name);
@@ -8748,8 +8749,9 @@ function renderBranchTasks() {
                     if (branchKey !== 'shock') {
                         const skipBtn = document.createElement('button');
                         skipBtn.className = 'task-submit-btn';
-                        skipBtn.style.cssText = 'background: #ff9800; padding: 8px 12px; font-size: 12px; flex-shrink: 0; white-space: nowrap;';
-                        skipBtn.innerHTML = '<i class="fas fa-skip-forward"></i> Скип';
+                        skipBtn.style.cssText = 'background: #ff9800; padding: 10px 10px; font-size: 13px; flex-shrink: 0; white-space: nowrap; min-width: 44px; display: flex; align-items: center; justify-content: center;';
+                        skipBtn.innerHTML = '<i class="fas fa-forward"></i>';
+                        skipBtn.title = 'Скип (1 скип)';
                         skipBtn.onclick = (function(b, l, s, cp, req, sn) {
                             return async function() {
                                 await useSkipForSubtask(b, l, s, cp, req, sn);
@@ -8787,11 +8789,11 @@ function renderBranchTasks() {
                 
                 // ✅ КНОПКИ В ОДНУ СТРОКУ
                 const buttonsRow = document.createElement('div');
-                buttonsRow.style.cssText = 'display: flex; gap: 8px; align-items: center; margin-top: 10px;';
+                buttonsRow.style.cssText = 'display: flex; gap: 6px; align-items: stretch; margin-top: 10px;';
                 
                 const uploadBtn = document.createElement('button');
                 uploadBtn.className = 'task-submit-btn';
-                uploadBtn.style.cssText = 'padding: 8px 12px; font-size: 12px; flex: 1; min-width: 0;';
+                uploadBtn.style.cssText = 'padding: 10px 14px; font-size: 13px; flex: 1; min-width: 0; display: flex; align-items: center; justify-content: center; gap: 6px;';
                 uploadBtn.innerHTML = '<i class="fas fa-camera"></i> Отправить фото';
                 uploadBtn.onclick = function() {
                     openTaskUpload(branchKey, currentLevelIndex);
@@ -8801,8 +8803,9 @@ function renderBranchTasks() {
                 if (branchKey !== 'shock' && currentProgress < level.maxProgress) {
                     const skipBtn = document.createElement('button');
                     skipBtn.className = 'task-submit-btn';
-                    skipBtn.style.cssText = 'background: #ff9800; padding: 8px 12px; font-size: 12px; flex-shrink: 0; white-space: nowrap;';
-                    skipBtn.innerHTML = '<i class="fas fa-skip-forward"></i> Скип';
+                    skipBtn.style.cssText = 'background: #ff9800; padding: 10px 10px; font-size: 13px; flex-shrink: 0; white-space: nowrap; min-width: 44px; display: flex; align-items: center; justify-content: center;';
+                    skipBtn.innerHTML = '<i class="fas fa-forward"></i>';
+                    skipBtn.title = 'Скип (1 скип)';
                     skipBtn.onclick = async (e) => {
                         e.preventDefault();
                         e.stopPropagation();
