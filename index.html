@@ -8390,7 +8390,7 @@ async function addProgressWithoutPhoto(branchKey, levelIndex) {
             localStorage.setItem(`user_skips_${userId}`, skips);
             updateSkipCounter();
             
-            // Добавляем XP
+            // Добавляем XP с бустом
             await addXPWithBoost(5, `Пропуск задания в ветке ${branchKey}`);
             
             alert('✅ Задание пропущено! Прогресс и XP зачислены.');
