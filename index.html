@@ -6281,6 +6281,23 @@ body:not([data-theme]) .modal-content,
 .difficulty-option:hover {
     background: rgba(255, 149, 0, 0.1);
 }
+        /* Стили для магазина статусов */
+.status-common { box-shadow: 0 0 5px rgba(255,255,255,0.3); }
+.status-rare { box-shadow: 0 0 8px #6b5b95; }
+.status-epic { box-shadow: 0 0 12px #ffd700; }
+.status-legendary { box-shadow: 0 0 15px #9400d3; }
+.status-mythic { box-shadow: 0 0 20px #ff69b4; animation: mythicPulse 2s infinite; }
+
+@keyframes mythicPulse {
+    0% { box-shadow: 0 0 5px #ff69b4; }
+    50% { box-shadow: 0 0 20px #ff69b4; }
+    100% { box-shadow: 0 0 5px #ff69b4; }
+}
+
+.reward-card.owned {
+    opacity: 0.8;
+    filter: grayscale(0.2);
+}
     </style>
 </head>
 <body>
@@ -6329,61 +6346,19 @@ body:not([data-theme]) .modal-content,
         <button class="upload-photo-btn" onclick="document.getElementById('customAvatarInput').click()"><i class="fas fa-camera"></i> Загрузить фото</button>
     </div>
 
-   <div class="balance-card">
+  <div class="balance-card">
     <p class="balance-label">ВАШ БАЛАНС</p>
     <div class="balance-main"><span id="userBalance">0</span> <i class="fas fa-book-open gold-book"></i></div>
     <div class="balance-controls">
-        <button class="balance-btn" onclick="toggleSection('rewards-section')">Потратить ашетики 🏆</button>
-        <button class="balance-btn" onclick="toggleSection('earn-section')">Заработать ашетики 💰</button>
+        <button class="balance-btn" onclick="toggleSection('rewards-section')">Магазин статусов 🏆</button>
     </div>
 </div>
+  <div id="rewards-section" class="rewards-section">
+    <h3>✨ Уникальные статусы ✨</h3>
+    <p style="color: var(--text-gray); font-size: 13px; margin-bottom: 15px;">Приобретите эксклюзивный статус, который будет отображаться в вашем профиле!</p>
+    <div class="rewards-grid" id="statusShopGrid"></div>
+</div>
 
-    <div id="rewards-section" class="rewards-section">
-        <h3>Товары за ашетики</h3>
-        <div class="rewards-grid">
-            <div class="reward-card" onclick="buyItem('bookmark')">
-                <img src="https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/bonusi/b1.png" class="reward-img">
-                <h4>Книжная закладка Hachette</h4>
-                <div class="reward-price"><span class="price-amount">750</span> <i class="fas fa-book-open gold-book"></i></div>
-                <button class="reward-buy-btn">Приобрести</button>
-            </div>
-            <div class="reward-card" onclick="buyItem('petites')">
-                <img src="https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/bonusi/b2.png" class="reward-img">
-                <h4>Petites Poupees</h4>
-                <div class="reward-price"><span class="price-amount">950</span> <i class="fas fa-book-open gold-book"></i></div>
-                <button class="reward-buy-btn">Приобрести</button>
-            </div>
-            <div class="reward-card" onclick="buyItem('tracker')">
-                <img src="https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/bonusi/b3.png" class="reward-img">
-                <h4>Трекер от Hachette</h4>
-                <div class="reward-price"><span class="price-amount">950</span> <i class="fas fa-book-open gold-book"></i></div>
-                <button class="reward-buy-btn">Приобрести</button>
-            </div>
-            <div class="reward-card" onclick="buyItem('alcohol')">
-                <img src="https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/bonusi/b4.png" class="reward-img">
-                <h4>Спиртовая раскраска</h4>
-                <div class="reward-price"><span class="price-amount">1250</span> <i class="fas fa-book-open gold-book"></i></div>
-                <button class="reward-buy-btn">Приобрести</button>
-            </div>
-            <div class="reward-card" onclick="buyItem('coloriages')">
-                <img src="https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/bonusi/b5.png" class="reward-img">
-                <h4>Hachette Coloriages (А4 том)</h4>
-                <div class="reward-price"><span class="price-amount">1500</span> <i class="fas fa-book-open gold-book"></i></div>
-                <button class="reward-buy-btn">Приобрести</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="earn-section" class="rewards-section" style="display:none;">
-        <h3>Как получить ашетики</h3>
-        <div class="earn-list">
-            <div class="earn-item"><div class="earn-left"><i class="fas fa-star"></i><span>За отзыв</span></div><div class="earn-right"><span class="earn-amount">+25</span><i class="fas fa-book-open gold-book"></i></div></div>
-            <div class="earn-item"><div class="earn-left"><i class="fas fa-shopping-cart"></i><span>За покупку от 3 000 ₽</span></div><div class="earn-right"><span class="earn-amount">+20</span><i class="fas fa-book-open gold-book"></i></div></div>
-            <div class="earn-item"><div class="earn-left"><i class="fas fa-shopping-cart"></i><span>За покупку от 5 000 ₽</span></div><div class="earn-right"><span class="earn-amount">+30</span><i class="fas fa-book-open gold-book"></i></div></div>
-            <div class="earn-item"><div class="earn-left"><i class="fas fa-shopping-cart"></i><span>За покупку от 7 500 ₽</span></div><div class="earn-right"><span class="earn-amount">+40</span><i class="fas fa-book-open gold-book"></i></div></div>
-            <div class="earn-item"><div class="earn-left"><i class="fas fa-shopping-cart"></i><span>За покупку от 10 000 ₽</span></div><div class="earn-right"><span class="earn-amount">+50</span><i class="fas fa-book-open gold-book"></i></div></div>
-        </div>
-    </div>
  <!-- ========== ЗАДАНИЯ НА СТАТУСЫ ========== -->
 <div class="tasks-section">
     <button class="tasks-header" onclick="toggleTasks()">
@@ -14938,6 +14913,215 @@ function renderUserLevel() {
     }
     
     return xp;
+}
+        // ==========================================
+// МАГАЗИН СТАТУСОВ (ЦИФРОВЫЕ ТОВАРЫ)
+// ==========================================
+
+const STATUS_SHOP = [
+    {
+        id: 'rainbow_master',
+        name: '🌈 Мастер радуги',
+        description: 'Тот, кто видит мир во всех цветах',
+        price: 500,
+        icon: '🌈',
+        color: '#ff6b6b',
+        rarity: 'common'
+    },
+    {
+        id: 'night_watcher',
+        name: '🌙 Ночной страж',
+        description: 'Хранитель тайн ночи',
+        price: 800,
+        icon: '🌙',
+        color: '#6b5b95',
+        rarity: 'rare'
+    },
+    {
+        id: 'stardust_weaver',
+        name: '✨ Ткач звёздной пыли',
+        description: 'Сплетает судьбы из звёзд',
+        price: 1200,
+        icon: '✨',
+        color: '#ffd700',
+        rarity: 'epic'
+    },
+    {
+        id: 'eternal_flame',
+        name: '🔥 Вечное пламя',
+        description: 'Чей творческий огонь не угасает',
+        price: 1500,
+        icon: '🔥',
+        color: '#ff4444',
+        rarity: 'epic'
+    },
+    {
+        id: 'crystal_dreamer',
+        name: '💎 Хрустальный мечтатель',
+        description: 'Видит сны в кристально чистом свете',
+        price: 2000,
+        icon: '💎',
+        color: '#00ced1',
+        rarity: 'legendary'
+    },
+    {
+        id: 'void_traveler',
+        name: '🌌 Путешественник пустоты',
+        description: 'Исследователь неизведанных миров',
+        price: 3000,
+        icon: '🌌',
+        color: '#9400d3',
+        rarity: 'legendary'
+    },
+    {
+        id: 'cosmic_artist',
+        name: '🎨 Космический художник',
+        description: 'Рисующий галактики на холсте',
+        price: 5000,
+        icon: '🎨',
+        color: '#ff69b4',
+        rarity: 'mythic'
+    }
+];
+
+// Рендеринг магазина статусов
+function renderStatusShop() {
+    const container = document.getElementById('statusShopGrid');
+    if (!container) return;
+    
+    container.innerHTML = '';
+    
+    STATUS_SHOP.forEach(status => {
+        const isOwned = user.unlockedStatuses.includes(status.name);
+        const canBuy = !isOwned && user.balance >= status.price;
+        
+        // Определяем класс редкости
+        let rarityClass = '';
+        let rarityText = '';
+        switch(status.rarity) {
+            case 'common': rarityText = 'Обычный'; rarityClass = 'status-common'; break;
+            case 'rare': rarityText = 'Редкий'; rarityClass = 'status-rare'; break;
+            case 'epic': rarityText = 'Эпический'; rarityClass = 'status-epic'; break;
+            case 'legendary': rarityText = 'Легендарный'; rarityClass = 'status-legendary'; break;
+            case 'mythic': rarityText = 'Мифический'; rarityClass = 'status-mythic'; break;
+        }
+        
+        const card = document.createElement('div');
+        card.className = `reward-card ${isOwned ? 'owned' : ''}`;
+        card.style.cssText = `
+            background: linear-gradient(135deg, var(--card-bg) 0%, ${status.color}10 100%);
+            border: ${isOwned ? '2px solid var(--status-green)' : '1px solid var(--border-color)'};
+        `;
+        
+        card.innerHTML = `
+            <div class="reward-img" style="font-size: 48px; display: flex; align-items: center; justify-content: center; background: ${status.color}20; border-radius: 16px;">
+                ${status.icon}
+            </div>
+            <h4 style="margin: 10px 0 5px; color: ${status.color};">${status.name}</h4>
+            <p style="font-size: 11px; color: var(--text-gray); margin-bottom: 8px;">${status.description}</p>
+            <div class="reward-price">
+                <span class="price-amount">${status.price}</span> 
+                <i class="fas fa-book-open gold-book"></i>
+            </div>
+            <div style="font-size: 10px; color: ${status.color}; margin-bottom: 10px;">⭐ ${rarityText}</div>
+            ${isOwned ? 
+                '<div class="status-owned-badge" style="background: var(--status-green); color: white; padding: 8px; border-radius: 30px; font-size: 12px;">✅ Уже есть</div>' :
+                `<button class="reward-buy-btn" onclick="buyStatus('${status.id}', '${status.name}', ${status.price})" ${!canBuy ? 'disabled' : ''}>
+                    ${canBuy ? '🎁 Приобрести' : '❌ Недостаточно ашетиков'}
+                </button>`
+            }
+        `;
+        
+        container.appendChild(card);
+    });
+}
+
+// Покупка статуса
+async function buyStatus(statusId, statusName, price) {
+    if (user.balance < price) {
+        if (tg) tg.showAlert(`❌ Недостаточно ашетиков! Нужно ${price}, у вас ${user.balance}`);
+        return;
+    }
+    
+    if (user.unlockedStatuses.includes(statusName)) {
+        if (tg) tg.showAlert('❌ У вас уже есть этот статус!');
+        return;
+    }
+    
+    if (tg) {
+        tg.showConfirm(`Приобрести статус "${statusName}" за ${price} ашетиков?`, async (confirm) => {
+            if (confirm) {
+                await processStatusPurchase(statusName, price);
+            }
+        });
+    } else {
+        if (confirm(`Приобрести статус "${statusName}" за ${price} ашетиков?`)) {
+            await processStatusPurchase(statusName, price);
+        }
+    }
+}
+
+async function processStatusPurchase(statusName, price) {
+    try {
+        // Списываем ашетики
+        const response = await fetch(`${SERVER_URL}/api/add_balance`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                user_id: userId,
+                amount: -price,
+                reason: `Покупка статуса "${statusName}" в магазине`
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.status === 'ok') {
+            // Разблокируем статус
+            await fetch(`${SERVER_URL}/api/sync_status`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    user_id: userId,
+                    status: statusName,
+                    action: 'unlock'
+                })
+            });
+            
+            user.balance = result.new_balance;
+            user.unlockedStatuses.push(statusName);
+            saveUserData();
+            updateUI();
+            renderStatusShop();
+            
+            if (tg) tg.showAlert(`✅ Статус "${statusName}" успешно приобретён!`);
+        } else {
+            throw new Error(result.message || 'Ошибка');
+        }
+    } catch (error) {
+        console.error('Ошибка покупки статуса:', error);
+        if (tg) tg.showAlert('❌ Ошибка при покупке статуса');
+    }
+}
+
+// Обновляем toggleSection чтобы при открытии рендерить магазин
+function toggleSection(sectionId) {
+    const section = document.getElementById(sectionId);
+    if (section) {
+        if (section.style.display === 'none' || section.style.display === '') {
+            document.querySelectorAll('.rewards-section').forEach(el => {
+                if (el && el !== section) el.style.display = 'none';
+            });
+            section.style.display = 'block';
+            
+            // Если открыли магазин статусов — рендерим
+            if (sectionId === 'rewards-section') {
+                renderStatusShop();
+            }
+        } else {
+            section.style.display = 'none';
+        }
+    }
 }
      
 var teamPollingInterval = null;
