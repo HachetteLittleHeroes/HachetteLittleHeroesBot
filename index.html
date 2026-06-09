@@ -8464,6 +8464,63 @@ function canUseSkipForTask(branchKey) {
     
     return confirm('Использовать пропуск для выполнения этого задания?');
 }
+         // ==========================================
+// МАГАЗИН - ПРОПУСКИ И БУСТЫ
+// ==========================================
+
+
+
+// Загрузка данных
+function loadBoostData() {
+    const saved = localStorage.getItem(`user_boosts_${userId}`);
+    if (saved) {
+        try { userBoosts = JSON.parse(saved); } catch(e) {}
+    }
+    const savedSkips = localStorage.getItem(`user_skips_${userId}`);
+    if (savedSkips) {
+        userSkips = parseInt(savedSkips) || 0;
+    }
+}
+
+// Сохранение буста
+function saveBoostData() {
+    localStorage.setItem(`user_boosts_${userId}`, JSON.stringify(userBoosts));
+}
+
+// Сохранение пропусков
+function saveSkipData() {
+    localStorage.setItem(`user_skips_${userId}`, userSkips);
+}
+
+// Обновление отображения
+function updateSkipDisplay() {
+    const display = document.getElementById('skipCountDisplay');
+    if (display) {
+        display.innerText = userSkips;
+        if (userSkips > 0) {
+            display.style.color = 'var(--status-green)';
+        } else {
+            display.style.color = 'var(--text-gray)';
+        }
+    }
+}
+
+function updateBoostDisplay() {
+    const container = document.getElementById('boostStatusContainer');
+    if (!container) return;
+    
+    if (userBoosts.active && userBoosts.remainingWorks > 0) {
+        container.innerHTML = `
+            <div style="background: linear-gradient(135deg, rgba(255,149,0,0.2), rgba(255,149,0,0.05)); border-radius: 20px; padding: 8px 15px; display: flex; align-items: center; gap: 8px;">
+                <i class="fas fa-fire" style="color: var(--accent);"></i>
+                <span style="color: var(--accent); font-weight: 600;">🔥 x2 буст активен!</span>
+                <span style="color: var(--text-gray);">Осталось: ${userBoosts.remainingWorks} работ</span>
+            </div>
+        `;
+    } else {
+        container.innerHTML = '';
+    }
+}
 
 // Функция применения буста (уже есть, но добавим логирование)
 function applyBoost(xpAmount) {
