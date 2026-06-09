@@ -15037,31 +15037,41 @@ function renderStatusShop() {
 }
 
 // Покупка статуса
+// Покупка статуса
 async function buyStatus(statusId, statusName, price) {
     if (user.balance < price) {
-        if (tg) tg.showAlert(`❌ Недостаточно ашетиков! Нужно ${price}, у вас ${user.balance}`);
+        if (tg && tg.showAlert) {
+            tg.showAlert(`❌ Недостаточно ашетиков! Нужно ${price}, у вас ${user.balance}`);
+        } else {
+            alert(`❌ Недостаточно ашетиков! Нужно ${price}, у вас ${user.balance}`);
+        }
         return;
     }
     
     if (user.unlockedStatuses.includes(statusName)) {
-        if (tg) tg.showAlert('❌ У вас уже есть этот статус!');
+        if (tg && tg.showAlert) {
+            tg.showAlert('❌ У вас уже есть этот статус!');
+        } else {
+            alert('❌ У вас уже есть этот статус!');
+        }
         return;
     }
     
-    if (tg) {
-        tg.showConfirm(`Приобрести статус "${statusName}" за ${price} ашетиков?`, async (confirm) => {
-            if (confirm) {
-                await processStatusPurchase(statusName, price);
-            }
-        });
-    } else {
-        if (confirm(`Приобрести статус "${statusName}" за ${price} ашетиков?`)) {
-            await processStatusPurchase(statusName, price);
-        }
+    // ✅ Используем обычный confirm вместо tg.showConfirm
+    const userConfirmed = confirm(`Приобрести статус "${statusName}" за ${price} ашетиков?`);
+    
+    if (userConfirmed) {
+        await processStatusPurchase(statusName, price);
     }
 }
 
 async function processStatusPurchase(statusName, price) {
+    // Показываем индикатор загрузки
+    if (tg && tg.MainButton) {
+        tg.MainButton.setText("⏳ Обработка...").show();
+        tg.MainButton.showProgress();
+    }
+    
     try {
         // Списываем ашетики
         const response = await fetch(`${SERVER_URL}/api/add_balance`, {
@@ -15089,18 +15099,40 @@ async function processStatusPurchase(statusName, price) {
             });
             
             user.balance = result.new_balance;
-            user.unlockedStatuses.push(statusName);
+            if (!user.unlockedStatuses.includes(statusName)) {
+                user.unlockedStatuses.push(statusName);
+            }
             saveUserData();
             updateUI();
             renderStatusShop();
             
-            if (tg) tg.showAlert(`✅ Статус "${statusName}" успешно приобретён!`);
+            if (tg && tg.showAlert) {
+                tg.showAlert(`✅ Статус "${statusName}" успешно приобретён!`);
+            } else {
+                alert(`✅ Статус "${statusName}" успешно приобретён!`);
+            }
+            
+            // Обновляем отображение статусов в профиле
+            if (typeof openStatusInfo === 'function') {
+                // Обновляем список доступных статусов
+                await loadUnlockedStatuses();
+                updateUI();
+            }
         } else {
             throw new Error(result.message || 'Ошибка');
         }
     } catch (error) {
         console.error('Ошибка покупки статуса:', error);
-        if (tg) tg.showAlert('❌ Ошибка при покупке статуса');
+        if (tg && tg.showAlert) {
+            tg.showAlert('❌ Ошибка при покупке статуса');
+        } else {
+            alert('❌ Ошибка при покупке статуса');
+        }
+    } finally {
+        if (tg && tg.MainButton) {
+            tg.MainButton.hideProgress();
+            tg.MainButton.hide();
+        }
     }
 }
 
