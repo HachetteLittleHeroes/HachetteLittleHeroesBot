@@ -8365,21 +8365,13 @@ async function addXPWithBoost(amount, reason) {
 
 // Функция пропуска задания
 async function addProgressWithoutPhoto(branchKey, levelIndex) {
-    // Проверка: Шок контент нельзя пропускать
-    if (branchKey === 'shock') {
-        if (tg) tg.showAlert('⚠️ Задания ветки "Шок контент" нельзя пропускать!');
-        return false;
-    }
-    
-    // Проверяем наличие пропусков
     let skips = parseInt(localStorage.getItem(`user_skips_${userId}`) || '0');
     if (skips <= 0) {
-        if (tg) tg.showAlert('❌ Нет доступных пропусков! Купите в магазине.');
+        alert('❌ Нет пропусков! Купите в магазине.');
         return false;
     }
     
     try {
-        // Отправляем запрос на добавление прогресса
         const response = await fetch(`${SERVER_URL}/api/add_progress`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -8394,39 +8386,26 @@ async function addProgressWithoutPhoto(branchKey, levelIndex) {
         const result = await response.json();
         
         if (result.status === 'ok') {
-            // Списываем пропуск
             skips--;
             localStorage.setItem(`user_skips_${userId}`, skips);
+            updateSkipCounter();
             
-            // Добавляем XP с бустом
+            // Добавляем XP
             await addXPWithBoost(5, `Пропуск задания в ветке ${branchKey}`);
             
-            // Обновляем отображения
-            if (tg) tg.showAlert('✅ Задание пропущено! Прогресс и XP зачислены.');
+            alert('✅ Задание пропущено! Прогресс и XP зачислены.');
             
-            if (typeof refreshUserProgress === 'function') {
-                await refreshUserProgress();
-            }
-            
-            if (typeof renderBranchTasks === 'function') {
-                renderBranchTasks();
-            }
-            
-            if (typeof updateSkipCounter === 'function') {
-                updateSkipCounter();
-            }
-            
-            if (typeof renderBoostStatus === 'function') {
-                renderBoostStatus();
-            }
+            await refreshUserProgress();
+            renderBranchTasks();
             
             return true;
         } else {
-            throw new Error(result.message || 'Ошибка сервера');
+            alert('❌ Ошибка: ' + (result.message || 'Неизвестная ошибка'));
+            return false;
         }
     } catch (error) {
-        console.error('Ошибка при пропуске задания:', error);
-        if (tg) tg.showAlert('❌ Ошибка при пропуске задания');
+        console.error('Ошибка:', error);
+        alert('❌ Ошибка при пропуске задания');
         return false;
     }
 }
@@ -8437,7 +8416,6 @@ function updateSkipCounter() {
     const display = document.getElementById('skipCountDisplay');
     if (display) {
         display.innerText = skips;
-        display.style.color = skips > 0 ? 'var(--status-green)' : 'var(--text-gray)';
     }
 }
 
@@ -8448,7 +8426,7 @@ function renderBoostStatus() {
     
     if (userBoosts.active && userBoosts.remainingWorks > 0) {
         container.innerHTML = `
-            <div class="boost-active" style="background: linear-gradient(135deg, rgba(255,149,0,0.2), rgba(255,149,0,0.05)); border-radius: 20px; padding: 8px 15px; display: flex; align-items: center; gap: 8px; animation: boostPulse 1.5s ease-in-out infinite;">
+            <div style="background: linear-gradient(135deg, rgba(255,149,0,0.2), rgba(255,149,0,0.05)); border-radius: 20px; padding: 8px 15px; display: flex; align-items: center; gap: 8px;">
                 <i class="fas fa-fire" style="color: var(--accent);"></i>
                 <span style="color: var(--accent); font-weight: 600;">x2 буст активен!</span>
                 <span style="color: var(--text-gray); font-size: 12px;">Осталось: ${userBoosts.remainingWorks} работ</span>
@@ -8531,9 +8509,9 @@ function renderBranchTasks() {
         const currentLevelIndex = getCurrentLevelIndex(branchKey);
         const levels = branch.levels;
         
-       // Получаем сложность ветки (по умолчанию 1 звезда)
-const difficulty = TASK_DIFFICULTY[branchKey] || 1;
-const starsHtml = '<span class="stars" data-difficulty="' + difficulty + '" style="display: inline-flex; align-items: center; gap: 2px; margin-left: 8px;">' + renderStars(difficulty) + '</span>';
+        // Получаем сложность ветки (по умолчанию 1 звезда)
+        const difficulty = TASK_DIFFICULTY[branchKey] || 1;
+        const starsHtml = '<span class="stars" data-difficulty="' + difficulty + '" style="display: inline-flex; align-items: center; gap: 2px; margin-left: 8px;">' + renderStars(difficulty) + '</span>';
         
         const branchCard = document.createElement('div');
         branchCard.className = `branch-task-card ${isCompleted ? 'completed' : ''}`;
@@ -8571,6 +8549,7 @@ const starsHtml = '<span class="stars" data-difficulty="' + difficulty + '" styl
                     
                     const levelCard = document.createElement('div');
                     levelCard.className = 'level-card';
+                    levelCard.setAttribute('data-level-index', currentLevelIndex);
                     levelCard.innerHTML = `
                         <div class="level-header">
                             <span class="level-title">${level.title}</span>
@@ -8591,9 +8570,33 @@ const starsHtml = '<span class="stars" data-difficulty="' + difficulty + '" styl
                         `}
                     `;
                     branchCard.appendChild(levelCard);
+                    
+                    // Добавляем кнопку пропуска (кроме Шок контент)
+                    if (branchKey !== 'shock' && !isSubtaskCompleted) {
+                        const skipBtn = document.createElement('button');
+                        skipBtn.className = 'task-submit-btn skip-task-btn';
+                        skipBtn.style.cssText = 'background: #ff9800; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 8px;';
+                        skipBtn.innerHTML = '<i class="fas fa-skip-forward"></i> Пропустить (1 очко)';
+                        skipBtn.onclick = async (e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            
+                            let skips = parseInt(localStorage.getItem(`user_skips_${userId}`) || '0');
+                            if (skips <= 0) {
+                                alert('❌ Нет пропусков! Купите в магазине.');
+                                return;
+                            }
+                            
+                            if (confirm(`Использовать пропуск для этого задания? Осталось пропусков: ${skips}`)) {
+                                await addProgressWithoutPhoto(branchKey, currentLevelIndex);
+                            }
+                        };
+                        levelCard.appendChild(skipBtn);
+                    }
                 } else {
                     const levelCard = document.createElement('div');
                     levelCard.className = 'level-card';
+                    levelCard.setAttribute('data-level-index', currentLevelIndex);
                     
                     let totalCompleted = 0;
                     let totalRequired = 0;
@@ -8648,12 +8651,36 @@ const starsHtml = '<span class="stars" data-difficulty="' + difficulty + '" styl
                     });
                     
                     branchCard.appendChild(levelCard);
+                    
+                    // Добавляем кнопку пропуска для всего уровня (кроме Шок контент)
+                    if (branchKey !== 'shock' && totalCompleted < totalRequired) {
+                        const skipBtn = document.createElement('button');
+                        skipBtn.className = 'task-submit-btn skip-task-btn';
+                        skipBtn.style.cssText = 'background: #ff9800; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 8px;';
+                        skipBtn.innerHTML = '<i class="fas fa-skip-forward"></i> Пропустить подзадание (1 очко)';
+                        skipBtn.onclick = async (e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            
+                            let skips = parseInt(localStorage.getItem(`user_skips_${userId}`) || '0');
+                            if (skips <= 0) {
+                                alert('❌ Нет пропусков! Купите в магазине.');
+                                return;
+                            }
+                            
+                            if (confirm(`Использовать пропуск для этого задания? Осталось пропусков: ${skips}`)) {
+                                await addProgressWithoutPhoto(branchKey, currentLevelIndex);
+                            }
+                        };
+                        levelCard.appendChild(skipBtn);
+                    }
                 }
             } else {
                 const currentProgress = getLevelProgress(branchKey, currentLevelIndex);
                 const percent = (currentProgress / level.maxProgress) * 100;
                 const levelCard = document.createElement('div');
                 levelCard.className = 'level-card';
+                levelCard.setAttribute('data-level-index', currentLevelIndex);
                 levelCard.innerHTML = `
                     <div class="level-header">
                         <span class="level-title">Уровень ${currentLevelIndex + 1}: ${level.title}</span>
@@ -8668,6 +8695,29 @@ const starsHtml = '<span class="stars" data-difficulty="' + difficulty + '" styl
                     </button>
                 `;
                 branchCard.appendChild(levelCard);
+                
+                // Добавляем кнопку пропуска (кроме Шок контент)
+                if (branchKey !== 'shock' && currentProgress < level.maxProgress) {
+                    const skipBtn = document.createElement('button');
+                    skipBtn.className = 'task-submit-btn skip-task-btn';
+                    skipBtn.style.cssText = 'background: #ff9800; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 8px;';
+                    skipBtn.innerHTML = '<i class="fas fa-skip-forward"></i> Пропустить (1 очко)';
+                    skipBtn.onclick = async (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        let skips = parseInt(localStorage.getItem(`user_skips_${userId}`) || '0');
+                        if (skips <= 0) {
+                            alert('❌ Нет пропусков! Купите в магазине.');
+                            return;
+                        }
+                        
+                        if (confirm(`Использовать пропуск для этого задания? Осталось пропусков: ${skips}`)) {
+                            await addProgressWithoutPhoto(branchKey, currentLevelIndex);
+                        }
+                    };
+                    levelCard.appendChild(skipBtn);
+                }
             }
         }
         
@@ -15509,39 +15559,108 @@ async function buyStatus(id, name, price) {
 }
 
 async function buySkip(amount, price) {
-    if (user.balance < price) return tg.showAlert(`❌ Нужно ${price} ашетиков`);
+    if (user.balance < price) {
+        alert(`❌ Недостаточно ашетиков! Нужно ${price}`);
+        return;
+    }
     if (!confirm(`Купить пропуск на ${amount} очк(а) за ${price} ашетиков?`)) return;
+    
     try {
-        let r = await fetch(`${SERVER_URL}/api/add_balance`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user_id: userId, amount: -price, reason: `Покупка пропуска на ${amount} очков` }) });
+        let r = await fetch(`${SERVER_URL}/api/add_balance`, { 
+            method: 'POST', 
+            headers: { 'Content-Type': 'application/json' }, 
+            body: JSON.stringify({ user_id: userId, amount: -price, reason: `Покупка пропуска на ${amount} очков` }) 
+        });
         let res = await r.json();
         if (res.status === 'ok') {
             let skips = parseInt(localStorage.getItem(`user_skips_${userId}`) || '0');
             skips += amount;
             localStorage.setItem(`user_skips_${userId}`, skips);
             user.balance = res.new_balance;
-            saveUserData(); updateUI();
-            tg.showAlert(`✅ Куплено пропусков: ${amount}!`);
+            saveUserData(); 
+            updateUI();
+            updateSkipCounter();
+            alert(`✅ Куплено пропусков: ${amount}! Всего: ${skips}`);
+        } else {
+            alert('❌ Ошибка при покупке');
         }
-    } catch(e) { tg.showAlert('❌ Ошибка'); }
+    } catch(e) { 
+        console.error(e);
+        alert('❌ Ошибка при покупке');
+    }
 }
-
+// Функция добавления кнопки пропуска в карточку задания
+function addSkipButtonToTask(taskCard, branchKey, levelIndex) {
+    // Не добавляем для Шок контент
+    if (branchKey === 'shock') return;
+    
+    // Проверяем, есть ли уже кнопка
+    if (taskCard.querySelector('.skip-task-btn')) return;
+    
+    const levelCard = taskCard.querySelector('.level-card');
+    if (!levelCard) return;
+    
+    const existingBtn = levelCard.querySelector('.task-submit-btn');
+    if (!existingBtn) return;
+    
+    const skipBtn = document.createElement('button');
+    skipBtn.className = 'task-submit-btn skip-task-btn';
+    skipBtn.style.cssText = 'background: #ff9800; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 8px;';
+    skipBtn.innerHTML = '<i class="fas fa-skip-forward"></i> Пропустить (1 очко)';
+    
+    skipBtn.onclick = async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        let skips = parseInt(localStorage.getItem(`user_skips_${userId}`) || '0');
+        if (skips <= 0) {
+            alert('❌ Нет пропусков! Купите в магазине.');
+            return;
+        }
+        
+        if (confirm(`Использовать пропуск для этого задания? Осталось пропусков: ${skips}`)) {
+            await addProgressWithoutPhoto(branchKey, levelIndex);
+        }
+    };
+    
+    existingBtn.parentNode.insertBefore(skipBtn, existingBtn.nextSibling);
+} 
 async function buyBoost(duration, price) {
-    if (user.balance < price) return tg.showAlert(`❌ Нужно ${price} ашетиков`);
+    if (user.balance < price) {
+        alert(`❌ Недостаточно ашетиков! Нужно ${price}`);
+        return;
+    }
     if (!confirm(`Активировать x2 буст на ${duration} работ за ${price} ашетиков?`)) return;
+    
     try {
-        let r = await fetch(`${SERVER_URL}/api/add_balance`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user_id: userId, amount: -price, reason: `Покупка x2 буста на ${duration} работ` }) });
+        let r = await fetch(`${SERVER_URL}/api/add_balance`, { 
+            method: 'POST', 
+            headers: { 'Content-Type': 'application/json' }, 
+            body: JSON.stringify({ user_id: userId, amount: -price, reason: `Покупка x2 буста на ${duration} работ` }) 
+        });
         let res = await r.json();
         if (res.status === 'ok') {
-            if (userBoosts.active) userBoosts.remainingWorks += duration;
-            else { userBoosts.active = true; userBoosts.remainingWorks = duration; }
+            if (userBoosts.active) {
+                userBoosts.remainingWorks += duration;
+            } else {
+                userBoosts.active = true;
+                userBoosts.remainingWorks = duration;
+            }
             localStorage.setItem(`user_boosts_${userId}`, JSON.stringify(userBoosts));
             user.balance = res.new_balance;
-            saveUserData(); updateUI(); renderBoostShop();
-            tg.showAlert(`✅ x2 буст активирован на ${duration} работ!`);
+            saveUserData(); 
+            updateUI(); 
+            renderBoostShop();
+            renderBoostStatus();
+            alert(`✅ x2 буст активирован на ${duration} работ!`);
+        } else {
+            alert('❌ Ошибка при покупке');
         }
-    } catch(e) { tg.showAlert('❌ Ошибка'); }
+    } catch(e) { 
+        console.error(e);
+        alert('❌ Ошибка при покупке');
+    }
 }
-
 function loadUserBoosts() {
     let saved = localStorage.getItem(`user_boosts_${userId}`);
     if (saved) { try { userBoosts = JSON.parse(saved); } catch(e) {} }
