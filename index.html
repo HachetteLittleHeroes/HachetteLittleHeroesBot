@@ -6298,6 +6298,75 @@ body:not([data-theme]) .modal-content,
     opacity: 0.8;
     filter: grayscale(0.2);
 }
+        /* Стили для разных статусов в профиле */
+.status-badge[data-status="🌈 Мастер радуги"] {
+    background: linear-gradient(135deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3);
+    color: white;
+    text-shadow: 0 0 5px rgba(0,0,0,0.5);
+    animation: rainbow 3s linear infinite;
+}
+
+.status-badge[data-status="🌙 Ночной страж"] {
+    background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+    color: #c4d0ff;
+    border: 1px solid #4a6fa5;
+    box-shadow: 0 0 10px rgba(74, 111, 165, 0.5);
+}
+
+.status-badge[data-status="✨ Ткач звёздной пыли"] {
+    background: linear-gradient(135deg, #2d1b4e, #1a0f2e);
+    color: #ffd700;
+    border: 1px solid #ffd700;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    animation: starGlow 2s ease-in-out infinite;
+}
+
+.status-badge[data-status="🔥 Вечное пламя"] {
+    background: linear-gradient(135deg, #ff4500, #ff0000, #8b0000);
+    color: #ffeb99;
+    border: 1px solid #ff6600;
+    box-shadow: 0 0 10px rgba(255, 69, 0, 0.5);
+}
+
+.status-badge[data-status="💎 Хрустальный мечтатель"] {
+    background: linear-gradient(135deg, #00ced1, #20b2aa, #008b8b);
+    color: #e0ffff;
+    border: 1px solid #00ffff;
+    box-shadow: 0 0 15px rgba(0, 206, 209, 0.5);
+}
+
+.status-badge[data-status="🌌 Путешественник пустоты"] {
+    background: linear-gradient(135deg, #4b0082, #2e0047, #1a0030);
+    color: #dda0dd;
+    border: 1px solid #9400d3;
+    box-shadow: 0 0 15px rgba(148, 0, 211, 0.5);
+}
+
+.status-badge[data-status="🎨 Космический художник"] {
+    background: linear-gradient(135deg, #ff69b4, #ff1493, #c71585);
+    color: #ffe4f3;
+    border: 1px solid #ff69b4;
+    box-shadow: 0 0 20px rgba(255, 105, 180, 0.5);
+    animation: mythicPulse 3s ease-in-out infinite;
+}
+
+@keyframes rainbow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+@keyframes starGlow {
+    0% { box-shadow: 0 0 5px #ffd700; }
+    50% { box-shadow: 0 0 20px #ffd700, 0 0 5px #ffd700; }
+    100% { box-shadow: 0 0 5px #ffd700; }
+}
+
+@keyframes mythicPulse {
+    0% { box-shadow: 0 0 5px #ff69b4; }
+    50% { box-shadow: 0 0 30px #ff69b4, 0 0 10px #ff1493; }
+    100% { box-shadow: 0 0 5px #ff69b4; }
+}
     </style>
 </head>
 <body>
@@ -8954,7 +9023,7 @@ function approveNadyaTask() {
         // ПРОФИЛЬ И UI
         // ==========================================
         
-       function updateUI() {
+     function updateUI() {
     const nameEl = document.getElementById('displayUsername');
     const avatarEl = document.getElementById('user-avatar');
     const balanceEl = document.getElementById('userBalance');
@@ -8963,7 +9032,11 @@ function approveNadyaTask() {
     if (nameEl) nameEl.innerText = user.name;
     if (avatarEl) avatarEl.src = user.avatar;
     if (balanceEl) balanceEl.innerText = user.balance;
-    if (statusBadge) statusBadge.innerText = user.status || 'Без статуса';
+    if (statusBadge) {
+        statusBadge.innerText = user.status || 'Без статуса';
+        // ✅ Добавляем data-status для применения стилей
+        statusBadge.setAttribute('data-status', user.status || 'Без статуса');
+    }
     
     renderUserLevel();
     
@@ -9209,7 +9282,7 @@ async function saveAvatarToServer(avatarUrl) {
     }
 }
         
-        function selectStatus(statusName) {
+       function selectStatus(statusName) {
     console.log('selectStatus called with:', statusName);
     
     if (!user.unlockedStatuses.includes(statusName)) {
@@ -9235,6 +9308,19 @@ async function saveAvatarToServer(avatarUrl) {
     if (modal) modal.style.display = 'none';
     
     updateUI();
+    
+    // ✅ Дополнительно обновляем стиль статус-бейджа
+    const statusBadge = document.getElementById('currentStatus');
+    if (statusBadge) {
+        statusBadge.setAttribute('data-status', statusName);
+        
+        // Находим статус в магазине для применения градиента
+        const shopStatus = STATUS_SHOP.find(s => s.name === statusName);
+        if (shopStatus && shopStatus.gradient) {
+            statusBadge.style.background = shopStatus.gradient;
+            statusBadge.style.border = 'none';
+        }
+    }
     
     if (tg) tg.showAlert(`✅ Статус изменен на "${statusName}"`);
 }
@@ -14925,7 +15011,7 @@ const STATUS_SHOP = [
         description: 'Тот, кто видит мир во всех цветах',
         price: 500,
         icon: '🌈',
-        color: '#ff6b6b',
+        gradient: 'linear-gradient(135deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3)',
         rarity: 'common'
     },
     {
@@ -14934,7 +15020,7 @@ const STATUS_SHOP = [
         description: 'Хранитель тайн ночи',
         price: 800,
         icon: '🌙',
-        color: '#6b5b95',
+        gradient: 'linear-gradient(135deg, #1a1a2e, #16213e, #0f3460)',
         rarity: 'rare'
     },
     {
@@ -14943,7 +15029,7 @@ const STATUS_SHOP = [
         description: 'Сплетает судьбы из звёзд',
         price: 1200,
         icon: '✨',
-        color: '#ffd700',
+        gradient: 'linear-gradient(135deg, #2d1b4e, #1a0f2e)',
         rarity: 'epic'
     },
     {
@@ -14952,7 +15038,7 @@ const STATUS_SHOP = [
         description: 'Чей творческий огонь не угасает',
         price: 1500,
         icon: '🔥',
-        color: '#ff4444',
+        gradient: 'linear-gradient(135deg, #ff4500, #ff0000, #8b0000)',
         rarity: 'epic'
     },
     {
@@ -14961,7 +15047,7 @@ const STATUS_SHOP = [
         description: 'Видит сны в кристально чистом свете',
         price: 2000,
         icon: '💎',
-        color: '#00ced1',
+        gradient: 'linear-gradient(135deg, #00ced1, #20b2aa, #008b8b)',
         rarity: 'legendary'
     },
     {
@@ -14970,7 +15056,7 @@ const STATUS_SHOP = [
         description: 'Исследователь неизведанных миров',
         price: 3000,
         icon: '🌌',
-        color: '#9400d3',
+        gradient: 'linear-gradient(135deg, #4b0082, #2e0047, #1a0030)',
         rarity: 'legendary'
     },
     {
@@ -14979,12 +15065,11 @@ const STATUS_SHOP = [
         description: 'Рисующий галактики на холсте',
         price: 5000,
         icon: '🎨',
-        color: '#ff69b4',
+        gradient: 'linear-gradient(135deg, #ff69b4, #ff1493, #c71585)',
         rarity: 'mythic'
     }
 ];
 
-// Рендеринг магазина статусов
 function renderStatusShop() {
     const container = document.getElementById('statusShopGrid');
     if (!container) return;
@@ -14995,7 +15080,6 @@ function renderStatusShop() {
         const isOwned = user.unlockedStatuses.includes(status.name);
         const canBuy = !isOwned && user.balance >= status.price;
         
-        // Определяем класс редкости
         let rarityClass = '';
         let rarityText = '';
         switch(status.rarity) {
@@ -15009,23 +15093,37 @@ function renderStatusShop() {
         const card = document.createElement('div');
         card.className = `reward-card ${isOwned ? 'owned' : ''}`;
         card.style.cssText = `
-            background: linear-gradient(135deg, var(--card-bg) 0%, ${status.color}10 100%);
+            background: linear-gradient(135deg, var(--card-bg) 0%, ${status.gradient}15 100%);
             border: ${isOwned ? '2px solid var(--status-green)' : '1px solid var(--border-color)'};
         `;
         
+        // Превью статуса с градиентом
+        const statusPreviewStyle = `
+            background: ${status.gradient};
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            display: inline-block;
+            margin-top: 8px;
+        `;
+        
         card.innerHTML = `
-            <div class="reward-img" style="font-size: 48px; display: flex; align-items: center; justify-content: center; background: ${status.color}20; border-radius: 16px;">
+            <div class="reward-img" style="font-size: 48px; display: flex; align-items: center; justify-content: center; background: ${status.gradient}20; border-radius: 16px;">
                 ${status.icon}
             </div>
-            <h4 style="margin: 10px 0 5px; color: ${status.color};">${status.name}</h4>
+            <h4 style="margin: 10px 0 5px; background: ${status.gradient}; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                ${status.name}
+            </h4>
             <p style="font-size: 11px; color: var(--text-gray); margin-bottom: 8px;">${status.description}</p>
             <div class="reward-price">
                 <span class="price-amount">${status.price}</span> 
                 <i class="fas fa-book-open gold-book"></i>
             </div>
-            <div style="font-size: 10px; color: ${status.color}; margin-bottom: 10px;">⭐ ${rarityText}</div>
+            <div style="font-size: 10px; color: ${status.gradient.split(',')[0].replace('linear-gradient(', '').trim()}; margin-bottom: 10px;">⭐ ${rarityText}</div>
+            <div style="${statusPreviewStyle}">${status.icon} ${status.name}</div>
             ${isOwned ? 
-                '<div class="status-owned-badge" style="background: var(--status-green); color: white; padding: 8px; border-radius: 30px; font-size: 12px;">✅ Уже есть</div>' :
+                '<div class="status-owned-badge" style="background: var(--status-green); color: white; padding: 8px; border-radius: 30px; font-size: 12px; margin-top: 10px;">✅ Уже есть</div>' :
                 `<button class="reward-buy-btn" onclick="buyStatus('${status.id}', '${status.name}', ${status.price})" ${!canBuy ? 'disabled' : ''}>
                     ${canBuy ? '🎁 Приобрести' : '❌ Недостаточно ашетиков'}
                 </button>`
