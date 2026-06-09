@@ -9747,7 +9747,7 @@ function openSupportDialog() {
                 name: VOLUME_NAMES[i],
                 price: price,
                 pages: 26,
-                img: `assets/img/t${i + 1}.png`
+                img: `https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/covers/t${i + 1}.jpg`
             });
         }
         
@@ -10125,56 +10125,56 @@ function openSupportDialog() {
 // ==========================================
 
 const COLLECTION_FIGURES = [
-    { id: 1, name: "Винни-Пух", desc: "Тот самый мишка, который любит мед", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/winnie.png" },
-    { id: 2, name: "Реми", desc: "Микрошеф", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/remie.png" },
-    { id: 3, name: "Бемби", desc: "Маленький принц", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/bembi.png" },
-    { id: 4, name: "Багира", desc: "Верный друг Маугли", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/bagira.png" },
-    { id: 5, name: "Леди", desc: "Спутница бродяги", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/ledi.png" },
-    { id: 6, name: "Мегара", desc: "Ахилесова пята Геркулеса", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/megara.png" },
-    { id: 7, name: "Тиана", desc: "Принцесса-лягушка", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/tiana.png" },
-    { id: 8, name: "Рапунцель", desc: "Запутанная история", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/rapunc.png" },
-    { id: 9, name: "Долматинец", desc: "100 и 1 пятнышко", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/dolmat.png" },
-    { id: 10, name: "Мулан", desc: "Отважная принцесса", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/mulan.png" },
-    { id: 11, name: "Майло", desc: "По стопам деда", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/mailo.png" },
-    { id: 12, name: "Карл", desc: "Ворчливый старик", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/karl.png" },
-    { id: 13, name: "Джуди Хоппс", desc: "Глупый кролик", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/judi.png" },
-    { id: 14, name: "Ник Уайлд", desc: "Хитрый лис", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/nik.png" },
-    { id: 15, name: "Малефисента", desc: "Осторожно! Превращается в дракона", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/malefisenta.png" },
-    { id: 16, name: "Джин", desc: "А какое у тебя 3 желание?", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/jin.png" },
-    { id: 17, name: "Вуди", desc: "Ковбой с дикого запада", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/voodi.png" },
-    { id: 18, name: "Булзай", desc: "Очаровательный конь", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/bulzai.png" },
-    { id: 19, name: "Фея крестная", desc: "Превратит твою тыкву в карету", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/feya.png" },
-    { id: 20, name: "Жасмин", desc: "Принцесса Аграбы", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/jasmin.png" },
-    { id: 21, name: "Принц Навин", desc: "Принц, любитель джаза", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/navin.png" },
-    { id: 22, name: "Плуто", desc: "Друг Микки", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/pluto.png" },
-    { id: 23, name: "Гастон", desc: "Надменный охотник", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/gaston.png" },
-    { id: 24, name: "Паскаль", desc: "Зеленый друг Рапунцель", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/pascal.png" },
-    { id: 25, name: "Моана", desc: "Обладательница всех весел мира", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/moana.png" },
-    { id: 26, name: "Капитан Крюк", desc: "Главный враг Питера Пена", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/kruk.png" },
-    { id: 27, name: "Дамбо", desc: "Слоненок, который научился летать", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/dambo.png" },
-    { id: 28, name: "Белль", desc: "Любительница библиотек", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/belle.png" },
-    { id: 29, name: "Робин Гуд", desc: "Обворажительный лис", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/robin.png" },
-    { id: 30, name: "Изма", desc: "Коварная женщина", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/izma.png" },
-    { id: 31, name: "Стич", desc: "Маленький инопришеленец", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/stitch.png" },
-    { id: 32, name: "Дональд Дак", desc: "Попробуй разобрать, чтотон говорит", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/donald.png" },
-    { id: 33, name: "Симба", desc: "Король Саванны", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/simba.png" },
-    { id: 34, name: "Олаф", desc: "Шашлычок", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/olaf.png" },
-    { id: 35, name: "Покахонтас", desc: "Дождь вождя", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/pokahontas.png" },
-    { id: 36, name: "Майк Вазовски", desc: "Круглик-Бублик", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/mikevazov.png" },
-    { id: 37, name: "Ариэль", desc: "Дочь царя Тритона", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/ariel.png" },
-    { id: 38, name: "Дори", desc: "Просто продолжай плыть", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/dori.png" },
-    { id: 39, name: "Круэлла", desc: "Любительница пятен", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/kruella.png" },
-    { id: 40, name: "Микки Маус", desc: "Самая знаменитая мышь", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/IMG_7022.png" },
-    { id: 41, name: "Луи", desc: "Любитель джаза", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/lui.png" },
-    { id: 42, name: "Эльза", desc: "Холодное сердце", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/elza.png" },
-    { id: 43, name: "Флинн", desc: "Боится сковородок", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/flin.png" },
-    { id: 44, name: "Тимон", desc: "Последователь Акуны-Мататы", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/timon.png" },
-    { id: 45, name: "Белоснежка", desc: "Любительница яблок", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/belosnezhka.png" },
-    { id: 46, name: "Геркулес", desc: "Полубог", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/gerkules.png" },
-    { id: 47, name: "Балу", desc: "Мастер маскировки", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/balu.png" },
-    { id: 48, name: "Шрам", desc: "Коварный дядя", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/shram.png" },
-    { id: 49, name: "Рогатый Король", desc: "Повелитель армии мертвых", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/rog.png" },
-    { id: 50, name: "Злая королева", desc: "Не прекрасней всех на свете", img: "https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/collection/evil.png" }
+    { id: 1, name: "Винни-Пух", desc: "Тот самый мишка, который любит мед", img: "https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/collection/winnie.jpg" },
+    { id: 2, name: "Реми", desc: "Микрошеф", img: "https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/collection/remie.jpg" },
+    { id: 3, name: "Бемби", desc: "Маленький принц", img: "https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/collection/bembi.jpg" },
+    { id: 4, name: "Багира", desc: "Верный друг Маугли", img: "https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/collection/bagira.jpg" },
+    { id: 5, name: "Леди", desc: "Спутница бродяги", img: "https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/collection/ledi.jpg" },
+    { id: 6, name: "Мегара", desc: "Ахилесова пята Геркулеса", img: "https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/collection/megara.jpg" },
+    { id: 7, name: "Тиана", desc: "Принцесса-лягушка", img: "https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/collection/tiana.jpg" },
+    { id: 8, name: "Рапунцель", desc: "Запутанная история",img: "https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/collection/rapunc.jpg" },
+    { id: 9, name: "Долматинец", desc: "100 и 1 пятнышко", img: "https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/collection/dolmat.jpg" },
+    { id: 10, name: "Мулан", desc: "Отважная принцесса", img: "https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/collection/mulan.jpg" },
+    { id: 11, name: "Майло", desc: "По стопам деда", img: "https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/collection/mailo.jpg" },
+    { id: 12, name: "Карл", desc: "Ворчливый старик", img: "https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/collection/karl.jpg" },
+    { id: 13, name: "Джуди Хоппс", desc: "Глупый кролик", img: "https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/collection/judi.jpg" },
+    { id: 14, name: "Ник Уайлд", desc: "Хитрый лис", img: "https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/collection/nik.jpg" },
+    { id: 15, name: "Малефисента", desc: "Осторожно! Превращается в дракона", img: "https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/collection/malefisenta.jpg" },
+    { id: 16, name: "Джин", desc: "А какое у тебя 3 желание?", img: "https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/collection/jin.jpg" },
+    { id: 17, name: "Вуди", desc: "Ковбой с дикого запада", img: "https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/collection/voodi.jpg" },
+    { id: 18, name: "Булзай", desc: "Очаровательный конь", img: "https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/collection/bulzai.jpg" },
+    { id: 19, name: "Фея крестная", desc: "Превратит твою тыкву в карету", img: "https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/collection/feya.jpg" },
+    { id: 20, name: "Жасмин", desc: "Принцесса Аграбы", img: "https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/collection/jasmin.jpg" },
+    { id: 21, name: "Принц Навин", desc: "Принц, любитель джаза", img: "https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/collection/navin.jpg" },
+    { id: 22, name: "Плуто", desc: "Друг Микки", img: "https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/collection/pluto.jpg" },
+    { id: 23, name: "Гастон", desc: "Надменный охотник", img: "https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/collection/gaston.jpg" },
+    { id: 24, name: "Паскаль", desc: "Зеленый друг Рапунцель", img: "https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/collection/pascal.jpg" },
+    { id: 25, name: "Моана", desc: "Обладательница всех весел мира", img: "https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/collection/moana.jpg" },
+    { id: 26, name: "Капитан Крюк", desc: "Главный враг Питера Пена", img: "https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/collection/kruk.jpg" },
+    { id: 27, name: "Дамбо", desc: "Слоненок, который научился летать", img: "https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/collection/dambo.jpg" },
+    { id: 28, name: "Белль", desc: "Любительница библиотек", img: "https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/collection/belle.jpg" },
+    { id: 29, name: "Робин Гуд", desc: "Обворажительный лис", img: "https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/collection/robin.jpg" },
+    { id: 30, name: "Изма", desc: "Коварная женщина", img: "https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/collection/izma.jpg" },
+    { id: 31, name: "Стич", desc: "Маленький инопришеленец", img: "https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/collection/stitch.jpg" },
+    { id: 32, name: "Дональд Дак", desc: "Попробуй разобрать, чтотон говорит", img: "https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/collection/donald.jpg" },
+    { id: 33, name: "Симба", desc: "Король Саванны", img: "https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/collection/simba.jpg" },
+    { id: 34, name: "Олаф", desc: "Шашлычок", img: "https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/collection/olaf.jpg" },
+    { id: 35, name: "Покахонтас", desc: "Дождь вождя", img: "https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/collection/pokahontas.jpg" },
+    { id: 36, name: "Майк Вазовски", desc: "Круглик-Бублик", img: "https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/collection/mikevazov.jpg" },
+    { id: 37, name: "Ариэль", desc: "Дочь царя Тритона", img: "https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/collection/ariel.jpg" },
+    { id: 38, name: "Дори", desc: "Просто продолжай плыть", img: "https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/collection/dori.jpg" },
+    { id: 39, name: "Круэлла", desc: "Любительница пятен", img: "https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/collection/kruella.jpg" },
+    { id: 40, name: "Микки Маус", desc: "Самая знаменитая мышь", img: "https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/collection/IMG_7022.jpg" },
+    { id: 41, name: "Луи", desc: "Любитель джаза", img: "https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/collection/lui.jpg" },
+    { id: 42, name: "Эльза", desc: "Холодное сердце", img: "https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/collection/elza.jpg" },
+    { id: 43, name: "Флинн", desc: "Боится сковородок", img: "https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/collection/flin.jpg" },
+    { id: 44, name: "Тимон", desc: "Последователь Акуны-Мататы", img: "https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/collection/timon.jpg" },
+    { id: 45, name: "Белоснежка", desc: "Любительница яблок", img: "https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/collection/belosnezhka.jpg" },
+    { id: 46, name: "Геркулес", desc: "Полубог", img: "https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/collection/gerkules.jpg" },
+    { id: 47, name: "Балу", desc: "Мастер маскировки", img: "https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/collection/balu.jpg" },
+    { id: 48, name: "Шрам", desc: "Коварный дядя", img: "https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/collection/shram.jpg" },
+    { id: 49, name: "Рогатый Король", desc: "Повелитель армии мертвых", img: "https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/collection/rog.jpg" },
+    { id: 50, name: "Злая королева", desc: "Не прекрасней всех на свете", img: "https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/collection/evil.jpg" }
 ];
 
 let userCollection = [];
@@ -10495,19 +10495,19 @@ const DEFAULT_COLORING_BOOKS = {
 
 const DEFAULT_COVERS = {
     // Раскраски по номерам
-    "Les Grands Classiques tome 1": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/t1.jpg",
-    "Les Grands Classiques tome 2": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/t2.jpg",
-    "Les Grands Classiques tome 3": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/t3.jpg",
-    "Les Grands Classiques tome 4": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/t4.jpg",
-    "Les Grands Classiques tome 5": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/t5.jpg",
-    "Les Grands Classiques tome 6": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/t6.jpg",
-    "Les Grands Classiques tome 7": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/t7.jpg",
-    "Les Grands Classiques tome 8": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/t8.jpg",
-    "Les Grands Classiques tome 9": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/t9.jpg",
-    "Les Grands Classiques tome 10": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/t10.jpg",
-    "Les Grands Classiques tome 11": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/t11.jpg",
-    "Les Grands Classiques tome 12": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/t12.jpg",
-    "Les Grands Classiques tome 13": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/t13.jpg",
+    "Les Grands Classiques tome 1": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/tom1.png",
+    "Les Grands Classiques tome 2": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/tom2.jpg",
+    "Les Grands Classiques tome 3": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/tom3.jpg",
+    "Les Grands Classiques tome 4": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/tom4.jpg",
+    "Les Grands Classiques tome 5": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/tom5.jpg",
+    "Les Grands Classiques tome 6": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/tom6.jpg",
+    "Les Grands Classiques tome 7": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/tom7.jpg",
+    "Les Grands Classiques tome 8": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/tom8.jpg",
+    "Les Grands Classiques tome 9": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/tom9.jpg",
+    "Les Grands Classiques tome 10": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/tom10.jpg",
+    "Les Grands Classiques tome 11": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/tom11.jpg",
+    "Les Grands Classiques tome 12": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/tom12.jpg",
+    "Les Grands Classiques tome 13": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/tom13.jpg",
     "Mondes Fantastiques": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/mondesfantastiques.jpg",
     "Les Grands Classiques Spécial Débutants vol. 1": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/debutants.jpg",
     "Les Grands Classiques Spécial Débutants vol. 2": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/debutants2.jpg",
@@ -28862,32 +28862,52 @@ function searchUsers() {
 
 // Публичный профиль
 async function openPublicProfile(userId) {
-    currentPublicUserId = userId;
-    window.isViewOnly = true; // ✅ Блокируем кнопки удаления при просмотре чужого профиля
+    if (!userId) {
+        console.error('❌ openPublicProfile: userId не передан');
+        return;
+    }
     
-    closeUserSearch();
+    console.log('🔵 Открываем публичный профиль:', userId);
+    
+    currentPublicUserId = userId;
+    window.isViewOnly = true;
+    
+    closeUserSearch();  // Закрываем поиск если открыт
     
     const modal = document.getElementById('publicProfileModal');
-    modal.style.display = 'flex';
-    modal.className = 'modal-overlay';
-    
     const container = document.getElementById('publicProfileContent');
+    
+    modal.style.display = 'flex';
     container.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Загрузка профиля...</div>';
     
     try {
-        const artworksResponse = await fetch(`${SERVER_URL}/api/artworks?user_id=${userId}`);
-        userArtworks = await artworksResponse.json();
-        
+        // Загружаем профиль
         const response = await fetch(`${SERVER_URL}/api/public_profile?user_id=${userId}`);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+        
         const profile = await response.json();
         
-        console.log('profile loaded, calling renderPublicProfile');
+        if (profile.status === 'error') {
+            throw new Error(profile.message || 'Ошибка загрузки');
+        }
+        
+        console.log('✅ Профиль загружен:', profile);
+        
+        // Загружаем работы пользователя
+        const artworksResponse = await fetch(`${SERVER_URL}/api/artworks?user_id=${userId}`);
+        if (artworksResponse.ok) {
+            userArtworks = await artworksResponse.json();
+            profile.artworks = userArtworks;
+        }
+        
         renderPublicProfile(profile);
-        console.log('renderPublicProfile done');
         
     } catch (error) {
-        console.error('❌ Ошибка:', error);
-        container.innerHTML = '<div class="no-results">❌ Ошибка загрузки</div>';
+        console.error('❌ Ошибка загрузки профиля:', error);
+        container.innerHTML = `<div class="no-results" style="padding: 20px;">❌ Ошибка загрузки профиля: ${error.message}</div>`;
     }
 }
 
@@ -28900,146 +28920,221 @@ function closePublicProfile() {
     loadUserArtworks();
 }
 function renderPublicProfile(profile) {
+    console.log('🔵 renderPublicProfile вызвана с профилем:', profile);
+    
     const container = document.getElementById('publicProfileContent');
+    if (!container) {
+        console.error('❌ container не найден');
+        return;
+    }
     
+    // Проверяем, что профиль содержит данные
+    if (!profile || profile.status === 'error') {
+        container.innerHTML = '<div class="no-results">❌ Профиль не найден</div>';
+        return;
+    }
+    
+    const userId = profile.user_id || currentPublicUserId;
     const avatarUrl = profile.avatar || 'https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png';
-    const userName = profile.name || 'Пользователь';
+    const userName = profile.name || profile.username || 'Пользователь';
     const userStatus = profile.status || 'Без статуса';
-    const figuresCount = profile.figures?.length || 0;
-    const booksCount = countColoringBooks(profile.coloring_books);
-    const wishlistCount = profile.wishlist?.length || 0;
-    const isOwnProfile = (String(profile.user_id) === String(userId));
-    const isFriend = myFriends.some(f => String(f.user_id) === String(profile.user_id));
-    const pubUserId = profile.user_id;
     
-    var totalWorks = 0, lastMonthWorks = 0, monthWorks = 0;
-    var now = new Date();
-    var lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1).getTime();
-    var lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59).getTime();
-    var monthAgo = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+    // Получаем коллекции
+    const figures = profile.figures || [];
+    const figuresCount = figures.length;
     
-    // ✅ Сохраняем временные метки для использования в renderPublicStatsBooks
-    container._lastMonthStart = lastMonthStart;
-    container._lastMonthEnd = lastMonthEnd;
-    container._monthAgo = monthAgo;
-    
-    console.log('📅 Текущая дата:', now);
-    console.log('📅 Прошлый месяц: с', new Date(lastMonthStart), 'по', new Date(lastMonthEnd));
-    console.log('📅 Текущий месяц с:', new Date(monthAgo));
-    
-    var profileCompletedPages = profile.completed_pages || {};
-    var profileCompletedDates = profile.completed_pages_dates || {};
-    var profileArtworks = profile.artworks || {};
-    var booksStats = {};
-
-    for (var bk in profileCompletedPages) {
-        for (var pg in profileCompletedPages[bk]) {
-            totalWorks++;
-            var dt = profileCompletedDates[bk + '|' + pg] || 0;
-            if (dt >= monthAgo) monthWorks++;
-            if (dt >= lastMonthStart && dt <= lastMonthEnd) lastMonthWorks++;
-
-            var cat;
-            if (bk.startsWith('paint_by_number_')) cat = 'paint_by_number';
-            else if (bk.startsWith('alcohol_')) cat = 'alcohol';
-            else if (bk.startsWith('pencil_')) cat = 'pencil';
-            else cat = 'custom';
-
-            var bname = bk.substring(cat.length + 1);
-            if (!booksStats[bname]) booksStats[bname] = { lastmonth: 0, month: 0, total: 0, cat: cat, works: [] };
-            
-            booksStats[bname].total++;
-            if (dt >= monthAgo) booksStats[bname].month++;
-            if (dt >= lastMonthStart && dt <= lastMonthEnd) booksStats[bname].lastmonth++;
-            
-            var artworkUrl = '';
-            if (profileArtworks[bk] && profileArtworks[bk][pg]) {
-                artworkUrl = profileArtworks[bk][pg];
-            }
-            
-            booksStats[bname].works.push({
-                page: pg,
-                date: dt,
-                artwork: artworkUrl,
-                bookKey: bk
-            });
+    const coloringBooks = profile.coloring_books || { paint_by_number: [], alcohol: [], pencil: [], custom: [] };
+    let booksCount = 0;
+    for (const cat in coloringBooks) {
+        if (coloringBooks[cat]) {
+            booksCount += coloringBooks[cat].length || 0;
         }
     }
     
-    console.log('📊 Статистика: всего=', totalWorks, 'за месяц=', monthWorks, 'за прошлый месяц=', lastMonthWorks);
+    const wishlist = profile.wishlist || [];
+    const wishlistCount = wishlist.length;
     
-    let html = `
+    // Проверяем, друг ли это
+    const isOwnProfile = (String(profile.user_id) === String(userId));
+    const isFriend = myFriends.some(function(f) { 
+        return String(f.user_id) === String(profile.user_id) || String(f.id) === String(profile.user_id); 
+    });
+    
+    // Считаем статистику
+    const completedPages = profile.completed_pages || {};
+    const completedPagesDates = profile.completed_pages_dates || {};
+    const artworks = profile.artworks || {};
+    
+    let totalWorks = 0, monthWorks = 0, lastMonthWorks = 0;
+    const now = new Date();
+    const monthAgo = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+    const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1).getTime();
+    const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59).getTime();
+    
+    for (const bookKey in completedPages) {
+        if (completedPages.hasOwnProperty(bookKey)) {
+            for (const page in completedPages[bookKey]) {
+                if (completedPages[bookKey].hasOwnProperty(page)) {
+                    totalWorks++;
+                    const date = completedPagesDates[bookKey + '|' + page] || 0;
+                    if (date >= monthAgo) monthWorks++;
+                    if (date >= lastMonthStart && date <= lastMonthEnd) lastMonthWorks++;
+                }
+            }
+        }
+    }
+    
+    const friendButtonHtml = (function() {
+        if (isOwnProfile) return '';
+        if (isFriend) {
+            return '<button class="already-friend-btn" disabled><i class="fas fa-check"></i> В друзьях</button>';
+        }
+        return '<button class="add-friend-btn" onclick="addFriend(\'' + userId + '\')"><i class="fas fa-user-plus"></i> Добавить в друзья</button>';
+    })();
+    
+    const html = `
         <div class="profile-header-block" style="margin: 0; padding: 15px;">
-            <div class="avatar-wrapper"><img src="${avatarUrl}" onerror="this.src='https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png'"></div>
+            <div class="avatar-wrapper">
+                <img src="${avatarUrl}" onerror="this.src='https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png'">
+            </div>
             <div class="profile-info">
-                <div class="name-row"><h2>${userName}</h2></div>
-              <div class="status-badge">${userStatus}</div>
+                <div class="name-row"><h2>${escapeHtml(userName)}</h2></div>
+                <div class="status-badge">${escapeHtml(userStatus)}</div>
                 <div id="publicUserLevel" style="margin-top: 8px;"></div>
-                ${!isOwnProfile ? (isFriend ? `<button class="already-friend-btn" disabled><i class="fas fa-check"></i> В друзьях</button>` : `<button class="add-friend-btn" onclick="addFriend('${pubUserId}')"><i class="fas fa-user-plus"></i> Добавить в друзья</button>`) : ''}
+                ${friendButtonHtml}
             </div>
         </div>
         
         <div class="inventory-main-block" style="margin-top: 10px;">
-            <div class="inventory-header" onclick="toggleBlock('modalStatsContent', 'modalStatsArrow')"><div class="inventory-header-left"><i class="fas fa-chart-bar"></i><span>Статистика</span></div><i class="fas fa-chevron-down" id="modalStatsArrow" style="transform: rotate(180deg);"></i></div>
+            <div class="inventory-header" onclick="toggleBlock('modalStatsContent', 'modalStatsArrow')">
+                <div class="inventory-header-left"><i class="fas fa-chart-bar"></i><span>Статистика</span></div>
+                <i class="fas fa-chevron-down" id="modalStatsArrow" style="transform: rotate(180deg);"></i>
+            </div>
             <div id="modalStatsContent" class="inventory-content" style="display: block;">
                 <div class="stats-numbers" style="margin-bottom:15px;">
-                    <div class="stats-number-card active" id="pubCardLastMonth" onclick="switchPublicStats('lastmonth')"><div class="number">${lastMonthWorks}</div><div class="label">За прошлый месяц</div></div>
-                    <div class="stats-number-card" id="pubCardMonth" onclick="switchPublicStats('month')"><div class="number">${monthWorks}</div><div class="label">За месяц</div></div>
-                    <div class="stats-number-card" id="pubCardTotal" onclick="switchPublicStats('total')"><div class="number">${totalWorks}</div><div class="label">Всего</div></div>
+                    <div class="stats-number-card active" id="pubCardLastMonth" onclick="switchPublicStats('lastmonth')">
+                        <div class="number">${lastMonthWorks}</div>
+                        <div class="label">За прошлый месяц</div>
+                    </div>
+                    <div class="stats-number-card" id="pubCardMonth" onclick="switchPublicStats('month')">
+                        <div class="number">${monthWorks}</div>
+                        <div class="label">За месяц</div>
+                    </div>
+                    <div class="stats-number-card" id="pubCardTotal" onclick="switchPublicStats('total')">
+                        <div class="number">${totalWorks}</div>
+                        <div class="label">Всего</div>
+                    </div>
                 </div>
                 <div id="pubStatsBooksList"></div>
             </div>
         </div>
         
         <div class="inventory-main-block" style="margin-top: 10px;">
-            <div class="inventory-header" onclick="toggleBlock('modalFiguresContent', 'modalFiguresArrow')"><div class="inventory-header-left"><i class="fas fa-users"></i><span>Коллекция персонажей</span></div><div class="inventory-header-right"><span class="collection-badge">${figuresCount}/50</span><i class="fas fa-chevron-down" id="modalFiguresArrow"></i></div></div>
-            <div id="modalFiguresContent" class="inventory-content" style="display: none;"><div id="modalFiguresGrid" class="collection-grid"></div></div>
+            <div class="inventory-header" onclick="toggleBlock('modalFiguresContent', 'modalFiguresArrow')">
+                <div class="inventory-header-left"><i class="fas fa-users"></i><span>Коллекция персонажей</span></div>
+                <div class="inventory-header-right"><span class="collection-badge">${figuresCount}/50</span><i class="fas fa-chevron-down" id="modalFiguresArrow"></i></div>
+            </div>
+            <div id="modalFiguresContent" class="inventory-content" style="display: none;">
+                <div id="modalFiguresGrid" class="collection-grid"></div>
+            </div>
         </div>
         
         <div class="inventory-main-block" style="margin-top: 10px;">
-            <div class="inventory-header" onclick="toggleBlock('modalBooksContent', 'modalBooksArrow')"><div class="inventory-header-left"><i class="fas fa-book"></i><span>Коллекция раскрасок</span></div><div class="inventory-header-right"><span class="collection-badge">${booksCount}</span><i class="fas fa-chevron-down" id="modalBooksArrow"></i></div></div>
-            <div id="modalBooksContent" class="inventory-content" style="display: none;"><div id="modalBooksList"></div></div>
+            <div class="inventory-header" onclick="toggleBlock('modalBooksContent', 'modalBooksArrow')">
+                <div class="inventory-header-left"><i class="fas fa-book"></i><span>Коллекция раскрасок</span></div>
+                <div class="inventory-header-right"><span class="collection-badge">${booksCount}</span><i class="fas fa-chevron-down" id="modalBooksArrow"></i></div>
+            </div>
+            <div id="modalBooksContent" class="inventory-content" style="display: none;">
+                <div id="modalBooksList"></div>
+            </div>
         </div>
         
         <div class="inventory-main-block" style="margin-top: 10px;">
-            <div class="inventory-header" onclick="toggleBlock('modalWishlistContent', 'modalWishlistArrow')"><div class="inventory-header-left"><i class="fas fa-heart"></i><span>Список желаний</span></div><div class="inventory-header-right"><span class="collection-badge">${wishlistCount}</span><i class="fas fa-chevron-down" id="modalWishlistArrow"></i></div></div>
-            <div id="modalWishlistContent" class="inventory-content" style="display: none;"><div id="modalWishlistGrid" class="category-items" style="grid-template-columns: repeat(2, 1fr);"></div></div>
+            <div class="inventory-header" onclick="toggleBlock('modalWishlistContent', 'modalWishlistArrow')">
+                <div class="inventory-header-left"><i class="fas fa-heart"></i><span>Список желаний</span></div>
+                <div class="inventory-header-right"><span class="collection-badge">${wishlistCount}</span><i class="fas fa-chevron-down" id="modalWishlistArrow"></i></div>
+            </div>
+            <div id="modalWishlistContent" class="inventory-content" style="display: none;">
+                <div id="modalWishlistGrid" class="category-items" style="grid-template-columns: repeat(2, 1fr);"></div>
+            </div>
         </div>
     `;
     
-    // ✅ Сначала свойства, потом innerHTML
-    container._pubBooksStats = booksStats;
-    container._pubPeriod = 'lastmonth';
-    container._pubUserId = profile.user_id;
-    container.dataset.profile = JSON.stringify(profile);
-    
-    console.log('🔵 Перед innerHTML');
     container.innerHTML = html;
-    console.log('🔵 После innerHTML');
     
-    console.log('🔵 Перед вызовом renderPublicStatsBooks');
-    console.log('🔵 Тип renderPublicStatsBooks:', typeof renderPublicStatsBooks);
-    
-    if (typeof renderPublicStatsBooks === 'function') {
-        console.log('🔵 Вызываю renderPublicStatsBooks...');
-        renderPublicStatsBooks();
-        console.log('🔵 renderPublicStatsBooks выполнен');
-    } else {
-        console.error('❌ renderPublicStatsBooks не является функцией!');
+    // Сохраняем данные для статистики
+    const booksStats = {};
+    for (const bookKey in completedPages) {
+        if (completedPages.hasOwnProperty(bookKey)) {
+            let category = 'paint_by_number';
+            if (bookKey.startsWith('alcohol_')) category = 'alcohol';
+            else if (bookKey.startsWith('pencil_')) category = 'pencil';
+            else if (bookKey.startsWith('custom_')) category = 'custom';
+            
+            const bookName = bookKey.substring(category.length + 1);
+            if (!booksStats[bookName]) {
+                booksStats[bookName] = { works: [], cat: category };
+            }
+            
+            for (const page in completedPages[bookKey]) {
+                if (completedPages[bookKey].hasOwnProperty(page)) {
+                    const date = completedPagesDates[bookKey + '|' + page] || 0;
+                    const artworkUrl = (artworks[bookKey] && artworks[bookKey][page]) || '';
+                    booksStats[bookName].works.push({
+                        page: page,
+                        date: date,
+                        artwork: artworkUrl,
+                        bookKey: bookKey
+                    });
+                }
+            }
+        }
     }
     
-    setTimeout(() => {
-       const xp = profile.xp || 0;
+    container._pubBooksStats = booksStats;
+    container._pubPeriod = 'lastmonth';
+    container._pubUserId = userId;
+    container._lastMonthStart = lastMonthStart;
+    container._lastMonthEnd = lastMonthEnd;
+    container._monthAgo = monthAgo;
+    container.dataset.profile = JSON.stringify(profile);
+    
+    // Рендерим статистику
+    if (typeof renderPublicStatsBooks === 'function') {
+        renderPublicStatsBooks();
+    }
+    
+    // Рендерим уровень
+    setTimeout(function() {
+        const xp = profile.xp || 0;
         const levelInfo = getUserLevelInfo(xp);
-        const el = document.getElementById('publicUserLevel');
-        if (el) {
-            el.innerHTML = `
+        const levelEl = document.getElementById('publicUserLevel');
+        if (levelEl) {
+            levelEl.innerHTML = `
                 <div style="font-size: 12px; color: var(--text-gray); margin-bottom: 4px;">${levelInfo.name}</div>
                 <div class="progress-bar-container" style="height: 4px;">
                     <div class="progress-bar-fill" style="width: ${levelInfo.progress}%;"></div>
                 </div>
                 <div style="font-size: 10px; color: var(--text-gray); margin-top: 2px;">${levelInfo.xp} / ${levelInfo.nextXP} XP</div>
             `;
+        }
+        
+        // Рендерим фигурки
+        const figuresContainer = document.getElementById('modalFiguresGrid');
+        if (figuresContainer && typeof renderPublicFigures === 'function') {
+            renderPublicFigures(figures);
+        }
+        
+        // Рендерим раскраски
+        const booksContainer = document.getElementById('modalBooksList');
+        if (booksContainer && typeof renderPublicBooks === 'function') {
+            renderPublicBooks(coloringBooks, artworks, userId);
+        }
+        
+        // Рендерим вишлист
+        const wishlistContainer = document.getElementById('modalWishlistGrid');
+        if (wishlistContainer && typeof renderPublicWishlist === 'function') {
+            renderPublicWishlist(wishlist);
         }
     }, 100);
     
@@ -29486,19 +29581,35 @@ function renderFriendsListInner() {
     }
     
     let html = '<h4 style="margin-bottom: 10px;">Мои друзья</h4>';
-    myFriends.forEach(friend => {
+    myFriends.forEach(function(friend) {
+        const friendUserId = friend.user_id;
+        
+        // ✅ Формируем отображаемое имя (без дублирования)
+        let displayName = friend.name || 'Пользователь';
+        let displayUsername = '';
+        
+        // Если username есть и он не совпадает с именем
+        if (friend.username && friend.username !== displayName) {
+            displayUsername = friend.username;
+        }
+        
+        // ✅ Аватар: если есть URL — используем его, иначе дефолтный
+        const avatarUrl = friend.avatar && friend.avatar !== '' 
+            ? friend.avatar 
+            : 'https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png';
+        
         html += `
             <div class="friend-card">
-                <img src="${friend.avatar}" class="friend-avatar" onerror="this.src='https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png'">
+                <img src="${avatarUrl}" class="friend-avatar" onerror="this.src='https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png'">
                 <div class="friend-info">
-                    <div class="friend-name">${friend.name}</div>
-                    <div class="friend-username">${friend.username}</div>
+                    <div class="friend-name">${escapeHtml(displayName)}</div>
+                    ${displayUsername ? `<div class="friend-username">${escapeHtml(displayUsername)}</div>` : ''}
                 </div>
                 <div style="display: flex; gap: 5px;">
-                    <button class="friend-view-btn" onclick="viewFriendProfile('${friend.user_id}')">
+                    <button class="friend-view-btn" onclick="viewFriendProfile('${friendUserId}')">
                         <i class="fas fa-user"></i>
                     </button>
-                    <button class="friend-remove-btn" onclick="confirmRemoveFriend('${friend.user_id}', '${friend.name.replace(/'/g, "\\'")}')">
+                    <button class="friend-remove-btn" onclick="confirmRemoveFriend('${friendUserId}', '${escapeHtml(displayName).replace(/'/g, "\\'")}')">
                         <i class="fas fa-user-minus"></i>
                     </button>
                 </div>
@@ -29569,8 +29680,13 @@ function closeFriendsList() {
 }
 
 function viewFriendProfile(friendId) {
+    console.log('🔵 viewFriendProfile вызвана с friendId:', friendId);
     closeFriendsList();
-    openPublicProfile(friendId);
+    if (friendId) {
+        openPublicProfile(friendId);
+    } else {
+        console.error('❌ friendId не передан');
+    }
 }
 
 function confirmRemoveFriend(friendId, friendName) {
@@ -29586,58 +29702,107 @@ function confirmRemoveFriend(friendId, friendName) {
 }
 
 async function removeFriend(friendId) {
+    console.log('🔵 removeFriend вызвана с friendId:', friendId);
+    
     try {
-        await fetch(`${SERVER_URL}/api/friends/remove`, {
+        const response = await fetch(`${SERVER_URL}/api/friends/remove`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ user_id: userId, friend_id: friendId })
         });
         
-        await loadMyFriends();
-        openFriendsList();
-        
-        if (currentPublicUserId === friendId) {
-            const container = document.getElementById('publicProfileContent');
-            if (container && container.dataset.profile) {
-                const profile = JSON.parse(container.dataset.profile);
-                renderPublicProfile(profile);
-            }
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
         }
         
-        if (tg) tg.showAlert('❌ Удалено из друзей');
+        const result = await response.json();
+        console.log('📡 Результат удаления друга:', result);
+        
+        if (result.status === 'ok') {
+            await loadMyFriends();
+            await openFriendsList(); // Обновляем список
+            
+            if (currentPublicUserId === friendId) {
+                const container = document.getElementById('publicProfileContent');
+                if (container && container.dataset.profile) {
+                    const profile = JSON.parse(container.dataset.profile);
+                    renderPublicProfile(profile);
+                }
+            }
+            
+            if (tg) tg.showAlert('❌ Удалено из друзей');
+        }
     } catch (error) {
-        if (tg) tg.showAlert('❌ Ошибка');
+        console.error('❌ Ошибка удаления из друзей:', error);
+        if (tg) tg.showAlert('❌ Ошибка при удалении из друзей');
     }
 }
 
 async function addFriend(friendId) {
+    console.log('🔵 addFriend вызвана с friendId:', friendId);
+    
     try {
-        await fetch(`${SERVER_URL}/api/friends/add`, {
+        const response = await fetch(`${SERVER_URL}/api/friends/add`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ user_id: userId, friend_id: friendId })
         });
         
-        await loadMyFriends();
-        
-        if (currentPublicUserId === friendId) {
-            const container = document.getElementById('publicProfileContent');
-            if (container && container.dataset.profile) {
-                const profile = JSON.parse(container.dataset.profile);
-                renderPublicProfile(profile);
-            }
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
         }
         
-        if (tg) tg.showAlert('✅ Добавлено в друзья!');
+        const result = await response.json();
+        console.log('📡 Результат добавления друга:', result);
+        
+        if (result.status === 'ok') {
+            await loadMyFriends();
+            
+            // Обновляем публичный профиль если он открыт
+            if (currentPublicUserId === friendId) {
+                const container = document.getElementById('publicProfileContent');
+                if (container && container.dataset.profile) {
+                    const profile = JSON.parse(container.dataset.profile);
+                    renderPublicProfile(profile);
+                }
+            }
+            
+            // Обновляем кнопку в профиле
+            const addFriendBtn = document.querySelector('.add-friend-btn');
+            if (addFriendBtn) {
+                addFriendBtn.outerHTML = '<button class="already-friend-btn" disabled><i class="fas fa-check"></i> В друзьях</button>';
+            }
+            
+            if (tg) tg.showAlert('✅ Добавлено в друзья!');
+        } else {
+            throw new Error(result.message || 'Ошибка');
+        }
     } catch (error) {
-        if (tg) tg.showAlert('❌ Ошибка');
+        console.error('❌ Ошибка добавления в друзья:', error);
+        if (tg) tg.showAlert('❌ Ошибка при добавлении в друзья');
     }
 }
-
 async function loadMyFriends() {
     try {
         const response = await fetch(`${SERVER_URL}/api/friends?user_id=${userId}`);
-        myFriends = await response.json();
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+        const data = await response.json();
+        console.log('📡 Загружены друзья:', data);
+        
+        // ✅ Сохраняем данные как есть, с аватарами
+        myFriends = (data || []).map(function(friend) {
+            return {
+                user_id: friend.user_id,
+                id: friend.id || friend.user_id,
+                name: friend.name || friend.username || 'Пользователь',
+                username: friend.username || '',
+                avatar: friend.avatar || ''  // ← сохраняем пустым, если нет
+            };
+        });
+        
+        console.log('✅ Обработанные друзья:', myFriends);
     } catch (error) {
         console.error('Ошибка загрузки друзей:', error);
         myFriends = [];
