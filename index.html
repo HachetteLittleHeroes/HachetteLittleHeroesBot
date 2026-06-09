@@ -20101,6 +20101,29 @@ window.onload = async () => {
         }
     }
     
+    // ✅ ПЕРИОДИЧЕСКАЯ СИНХРОНИЗАЦИЯ БУСТА С СЕРВЕРОМ (каждые 30 секунд)
+    setInterval(async () => {
+        try {
+            const response = await fetch(`${SERVER_URL}/api/get_boost_status?user_id=${userId}`);
+            const boost = await response.json();
+            const newBoost = {
+                active: boost.active || false,
+                remainingWorks: boost.remaining || 0
+            };
+            
+            // Обновляем только если изменилось
+            if (JSON.stringify(userBoosts) !== JSON.stringify(newBoost)) {
+                userBoosts = newBoost;
+                if (typeof updateBoostDisplay === 'function') {
+                    updateBoostDisplay();
+                }
+                console.log('🔄 Буст синхронизирован с сервера:', userBoosts);
+            }
+        } catch (e) {
+            // Тихо игнорируем ошибки
+        }
+    }, 30000);
+    
     console.log('✅ APP READY');
     
     // ✅ D&D: авто-восстановление при загрузке (только если оплачено)
