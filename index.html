@@ -6475,27 +6475,20 @@ body:not([data-theme]) .modal-content,
     </div>
 </div>
 
-<!-- ========== СКИПЫ И БУСТЫ (информационный) ========== -->
-<div class="tasks-section" style="margin-top: 15px;">
-    <div class="tasks-header" style="cursor: default;">
-        <span>⚡ Скипы и бусты</span>
+<!-- ========== СКИПЫ И БУСТЫ ========== -->
+<div style="display: flex; gap: 10px; margin: 10px 15px;">
+    <div style="flex: 1; background: var(--bg-header); border-radius: 16px; padding: 10px 14px; display: flex; align-items: center; gap: 10px; border: 1px solid var(--border-color);">
+        <i class="fas fa-forward" style="color: var(--accent); font-size: 18px;"></i>
+        <div>
+            <div style="font-size: 11px; color: var(--text-gray);">Скипы</div>
+            <span id="skipCountDisplay" style="font-weight: 700; color: var(--accent); font-size: 20px;">0</span>
+        </div>
     </div>
-    <div class="tasks-content" style="display: block; padding: 15px;">
-        <div style="display: flex; gap: 15px; align-items: stretch;">
-            <div style="flex: 1; background: linear-gradient(135deg, rgba(255,149,0,0.15), rgba(255,149,0,0.05)); border-radius: 16px; padding: 14px 16px; display: flex; align-items: center; gap: 10px; border: 1px solid rgba(255,149,0,0.3);">
-                <i class="fas fa-forward" style="color: var(--accent); font-size: 20px;"></i>
-                <div>
-                    <div style="font-size: 11px; color: var(--text-gray);">Скипы</div>
-                    <span id="skipCountDisplay" style="font-weight: 700; color: var(--accent); font-size: 22px;">0</span>
-                </div>
-            </div>
-            <div style="flex: 1; background: linear-gradient(135deg, rgba(255,149,0,0.15), rgba(255,149,0,0.05)); border-radius: 16px; padding: 14px 16px; display: flex; align-items: center; gap: 10px; border: 1px solid rgba(255,149,0,0.3);">
-                <i class="fas fa-rocket" style="color: var(--accent); font-size: 20px;"></i>
-                <div id="boostStatusContainer">
-                    <div style="font-size: 11px; color: var(--text-gray);">Буст x2</div>
-                    <span style="font-weight: 700; color: var(--text-gray); font-size: 22px;">—</span>
-                </div>
-            </div>
+    <div style="flex: 1; background: var(--bg-header); border-radius: 16px; padding: 10px 14px; display: flex; align-items: center; gap: 10px; border: 1px solid var(--border-color);">
+        <i class="fas fa-rocket" style="color: var(--accent); font-size: 18px;"></i>
+        <div id="boostStatusContainer">
+            <div style="font-size: 11px; color: var(--text-gray);">Буст x2</div>
+            <span style="font-weight: 700; color: var(--text-gray); font-size: 20px;">—</span>
         </div>
     </div>
 </div>
@@ -8840,12 +8833,12 @@ async function updateBoostDisplay() {
     if (userBoosts.active && userBoosts.remainingWorks > 0) {
         container.innerHTML = `
             <div style="font-size: 11px; color: var(--text-gray);">Буст x2</div>
-            <span style="font-weight: 700; color: var(--accent); font-size: 22px;">${userBoosts.remainingWorks}</span>
+            <span style="font-weight: 700; color: var(--accent); font-size: 20px;">${userBoosts.remainingWorks}</span>
         `;
     } else {
         container.innerHTML = `
             <div style="font-size: 11px; color: var(--text-gray);">Буст x2</div>
-            <span style="font-weight: 700; color: var(--text-gray); font-size: 22px;">—</span>
+            <span style="font-weight: 700; color: var(--text-gray); font-size: 20px;">—</span>
         `;
     }
 }
@@ -21380,8 +21373,6 @@ function confirmSkipTask() {
 window.onload = async () => {
     console.log('🚀 APP STARTING...');
     
-    // ✅ D&D: НЕ восстанавливаем из localStorage — всё через сервер
-    
     const savedUser = localStorage.getItem('coloring_user');
     if (savedUser) Object.assign(user, JSON.parse(savedUser));
     
@@ -21396,7 +21387,6 @@ window.onload = async () => {
         window.completedPagesDates = {};
     }
     
-    // ✅ Загружаем коллекцию маркеров из localStorage ДО всего
     loadMarkersCollection();
     
     await loadUserBalance();
@@ -21420,14 +21410,12 @@ window.onload = async () => {
             localStorage.setItem('coloring_user', JSON.stringify(user));
         }
         
-        // ✅ Загружаем имя пользователя с сервера
         if (stats.name) {
             user.name = stats.name;
             document.getElementById('displayUsername').innerText = stats.name;
             localStorage.setItem('coloring_user', JSON.stringify(user));
         }
         
-        // ✅ Загружаем все кастомизации из ОДНОГО ответа stats
         if (stats.sponsor_background) {
             applySponsorBackground(stats.sponsor_background);
         }
@@ -21462,7 +21450,6 @@ window.onload = async () => {
         setTheme(user.theme || 'light');
     }
     
-    // ✅ Обновляем эмодзи-подложки с актуальным цветом акцента (после установки темы)
     setTimeout(() => {
         fetch(`${SERVER_URL}/api/stats?user_id=${userId}`)
             .then(r => r.json())
@@ -21511,7 +21498,6 @@ window.onload = async () => {
         });
     };
     
-    // ✅ ЗАГРУЖАЕМ БУСТ С СЕРВЕРА
     try {
         const boostResponse = await fetch(`${SERVER_URL}/api/get_boost_status?user_id=${userId}`);
         const boostData = await boostResponse.json();
@@ -21528,13 +21514,11 @@ window.onload = async () => {
         }
     }
     
-    // ✅ ЗАГРУЖАЕМ СКИПЫ (из localStorage)
     const savedSkips = localStorage.getItem(`user_skips_${userId}`);
     if (savedSkips) {
         userSkips = parseInt(savedSkips) || 0;
     }
     
-    // ✅ ОБНОВЛЯЕМ ОТОБРАЖЕНИЕ СКИПОВ
     if (typeof updateSkipDisplay === 'function') {
         updateSkipDisplay();
     } else {
@@ -21544,7 +21528,6 @@ window.onload = async () => {
         }
     }
     
-    // ✅ ОБНОВЛЯЕМ ОТОБРАЖЕНИЕ БУСТА
     if (typeof updateBoostDisplay === 'function') {
         updateBoostDisplay();
     } else {
@@ -21553,18 +21536,17 @@ window.onload = async () => {
             if (userBoosts && userBoosts.active && userBoosts.remainingWorks > 0) {
                 boostContainer.innerHTML = `
                     <div style="font-size: 11px; color: var(--text-gray);">Буст x2</div>
-                    <span style="font-weight: 700; color: var(--accent); font-size: 22px;">${userBoosts.remainingWorks}</span>
+                    <span style="font-weight: 700; color: var(--accent); font-size: 20px;">${userBoosts.remainingWorks}</span>
                 `;
             } else {
                 boostContainer.innerHTML = `
                     <div style="font-size: 11px; color: var(--text-gray);">Буст x2</div>
-                    <span style="font-weight: 700; color: var(--text-gray); font-size: 22px;">—</span>
+                    <span style="font-weight: 700; color: var(--text-gray); font-size: 20px;">—</span>
                 `;
             }
         }
     }
     
-    // ✅ ПЕРИОДИЧЕСКАЯ СИНХРОНИЗАЦИЯ БУСТА С СЕРВЕРОМ (каждые 30 секунд)
     setInterval(async () => {
         try {
             const response = await fetch(`${SERVER_URL}/api/get_boost_status?user_id=${userId}`);
@@ -21581,14 +21563,11 @@ window.onload = async () => {
                 }
                 console.log('🔄 Буст синхронизирован с сервера:', userBoosts);
             }
-        } catch (e) {
-            // Тихо игнорируем ошибки
-        }
+        } catch (e) {}
     }, 30000);
     
     console.log('✅ APP READY');
     
-    // ✅ D&D: авто-восстановление при загрузке (только если оплачено)
     setTimeout(function() {
         fetch(SERVER_URL + '/api/dnd/payment_status?user_id=' + userId)
             .then(r => r.json())
