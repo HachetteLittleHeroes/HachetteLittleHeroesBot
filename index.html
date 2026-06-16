@@ -15627,7 +15627,7 @@ function showLeagueLeaderboard(league) {
         const placeIcon = user.place <= 3 ? ['🥇','🥈','🥉'][user.place - 1] : `#${user.place}`;
         
         const sponsorBg = user.sponsor_background || '';
-const bgStyle = sponsorBg ? sponsorBg : `background: ${isMe ? 'rgba(255,149,0,0.1)' : 'var(--card-bg)'};`;
+const bgStyle = sponsorBg ? sponsorBg : `background: ${isMe ? 'color-mix(in srgb, var(--accent) 10%, transparent)' : 'var(--card-bg)'};`;
 
 html += `
     <div style="display: flex; align-items: center; gap: 12px; padding: 12px; margin-bottom: 8px; ${bgStyle} border-radius: 12px; border: 1px solid var(--border-color); cursor: pointer;" onclick="openPublicProfile('${user.user_id}')">
@@ -15912,22 +15912,102 @@ const STATUS_SHOP = [
     { id: 'understood_genius', name: 'Недопонятый гений', price: 300 }
 ];
 const BACKGROUNDS_SHOP = [
-    { id: 'bg_canvas', name: 'Холст', price: 200, css: 'background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(128,128,128,0.03) 3px, rgba(128,128,128,0.03) 4px), repeating-linear-gradient(90deg, transparent, transparent 3px, rgba(128,128,128,0.03) 3px, rgba(128,128,128,0.03) 4px); border: 1px solid var(--border-color);' },
-    { id: 'bg_soft_gradient', name: 'Мягкий градиент', price: 200, css: 'background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(0,0,0,0.04)); border: 1px solid var(--border-color);' },
-    { id: 'bg_glass', name: 'Стекло', price: 250, css: 'background: linear-gradient(135deg, rgba(255,255,255,0.12), rgba(255,255,255,0.03)); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);' },
-    { id: 'bg_minimal', name: 'Минимал', price: 250, css: 'background: linear-gradient(180deg, rgba(128,128,128,0.04), transparent); border: 1px solid var(--border-color);' },
-    { id: 'bg_vignette', name: 'Виньетка', price: 250, css: 'background: radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.06) 100%); border: 1px solid var(--border-color);' },
-    { id: 'bg_subtle_lines', name: 'Тонкие линии', price: 300, css: 'background: repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(128,128,128,0.06) 5px, rgba(128,128,128,0.06) 10px); border: 1px solid var(--border-color);' },
-    { id: 'bg_dots', name: 'Точечки', price: 300, css: 'background: radial-gradient(circle, rgba(128,128,128,0.08) 1px, transparent 1px); background-size: 16px 16px; border: 1px solid var(--border-color);' },
-    { id: 'bg_silk', name: 'Шёлк', price: 300, css: 'background: linear-gradient(180deg, rgba(128,128,128,0.03) 0%, transparent 30%, transparent 70%, rgba(128,128,128,0.03) 100%); border: 1px solid var(--border-color);' },
-    { id: 'bg_card', name: 'Карточка', price: 350, css: 'background: var(--card-bg); box-shadow: 0 2px 12px rgba(0,0,0,0.06); border: 1px solid var(--border-color);' },
-    { id: 'bg_brushed', name: 'Брашированный металл', price: 350, css: 'background: linear-gradient(90deg, rgba(128,128,128,0.04) 0%, rgba(128,128,128,0.02) 50%, rgba(128,128,128,0.04) 100%); border: 1px solid var(--border-color);' },
-    { id: 'bg_frost', name: 'Иней', price: 350, css: 'background: radial-gradient(circle at 20% 30%, rgba(255,255,255,0.06) 0%, transparent 50%), radial-gradient(circle at 80% 70%, rgba(255,255,255,0.04) 0%, transparent 50%); border: 1px solid var(--border-color);' },
-    { id: 'bg_soft_glow', name: 'Мягкое свечение', price: 400, css: 'background: linear-gradient(135deg, rgba(128,128,128,0.06), transparent 60%); border: 1px solid var(--border-color);' },
-    { id: 'bg_watercolor', name: 'Акварель', price: 400, css: 'background: radial-gradient(ellipse at 30% 20%, rgba(128,128,128,0.06), transparent 40%), radial-gradient(ellipse at 70% 80%, rgba(128,128,128,0.04), transparent 40%); border: 1px solid var(--border-color);' },
-    { id: 'bg_prism', name: 'Призма', price: 450, css: 'background: linear-gradient(135deg, rgba(128,128,128,0.04) 0%, transparent 25%, rgba(128,128,128,0.04) 50%, transparent 75%, rgba(128,128,128,0.04) 100%); background-size: 200% 200%; border: 1px solid var(--border-color);' },
-    { id: 'bg_nebula', name: 'Туманность', price: 500, css: 'background: radial-gradient(ellipse at top left, rgba(128,128,128,0.08), transparent 50%), radial-gradient(ellipse at bottom right, rgba(128,128,128,0.06), transparent 50%); border: 1px solid var(--border-color);' },
-    { id: 'bg_marble', name: 'Мрамор', price: 500, css: 'background: radial-gradient(ellipse at 40% 40%, rgba(128,128,128,0.05) 0%, transparent 50%), radial-gradient(ellipse at 60% 60%, rgba(128,128,128,0.03) 0%, transparent 40%), linear-gradient(135deg, rgba(128,128,128,0.02) 0%, transparent 50%); border: 1px solid var(--border-color);' }
+    { 
+        id: 'bg_canvas', 
+        name: 'Холст', 
+        price: 200, 
+        css: 'background: repeating-linear-gradient(0deg, transparent, transparent 3px, color-mix(in srgb, var(--accent) 5%, transparent) 3px, color-mix(in srgb, var(--accent) 5%, transparent) 4px), repeating-linear-gradient(90deg, transparent, transparent 3px, color-mix(in srgb, var(--accent) 5%, transparent) 3px, color-mix(in srgb, var(--accent) 5%, transparent) 4px); border: 1px solid var(--border-color);'
+    },
+    { 
+        id: 'bg_soft_gradient', 
+        name: 'Мягкий градиент', 
+        price: 200, 
+        css: 'background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 8%, transparent), color-mix(in srgb, var(--accent) 3%, transparent)); border: 1px solid color-mix(in srgb, var(--accent) 15%, transparent);'
+    },
+    { 
+        id: 'bg_glass', 
+        name: 'Стекло', 
+        price: 250, 
+        css: 'background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 10%, transparent), color-mix(in srgb, var(--accent) 4%, transparent)); backdrop-filter: blur(10px); border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);'
+    },
+    { 
+        id: 'bg_minimal', 
+        name: 'Минимал', 
+        price: 250, 
+        css: 'background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 6%, transparent), transparent); border: 1px solid var(--border-color);'
+    },
+    { 
+        id: 'bg_vignette', 
+        name: 'Виньетка', 
+        price: 250, 
+        css: 'background: radial-gradient(ellipse at center, transparent 55%, color-mix(in srgb, var(--accent) 8%, transparent) 100%); border: 1px solid var(--border-color);'
+    },
+    { 
+        id: 'bg_subtle_lines', 
+        name: 'Тонкие линии', 
+        price: 300, 
+        css: 'background: repeating-linear-gradient(45deg, transparent, transparent 5px, color-mix(in srgb, var(--accent) 5%, transparent) 5px, color-mix(in srgb, var(--accent) 5%, transparent) 10px); border: 1px solid var(--border-color);'
+    },
+    { 
+        id: 'bg_dots', 
+        name: 'Точечки', 
+        price: 300, 
+        css: 'background: radial-gradient(circle, color-mix(in srgb, var(--accent) 8%, transparent) 1.5px, transparent 1.5px); background-size: 16px 16px; border: 1px solid var(--border-color);'
+    },
+    { 
+        id: 'bg_silk', 
+        name: 'Шёлк', 
+        price: 300, 
+        css: 'background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 5%, transparent) 0%, transparent 30%, transparent 70%, color-mix(in srgb, var(--accent) 5%, transparent) 100%); border: 1px solid var(--border-color);'
+    },
+    { 
+        id: 'bg_card', 
+        name: 'Карточка', 
+        price: 350, 
+        css: 'background: var(--card-bg); box-shadow: 0 2px 12px color-mix(in srgb, var(--accent) 15%, transparent); border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);'
+    },
+    { 
+        id: 'bg_brushed', 
+        name: 'Брашированный металл', 
+        price: 350, 
+        css: 'background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 5%, transparent) 0%, color-mix(in srgb, var(--accent) 3%, transparent) 50%, color-mix(in srgb, var(--accent) 5%, transparent) 100%); border: 1px solid color-mix(in srgb, var(--accent) 15%, transparent);'
+    },
+    { 
+        id: 'bg_frost', 
+        name: 'Иней', 
+        price: 350, 
+        css: 'background: radial-gradient(circle at 20% 30%, color-mix(in srgb, var(--accent) 8%, transparent) 0%, transparent 50%), radial-gradient(circle at 80% 70%, color-mix(in srgb, var(--accent) 5%, transparent) 0%, transparent 50%); border: 1px solid var(--border-color);'
+    },
+    { 
+        id: 'bg_soft_glow', 
+        name: 'Мягкое свечение', 
+        price: 400, 
+        css: 'background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 8%, transparent), transparent 60%); border: 1px solid var(--border-color);'
+    },
+    { 
+        id: 'bg_watercolor', 
+        name: 'Акварель', 
+        price: 400, 
+        css: 'background: radial-gradient(ellipse at 30% 20%, color-mix(in srgb, var(--accent) 7%, transparent), transparent 40%), radial-gradient(ellipse at 70% 80%, color-mix(in srgb, var(--accent) 5%, transparent), transparent 40%); border: 1px solid var(--border-color);'
+    },
+    { 
+        id: 'bg_prism', 
+        name: 'Призма', 
+        price: 450, 
+        css: 'background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 6%, transparent) 0%, transparent 25%, color-mix(in srgb, var(--accent) 5%, transparent) 50%, transparent 75%, color-mix(in srgb, var(--accent) 6%, transparent) 100%); background-size: 200% 200%; border: 1px solid var(--border-color);'
+    },
+    { 
+        id: 'bg_nebula', 
+        name: 'Туманность', 
+        price: 500, 
+        css: 'background: radial-gradient(ellipse at top left, color-mix(in srgb, var(--accent) 10%, transparent), transparent 50%), radial-gradient(ellipse at bottom right, color-mix(in srgb, var(--accent) 7%, transparent), transparent 50%); border: 1px solid var(--border-color);'
+    },
+    { 
+        id: 'bg_marble', 
+        name: 'Мрамор', 
+        price: 500, 
+        css: 'background: radial-gradient(ellipse at 40% 40%, color-mix(in srgb, var(--accent) 6%, transparent) 0%, transparent 50%), radial-gradient(ellipse at 60% 60%, color-mix(in srgb, var(--accent) 4%, transparent) 0%, transparent 40%), linear-gradient(135deg, color-mix(in srgb, var(--accent) 3%, transparent) 0%, transparent 50%); border: 1px solid var(--border-color);'
+    }
 ];
 const SKIP_SHOP = [
     { id: 'skip_1', name: 'Скип на 1 очко', desc: 'Пропустить одно задание (кроме Шок контент)', price: 50, amount: 1 },
@@ -15968,15 +16048,15 @@ function renderBackgroundsShop() {
             const currentBg = stats.sponsor_background || '';
             
             BACKGROUNDS_SHOP.forEach(bg => {
-                const owned = (currentBg === bg.css);
-                const canBuy = !owned && user.balance >= bg.price;
+                const isActive = (currentBg === bg.css);
+                const canBuy = user.balance >= bg.price;
                 
                 container.innerHTML += `
-                    <div class="shop-item-card ${owned ? 'owned' : ''}">
+                    <div class="shop-item-card ${isActive ? 'owned' : ''}">
                         <div style="width: 100%; height: 60px; border-radius: 12px; margin-bottom: 10px; ${bg.css}"></div>
                         <div class="shop-item-title">${bg.name}</div>
                         <div class="shop-item-price">${bg.price} <i class="fas fa-book-open gold-book"></i></div>
-                        ${owned ? '<div style="color:green;font-size:12px;">✅ Используется</div>' : 
+                        ${isActive ? '<div style="color:green;font-size:12px;">✅ Активна</div>' : 
                             `<button class="shop-item-btn" onclick="buyBackground('${bg.id}', ${bg.price})" ${!canBuy ? 'disabled' : ''}>${canBuy ? '🎨 Купить' : '❌ Недостаточно'}</button>`}
                     </div>
                 `;
@@ -15985,11 +16065,23 @@ function renderBackgroundsShop() {
 }
 
 async function buyBackground(id, price) {
-    if (user.balance < price) return tg.showAlert(`❌ Нужно ${price} ашетиков`);
-    if (!confirm(`Купить подложку за ${price} ашетиков?`)) return;
-    
     const bg = BACKGROUNDS_SHOP.find(b => b.id === id);
     if (!bg) return;
+    
+    // Проверяем, не установлена ли уже эта подложка
+    try {
+        const statsRes = await fetch(`${SERVER_URL}/api/stats?user_id=${userId}`);
+        const stats = await statsRes.json();
+        const currentBg = stats.sponsor_background || '';
+        
+        if (currentBg === bg.css) {
+            if (tg) tg.showAlert('✅ Эта подложка уже активна!');
+            return;
+        }
+    } catch(e) {}
+    
+    if (user.balance < price) return tg.showAlert(`❌ Нужно ${price} ашетиков`);
+    if (!confirm(`Купить подложку «${bg.name}» за ${price} ашетиков?`)) return;
     
     try {
         let r = await fetch(`${SERVER_URL}/api/add_balance`, {
@@ -16010,7 +16102,7 @@ async function buyBackground(id, price) {
             saveUserData();
             updateUI();
             renderBackgroundsShop();
-            tg.showAlert(`✅ Подложка "${bg.name}" применена!`);
+            tg.showAlert(`✅ Подложка «${bg.name}» применена!`);
         }
     } catch(e) {
         tg.showAlert('❌ Ошибка');
