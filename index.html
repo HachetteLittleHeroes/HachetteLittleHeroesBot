@@ -16165,7 +16165,7 @@ async function buyAvatarBorder(id, price) {
         let r = await fetch(`${SERVER_URL}/api/add_balance`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ user_id: userId, amount: -price, reason: `Покупка обводки аватара "${border.name}"` })
+           body: JSON.stringify({ user_id: userId, border: border.css, border_id: border.id })
         });
         let res = await r.json();
         
@@ -16221,7 +16221,7 @@ async function buyStatusBg(id, price) {
         let r = await fetch(`${SERVER_URL}/api/add_balance`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ user_id: userId, amount: -price, reason: `Покупка фона статуса "${bg.name}"` })
+           body: JSON.stringify({ user_id: userId, background: bg.css, background_id: bg.id })
         });
         let res = await r.json();
         
