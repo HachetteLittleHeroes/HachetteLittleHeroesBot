@@ -6492,29 +6492,29 @@ body:not([data-theme]) .modal-content,
 <div id="rewards-section" class="rewards-section">
     <h3>💰 Магазин</h3>
     
-    <div style="display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); flex-wrap: wrap;">
-        <button class="shop-tab" data-tab="bundles" onclick="switchShopTab('bundles')">
-            <i class="fas fa-gift"></i> Наборы
-        </button>
-        <button class="shop-tab active" data-tab="statuses" onclick="switchShopTab('statuses')">
-            <i class="fas fa-crown"></i> Статусы
-        </button>
-        <button class="shop-tab" data-tab="status_bg" onclick="switchShopTab('status_bg')">
-            <i class="fas fa-crown"></i> Фон статуса
-        </button>
-        <button class="shop-tab" data-tab="backgrounds" onclick="switchShopTab('backgrounds')">
-            <i class="fas fa-paint-roller"></i> Подложки
-        </button>
-        <button class="shop-tab" data-tab="avatar_border" onclick="switchShopTab('avatar_border')">
-            <i class="fas fa-circle"></i> Обводка
-        </button>
-        <button class="shop-tab" data-tab="skips" onclick="switchShopTab('skips')">
-            <i class="fas fa-forward"></i> Скипы
-        </button>
-        <button class="shop-tab" data-tab="boosts" onclick="switchShopTab('boosts')">
-            <i class="fas fa-rocket"></i> Бусты
-        </button>
-    </div>
+  <div style="display: flex; gap: 6px; margin-bottom: 15px; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; padding-bottom: 5px;">
+       <button class="shop-tab" data-tab="bundles" onclick="switchShopTab('bundles')" style="flex-shrink: 0; white-space: nowrap;">
+        <i class="fas fa-gift"></i> Наборы
+    </button>
+      <button class="shop-tab active" data-tab="statuses" onclick="switchShopTab('statuses')" style="flex-shrink: 0; white-space: nowrap;">
+        <i class="fas fa-crown"></i> Статусы
+    </button>
+    <button class="shop-tab" data-tab="status_bg" onclick="switchShopTab('status_bg')" style="flex-shrink: 0; white-space: nowrap;">
+        <i class="fas fa-crown"></i> Фон статуса
+    </button>
+    <button class="shop-tab" data-tab="backgrounds" onclick="switchShopTab('backgrounds')" style="flex-shrink: 0; white-space: nowrap;">
+        <i class="fas fa-paint-roller"></i> Подложки
+    </button>
+    <button class="shop-tab" data-tab="avatar_border" onclick="switchShopTab('avatar_border')" style="flex-shrink: 0; white-space: nowrap;">
+        <i class="fas fa-circle"></i> Обводка
+    </button>
+    <button class="shop-tab" data-tab="skips" onclick="switchShopTab('skips')" style="flex-shrink: 0; white-space: nowrap;">
+        <i class="fas fa-forward"></i> Скипы
+    </button>
+    <button class="shop-tab" data-tab="boosts" onclick="switchShopTab('boosts')" style="flex-shrink: 0; white-space: nowrap;">
+        <i class="fas fa-rocket"></i> Бусты
+    </button>
+</div>
     
     <div id="shop-statuses" class="shop-tab-content active">
         <div class="rewards-grid" id="statusShopGrid"></div>
