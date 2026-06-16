@@ -6410,6 +6410,13 @@ body:not([data-theme]) .modal-content,
     background: #ff9800;
     flex-shrink: 0;
 }
+        @keyframes diceShake {
+    0% { transform: rotate(0deg); }
+    25% { transform: rotate(15deg); }
+    50% { transform: rotate(-15deg); }
+    75% { transform: rotate(10deg); }
+    100% { transform: rotate(0deg); }
+}
     </style>
 </head>
 <body>
@@ -6800,6 +6807,41 @@ body:not([data-theme]) .modal-content,
     </div>
 </div>
 
+    <!-- ========== СЛУЧАЙНАЯ СТРАНИЦА ========== -->
+<div class="tasks-section" style="margin-top: 15px;">
+    <button class="tasks-header" onclick="toggleRandomPage()">
+        <span>🎲 Случайная страница</span>
+        <i class="fas fa-chevron-down" id="randomPageArrow"></i>
+    </button>
+    <div id="randomPageContent" class="tasks-content" style="display: none;">
+        <div style="padding: 15px; text-align: center;">
+            <p style="color: var(--text-gray); font-size: 13px; margin-bottom: 15px;">
+                Выберите категорию и нажмите кнопку — мы случайно выберем нераскрашенную страницу из вашей коллекции!
+            </p>
+            
+            <div style="display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; justify-content: center;">
+                <button class="filter-btn active" onclick="setRandomFilter('all', this)" style="flex: 1; min-width: 90px;">
+                    <i class="fas fa-book"></i> Все
+                </button>
+                <button class="filter-btn" onclick="setRandomFilter('paint_by_number', this)" style="flex: 1; min-width: 90px;">
+                    <i class="fas fa-border-all"></i> По номерам
+                </button>
+                <button class="filter-btn" onclick="setRandomFilter('alcohol', this)" style="flex: 1; min-width: 90px;">
+                    <i class="fas fa-wine-bottle"></i> Спиртовые
+                </button>
+            </div>
+            
+            <button onclick="randomUncoloredPage()" class="task-submit-btn" style="width: 100%; padding: 14px 20px; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 10px; background: var(--accent-gradient); box-shadow: 0 4px 12px rgba(0,0,0,0.15); margin-bottom: 10px;">
+                <i class="fas fa-dice"></i> 
+                Выбрать случайную страницу
+            </button>
+            
+            <button onclick="showExcludedBooks()" class="task-submit-btn" style="width: 100%; padding: 10px; font-size: 13px; background: var(--card-bg); color: var(--text); border: 1px solid var(--border-color);">
+                <i class="fas fa-list"></i> Исключённые раскраски (<span id="excludedBooksCount">0</span>)
+            </button>
+        </div>
+    </div>
+</div>
 <style>
 /* Стили для D&D */
 .team-card {
@@ -8339,6 +8381,233 @@ function applyAllFilters() {
         // Применяем все фильтры
         card.style.display = (showByStatus && showByCategory && showByDifficulty) ? '' : 'none';
     });
+}
+        // ==========================================
+// РАНДОМАЙЗЕР
+// ==========================================
+
+let randomizerCategory = 'all';
+let excludedBooks = [];
+
+function toggleRandomPage() {
+    const content = document.getElementById('randomPageContent');
+    const arrow = document.getElementById('randomPageArrow');
+    if (!content) return;
+    if (content.style.display === 'block') {
+        content.style.display = 'none';
+        if (arrow) arrow.style.transform = 'rotate(0deg)';
+    } else {
+        content.style.display = 'block';
+        if (arrow) arrow.style.transform = 'rotate(180deg)';
+    }
+}
+
+function setRandomFilter(filter, btn) {
+    randomizerCategory = filter;
+    document.querySelectorAll('#randomPageContent .filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+}
+
+function randomUncoloredPage() {
+    const availablePages = [];
+    const categories = ['paint_by_number', 'alcohol', 'pencil', 'custom'];
+    
+    categories.forEach(category => {
+        if (randomizerCategory === 'paint_by_number' && category !== 'paint_by_number') return;
+        if (randomizerCategory === 'alcohol' && category !== 'alcohol') return;
+        
+        const userBooks = userColoringBooks[category] || [];
+        
+        userBooks.forEach(book => {
+            const bookName = typeof book === 'string' ? book : book.name;
+            
+            if (excludedBooks.includes(bookName)) return;
+            
+            const bookKey = `${category}_${bookName}`;
+            
+            let config;
+            if (typeof book === 'object' && book.custom) {
+                config = {
+                    totalPages: book.totalPages || DEFAULT_PAGES_CONFIG.totalPages,
+                    spreads: book.spreads || []
+                };
+            } else {
+                config = BOOK_PAGES_CONFIG[bookName] || DEFAULT_PAGES_CONFIG;
+            }
+            
+            const completedPages = userCompletedPages[bookKey] || {};
+            const { totalPages, spreads } = config;
+            
+            let page = 1;
+            while (page <= totalPages) {
+                const isSpread = spreads.includes(page);
+                const pageLabel = isSpread ? `${page}-${page + 1}` : String(page);
+                
+                if (!completedPages[pageLabel]) {
+                    availablePages.push({
+                        bookName: bookName,
+                        category: category,
+                        bookKey: bookKey,
+                        page: pageLabel,
+                        isSpread: isSpread,
+                        config: config
+                    });
+                }
+                
+                page += isSpread ? 2 : 1;
+            }
+        });
+    });
+    
+    if (availablePages.length === 0) {
+        const messages = {
+            'all': '🎉 Все страницы в выбранных раскрасках раскрашены!',
+            'paint_by_number': '🎉 Все страницы в раскрасках по номерам раскрашены!',
+            'alcohol': '🎉 Все страницы в спиртовых раскрасках раскрашены!'
+        };
+        if (tg) tg.showAlert(messages[randomizerCategory] || 'Нет нераскрашенных страниц');
+        else alert(messages[randomizerCategory] || 'Нет нераскрашенных страниц');
+        return;
+    }
+    
+    const randomIndex = Math.floor(Math.random() * availablePages.length);
+    const chosen = availablePages[randomIndex];
+    
+    showRandomResult(chosen);
+}
+
+function showRandomResult(chosen) {
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.style.display = 'flex';
+    modal.style.zIndex = '100005';
+    
+    const coverUrl = DEFAULT_COVERS[chosen.bookName] || '';
+    const categoryNames = {
+        'paint_by_number': 'Раскраска по номерам',
+        'alcohol': 'Спиртовая раскраска',
+        'pencil': 'Для карандашей',
+        'custom': 'Другая раскраска'
+    };
+    
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width: 400px; text-align: center;">
+            <h3 style="margin-bottom: 5px;">🎲 Случайная страница</h3>
+            <p style="color: var(--text-gray); font-size: 12px; margin-bottom: 15px;">${categoryNames[chosen.category] || chosen.category}</p>
+            
+            ${coverUrl ? `<img src="${coverUrl}" style="width: 120px; border-radius: 12px; margin-bottom: 15px;" onerror="this.style.display='none'">` : ''}
+            
+            <div style="font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 8px;">
+                ${chosen.bookName}
+            </div>
+            
+            <div style="font-size: 24px; font-weight: 900; color: var(--accent); margin-bottom: 15px;">
+                ${chosen.isSpread ? `Разворот ${chosen.page}` : `Страница ${chosen.page}`}
+            </div>
+            
+            <p style="color: var(--text-gray); font-size: 13px; margin-bottom: 10px;">
+                ${chosen.isSpread ? 'Это разворот — считается как 1 страница' : 'Обычная страница'}
+            </p>
+            
+            <button class="modal-action-btn" onclick="goToBookPage('${chosen.category}', '${chosen.bookName.replace(/'/g, "\\'")}', '${chosen.page}')" style="margin-bottom: 8px;">
+                <i class="fas fa-paint-brush"></i> Перейти к раскраске
+            </button>
+            
+            <button class="modal-action-btn" onclick="this.closest('.modal-overlay').remove(); randomUncoloredPage();" style="background: #ff9800; margin-bottom: 8px;">
+                <i class="fas fa-dice"></i> Ещё раз
+            </button>
+            
+            <button class="modal-action-btn" onclick="excludeBook('${chosen.bookName.replace(/'/g, "\\'")}'); this.closest('.modal-overlay').remove(); randomUncoloredPage();" style="background: var(--status-red); margin-bottom: 8px;">
+                <i class="fas fa-ban"></i> Исключить эту раскраску
+            </button>
+            
+            <button class="modal-close-btn" onclick="this.closest('.modal-overlay').remove()">
+                Закрыть
+            </button>
+        </div>
+    `;
+    
+    modal.onclick = function(e) {
+        if (e.target === modal) modal.remove();
+    };
+    
+    document.body.appendChild(modal);
+}
+
+function excludeBook(bookName) {
+    if (!excludedBooks.includes(bookName)) {
+        excludedBooks.push(bookName);
+        updateExcludedCount();
+        if (tg) tg.showAlert(`❌ "${bookName}" исключена из рандомайзера`);
+    }
+}
+
+function resetExcludedBooks() {
+    excludedBooks = [];
+    updateExcludedCount();
+    if (tg) tg.showAlert('✅ Все раскраски снова доступны в рандомайзере');
+}
+
+function updateExcludedCount() {
+    const countEl = document.getElementById('excludedBooksCount');
+    if (countEl) countEl.textContent = excludedBooks.length;
+}
+
+function showExcludedBooks() {
+    if (excludedBooks.length === 0) {
+        if (tg) tg.showAlert('Нет исключённых раскрасок');
+        else alert('Нет исключённых раскрасок');
+        return;
+    }
+    
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.style.display = 'flex';
+    modal.style.zIndex = '100005';
+    
+    let booksHtml = excludedBooks.map(book => `
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: var(--bg); border-radius: 10px; margin-bottom: 8px;">
+            <span style="font-size: 14px; color: var(--text);">${book}</span>
+            <button onclick="excludedBooks = excludedBooks.filter(b => b !== '${book.replace(/'/g, "\\'")}'); updateExcludedCount(); this.closest('.modal-overlay').remove(); showExcludedBooks();" 
+                    style="background: var(--accent); color: white; border: none; padding: 5px 12px; border-radius: 15px; cursor: pointer; font-size: 12px;">
+                Вернуть
+            </button>
+        </div>
+    `).join('');
+    
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width: 400px;">
+            <h3 style="margin-bottom: 15px;">🚫 Исключённые раскраски</h3>
+            ${booksHtml}
+            <button class="modal-action-btn" onclick="resetExcludedBooks(); this.closest('.modal-overlay').remove();" style="margin-bottom: 10px;">Сбросить все</button>
+            <button class="modal-close-btn" onclick="this.closest('.modal-overlay').remove()">Закрыть</button>
+        </div>
+    `;
+    
+    modal.onclick = function(e) {
+        if (e.target === modal) modal.remove();
+    };
+    
+    document.body.appendChild(modal);
+}
+
+function goToBookPage(category, bookName, page) {
+    openBookPagesModal(category, bookName);
+    
+    document.querySelectorAll('.modal-overlay').forEach(m => {
+        if (m.innerHTML.includes('Случайная страница')) m.remove();
+    });
+    
+    setTimeout(() => {
+        const pageBtns = document.querySelectorAll('.book-page-btn');
+        pageBtns.forEach(btn => {
+            const text = btn.textContent.trim();
+            if (text === page || text.includes(page)) {
+                btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                btn.style.animation = 'highlight 1s ease-in-out 3';
+            }
+        });
+    }, 500);
 }
 // ==========================================
 // ПРОПУСК ЗАДАНИЙ И БУСТЫ XP
