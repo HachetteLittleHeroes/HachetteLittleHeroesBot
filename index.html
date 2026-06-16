@@ -9235,11 +9235,18 @@ function getWeeklyTask() {
     const charIndex = weekNumber % BESTIARY.length;
     const char = BESTIARY[charIndex];
     
+    // Вычисляем дату окончания (следующее воскресенье 00:00 МСК)
+    const now = new Date();
+    const daysUntilSunday = (7 - now.getDay()) % 7 || 7;
+    const deadline = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysUntilSunday);
+    const deadlineStr = `${String(deadline.getDate()).padStart(2, '0')}.${String(deadline.getMonth() + 1).padStart(2, '0')}.${deadline.getFullYear()}`;
+    
     return {
         id: 'weekly_task',
         title: `Персонаж недели: ${char.name}`,
         description: `Раскрась картинку с ${char.name} из м/ф «${char.film}»`,
         reward: 10,
+        deadline: deadlineStr,
         type: 'weekly',
         character: char
     };
@@ -9249,58 +9256,53 @@ function getMonthlyTask() {
     const now = new Date();
     const monthIndex = now.getFullYear() * 12 + now.getMonth();
     
-    const taskSets = [
-        {
-            title: 'Раскрась персонажа месяца',
-            description: 'Выполни 3 задания',
-            reward: 20,
-            subtasks: [
-                { name: 'Раскрась картинку с принцессой', required: 1 },
-                { name: 'Раскрась картинку с животным', required: 1 },
-                { name: 'Раскрась разворот', required: 1 }
-            ]
-        },
-        {
-            title: 'Месяц волшебства',
-            description: 'Выполни 3 задания',
-            reward: 20,
-            subtasks: [
-                { name: 'Раскрась картинку с замком', required: 1 },
-                { name: 'Раскрась картинку с драконом', required: 1 },
-                { name: 'Раскрась картинку с феей', required: 1 }
-            ]
-        },
-        {
-            title: 'Морской месяц',
-            description: 'Выполни 3 задания',
-            reward: 20,
-            subtasks: [
-                { name: 'Раскрась картинку с русалкой', required: 1 },
-                { name: 'Раскрась картинку с рыбой', required: 1 },
-                { name: 'Раскрась картинку с кораблём', required: 1 }
-            ]
-        },
-        {
-            title: 'Лесной месяц',
-            description: 'Выполни 3 задания',
-            reward: 20,
-            subtasks: [
-                { name: 'Раскрась картинку с лесом', required: 1 },
-                { name: 'Раскрась картинку с оленем', required: 1 },
-                { name: 'Раскрась картинку с грибами', required: 1 }
-            ]
-        }
-    ];
+    // 4 случайных персонажа на месяц (детерминировано по месяцу)
+    const chars = [];
+    const usedIndices = new Set();
+    const seed = monthIndex * 12345;
     
-    const taskSet = taskSets[monthIndex % taskSets.length];
+    for (let i = 0; i < 4; i++) {
+        let idx = (seed + i * 7919) % BESTIARY.length;
+        while (usedIndices.has(idx)) {
+            idx = (idx + 1) % BESTIARY.length;
+        }
+        usedIndices.add(idx);
+        chars.push(BESTIARY[idx]);
+    }
+    
+    // Вычисляем дату окончания (последний день месяца 00:00 МСК)
+    const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    const deadlineStr = `${String(lastDay.getDate()).padStart(2, '0')}.${String(lastDay.getMonth() + 1).padStart(2, '0')}.${lastDay.getFullYear()}`;
+    
+    const subtasks = chars.map((char, i) => {
+        // Считаем количество появлений персонажа в бестиарии
+        let totalAppearances = 0;
+        char.appearances.forEach(a => totalAppearances += a.pages.length);
+        
+        // Если персонаж встречается на 3 и меньше страницах — повышенная награда
+        const isRare = totalAppearances <= 3;
+        const reward = isRare ? 10 : 5;
+        
+        return {
+            name: `Раскрась картинку с ${char.name} из м/ф «${char.film}»${isRare ? ' (редкий!)' : ''}`,
+            required: 1,
+            reward: reward,
+            character: char,
+            totalAppearances: totalAppearances,
+            isRare: isRare
+        };
+    });
+    
+    const totalReward = subtasks.reduce((sum, s) => sum + s.reward, 0);
     
     return {
         id: 'monthly_task',
-        title: taskSet.title,
-        description: taskSet.description,
-        reward: taskSet.reward,
+        title: 'Персонажи месяца',
+        description: `Выполни 4 задания до ${deadlineStr}`,
+        reward: totalReward,
+        deadline: deadlineStr,
         type: 'monthly',
-        subtasks: taskSet.subtasks
+        subtasks: subtasks
     };
 }
 
@@ -9320,7 +9322,7 @@ function checkTimeTasksReset() {
 }
 
 function loadTimeTasksStatus() {
-    // Больше не используется, оставлено для совместимости
+    // Оставлено для совместимости
 }
 
 function toggleTimeTasks() {
@@ -9354,7 +9356,7 @@ function renderTimeTasks() {
     // Еженедельное задание
     html += `
         <div class="time-task-card ${weeklyCompleted ? 'completed' : ''}">
-            <div class="time-badge">📅 Еженедельное</div>
+            <div class="time-badge">📅 Еженедельное (до ${weeklyTask.deadline})</div>
             <div class="time-header">
                 <h3>${weeklyTask.title}</h3>
                 <p>${weeklyTask.description}</p>
@@ -9377,11 +9379,11 @@ function renderTimeTasks() {
     // Ежемесячное задание
     html += `
         <div class="time-task-card">
-            <div class="time-badge">📆 Ежемесячное</div>
+            <div class="time-badge">📆 Ежемесячное (до ${monthlyTask.deadline})</div>
             <div class="time-header">
                 <h3>${monthlyTask.title}</h3>
                 <p>${monthlyTask.description}</p>
-                <div class="time-reward">🎁 Награда: +${monthlyTask.reward} ашетиков</div>
+                <div class="time-reward">🎁 Награда: до +${monthlyTask.reward} ашетиков</div>
             </div>
             <div class="level-card">
     `;
@@ -9397,6 +9399,10 @@ function renderTimeTasks() {
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                     <span style="font-weight: 600; font-size: 14px;">${subtask.name}</span>
                     <span style="font-size: 12px; color: var(--accent);">${progress}/${subtask.required}</span>
+                </div>
+                <div style="font-size: 11px; color: var(--text-gray); margin-bottom: 6px;">
+                    🎁 +${subtask.reward} ашетиков${subtask.isRare ? ' (редкий персонаж!)' : ''}
+                    <span style="font-size: 10px;">(${subtask.totalAppearances} появлений в бестиарии)</span>
                 </div>
                 <div class="progress-bar-container" style="height: 6px; margin: 0 0 8px 0;">
                     <div class="progress-bar-fill" style="width: ${(progress / subtask.required) * 100}%;"></div>
@@ -9435,7 +9441,6 @@ let currentTimeTaskReward = null;
 let currentTimeTaskSubtask = 0;
 
 function openTimeTaskUpload(taskId, reward) {
-    console.log('⏰ openTimeTaskUpload called:', taskId, reward);
     currentTimeTaskId = taskId;
     currentTimeTaskReward = reward;
     currentTimeTaskSubtask = 0;
@@ -9450,8 +9455,10 @@ function openTimeTaskUpload(taskId, reward) {
 
 function openMonthlySubtaskUpload(subtaskIdx) {
     currentTimeTaskId = 'monthly_task';
-    currentTimeTaskReward = 20;
     currentTimeTaskSubtask = subtaskIdx;
+    
+    const monthlyTask = getMonthlyTask();
+    currentTimeTaskReward = monthlyTask.subtasks[subtaskIdx].reward;
     
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
@@ -9490,7 +9497,6 @@ function handleTimeTaskFilesSelected(event) {
 }
 
 async function submitTimeTaskPhoto() {
-    console.log('=== SUBMIT TIME TASK PHOTO ===');
     if (isUploading) return;
     if (!tempPhotos || tempPhotos.length === 0) {
         if (tg) tg.showAlert('❌ Выберите хотя бы одно фото');
@@ -9504,13 +9510,13 @@ async function submitTimeTaskPhoto() {
         formData.append('type', 'time_task');
         
         if (currentTimeTaskId === 'monthly_task') {
-            formData.append('subtask', currentTimeTaskSubtask.toString());
-            formData.append('reward', '20');
             const monthlyTask = getMonthlyTask();
+            formData.append('subtask', currentTimeTaskSubtask.toString());
+            formData.append('reward', currentTimeTaskReward.toString());
             formData.append('title', `Ежемесячное задание: ${monthlyTask.subtasks[currentTimeTaskSubtask].name}`);
         } else {
-            formData.append('reward', currentTimeTaskReward.toString());
             const weeklyTask = getWeeklyTask();
+            formData.append('reward', currentTimeTaskReward.toString());
             formData.append('title', `Еженедельное задание: ${weeklyTask.title}`);
         }
         
