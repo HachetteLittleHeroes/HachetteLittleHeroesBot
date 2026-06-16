@@ -15636,6 +15636,12 @@ function showLeagueLeaderboard(league) {
         const avatarUrl = user.avatar || 'https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png';
         const placeIcon = user.place <= 3 ? ['🥇','🥈','🥉'][user.place - 1] : `#${user.place}`;
         
+        // Фон статуса
+        const statusBg = user.status_background || '';
+        const statusStyle = statusBg 
+            ? statusBg + ' padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; display: inline-block; color: var(--text);' 
+            : 'font-size: 13px; font-weight: 600;';
+        
         const sponsorBgId = user.sponsor_background_id || '';
         let bgStyle = '';
         
@@ -15654,9 +15660,8 @@ function showLeagueLeaderboard(league) {
                 </div>
                 <img src="${avatarUrl}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" onerror="this.src='https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png'">
                 <div style="flex: 1; min-width: 0;">
-                    <div style="font-weight: 600; font-size: 14px;">${user.name || user.username}</div>
-                    <div style="font-size: 12px; color: var(--text-gray);">${user.status || 'Без статуса'}</div>
-                    <div style="font-size: 11px; color: var(--accent);">${getUserLevelInfo(user.xp || 0).name}</div>
+                    <div style="font-weight: 600; font-size: 14px; margin-bottom: 4px;">${user.name || user.username}</div>
+                    <span style="${statusStyle}">${user.status || 'Без статуса'}</span>
                 </div>
                 <div style="text-align: right;">
                     <div style="font-weight: 700; color: var(--accent); font-size: 16px;">${user.points}</div>
@@ -15668,7 +15673,7 @@ function showLeagueLeaderboard(league) {
     
     container.innerHTML = html;
     
-    // Применяем эмодзи-подложки через JS (инлайн-стили не работают с SVG)
+    // Применяем эмодзи-подложки через JS
     const cards = container.querySelectorAll('div[style*="display: flex"]');
     cards.forEach(card => {
         const onclick = card.getAttribute('onclick') || '';
