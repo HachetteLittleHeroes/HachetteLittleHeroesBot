@@ -16252,32 +16252,23 @@ async function activateBackground(id) {
             body: JSON.stringify({ user_id: userId, background: bg.css, background_id: bg.id })
         });
         
-        applySponsorBackground(bg.css, bg.id);
+        let finalCss = bg.css;
+        if (bg.id.startsWith('bg_emoji_')) {
+            const freshBg = BACKGROUNDS_SHOP.find(b => b.id === bg.id);
+            if (freshBg) finalCss = freshBg.css;
+        }
+        applySponsorBackground(finalCss, bg.id);
         renderBackgroundsShop();
+        
         tg.showAlert(`✅ Подложка «${bg.name}» активирована!`);
     } catch(e) {
         tg.showAlert('❌ Ошибка');
     }
 }
-        async function activateAvatarBorder(id) {
-    const border = AVATAR_BORDER_SHOP.find(b => b.id === id);
-    if (!border) return;
-    
-    await fetch(`${SERVER_URL}/api/save_avatar_border`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: userId, border: border.css, border_id: border.id })
-    });
-    
-    applyAvatarBorder(border.css);
-    renderAvatarBorderShop();
-    tg.showAlert(`✅ Обводка «${border.name}» активирована!`);
-}
 async function buyBackground(id, price) {
     const bg = BACKGROUNDS_SHOP.find(b => b.id === id);
     if (!bg) return;
     
-    // Проверяем, не установлена ли уже эта подложка
     try {
         const statsRes = await fetch(`${SERVER_URL}/api/stats?user_id=${userId}`);
         const stats = await statsRes.json();
@@ -16293,7 +16284,6 @@ async function buyBackground(id, price) {
     if (!confirm(`Купить подложку «${bg.name}» за ${price} ашетиков?`)) return;
     
     try {
-        // 1. Списываем ашетики
         let r = await fetch(`${SERVER_URL}/api/add_balance`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -16302,7 +16292,6 @@ async function buyBackground(id, price) {
         let res = await r.json();
         
         if (res.status === 'ok') {
-            // 2. Сохраняем подложку
             await fetch(`${SERVER_URL}/api/save_background`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -16312,8 +16301,16 @@ async function buyBackground(id, price) {
             user.balance = res.new_balance;
             saveUserData();
             updateUI();
+            
+            // Пересоздаём CSS для эмодзи-подложек
+            let finalCss = bg.css;
+            if (bg.id.startsWith('bg_emoji_')) {
+                const freshBg = BACKGROUNDS_SHOP.find(b => b.id === bg.id);
+                if (freshBg) finalCss = freshBg.css;
+            }
+            applySponsorBackground(finalCss, bg.id);
             renderBackgroundsShop();
-            applySponsorBackground(bg.css, bg.id);
+            
             tg.showAlert(`✅ Подложка «${bg.name}» применена!`);
         }
     } catch(e) {
