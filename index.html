@@ -15951,6 +15951,7 @@ function switchShopTab(tab) {
     document.getElementById('shop-statuses').style.display = tab === 'statuses' ? 'block' : 'none';
     document.getElementById('shop-skips').style.display = tab === 'skips' ? 'block' : 'none';
     document.getElementById('shop-boosts').style.display = tab === 'boosts' ? 'block' : 'none';
+    document.getElementById('shop-backgrounds').style.display = tab === 'backgrounds' ? 'block' : 'none';  // ← ДОБАВЬ ЭТУ СТРОКУ
     if (tab === 'statuses') renderStatusShop();
     if (tab === 'skips') renderSkipShop();
     if (tab === 'boosts') renderBoostShop();
