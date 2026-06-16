@@ -15456,7 +15456,7 @@ function renderPurchasedItems() {
                     const isActive = (bgId === currentBgId);
                     bgHtml += `
                         <div class="reward-card" onclick="activateBackground('${bgId}'); renderPurchasedItems();" style="border-color: ${isActive ? 'var(--accent)' : 'var(--border-color)'};">
-                            <div style="width: 100%; height: 60px; border-radius: 12px; margin-bottom: 10px; ${bg.css}"></div>
+                            <div style="width: 100%; height: 60px; border-radius: 12px; margin-bottom: 10px; ${bg.preview || bg.css}"></div>
                             <h4>${bg.name}</h4>
                             ${isActive ? '<div style="color: var(--accent); font-size: 12px; font-weight: 600;">✅ Активна</div>' : '<button class="reward-buy-btn" style="margin-top: 5px;">Выбрать</button>'}
                         </div>
