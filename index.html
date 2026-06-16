@@ -6483,8 +6483,8 @@ body:not([data-theme]) .modal-content,
     <div class="balance-main"><span id="userBalance">0</span> <i class="fas fa-book-open gold-book"></i></div>
     <div class="balance-controls">
         <button class="balance-btn" onclick="toggleSection('rewards-section')">Потратить ашетики 🏆</button>
-        <button class="balance-btn" onclick="openMyCustomization()" style="background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25);">
-            🌟 Приобретённое
+        <button class="balance-btn" onclick="toggleSection('purchased-section')" style="background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25);">
+            Приобретённое 🌟
         </button>
     </div>
 </div>
@@ -6492,59 +6492,65 @@ body:not([data-theme]) .modal-content,
 <div id="rewards-section" class="rewards-section">
     <h3>💰 Магазин</h3>
     
-    <!-- Вкладки -->
-   <div style="display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); flex-wrap: wrap;">
+    <div style="display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); flex-wrap: wrap;">
+        <button class="shop-tab" data-tab="bundles" onclick="switchShopTab('bundles')">
+            <i class="fas fa-gift"></i> Наборы
+        </button>
+        <button class="shop-tab active" data-tab="statuses" onclick="switchShopTab('statuses')">
+            <i class="fas fa-crown"></i> Статусы
+        </button>
+        <button class="shop-tab" data-tab="status_bg" onclick="switchShopTab('status_bg')">
+            <i class="fas fa-crown"></i> Фон статуса
+        </button>
+        <button class="shop-tab" data-tab="backgrounds" onclick="switchShopTab('backgrounds')">
+            <i class="fas fa-paint-roller"></i> Подложки
+        </button>
+        <button class="shop-tab" data-tab="avatar_border" onclick="switchShopTab('avatar_border')">
+            <i class="fas fa-circle"></i> Обводка
+        </button>
+        <button class="shop-tab" data-tab="skips" onclick="switchShopTab('skips')">
+            <i class="fas fa-forward"></i> Скипы
+        </button>
+        <button class="shop-tab" data-tab="boosts" onclick="switchShopTab('boosts')">
+            <i class="fas fa-rocket"></i> Бусты
+        </button>
+    </div>
     
-         <button class="shop-tab" data-tab="bundles" onclick="switchShopTab('bundles')">
-        <i class="fas fa-gift"></i> Наборы
-    </button>
-       <button class="shop-tab active" data-tab="statuses" onclick="switchShopTab('statuses')">
-        <i class="fas fa-crown"></i> Статусы
-    </button>
-          <button class="shop-tab" data-tab="status_bg" onclick="switchShopTab('status_bg')">
-        <i class="fas fa-crown"></i> Фон статуса
-    </button>
-           <button class="shop-tab" data-tab="backgrounds" onclick="switchShopTab('backgrounds')">
-        <i class="fas fa-paint-roller"></i> Подложки
-    </button>
-         <button class="shop-tab" data-tab="avatar_border" onclick="switchShopTab('avatar_border')">
-        <i class="fas fa-circle"></i> Обводка
-    </button>
-    <button class="shop-tab" data-tab="skips" onclick="switchShopTab('skips')">
-        <i class="fas fa-forward"></i> Скипы
-    </button>
-    <button class="shop-tab" data-tab="boosts" onclick="switchShopTab('boosts')">
-        <i class="fas fa-rocket"></i> Бусты
-    </button>
-</div>
-    
-    <!-- Статусы -->
     <div id="shop-statuses" class="shop-tab-content active">
         <div class="rewards-grid" id="statusShopGrid"></div>
     </div>
-    
-    <!-- Скипы -->
     <div id="shop-skips" class="shop-tab-content" style="display: none;">
         <div class="rewards-grid" id="skipShopGrid"></div>
     </div>
-    
-    <!-- Бусты -->
     <div id="shop-boosts" class="shop-tab-content" style="display: none;">
         <div class="rewards-grid" id="boostShopGrid"></div>
     </div>
     <div id="shop-bundles" class="shop-tab-content" style="display: none;">
-    <div id="weeklyBundleContainer" style="margin-bottom: 20px;"></div>
-    <div class="rewards-grid" id="bundlesShopGrid"></div>
-</div>
+        <div id="weeklyBundleContainer" style="margin-bottom: 20px;"></div>
+        <div class="rewards-grid" id="bundlesShopGrid"></div>
+    </div>
     <div id="shop-backgrounds" class="shop-tab-content" style="display: none;">
-    <div class="rewards-grid" id="backgroundsShopGrid"></div>
-</div>
+        <div class="rewards-grid" id="backgroundsShopGrid"></div>
+    </div>
     <div id="shop-status_bg" class="shop-tab-content" style="display: none;">
-    <div class="rewards-grid" id="statusBgShopGrid"></div>
-</div>
+        <div class="rewards-grid" id="statusBgShopGrid"></div>
+    </div>
     <div id="shop-avatar_border" class="shop-tab-content" style="display: none;">
-    <div class="rewards-grid" id="avatarBorderShopGrid"></div>
+        <div class="rewards-grid" id="avatarBorderShopGrid"></div>
+    </div>
 </div>
+
+<div id="purchased-section" class="rewards-section">
+    <h3>Приобретённое 🌟</h3>
+    
+    <h4 style="margin: 15px 0 10px;"><i class="fas fa-paint-roller"></i> Подложки</h4>
+    <div id="purchasedBackgrounds" class="rewards-grid"></div>
+    
+    <h4 style="margin: 15px 0 10px;"><i class="fas fa-crown"></i> Фоны статуса</h4>
+    <div id="purchasedStatusBgs" class="rewards-grid"></div>
+    
+    <h4 style="margin: 15px 0 10px;"><i class="fas fa-circle"></i> Обводки аватара</h4>
+    <div id="purchasedBorders" class="rewards-grid"></div>
 </div>
 <!-- ========== КУДА ЖМЯТЬ ========== -->
 <div class="tasks-section" style="margin-top: 15px;">
@@ -11001,19 +11007,20 @@ function openSupportDialog() {
     }
 }
         
-        function toggleSection(sectionId) {
-            const section = document.getElementById(sectionId);
-            if (section) {
-                if (section.style.display === 'none' || section.style.display === '') {
-                    document.querySelectorAll('.rewards-section').forEach(el => {
-                        if (el && el !== section) el.style.display = 'none';
-                    });
-                    section.style.display = 'block';
-                } else {
-                    section.style.display = 'none';
-                }
-            }
+      function toggleSection(sectionId) {
+    const section = document.getElementById(sectionId);
+    if (section) {
+        if (section.style.display === 'none' || section.style.display === '') {
+            document.querySelectorAll('.rewards-section').forEach(el => {
+                if (el && el !== section) el.style.display = 'none';
+            });
+            section.style.display = 'block';
+            if (sectionId === 'purchased-section') renderPurchasedItems();
+        } else {
+            section.style.display = 'none';
         }
+    }
+}
      
         function toggleTasks() {
             const content = document.getElementById('tasksContent');
@@ -15425,7 +15432,84 @@ function openPhotoEditor(file, callback) {
     };
     reader.readAsDataURL(file);
 }
-
+function renderPurchasedItems() {
+    fetch(`${SERVER_URL}/api/stats?user_id=${userId}`)
+        .then(r => r.json())
+        .then(stats => {
+            const ownedBgs = stats.owned_backgrounds || [];
+            const ownedStatusBgs = stats.owned_status_backgrounds || [];
+            const ownedBorders = stats.owned_borders || [];
+            
+            const currentBgId = stats.sponsor_background_id || '';
+            const currentStatusBgId = stats.status_background_id || '';
+            const currentBorderId = stats.avatar_border_id || '';
+            
+            // Подложки
+            const bgContainer = document.getElementById('purchasedBackgrounds');
+            if (ownedBgs.length === 0) {
+                bgContainer.innerHTML = '<div class="no-results" style="grid-column: span 2;">Нет купленных подложек</div>';
+            } else {
+                let bgHtml = '';
+                ownedBgs.forEach(bgId => {
+                    const bg = BACKGROUNDS_SHOP.find(b => b.id === bgId);
+                    if (!bg) return;
+                    const isActive = (bgId === currentBgId);
+                    bgHtml += `
+                        <div class="reward-card" onclick="activateBackground('${bgId}'); renderPurchasedItems();" style="border-color: ${isActive ? 'var(--accent)' : 'var(--border-color)'};">
+                            <div style="width: 100%; height: 60px; border-radius: 12px; margin-bottom: 10px; ${bg.css}"></div>
+                            <h4>${bg.name}</h4>
+                            ${isActive ? '<div style="color: var(--accent); font-size: 12px; font-weight: 600;">✅ Активна</div>' : '<button class="reward-buy-btn" style="margin-top: 5px;">Выбрать</button>'}
+                        </div>
+                    `;
+                });
+                bgContainer.innerHTML = bgHtml;
+            }
+            
+            // Фоны статуса
+            const statusContainer = document.getElementById('purchasedStatusBgs');
+            if (ownedStatusBgs.length === 0) {
+                statusContainer.innerHTML = '<div class="no-results" style="grid-column: span 2;">Нет купленных фонов</div>';
+            } else {
+                let statusHtml = '';
+                ownedStatusBgs.forEach(bgId => {
+                    const bg = STATUS_BG_SHOP.find(b => b.id === bgId);
+                    if (!bg) return;
+                    const isActive = (bgId === currentStatusBgId);
+                    statusHtml += `
+                        <div class="reward-card" onclick="activateStatusBg('${bgId}'); renderPurchasedItems();" style="border-color: ${isActive ? 'var(--accent)' : 'var(--border-color)'};">
+                            <div style="width: 100%; height: 60px; border-radius: 12px; margin-bottom: 10px; ${bg.css}"></div>
+                            <h4>${bg.name}</h4>
+                            ${isActive ? '<div style="color: var(--accent); font-size: 12px; font-weight: 600;">✅ Активен</div>' : '<button class="reward-buy-btn" style="margin-top: 5px;">Выбрать</button>'}
+                        </div>
+                    `;
+                });
+                statusContainer.innerHTML = statusHtml;
+            }
+            
+            // Обводки
+            const borderContainer = document.getElementById('purchasedBorders');
+            if (ownedBorders.length === 0) {
+                borderContainer.innerHTML = '<div class="no-results" style="grid-column: span 2;">Нет купленных обводок</div>';
+            } else {
+                let borderHtml = '';
+                ownedBorders.forEach(borderId => {
+                    const border = AVATAR_BORDER_SHOP.find(b => b.id === borderId);
+                    if (!border) return;
+                    const isActive = (borderId === currentBorderId);
+                    borderHtml += `
+                        <div class="reward-card" onclick="activateAvatarBorder('${borderId}'); renderPurchasedItems();" style="border-color: ${isActive ? 'var(--accent)' : 'var(--border-color)'};">
+                            <div style="width: 60px; height: 60px; border-radius: 50%; margin: 0 auto 10px; ${border.css} background: var(--bg); display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-user" style="font-size: 24px; color: var(--text-gray);"></i>
+                            </div>
+                            <h4>${border.name}</h4>
+                            ${isActive ? '<div style="color: var(--accent); font-size: 12px; font-weight: 600;">✅ Активна</div>' : '<button class="reward-buy-btn" style="margin-top: 5px;">Выбрать</button>'}
+                        </div>
+                    `;
+                });
+                borderContainer.innerHTML = borderHtml;
+            }
+        });
+}
 // ==========================================
 // ИСПЫТАНИЕ СООБЩЕСТВА
 // ==========================================
