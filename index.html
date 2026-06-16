@@ -6498,6 +6498,9 @@ body:not([data-theme]) .modal-content,
         <button class="shop-tab" data-tab="backgrounds" onclick="switchShopTab('backgrounds')">
     <i class="fas fa-paint-roller"></i> Подложки
 </button>
+        <button class="shop-tab" data-tab="status_bg" onclick="switchShopTab('status_bg')">
+    <i class="fas fa-crown"></i> Фон статуса
+</button>
         <button class="shop-tab" data-tab="skips" onclick="switchShopTab('skips')">
             <i class="fas fa-forward"></i> Скипы
         </button>
@@ -6522,6 +6525,9 @@ body:not([data-theme]) .modal-content,
     </div>
     <div id="shop-backgrounds" class="shop-tab-content" style="display: none;">
     <div class="rewards-grid" id="backgroundsShopGrid"></div>
+</div>
+    <div id="shop-status_bg" class="shop-tab-content" style="display: none;">
+    <div class="rewards-grid" id="statusBgShopGrid"></div>
 </div>
 </div>
 <!-- ========== КУДА ЖМЯТЬ ========== -->
@@ -16009,6 +16015,20 @@ const BACKGROUNDS_SHOP = [
         css: 'background: radial-gradient(ellipse at 40% 40%, color-mix(in srgb, var(--accent) 6%, transparent) 0%, transparent 50%), radial-gradient(ellipse at 60% 60%, color-mix(in srgb, var(--accent) 4%, transparent) 0%, transparent 40%), linear-gradient(135deg, color-mix(in srgb, var(--accent) 3%, transparent) 0%, transparent 50%); border: 1px solid var(--border-color);'
     }
 ];
+        const STATUS_BG_SHOP = [
+    { id: 'status_bg_bronze', name: 'Бронза', price: 400, css: 'background: linear-gradient(135deg, rgba(205,127,50,0.25), rgba(180,100,30,0.1)); border: 1px solid rgba(205,127,50,0.4);' },
+    { id: 'status_bg_arctic', name: 'Арктика', price: 450, css: 'background: linear-gradient(135deg, rgba(180,220,255,0.2), rgba(140,200,240,0.08)); border: 1px solid rgba(180,220,255,0.35);' },
+    { id: 'status_bg_silver', name: 'Серебро', price: 500, css: 'background: linear-gradient(135deg, rgba(192,192,192,0.25), rgba(160,160,160,0.1)); border: 1px solid rgba(192,192,192,0.4);' },
+    { id: 'status_bg_amethyst', name: 'Аметист', price: 500, css: 'background: linear-gradient(135deg, rgba(160,100,200,0.2), rgba(130,70,180,0.08)); border: 1px solid rgba(160,100,200,0.35);' },
+    { id: 'status_bg_sunset', name: 'Закат', price: 500, css: 'background: linear-gradient(135deg, rgba(255,150,100,0.2), rgba(200,80,150,0.08)); border: 1px solid rgba(255,150,100,0.35);' },
+    { id: 'status_bg_emerald', name: 'Изумруд', price: 550, css: 'background: linear-gradient(135deg, rgba(80,200,120,0.2), rgba(50,160,90,0.08)); border: 1px solid rgba(80,200,120,0.35);' },
+    { id: 'status_bg_sapphire', name: 'Сапфир', price: 550, css: 'background: linear-gradient(135deg, rgba(70,130,200,0.2), rgba(40,100,180,0.08)); border: 1px solid rgba(70,130,200,0.35);' },
+    { id: 'status_bg_gold', name: 'Золото', price: 600, css: 'background: linear-gradient(135deg, rgba(255,215,0,0.25), rgba(255,180,0,0.1)); border: 1px solid rgba(255,215,0,0.4);' },
+    { id: 'status_bg_ruby', name: 'Рубин', price: 600, css: 'background: linear-gradient(135deg, rgba(220,60,60,0.2), rgba(180,30,30,0.08)); border: 1px solid rgba(220,60,60,0.35);' },
+    { id: 'status_bg_rose_gold', name: 'Розовое золото', price: 650, css: 'background: linear-gradient(135deg, rgba(231,156,148,0.25), rgba(200,120,110,0.1)); border: 1px solid rgba(231,156,148,0.4);' },
+    { id: 'status_bg_adaptive', name: 'Адаптивный', price: 700, css: 'background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 20%, transparent), color-mix(in srgb, var(--accent) 8%, transparent)); border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);' },
+    { id: 'status_bg_platinum', name: 'Платина', price: 750, css: 'background: linear-gradient(135deg, rgba(180,200,220,0.25), rgba(140,160,190,0.1)); border: 1px solid rgba(180,200,220,0.4);' }
+];
 const SKIP_SHOP = [
     { id: 'skip_1', name: 'Скип на 1 очко', desc: 'Пропустить одно задание (кроме Шок контент)', price: 50, amount: 1 },
     { id: 'skip_3', name: 'Скип на 3 очка', desc: 'Пропустить три задания (кроме Шок контент)', price: 125, amount: 3 },
@@ -16031,11 +16051,91 @@ function switchShopTab(tab) {
     document.getElementById('shop-statuses').style.display = tab === 'statuses' ? 'block' : 'none';
     document.getElementById('shop-skips').style.display = tab === 'skips' ? 'block' : 'none';
     document.getElementById('shop-boosts').style.display = tab === 'boosts' ? 'block' : 'none';
-    document.getElementById('shop-backgrounds').style.display = tab === 'backgrounds' ? 'block' : 'none';  // ← ДОБАВЬ ЭТУ СТРОКУ
+    document.getElementById('shop-backgrounds').style.display = tab === 'backgrounds' ? 'block' : 'none';
+    document.getElementById('shop-status_bg').style.display = tab === 'status_bg' ? 'block' : 'none';  // ← ДОБАВИТЬ
     if (tab === 'statuses') renderStatusShop();
     if (tab === 'skips') renderSkipShop();
     if (tab === 'boosts') renderBoostShop();
     if (tab === 'backgrounds') renderBackgroundsShop();
+    if (tab === 'status_bg') renderStatusBgShop();  // ← ДОБАВИТЬ
+}
+        function renderStatusBgShop() {
+    const container = document.getElementById('statusBgShopGrid');
+    if (!container) return;
+    container.innerHTML = '';
+    
+    fetch(`${SERVER_URL}/api/stats?user_id=${userId}`)
+        .then(r => r.json())
+        .then(stats => {
+            const currentBg = stats.status_background || '';
+            
+            STATUS_BG_SHOP.forEach(bg => {
+                const isActive = (currentBg === bg.css);
+                const canBuy = user.balance >= bg.price;
+                
+                container.innerHTML += `
+                    <div class="shop-item-card ${isActive ? 'owned' : ''}">
+                        <div style="width: 100%; height: 60px; border-radius: 12px; margin-bottom: 10px; ${bg.css}"></div>
+                        <div class="shop-item-title">${bg.name}</div>
+                        <div class="shop-item-price">${bg.price} <i class="fas fa-book-open gold-book"></i></div>
+                        ${isActive ? '<div style="color:green;font-size:12px;">✅ Активен</div>' : 
+                            `<button class="shop-item-btn" onclick="buyStatusBg('${bg.id}', ${bg.price})" ${!canBuy ? 'disabled' : ''}>${canBuy ? '🎨 Купить' : '❌ Недостаточно'}</button>`}
+                    </div>
+                `;
+            });
+        });
+}
+
+async function buyStatusBg(id, price) {
+    const bg = STATUS_BG_SHOP.find(b => b.id === id);
+    if (!bg) return;
+    
+    try {
+        const statsRes = await fetch(`${SERVER_URL}/api/stats?user_id=${userId}`);
+        const stats = await statsRes.json();
+        const currentBg = stats.status_background || '';
+        
+        if (currentBg === bg.css) {
+            if (tg) tg.showAlert('✅ Этот фон статуса уже активен!');
+            return;
+        }
+    } catch(e) {}
+    
+    if (user.balance < price) return tg.showAlert(`❌ Нужно ${price} ашетиков`);
+    if (!confirm(`Купить фон статуса «${bg.name}» за ${price} ашетиков?`)) return;
+    
+    try {
+        let r = await fetch(`${SERVER_URL}/api/add_balance`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId, amount: -price, reason: `Покупка фона статуса "${bg.name}"` })
+        });
+        let res = await r.json();
+        
+        if (res.status === 'ok') {
+            await fetch(`${SERVER_URL}/api/save_status_background`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_id: userId, background: bg.css })
+            });
+            
+            user.balance = res.new_balance;
+            saveUserData();
+            updateUI();
+            renderStatusBgShop();
+            applyStatusBackground(bg.css);
+            tg.showAlert(`✅ Фон статуса «${bg.name}» применён!`);
+        }
+    } catch(e) {
+        tg.showAlert('❌ Ошибка');
+    }
+}
+
+function applyStatusBackground(css) {
+    const statusBadge = document.getElementById('currentStatus');
+    if (statusBadge && css) {
+        statusBadge.style.cssText = css + ' padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; color: var(--text);';
+    }
 }
 function renderBackgroundsShop() {
     const container = document.getElementById('backgroundsShopGrid');
@@ -20453,6 +20553,14 @@ window.onload = async () => {
     
     await loadUserBalance();
     updateUI();
+    // Загружаем фон статуса
+fetch(`${SERVER_URL}/api/stats?user_id=${userId}`)
+    .then(r => r.json())
+    .then(stats => {
+        if (stats.status_background) {
+            applyStatusBackground(stats.status_background);
+        }
+    });
     
     await loadUserProgress();
     await loadUnlockedStatuses();
