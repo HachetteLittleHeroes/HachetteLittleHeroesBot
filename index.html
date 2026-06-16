@@ -16150,10 +16150,10 @@ async function buyAvatarBorder(id, price) {
     try {
         const statsRes = await fetch(`${SERVER_URL}/api/stats?user_id=${userId}`);
         const stats = await statsRes.json();
-        const currentBorder = stats.avatar_border || '';
+        const ownedBorders = stats.owned_borders || [];
         
-        if (currentBorder === border.css) {
-            if (tg) tg.showAlert('✅ Эта обводка уже активна!');
+        if (ownedBorders.includes(border.id)) {
+            if (tg) tg.showAlert('✅ Эта обводка уже куплена!');
             return;
         }
     } catch(e) {}
@@ -16165,7 +16165,7 @@ async function buyAvatarBorder(id, price) {
         let r = await fetch(`${SERVER_URL}/api/add_balance`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-           body: JSON.stringify({ user_id: userId, border: border.css, border_id: border.id })
+            body: JSON.stringify({ user_id: userId, amount: -price, reason: `Покупка обводки аватара "${border.name}"` })
         });
         let res = await r.json();
         
@@ -16173,7 +16173,7 @@ async function buyAvatarBorder(id, price) {
             await fetch(`${SERVER_URL}/api/save_avatar_border`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ user_id: userId, border: border.css })
+                body: JSON.stringify({ user_id: userId, border: border.css, border_id: border.id })
             });
             
             user.balance = res.new_balance;
@@ -16206,10 +16206,10 @@ async function buyStatusBg(id, price) {
     try {
         const statsRes = await fetch(`${SERVER_URL}/api/stats?user_id=${userId}`);
         const stats = await statsRes.json();
-        const currentBg = stats.status_background || '';
+        const ownedStatusBgs = stats.owned_status_backgrounds || [];
         
-        if (currentBg === bg.css) {
-            if (tg) tg.showAlert('✅ Этот фон статуса уже активен!');
+        if (ownedStatusBgs.includes(bg.id)) {
+            if (tg) tg.showAlert('✅ Этот фон статуса уже куплен!');
             return;
         }
     } catch(e) {}
@@ -16221,7 +16221,7 @@ async function buyStatusBg(id, price) {
         let r = await fetch(`${SERVER_URL}/api/add_balance`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-           body: JSON.stringify({ user_id: userId, background: bg.css, background_id: bg.id })
+            body: JSON.stringify({ user_id: userId, amount: -price, reason: `Покупка фона статуса "${bg.name}"` })
         });
         let res = await r.json();
         
@@ -16229,7 +16229,7 @@ async function buyStatusBg(id, price) {
             await fetch(`${SERVER_URL}/api/save_status_background`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ user_id: userId, background: bg.css })
+                body: JSON.stringify({ user_id: userId, background: bg.css, background_id: bg.id })
             });
             
             user.balance = res.new_balance;
