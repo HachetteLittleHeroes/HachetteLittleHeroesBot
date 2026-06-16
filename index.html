@@ -15626,22 +15626,6 @@ function showLeagueLeaderboard(league) {
     const rewards = communityEventData.rewards || {};
     const leaguePrize = rewards[league] || '';
     
-    // Карта эмодзи для пересоздания CSS
-    const emojiMap = {
-        'bg_emoji_stars': '⭐',
-        'bg_emoji_hearts': '❤️',
-        'bg_emoji_money': '$',
-        'bg_emoji_crowns': '👑',
-        'bg_emoji_diamonds': '💎',
-        'bg_emoji_fire': '🔥',
-        'bg_emoji_rocket': '🚀',
-        'bg_emoji_clown': '🤡',
-        'bg_emoji_dino': '🦕',
-        'bg_emoji_dragon': '🐉',
-        'bg_emoji_rainbow': '🌈',
-        'bg_emoji_butterfly': '🦋'
-    };
-    
     let html = '';
     if (leaguePrize) {
         html += `<div style="font-size: 13px; color: var(--text-gray); margin-bottom: 10px;">🎁 ${leaguePrize}</div>`;
@@ -15656,7 +15640,7 @@ function showLeagueLeaderboard(league) {
         let bgStyle = '';
         
         if (sponsorBgId && sponsorBgId.startsWith('bg_emoji_')) {
-            const emoji = emojiMap[sponsorBgId] || '⭐';
+            const emoji = EMOJI_BG_MAP[sponsorBgId] || '⭐';
             const hex = getAccentHex();
             bgStyle = `background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='55' height='55' viewBox='0 0 55 55'%3E%3Ctext x='8' y='25' font-size='20' fill='%23${hex}' opacity='0.15'%3E${encodeURIComponent(emoji)}%3C/text%3E%3Ctext x='30' y='45' font-size='16' fill='%23${hex}' opacity='0.10'%3E${encodeURIComponent(emoji)}%3C/text%3E%3C/svg%3E"); background-size: 55px 55px;`;
         } else if (user.sponsor_background) {
@@ -30699,6 +30683,21 @@ function closePublicProfile() {
     // ✅ Восстанавливаем свои работы
     loadUserArtworks();
 }
+        const EMOJI_BG_MAP = {
+    'bg_emoji_stars': '⭐',
+    'bg_emoji_hearts': '❤️',
+    'bg_emoji_money': '$',
+    'bg_emoji_crowns': '👑',
+    'bg_emoji_diamonds': '💎',
+    'bg_emoji_fire': '🔥',
+    'bg_emoji_rocket': '🚀',
+    'bg_emoji_clown': '🤡',
+    'bg_emoji_dino': '🦕',
+    'bg_emoji_dragon': '🐉',
+    'bg_emoji_rainbow': '🌈',
+    'bg_emoji_butterfly': '🦋'
+};
+        
 function renderPublicProfile(profile) {
     console.log('🔵 renderPublicProfile вызвана с профилем:', profile);
     
@@ -30739,7 +30738,7 @@ function renderPublicProfile(profile) {
     let profileBgStyle = 'margin: 0; padding: 15px;';
     
     if (sponsorBgId && sponsorBgId.startsWith('bg_emoji_')) {
-        const emoji = emojiMap[sponsorBgId] || '⭐';
+        const emoji = EMOJI_BG_MAP[sponsorBgId] || '⭐';
         const hex = getAccentHex();
         profileBgStyle = `background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='55' height='55' viewBox='0 0 55 55'%3E%3Ctext x='8' y='25' font-size='20' fill='%23${hex}' opacity='0.15'%3E${encodeURIComponent(emoji)}%3C/text%3E%3Ctext x='30' y='45' font-size='16' fill='%23${hex}' opacity='0.10'%3E${encodeURIComponent(emoji)}%3C/text%3E%3C/svg%3E"); background-size: 55px 55px; margin: 0; padding: 15px; border-radius: 24px; display: flex; align-items: center; gap: 20px;`;
     } else if (profile.sponsor_background) {
