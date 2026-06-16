@@ -15651,8 +15651,8 @@ function showLeagueLeaderboard(league) {
             bgStyle = `background: ${isMe ? 'color-mix(in srgb, var(--accent) 10%, transparent)' : 'var(--card-bg)'};`;
         }
         
-        html += `
-            <div style="display: flex; align-items: center; gap: 12px; padding: 12px; margin-bottom: 8px; ${bgStyle} border-radius: 12px; border: 1px solid var(--border-color); cursor: pointer;" onclick="openPublicProfile('${user.user_id}')">
+       html += `
+    <div style="${bgStyle} display: flex; align-items: center; gap: 12px; padding: 12px; margin-bottom: 8px; border-radius: 12px; border: 1px solid var(--border-color); cursor: pointer;" onclick="openPublicProfile('${user.user_id}')">
                 <div style="font-size: 18px; font-weight: 800; color: var(--accent); min-width: 35px;">
                     ${placeIcon}
                 </div>
