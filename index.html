@@ -15626,8 +15626,11 @@ function showLeagueLeaderboard(league) {
         const avatarUrl = user.avatar || 'https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png';
         const placeIcon = user.place <= 3 ? ['🥇','🥈','🥉'][user.place - 1] : `#${user.place}`;
         
-        html += `
-            <div style="display: flex; align-items: center; gap: 12px; padding: 12px; margin-bottom: 8px; background: ${isMe ? 'rgba(255,149,0,0.1)' : 'var(--card-bg)'}; border-radius: 12px; border: 1px solid var(--border-color); cursor: pointer;" onclick="openPublicProfile('${user.user_id}')">
+        const sponsorBg = user.sponsor_background || '';
+const bgStyle = sponsorBg ? sponsorBg : `background: ${isMe ? 'rgba(255,149,0,0.1)' : 'var(--card-bg)'};`;
+
+html += `
+    <div style="display: flex; align-items: center; gap: 12px; padding: 12px; margin-bottom: 8px; ${bgStyle} border-radius: 12px; border: 1px solid var(--border-color); cursor: pointer;" onclick="openPublicProfile('${user.user_id}')">
                 <div style="font-size: 18px; font-weight: 800; color: var(--accent); min-width: 35px;">
                     ${placeIcon}
                 </div>
@@ -15951,8 +15954,67 @@ function switchShopTab(tab) {
     if (tab === 'statuses') renderStatusShop();
     if (tab === 'skips') renderSkipShop();
     if (tab === 'boosts') renderBoostShop();
+    if (tab === 'backgrounds') renderBackgroundsShop();
+}
+function renderBackgroundsShop() {
+    const container = document.getElementById('backgroundsShopGrid');
+    if (!container) return;
+    container.innerHTML = '';
+    
+    fetch(`${SERVER_URL}/api/stats?user_id=${userId}`)
+        .then(r => r.json())
+        .then(stats => {
+            const currentBg = stats.sponsor_background || '';
+            
+            BACKGROUNDS_SHOP.forEach(bg => {
+                const owned = (currentBg === bg.css);
+                const canBuy = !owned && user.balance >= bg.price;
+                
+                container.innerHTML += `
+                    <div class="shop-item-card ${owned ? 'owned' : ''}">
+                        <div style="width: 100%; height: 60px; border-radius: 12px; margin-bottom: 10px; ${bg.css}"></div>
+                        <div class="shop-item-title">${bg.name}</div>
+                        <div class="shop-item-price">${bg.price} <i class="fas fa-book-open gold-book"></i></div>
+                        ${owned ? '<div style="color:green;font-size:12px;">✅ Используется</div>' : 
+                            `<button class="shop-item-btn" onclick="buyBackground('${bg.id}', ${bg.price})" ${!canBuy ? 'disabled' : ''}>${canBuy ? '🎨 Купить' : '❌ Недостаточно'}</button>`}
+                    </div>
+                `;
+            });
+        });
 }
 
+async function buyBackground(id, price) {
+    if (user.balance < price) return tg.showAlert(`❌ Нужно ${price} ашетиков`);
+    if (!confirm(`Купить подложку за ${price} ашетиков?`)) return;
+    
+    const bg = BACKGROUNDS_SHOP.find(b => b.id === id);
+    if (!bg) return;
+    
+    try {
+        let r = await fetch(`${SERVER_URL}/api/add_balance`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId, amount: -price, reason: `Покупка подложки "${bg.name}"` })
+        });
+        let res = await r.json();
+        
+        if (res.status === 'ok') {
+            await fetch(`${SERVER_URL}/api/save_background`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_id: userId, background: bg.css })
+            });
+            
+            user.balance = res.new_balance;
+            saveUserData();
+            updateUI();
+            renderBackgroundsShop();
+            tg.showAlert(`✅ Подложка "${bg.name}" применена!`);
+        }
+    } catch(e) {
+        tg.showAlert('❌ Ошибка');
+    }
+}
 function renderStatusShop() {
     const container = document.getElementById('statusShopGrid');
     if (!container) return;
