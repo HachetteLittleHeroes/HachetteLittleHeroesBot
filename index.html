@@ -16183,8 +16183,7 @@ function switchShopTab(tab) {
     if (tab === 'status_bg') renderStatusBgShop();
     if (tab === 'avatar_border') renderAvatarBorderShop();
 }
-       function renderBundlesShop() {
-    // Набор недели
+      function renderBundlesShop() {
     const weeklyContainer = document.getElementById('weeklyBundleContainer');
     const weeklyBundle = getWeeklyBundle();
     const weeklyPrice = getWeeklyBundlePrice();
@@ -16199,46 +16198,69 @@ function switchShopTab(tab) {
                 <span style="text-decoration: line-through; color: var(--text-gray); font-size: 14px;">${originalPrice}</span>
                 ${weeklyPrice} <i class="fas fa-book-open gold-book"></i>
             </div>
-            <div style="display: flex; gap: 8px;">
-                <button class="shop-item-btn" onclick="buyBundle('${weeklyBundle.id}', ${weeklyPrice})" style="flex: 1; background: gold; color: #333; font-weight: 700;">
-                    🎁 Купить
-                </button>
-                <button class="shop-item-btn" onclick="openGiftModal('${weeklyBundle.id}', ${weeklyPrice})" style="flex: 1; background: #e91e63; color: white;">
-                    🎀 Подарить
-                </button>
-            </div>
+            <div id="weeklyBundleButtons"></div>
         </div>
     `;
     
-    // Все наборы
-    const container = document.getElementById('bundlesShopGrid');
-    container.innerHTML = '';
-    
-    BUNDLES_SHOP.forEach(bundle => {
-        const isWeekly = bundle.id === weeklyBundle.id;
-        const price = isWeekly ? weeklyPrice : bundle.price;
-        const canBuy = user.balance >= price;
-        
-        container.innerHTML += `
-            <div class="shop-item-card" style="${isWeekly ? 'border: 2px solid gold;' : ''}">
-                <div style="font-size: 32px; margin-bottom: 8px;">🎁</div>
-                <div class="shop-item-title">${bundle.name}</div>
-                <div class="shop-item-desc">${bundle.description}</div>
-                <div class="shop-item-price">
-                    ${isWeekly ? `<span style="text-decoration: line-through; color: var(--text-gray); font-size: 14px;">${bundle.price}</span> ` : ''}
-                    ${price} <i class="fas fa-book-open gold-book"></i>
-                </div>
-                <div style="display: flex; gap: 8px;">
-                    <button class="shop-item-btn" onclick="buyBundle('${bundle.id}', ${price})" ${!canBuy ? 'disabled' : ''} style="flex: 1;">
-                        ${canBuy ? '🎁 Купить' : '❌ Недостаточно'}
-                    </button>
-                    <button class="shop-item-btn" onclick="openGiftModal('${bundle.id}', ${price})" ${!canBuy ? 'disabled' : ''} style="flex: 1; background: #e91e63; color: white;">
-                        🎀 Подарить
-                    </button>
-                </div>
-            </div>
-        `;
-    });
+    // Загружаем статус купленных наборов
+    fetch(`${SERVER_URL}/api/stats?user_id=${userId}`)
+        .then(r => r.json())
+        .then(stats => {
+            const ownedBundles = stats.owned_bundles || [];
+            const isWeeklyOwned = ownedBundles.includes(weeklyBundle.id);
+            
+            const buttonsDiv = document.getElementById('weeklyBundleButtons');
+            if (buttonsDiv) {
+                if (isWeeklyOwned) {
+                    buttonsDiv.innerHTML = '<div style="color:green;font-size:14px;font-weight:600;">✅ Набор куплен</div>';
+                } else {
+                    const canBuy = user.balance >= weeklyPrice;
+                    buttonsDiv.innerHTML = `
+                        <div style="display: flex; gap: 8px;">
+                            <button class="shop-item-btn" onclick="buyBundle('${weeklyBundle.id}', ${weeklyPrice})" ${!canBuy ? 'disabled' : ''} style="flex: 1; background: gold; color: #333; font-weight: 700;">
+                                🎁 Купить
+                            </button>
+                            <button class="shop-item-btn" onclick="openGiftModal('${weeklyBundle.id}', ${weeklyPrice})" ${!canBuy ? 'disabled' : ''} style="flex: 1; background: #e91e63; color: white;">
+                                🎀 Подарить
+                            </button>
+                        </div>
+                    `;
+                }
+            }
+            
+            // Все наборы
+            const container = document.getElementById('bundlesShopGrid');
+            container.innerHTML = '';
+            
+            BUNDLES_SHOP.forEach(bundle => {
+                const isWeekly = bundle.id === weeklyBundle.id;
+                const price = isWeekly ? weeklyPrice : bundle.price;
+                const isOwned = ownedBundles.includes(bundle.id);
+                const canBuy = !isOwned && user.balance >= price;
+                
+                container.innerHTML += `
+                    <div class="shop-item-card" style="${isWeekly ? 'border: 2px solid gold;' : ''}">
+                        <div style="font-size: 32px; margin-bottom: 8px;">🎁</div>
+                        <div class="shop-item-title">${bundle.name}</div>
+                        <div class="shop-item-desc">${bundle.description}</div>
+                        <div class="shop-item-price">
+                            ${isWeekly ? `<span style="text-decoration: line-through; color: var(--text-gray); font-size: 14px;">${bundle.price}</span> ` : ''}
+                            ${price} <i class="fas fa-book-open gold-book"></i>
+                        </div>
+                        ${isOwned ? '<div style="color:green;font-size:14px;font-weight:600;">✅ Куплен</div>' : `
+                            <div style="display: flex; gap: 8px;">
+                                <button class="shop-item-btn" onclick="buyBundle('${bundle.id}', ${price})" ${!canBuy ? 'disabled' : ''} style="flex: 1;">
+                                    ${canBuy ? '🎁 Купить' : '❌ Недостаточно'}
+                                </button>
+                                <button class="shop-item-btn" onclick="openGiftModal('${bundle.id}', ${price})" ${!canBuy ? 'disabled' : ''} style="flex: 1; background: #e91e63; color: white;">
+                                    🎀 Подарить
+                                </button>
+                            </div>
+                        `}
+                    </div>
+                `;
+            });
+        });
 }
 async function buyBundle(bundleId, price) {
     const bundle = BUNDLES_SHOP.find(b => b.id === bundleId);
