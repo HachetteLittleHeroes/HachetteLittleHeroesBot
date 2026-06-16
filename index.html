@@ -16243,9 +16243,9 @@ async function buyBackground(id, price) {
     try {
         const statsRes = await fetch(`${SERVER_URL}/api/stats?user_id=${userId}`);
         const stats = await statsRes.json();
-        const currentBg = stats.sponsor_background || '';
+        const currentBgId = stats.sponsor_background_id || '';
         
-        if (currentBg === bg.css) {
+        if (currentBgId === bg.id) {
             if (tg) tg.showAlert('✅ Эта подложка уже активна!');
             return;
         }
@@ -16255,25 +16255,27 @@ async function buyBackground(id, price) {
     if (!confirm(`Купить подложку «${bg.name}» за ${price} ашетиков?`)) return;
     
     try {
+        // 1. Списываем ашетики
         let r = await fetch(`${SERVER_URL}/api/add_balance`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ user_id: userId, background: bg.css, background_id: bg.id })
+            body: JSON.stringify({ user_id: userId, amount: -price, reason: `Покупка подложки "${bg.name}"` })
         });
         let res = await r.json();
         
         if (res.status === 'ok') {
+            // 2. Сохраняем подложку
             await fetch(`${SERVER_URL}/api/save_background`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ user_id: userId, background: bg.css })
+                body: JSON.stringify({ user_id: userId, background: bg.css, background_id: bg.id })
             });
             
             user.balance = res.new_balance;
             saveUserData();
             updateUI();
             renderBackgroundsShop();
-            applySponsorBackground(bg.css);
+            applySponsorBackground(bg.css, bg.id);
             tg.showAlert(`✅ Подложка «${bg.name}» применена!`);
         }
     } catch(e) {
