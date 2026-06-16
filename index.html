@@ -6483,6 +6483,9 @@ body:not([data-theme]) .modal-content,
     <div class="balance-main"><span id="userBalance">0</span> <i class="fas fa-book-open gold-book"></i></div>
     <div class="balance-controls">
         <button class="balance-btn" onclick="toggleSection('rewards-section')">Потратить ашетики 🏆</button>
+        <button class="balance-btn" onclick="openMyCustomization()" style="background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25);">
+            🌟 Приобретённое
+        </button>
     </div>
 </div>
 
@@ -15855,6 +15858,102 @@ async function submitCommunityTaskPhoto() {
             tg.MainButton.hide();
         }
     }
+}
+        function openMyCustomization() {
+    const modal = document.getElementById('myCustomizationModal');
+    const content = document.getElementById('myCustomizationContent');
+    
+    modal.style.display = 'flex';
+    content.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Загрузка...</div>';
+    
+    fetch(`${SERVER_URL}/api/stats?user_id=${userId}`)
+        .then(r => r.json())
+        .then(stats => {
+            const ownedBgs = stats.owned_backgrounds || [];
+            const ownedStatusBgs = stats.owned_status_backgrounds || [];
+            const ownedBorders = stats.owned_borders || [];
+            
+            const currentBgId = stats.sponsor_background_id || '';
+            const currentStatusBgId = stats.status_background_id || '';
+            const currentBorderId = stats.avatar_border_id || '';
+            
+            let html = '';
+            
+            // Подложки
+            html += `<h4 style="margin: 15px 0 10px;"><i class="fas fa-paint-roller"></i> Подложки</h4>`;
+            if (ownedBgs.length === 0) {
+                html += '<div class="no-results" style="padding:10px;">Нет купленных подложек</div>';
+            } else {
+                html += '<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">';
+                ownedBgs.forEach(bgId => {
+                    const bg = BACKGROUNDS_SHOP.find(b => b.id === bgId);
+                    if (!bg) return;
+                    const isActive = (bgId === currentBgId);
+                    html += `
+                        <div onclick="activateBackground('${bgId}'); closeMyCustomization();" 
+                             style="background: var(--card-bg); border: 2px solid ${isActive ? 'var(--accent)' : 'var(--border-color)'}; border-radius: 12px; padding: 10px; cursor: pointer; text-align: center;">
+                            <div style="width: 100%; height: 40px; border-radius: 8px; margin-bottom: 8px; ${bg.css}"></div>
+                            <div style="font-size: 12px; font-weight: 600; color: var(--text);">${bg.name}</div>
+                            ${isActive ? '<div style="font-size: 10px; color: var(--accent);">✅ Активна</div>' : ''}
+                        </div>
+                    `;
+                });
+                html += '</div>';
+            }
+            
+            // Фоны статуса
+            html += `<h4 style="margin: 15px 0 10px;"><i class="fas fa-crown"></i> Фоны статуса</h4>`;
+            if (ownedStatusBgs.length === 0) {
+                html += '<div class="no-results" style="padding:10px;">Нет купленных фонов</div>';
+            } else {
+                html += '<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">';
+                ownedStatusBgs.forEach(bgId => {
+                    const bg = STATUS_BG_SHOP.find(b => b.id === bgId);
+                    if (!bg) return;
+                    const isActive = (bgId === currentStatusBgId);
+                    html += `
+                        <div onclick="activateStatusBg('${bgId}'); closeMyCustomization();" 
+                             style="background: var(--card-bg); border: 2px solid ${isActive ? 'var(--accent)' : 'var(--border-color)'}; border-radius: 12px; padding: 10px; cursor: pointer; text-align: center;">
+                            <div style="width: 100%; height: 40px; border-radius: 8px; margin-bottom: 8px; ${bg.css}"></div>
+                            <div style="font-size: 12px; font-weight: 600; color: var(--text);">${bg.name}</div>
+                            ${isActive ? '<div style="font-size: 10px; color: var(--accent);">✅ Активен</div>' : ''}
+                        </div>
+                    `;
+                });
+                html += '</div>';
+            }
+            
+            // Обводки аватара
+            html += `<h4 style="margin: 15px 0 10px;"><i class="fas fa-circle"></i> Обводки аватара</h4>`;
+            if (ownedBorders.length === 0) {
+                html += '<div class="no-results" style="padding:10px;">Нет купленных обводок</div>';
+            } else {
+                html += '<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">';
+                ownedBorders.forEach(borderId => {
+                    const border = AVATAR_BORDER_SHOP.find(b => b.id === borderId);
+                    if (!border) return;
+                    const isActive = (borderId === currentBorderId);
+                    html += `
+                        <div onclick="activateAvatarBorder('${borderId}'); closeMyCustomization();" 
+                             style="background: var(--card-bg); border: 2px solid ${isActive ? 'var(--accent)' : 'var(--border-color)'}; border-radius: 12px; padding: 10px; cursor: pointer; text-align: center;">
+                            <div style="width: 50px; height: 50px; border-radius: 50%; margin: 0 auto 8px; ${border.css} background: var(--bg); display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-user" style="font-size: 20px; color: var(--text-gray);"></i>
+                            </div>
+                            <div style="font-size: 12px; font-weight: 600; color: var(--text);">${border.name}</div>
+                            ${isActive ? '<div style="font-size: 10px; color: var(--accent);">✅ Активна</div>' : ''}
+                        </div>
+                    `;
+                });
+                html += '</div>';
+            }
+            
+            content.innerHTML = html;
+        });
+}
+
+function closeMyCustomization() {
+    document.getElementById('myCustomizationModal').style.display = 'none';
+    updateUI();
 }
         // ==========================================
 // СЖАТИЕ ИЗОБРАЖЕНИЙ ПЕРЕД ОТПРАВКОЙ
@@ -34231,6 +34330,13 @@ document.addEventListener('click', function(event) {
             🎁 Подарить
         </button>
         <button class="modal-close-btn" onclick="closeGiftModal()">Отмена</button>
+    </div>
+</div>
+    <div id="myCustomizationModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 450px; max-height: 80vh; overflow-y: auto;">
+        <h3>🌟 Приобретённое</h3>
+        <div id="myCustomizationContent"></div>
+        <button class="modal-close-btn" onclick="document.getElementById('myCustomizationModal').style.display='none'">Закрыть</button>
     </div>
 </div>
 </body>
