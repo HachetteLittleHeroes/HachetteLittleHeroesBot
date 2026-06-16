@@ -10075,20 +10075,33 @@ async function saveAvatarToServer(avatarUrl) {
             if (modal) modal.style.display = 'flex';
         }
         
-        function saveNewNickname() {
-            const input = document.getElementById('newNameInput');
-            if (!input) return;
-            const newName = input.value.trim();
-            if (newName.length > 0 && newName.length <= 20) {
-                user.name = newName;
-                saveUserData();
-                const modal = document.getElementById('nameModal');
-                if (modal) modal.style.display = 'none';
-                if (tg) tg.showAlert('Имя изменено!');
-            } else {
-                if (tg) tg.showAlert("Имя должно быть от 1 до 20 символов");
-            }
+       async function saveNewNickname() {
+    const input = document.getElementById('newNameInput');
+    if (!input) return;
+    const newName = input.value.trim();
+    if (newName.length > 0 && newName.length <= 20) {
+        user.name = newName;
+        saveUserData();
+        
+        // Отправляем на сервер
+        try {
+            await fetch(`${SERVER_URL}/api/save_name`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_id: userId, name: newName })
+            });
+        } catch(e) {
+            console.error('Ошибка сохранения имени:', e);
         }
+        
+        const modal = document.getElementById('nameModal');
+        if (modal) modal.style.display = 'none';
+        updateUI();
+        if (tg) tg.showAlert('Имя изменено!');
+    } else {
+        if (tg) tg.showAlert("Имя должно быть от 1 до 20 символов");
+    }
+}
         
         function closeNameModal() {
             const modal = document.getElementById('nameModal');
@@ -20696,6 +20709,13 @@ window.onload = async () => {
         if (stats && stats.avatar) {
             user.avatar = stats.avatar;
             document.getElementById('user-avatar').src = user.avatar;
+            localStorage.setItem('coloring_user', JSON.stringify(user));
+        }
+        
+        // ✅ Загружаем имя пользователя с сервера
+        if (stats.name) {
+            user.name = stats.name;
+            document.getElementById('displayUsername').innerText = stats.name;
             localStorage.setItem('coloring_user', JSON.stringify(user));
         }
         
