@@ -7536,6 +7536,9 @@ body:not([data-theme]) .modal-content,
         
         const SERVER_URL = 'https://bot-hachettelittleheroes.amvera.io';
         const MARKER_PRICE = 75;
+        let currentGiftBundle = null;
+let currentGiftPrice = null;
+let selectedGiftUser = null;
         // Хранилище
 let userBoosts = { active: false, remainingWorks: 0 };
 let userSkips = 0;
@@ -16180,7 +16183,7 @@ function switchShopTab(tab) {
     if (tab === 'status_bg') renderStatusBgShop();
     if (tab === 'avatar_border') renderAvatarBorderShop();
 }
-        function renderBundlesShop() {
+       function renderBundlesShop() {
     // Набор недели
     const weeklyContainer = document.getElementById('weeklyBundleContainer');
     const weeklyBundle = getWeeklyBundle();
@@ -16196,9 +16199,14 @@ function switchShopTab(tab) {
                 <span style="text-decoration: line-through; color: var(--text-gray); font-size: 14px;">${originalPrice}</span>
                 ${weeklyPrice} <i class="fas fa-book-open gold-book"></i>
             </div>
-            <button class="shop-item-btn" onclick="buyBundle('${weeklyBundle.id}', ${weeklyPrice})" style="background: gold; color: #333; font-weight: 700;">
-                🎁 Купить со скидкой
-            </button>
+            <div style="display: flex; gap: 8px;">
+                <button class="shop-item-btn" onclick="buyBundle('${weeklyBundle.id}', ${weeklyPrice})" style="flex: 1; background: gold; color: #333; font-weight: 700;">
+                    🎁 Купить
+                </button>
+                <button class="shop-item-btn" onclick="openGiftModal('${weeklyBundle.id}', ${weeklyPrice})" style="flex: 1; background: #e91e63; color: white;">
+                    🎀 Подарить
+                </button>
+            </div>
         </div>
     `;
     
@@ -16220,14 +16228,18 @@ function switchShopTab(tab) {
                     ${isWeekly ? `<span style="text-decoration: line-through; color: var(--text-gray); font-size: 14px;">${bundle.price}</span> ` : ''}
                     ${price} <i class="fas fa-book-open gold-book"></i>
                 </div>
-                <button class="shop-item-btn" onclick="buyBundle('${bundle.id}', ${price})" ${!canBuy ? 'disabled' : ''}>
-                    ${canBuy ? '🎁 Купить набор' : '❌ Недостаточно'}
-                </button>
+                <div style="display: flex; gap: 8px;">
+                    <button class="shop-item-btn" onclick="buyBundle('${bundle.id}', ${price})" ${!canBuy ? 'disabled' : ''} style="flex: 1;">
+                        ${canBuy ? '🎁 Купить' : '❌ Недостаточно'}
+                    </button>
+                    <button class="shop-item-btn" onclick="openGiftModal('${bundle.id}', ${price})" ${!canBuy ? 'disabled' : ''} style="flex: 1; background: #e91e63; color: white;">
+                        🎀 Подарить
+                    </button>
+                </div>
             </div>
         `;
     });
 }
-
 async function buyBundle(bundleId, price) {
     const bundle = BUNDLES_SHOP.find(b => b.id === bundleId);
     if (!bundle) return;
@@ -16807,6 +16819,178 @@ async function buyBoost(duration, price) {
         console.error('Ошибка:', error);
         alert('❌ Ошибка при пропуске задания');
         return false;
+    }
+}
+        function openGiftModal(bundleId, price) {
+    const bundle = BUNDLES_SHOP.find(b => b.id === bundleId);
+    if (!bundle) return;
+    
+    currentGiftBundle = bundle;
+    currentGiftPrice = price;
+    selectedGiftUser = null;
+    
+    document.getElementById('giftBundleName').innerText = `Набор «${bundle.name}» за ${price} ашетиков`;
+    document.getElementById('giftUsernameInput').value = '';
+    document.getElementById('giftSearchResults').innerHTML = '';
+    document.getElementById('giftConfirmBtn').disabled = true;
+    document.getElementById('giftModal').style.display = 'flex';
+}
+
+function closeGiftModal() {
+    document.getElementById('giftModal').style.display = 'none';
+    currentGiftBundle = null;
+    currentGiftPrice = null;
+    selectedGiftUser = null;
+}
+
+let giftSearchTimeout = null;
+
+function searchUserForGift() {
+    const input = document.getElementById('giftUsernameInput');
+    const query = input.value.trim();
+    const resultsDiv = document.getElementById('giftSearchResults');
+    const confirmBtn = document.getElementById('giftConfirmBtn');
+    
+    if (giftSearchTimeout) clearTimeout(giftSearchTimeout);
+    
+    selectedGiftUser = null;
+    confirmBtn.disabled = true;
+    
+    if (query.length < 2) {
+        resultsDiv.innerHTML = '';
+        return;
+    }
+    
+    resultsDiv.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Поиск...</div>';
+    
+    giftSearchTimeout = setTimeout(async () => {
+        try {
+            const response = await fetch(`${SERVER_URL}/api/search_users?query=${encodeURIComponent(query)}`);
+            const users = await response.json();
+            
+            if (users.length === 0) {
+                resultsDiv.innerHTML = '<div class="no-results" style="padding: 10px;">😕 Ничего не найдено</div>';
+                return;
+            }
+            
+            let html = '';
+            users.forEach(user => {
+                const avatarUrl = user.avatar || 'https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png';
+                
+                html += `
+                    <div class="user-search-card" onclick="selectGiftUser('${user.user_id}', '${user.username.replace(/'/g, "\\'")}', this)" style="cursor: pointer; padding: 10px;">
+                        <img src="${avatarUrl}" class="user-search-avatar" onerror="this.src='https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png'">
+                        <div class="user-search-info">
+                            <div class="user-search-name">${user.name}</div>
+                            <div class="user-search-username">${user.username}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            resultsDiv.innerHTML = html;
+        } catch (error) {
+            resultsDiv.innerHTML = '<div class="no-results">❌ Ошибка поиска</div>';
+        }
+    }, 500);
+}
+
+function selectGiftUser(userId, username, element) {
+    selectedGiftUser = { user_id: userId, username: username };
+    
+    document.querySelectorAll('#giftSearchResults .user-search-card').forEach(card => {
+        card.style.background = '';
+        card.style.border = '';
+    });
+    element.style.background = 'rgba(255,149,0,0.1)';
+    element.style.border = '1px solid var(--accent)';
+    
+    document.getElementById('giftConfirmBtn').disabled = false;
+}
+
+async function confirmGift() {
+    if (!selectedGiftUser || !currentGiftBundle || !currentGiftPrice) return;
+    
+    if (user.balance < currentGiftPrice) {
+        tg.showAlert(`❌ Недостаточно ашетиков! Нужно ${currentGiftPrice}`);
+        return;
+    }
+    
+    if (!confirm(`Подарить набор «${currentGiftBundle.name}» пользователю ${selectedGiftUser.username} за ${currentGiftPrice} ашетиков?`)) return;
+    
+    try {
+        // Списываем ашетики у дарителя
+        let r = await fetch(`${SERVER_URL}/api/add_balance`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId, amount: -currentGiftPrice, reason: `Подарок набора "${currentGiftBundle.name}" для ${selectedGiftUser.username}` })
+        });
+        let res = await r.json();
+        
+        if (res.status === 'ok') {
+            // Активируем набор получателю
+            const bundle = currentGiftBundle;
+            
+            // Подложка
+            const bgItem = BACKGROUNDS_SHOP.find(b => b.id === bundle.items.background);
+            if (bgItem) {
+                await fetch(`${SERVER_URL}/api/save_background`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id: selectedGiftUser.user_id, background: bgItem.css, background_id: bgItem.id })
+                });
+            }
+            
+            // Фон статуса
+            const statusBgItem = STATUS_BG_SHOP.find(b => b.id === bundle.items.status_bg);
+            if (statusBgItem) {
+                await fetch(`${SERVER_URL}/api/save_status_background`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id: selectedGiftUser.user_id, background: statusBgItem.css, background_id: statusBgItem.id })
+                });
+            }
+            
+            // Обводка
+            const borderItem = AVATAR_BORDER_SHOP.find(b => b.id === bundle.items.avatar_border);
+            if (borderItem) {
+                await fetch(`${SERVER_URL}/api/save_avatar_border`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id: selectedGiftUser.user_id, border: borderItem.css, border_id: borderItem.id })
+                });
+            }
+            
+            // Сохраняем набор получателю
+            await fetch(`${SERVER_URL}/api/save_bundle`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_id: selectedGiftUser.user_id, bundle_id: bundle.id })
+            });
+            
+            // Уведомляем получателя
+            try {
+                await fetch(`${SERVER_URL}/api/notify_gift`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        from_user_id: userId, 
+                        to_user_id: selectedGiftUser.user_id, 
+                        bundle_name: bundle.name,
+                        from_username: user.name || 'Пользователь'
+                    })
+                });
+            } catch(e) {}
+            
+            user.balance = res.new_balance;
+            saveUserData();
+            updateUI();
+            closeGiftModal();
+            renderBundlesShop();
+            tg.showAlert(`✅ Набор «${bundle.name}» подарен ${selectedGiftUser.username}!`);
+        }
+    } catch(e) {
+        tg.showAlert('❌ Ошибка');
     }
 }
 // Функция добавления кнопки пропуска в карточку задания
@@ -34007,6 +34191,21 @@ document.addEventListener('click', function(event) {
         <button class="modal-close-btn" onclick="document.getElementById('themeModal').style.display='none'">Закрыть</button>
     </div>
 </div>
-
+<!-- Модалка подарка -->
+<div id="giftModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 400px;">
+        <h3>🎁 Подарить набор</h3>
+        <p style="color: var(--text-gray); font-size: 13px; margin-bottom: 15px;" id="giftBundleName"></p>
+        <div class="search-box" style="margin-bottom: 15px;">
+            <i class="fas fa-search"></i>
+            <input type="text" id="giftUsernameInput" placeholder="Введите @username получателя..." oninput="searchUserForGift()">
+        </div>
+        <div id="giftSearchResults" style="max-height: 200px; overflow-y: auto; margin-bottom: 15px;"></div>
+        <button class="modal-action-btn" id="giftConfirmBtn" onclick="confirmGift()" disabled>
+            🎁 Подарить
+        </button>
+        <button class="modal-close-btn" onclick="closeGiftModal()">Отмена</button>
+    </div>
+</div>
 </body>
 </html>
