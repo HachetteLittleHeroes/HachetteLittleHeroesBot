@@ -30583,7 +30583,6 @@ function renderPublicProfile(profile) {
         return;
     }
     
-    // Проверяем, что профиль содержит данные
     if (!profile || profile.status === 'error') {
         container.innerHTML = '<div class="no-results">❌ Профиль не найден</div>';
         return;
@@ -30594,7 +30593,18 @@ function renderPublicProfile(profile) {
     const userName = profile.name || profile.username || 'Пользователь';
     const userStatus = profile.status || 'Без статуса';
     
-    // Получаем коллекции
+    // Подложка и кастомизация
+    const sponsorBg = profile.sponsor_background || '';
+    const profileBgStyle = sponsorBg ? sponsorBg + ' margin: 0; padding: 15px; border-radius: 24px; display: flex; align-items: center; gap: 20px;' : 'margin: 0; padding: 15px;';
+    
+    const statusBg = profile.status_background || '';
+    const statusStyle = statusBg ? statusBg + ' padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; display: inline-block; color: var(--text);' : '';
+    
+    const avatarBorder = profile.avatar_border || '';
+    const avatarBorderStyle = avatarBorder ? avatarBorder + ' width: 90px; height: 90px; border-radius: 50%; padding: 3px; background: var(--bg);' : '';
+    
+    const avatarEmoji = profile.avatar_emoji || '';
+    
     const figures = profile.figures || [];
     const figuresCount = figures.length;
     
@@ -30609,13 +30619,11 @@ function renderPublicProfile(profile) {
     const wishlist = profile.wishlist || [];
     const wishlistCount = wishlist.length;
     
-    // Проверяем, друг ли это
     const isOwnProfile = (String(profile.user_id) === String(userId));
     const isFriend = myFriends.some(function(f) { 
         return String(f.user_id) === String(profile.user_id) || String(f.id) === String(profile.user_id); 
     });
     
-    // Считаем статистику
     const completedPages = profile.completed_pages || {};
     const completedPagesDates = profile.completed_pages_dates || {};
     const artworks = profile.artworks || {};
@@ -30648,13 +30656,14 @@ function renderPublicProfile(profile) {
     })();
     
     const html = `
-        <div class="profile-header-block" style="margin: 0; padding: 15px;">
-            <div class="avatar-wrapper">
+        <div class="profile-header-block" style="${profileBgStyle}">
+            <div class="avatar-wrapper" style="${avatarBorderStyle}">
                 <img src="${avatarUrl}" onerror="this.src='https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png'">
+                ${avatarEmoji ? `<div style="position: absolute; top: -5px; right: -5px; width: 28px; height: 28px; border-radius: 50%; background: var(--bg-header); display: flex; align-items: center; justify-content: center; font-size: 16px; border: 2px solid var(--border-color); box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 5; pointer-events: none;">${avatarEmoji}</div>` : ''}
             </div>
             <div class="profile-info">
                 <div class="name-row"><h2>${escapeHtml(userName)}</h2></div>
-                <div class="status-badge">${escapeHtml(userStatus)}</div>
+                <span class="status-badge" style="${statusStyle}">${escapeHtml(userStatus)}</span>
                 <div id="publicUserLevel" style="margin-top: 8px;"></div>
                 ${friendButtonHtml}
             </div>
@@ -30717,7 +30726,6 @@ function renderPublicProfile(profile) {
     
     container.innerHTML = html;
     
-    // Сохраняем данные для статистики
     const booksStats = {};
     for (const bookKey in completedPages) {
         if (completedPages.hasOwnProperty(bookKey)) {
@@ -30754,12 +30762,10 @@ function renderPublicProfile(profile) {
     container._monthAgo = monthAgo;
     container.dataset.profile = JSON.stringify(profile);
     
-    // Рендерим статистику
     if (typeof renderPublicStatsBooks === 'function') {
         renderPublicStatsBooks();
     }
     
-    // Рендерим уровень
     setTimeout(function() {
         const xp = profile.xp || 0;
         const levelInfo = getUserLevelInfo(xp);
@@ -30774,19 +30780,16 @@ function renderPublicProfile(profile) {
             `;
         }
         
-        // Рендерим фигурки
         const figuresContainer = document.getElementById('modalFiguresGrid');
         if (figuresContainer && typeof renderPublicFigures === 'function') {
             renderPublicFigures(figures);
         }
         
-        // Рендерим раскраски
         const booksContainer = document.getElementById('modalBooksList');
         if (booksContainer && typeof renderPublicBooks === 'function') {
             renderPublicBooks(coloringBooks, artworks, userId);
         }
         
-        // Рендерим вишлист
         const wishlistContainer = document.getElementById('modalWishlistGrid');
         if (wishlistContainer && typeof renderPublicWishlist === 'function') {
             renderPublicWishlist(wishlist);
