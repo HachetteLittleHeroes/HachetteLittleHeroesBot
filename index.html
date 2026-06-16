@@ -6490,26 +6490,30 @@ body:not([data-theme]) .modal-content,
     <h3>💰 Магазин</h3>
     
     <!-- Вкладки -->
-    <div style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color);">
-        <button class="shop-tab active" data-tab="statuses" onclick="switchShopTab('statuses')">
-            <i class="fas fa-crown"></i> Статусы
-        </button>
-        <button class="shop-tab" data-tab="backgrounds" onclick="switchShopTab('backgrounds')">
-    <i class="fas fa-paint-roller"></i> Подложки
-</button>
-        <button class="shop-tab" data-tab="status_bg" onclick="switchShopTab('status_bg')">
-    <i class="fas fa-crown"></i> Фон статуса
-</button>
-        <button class="shop-tab" data-tab="avatar_border" onclick="switchShopTab('avatar_border')">
-    <i class="fas fa-circle"></i> Обводка аватара
-</button>
-        <button class="shop-tab" data-tab="skips" onclick="switchShopTab('skips')">
-            <i class="fas fa-forward"></i> Скипы
-        </button>
-        <button class="shop-tab" data-tab="boosts" onclick="switchShopTab('boosts')">
-            <i class="fas fa-rocket"></i> Бусты XP
-        </button>
-    </div>
+   <div style="display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); flex-wrap: wrap;">
+    
+         <button class="shop-tab" data-tab="bundles" onclick="switchShopTab('bundles')">
+        <i class="fas fa-gift"></i> Наборы
+    </button>
+       <button class="shop-tab active" data-tab="statuses" onclick="switchShopTab('statuses')">
+        <i class="fas fa-crown"></i> Статусы
+    </button>
+          <button class="shop-tab" data-tab="status_bg" onclick="switchShopTab('status_bg')">
+        <i class="fas fa-crown"></i> Фон статуса
+    </button>
+           <button class="shop-tab" data-tab="backgrounds" onclick="switchShopTab('backgrounds')">
+        <i class="fas fa-paint-roller"></i> Подложки
+    </button>
+         <button class="shop-tab" data-tab="avatar_border" onclick="switchShopTab('avatar_border')">
+        <i class="fas fa-circle"></i> Обводка
+    </button>
+    <button class="shop-tab" data-tab="skips" onclick="switchShopTab('skips')">
+        <i class="fas fa-forward"></i> Скипы
+    </button>
+    <button class="shop-tab" data-tab="boosts" onclick="switchShopTab('boosts')">
+        <i class="fas fa-rocket"></i> Бусты
+    </button>
+</div>
     
     <!-- Статусы -->
     <div id="shop-statuses" class="shop-tab-content active">
@@ -6525,6 +6529,10 @@ body:not([data-theme]) .modal-content,
     <div id="shop-boosts" class="shop-tab-content" style="display: none;">
         <div class="rewards-grid" id="boostShopGrid"></div>
     </div>
+    <div id="shop-bundles" class="shop-tab-content" style="display: none;">
+    <div id="weeklyBundleContainer" style="margin-bottom: 20px;"></div>
+    <div class="rewards-grid" id="bundlesShopGrid"></div>
+</div>
     <div id="shop-backgrounds" class="shop-tab-content" style="display: none;">
     <div class="rewards-grid" id="backgroundsShopGrid"></div>
 </div>
@@ -16038,6 +16046,111 @@ const SKIP_SHOP = [
     { id: 'skip_3', name: 'Скип на 3 очка', desc: 'Пропустить три задания (кроме Шок контент)', price: 125, amount: 3 },
     { id: 'skip_5', name: 'Скип на 5 очков', desc: 'Пропустить пять заданий (кроме Шок контент)', price: 200, amount: 5 }
 ];
+        // ==========================================
+// НАБОРЫ КАСТОМИЗАЦИИ
+// ==========================================
+
+const BUNDLES_SHOP = [
+    {
+        id: 'bundle_rose_gold',
+        name: 'Розовое золото',
+        price: 950, // по отдельности: 600+550+650 = 1800
+        items: {
+            background: 'bg_emoji_hearts',
+            status_bg: 'status_bg_rose_gold',
+            avatar_border: 'avatar_border_rose_gold'
+        },
+        description: 'Сердечки + Розовое золото + Розовое золото'
+    },
+    {
+        id: 'bundle_gold',
+        name: 'Золотой',
+        price: 900, // по отдельности: 600+600+500 = 1700
+        items: {
+            background: 'bg_emoji_stars',
+            status_bg: 'status_bg_gold',
+            avatar_border: 'avatar_border_gold'
+        },
+        description: 'Звёздочки + Золото + Золото'
+    },
+    {
+        id: 'bundle_emerald',
+        name: 'Изумрудный',
+        price: 750, // по отдельности: 350+550+450 = 1350
+        items: {
+            background: 'bg_card',
+            status_bg: 'status_bg_emerald',
+            avatar_border: 'avatar_border_emerald'
+        },
+        description: 'Карточка + Изумруд + Изумруд'
+    },
+    {
+        id: 'bundle_sapphire',
+        name: 'Сапфировый',
+        price: 750,
+        items: {
+            background: 'bg_glass',
+            status_bg: 'status_bg_sapphire',
+            avatar_border: 'avatar_border_sapphire'
+        },
+        description: 'Стекло + Сапфир + Сапфир'
+    },
+    {
+        id: 'bundle_platinum',
+        name: 'Платиновый',
+        price: 1000, // по отдельности: 500+750+650 = 1900
+        items: {
+            background: 'bg_marble',
+            status_bg: 'status_bg_platinum',
+            avatar_border: 'avatar_border_platinum'
+        },
+        description: 'Мрамор + Платина + Платина'
+    },
+    {
+        id: 'bundle_ruby',
+        name: 'Рубиновый',
+        price: 850,
+        items: {
+            background: 'bg_emoji_fire',
+            status_bg: 'status_bg_ruby',
+            avatar_border: 'avatar_border_ruby'
+        },
+        description: 'Огоньки + Рубин + Рубин'
+    },
+    {
+        id: 'bundle_amethyst',
+        name: 'Аметистовый',
+        price: 700,
+        items: {
+            background: 'bg_dots',
+            status_bg: 'status_bg_amethyst',
+            avatar_border: 'avatar_border_amethyst'
+        },
+        description: 'Точечки + Аметист + Аметист'
+    },
+    {
+        id: 'bundle_arctic',
+        name: 'Арктический',
+        price: 650,
+        items: {
+            background: 'bg_frost',
+            status_bg: 'status_bg_arctic',
+            avatar_border: 'avatar_border_arctic'
+        },
+        description: 'Иней + Арктика + Арктика'
+    }
+];
+
+// Набор недели (меняется автоматически)
+function getWeeklyBundle() {
+    const weekNumber = Math.floor(Date.now() / (7 * 24 * 60 * 60 * 1000));
+    return BUNDLES_SHOP[weekNumber % BUNDLES_SHOP.length];
+}
+
+function getWeeklyBundlePrice() {
+    const bundle = getWeeklyBundle();
+    return Math.round(bundle.price * 0.7); // скидка 30%
+}
 
 const BOOST_SHOP = [
     { id: 'boost_5', name: 'x2 буст (5 работ)', desc: 'Удвоение опыта за 5 работ', price: 100, duration: 5 },
@@ -16055,15 +16168,128 @@ function switchShopTab(tab) {
     document.getElementById('shop-statuses').style.display = tab === 'statuses' ? 'block' : 'none';
     document.getElementById('shop-skips').style.display = tab === 'skips' ? 'block' : 'none';
     document.getElementById('shop-boosts').style.display = tab === 'boosts' ? 'block' : 'none';
+    document.getElementById('shop-bundles').style.display = tab === 'bundles' ? 'block' : 'none';
     document.getElementById('shop-backgrounds').style.display = tab === 'backgrounds' ? 'block' : 'none';
     document.getElementById('shop-status_bg').style.display = tab === 'status_bg' ? 'block' : 'none';
     document.getElementById('shop-avatar_border').style.display = tab === 'avatar_border' ? 'block' : 'none';
-    if (tab === 'avatar_border') renderAvatarBorderShop();
     if (tab === 'statuses') renderStatusShop();
     if (tab === 'skips') renderSkipShop();
     if (tab === 'boosts') renderBoostShop();
+    if (tab === 'bundles') renderBundlesShop();
     if (tab === 'backgrounds') renderBackgroundsShop();
-    if (tab === 'status_bg') renderStatusBgShop();  // ← ДОБАВИТЬ
+    if (tab === 'status_bg') renderStatusBgShop();
+    if (tab === 'avatar_border') renderAvatarBorderShop();
+}
+        function renderBundlesShop() {
+    // Набор недели
+    const weeklyContainer = document.getElementById('weeklyBundleContainer');
+    const weeklyBundle = getWeeklyBundle();
+    const weeklyPrice = getWeeklyBundlePrice();
+    const originalPrice = weeklyBundle.price;
+    
+    weeklyContainer.innerHTML = `
+        <div style="background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,149,0,0.05)); border: 2px solid gold; border-radius: 16px; padding: 15px; text-align: center; margin-bottom: 15px;">
+            <div style="font-size: 12px; color: gold; font-weight: 700; margin-bottom: 5px;">🔥 НАБОР НЕДЕЛИ (-30%)</div>
+            <div style="font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 5px;">${weeklyBundle.name}</div>
+            <div style="font-size: 12px; color: var(--text-gray); margin-bottom: 10px;">${weeklyBundle.description}</div>
+            <div style="font-size: 20px; font-weight: 900; color: var(--accent); margin-bottom: 10px;">
+                <span style="text-decoration: line-through; color: var(--text-gray); font-size: 14px;">${originalPrice}</span>
+                ${weeklyPrice} <i class="fas fa-book-open gold-book"></i>
+            </div>
+            <button class="shop-item-btn" onclick="buyBundle('${weeklyBundle.id}', ${weeklyPrice})" style="background: gold; color: #333; font-weight: 700;">
+                🎁 Купить со скидкой
+            </button>
+        </div>
+    `;
+    
+    // Все наборы
+    const container = document.getElementById('bundlesShopGrid');
+    container.innerHTML = '';
+    
+    BUNDLES_SHOP.forEach(bundle => {
+        const isWeekly = bundle.id === weeklyBundle.id;
+        const price = isWeekly ? weeklyPrice : bundle.price;
+        const canBuy = user.balance >= price;
+        
+        container.innerHTML += `
+            <div class="shop-item-card" style="${isWeekly ? 'border: 2px solid gold;' : ''}">
+                <div style="font-size: 32px; margin-bottom: 8px;">🎁</div>
+                <div class="shop-item-title">${bundle.name}</div>
+                <div class="shop-item-desc">${bundle.description}</div>
+                <div class="shop-item-price">
+                    ${isWeekly ? `<span style="text-decoration: line-through; color: var(--text-gray); font-size: 14px;">${bundle.price}</span> ` : ''}
+                    ${price} <i class="fas fa-book-open gold-book"></i>
+                </div>
+                <button class="shop-item-btn" onclick="buyBundle('${bundle.id}', ${price})" ${!canBuy ? 'disabled' : ''}>
+                    ${canBuy ? '🎁 Купить набор' : '❌ Недостаточно'}
+                </button>
+            </div>
+        `;
+    });
+}
+
+async function buyBundle(bundleId, price) {
+    const bundle = BUNDLES_SHOP.find(b => b.id === bundleId);
+    if (!bundle) return;
+    
+    if (user.balance < price) return tg.showAlert(`❌ Нужно ${price} ашетиков`);
+    if (!confirm(`Купить набор «${bundle.name}» за ${price} ашетиков?`)) return;
+    
+    try {
+        // Списываем ашетики
+        let r = await fetch(`${SERVER_URL}/api/add_balance`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId, amount: -price, reason: `Покупка набора "${bundle.name}"` })
+        });
+        let res = await r.json();
+        
+        if (res.status === 'ok') {
+            // Активируем подложку
+            const bgItem = BACKGROUNDS_SHOP.find(b => b.id === bundle.items.background);
+            if (bgItem) {
+                await fetch(`${SERVER_URL}/api/save_background`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id: userId, background: bgItem.css, background_id: bgItem.id })
+                });
+                applySponsorBackground(bgItem.css, bgItem.id);
+            }
+            
+            // Активируем фон статуса
+            const statusBgItem = STATUS_BG_SHOP.find(b => b.id === bundle.items.status_bg);
+            if (statusBgItem) {
+                await fetch(`${SERVER_URL}/api/save_status_background`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id: userId, background: statusBgItem.css, background_id: statusBgItem.id })
+                });
+                applyStatusBackground(statusBgItem.css);
+            }
+            
+            // Активируем обводку
+            const borderItem = AVATAR_BORDER_SHOP.find(b => b.id === bundle.items.avatar_border);
+            if (borderItem) {
+                await fetch(`${SERVER_URL}/api/save_avatar_border`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id: userId, border: borderItem.css, border_id: borderItem.id })
+                });
+                applyAvatarBorder(borderItem.css);
+            }
+            
+            user.balance = res.new_balance;
+            saveUserData();
+            updateUI();
+            renderBundlesShop();
+            renderBackgroundsShop();
+            renderStatusBgShop();
+            renderAvatarBorderShop();
+            tg.showAlert(`✅ Набор «${bundle.name}» применён!`);
+        }
+    } catch(e) {
+        tg.showAlert('❌ Ошибка');
+    }
 }
         function renderStatusBgShop() {
     const container = document.getElementById('statusBgShopGrid');
