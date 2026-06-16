@@ -15655,6 +15655,12 @@ function showLeagueLeaderboard(league) {
             ? statusBg + ' padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; display: inline-block; color: var(--text);' 
             : 'font-size: 13px; font-weight: 600;';
         
+        // Обводка аватара
+        const avatarBorder = user.avatar_border || '';
+        const avatarImgStyle = avatarBorder 
+            ? `width: 40px; height: 40px; border-radius: 50%; object-fit: cover; ${avatarBorder}` 
+            : 'width: 40px; height: 40px; border-radius: 50%; object-fit: cover;';
+        
         const sponsorBgId = user.sponsor_background_id || '';
         let bgStyle = '';
         
@@ -15671,7 +15677,7 @@ function showLeagueLeaderboard(league) {
                 <div style="font-size: 18px; font-weight: 800; color: var(--accent); min-width: 35px;">
                     ${placeIcon}
                 </div>
-                <img src="${avatarUrl}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" onerror="this.src='https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png'">
+                <img src="${avatarUrl}" style="${avatarImgStyle}" onerror="this.src='https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png'">
                 <div style="flex: 1; min-width: 0;">
                    <div style="font-weight: 600; font-size: 14px; margin-bottom: 4px;">${user.username || user.name}</div>
                     <span style="${statusStyle}">${user.status || 'Без статуса'}</span>
