@@ -16152,8 +16152,13 @@ async function buyAvatarBorder(id, price) {
 
 function applyAvatarBorder(css) {
     const avatarWrapper = document.querySelector('.avatar-wrapper');
-    if (avatarWrapper && css) {
-        avatarWrapper.style.cssText = css + ' width: 90px; height: 90px; border-radius: 50%; padding: 3px; background: var(--bg); position: relative; flex-shrink: 0; cursor: pointer;';
+    if (!avatarWrapper) return;
+    
+    if (css) {
+        avatarWrapper.style.cssText = css.replace('border:', 'border:') + ' !important;' + ' width: 90px; height: 90px; border-radius: 50%; padding: 3px; background: var(--bg); position: relative; flex-shrink: 0; cursor: pointer;';
+    } else {
+        // Восстанавливаем стандартную рамку
+        avatarWrapper.style.cssText = 'width: 90px; height: 90px; border-radius: 50%; border: 3px solid var(--accent) !important; padding: 3px; background: var(--bg); position: relative; flex-shrink: 0; cursor: pointer;';
     }
 }
 async function buyStatusBg(id, price) {
@@ -16215,11 +16220,13 @@ function renderBackgroundsShop() {
     fetch(`${SERVER_URL}/api/stats?user_id=${userId}`)
         .then(r => r.json())
         .then(stats => {
-            const currentBg = stats.sponsor_background || '';
+            const currentBgId = stats.sponsor_background_id || '';
+            const ownedBackgrounds = stats.owned_backgrounds || [];
             
             BACKGROUNDS_SHOP.forEach(bg => {
-                const isActive = (stats.sponsor_background_id === bg.id);
-                const canBuy = user.balance >= bg.price;
+                const isActive = (currentBgId === bg.id);
+                const isOwned = ownedBackgrounds.includes(bg.id);
+                const canBuy = !isOwned && user.balance >= bg.price;
                 
                 container.innerHTML += `
                     <div class="shop-item-card ${isActive ? 'owned' : ''}">
@@ -16227,13 +16234,45 @@ function renderBackgroundsShop() {
                         <div class="shop-item-title">${bg.name}</div>
                         <div class="shop-item-price">${bg.price} <i class="fas fa-book-open gold-book"></i></div>
                         ${isActive ? '<div style="color:green;font-size:12px;">✅ Активна</div>' : 
+                            isOwned ? `<button class="shop-item-btn" onclick="activateBackground('${bg.id}')" style="background: var(--status-green);">✅ Выбрать</button>` :
                             `<button class="shop-item-btn" onclick="buyBackground('${bg.id}', ${bg.price})" ${!canBuy ? 'disabled' : ''}>${canBuy ? '🎨 Купить' : '❌ Недостаточно'}</button>`}
                     </div>
                 `;
             });
         });
 }
-
+async function activateBackground(id) {
+    const bg = BACKGROUNDS_SHOP.find(b => b.id === id);
+    if (!bg) return;
+    
+    try {
+        await fetch(`${SERVER_URL}/api/save_background`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId, background: bg.css, background_id: bg.id })
+        });
+        
+        applySponsorBackground(bg.css, bg.id);
+        renderBackgroundsShop();
+        tg.showAlert(`✅ Подложка «${bg.name}» активирована!`);
+    } catch(e) {
+        tg.showAlert('❌ Ошибка');
+    }
+}
+        async function activateAvatarBorder(id) {
+    const border = AVATAR_BORDER_SHOP.find(b => b.id === id);
+    if (!border) return;
+    
+    await fetch(`${SERVER_URL}/api/save_avatar_border`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: userId, border: border.css, border_id: border.id })
+    });
+    
+    applyAvatarBorder(border.css);
+    renderAvatarBorderShop();
+    tg.showAlert(`✅ Обводка «${border.name}» активирована!`);
+}
 async function buyBackground(id, price) {
     const bg = BACKGROUNDS_SHOP.find(b => b.id === id);
     if (!bg) return;
