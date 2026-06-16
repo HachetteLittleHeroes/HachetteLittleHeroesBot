@@ -6464,20 +6464,6 @@ body:not([data-theme]) .modal-content,
         <button class="upload-photo-btn" onclick="document.getElementById('customAvatarInput').click()"><i class="fas fa-camera"></i> Загрузить фото</button>
     </div>
 
-<!-- Объединённый блок скипов и бустов -->
-<div style="background: linear-gradient(135deg, rgba(255,149,0,0.25), rgba(255,149,0,0.1)); border-radius: 20px; padding: 12px 15px; margin: 10px 15px; display: flex; align-items: center; gap: 15px; border: 1px solid rgba(255,149,0,0.4);">
-    <div style="flex: 1; display: flex; align-items: center; gap: 8px; padding-left: 10px;">
-        <i class="fas fa-forward" style="color: var(--accent); font-size: 18px;"></i>
-        <span style="font-size: 13px; color: var(--text);">Скипы:</span>
-        <span id="skipCountDisplay" style="font-weight: 700; color: var(--accent); font-size: 16px;">0</span>
-    </div>
-    <div style="width: 1px; height: 30px; background: rgba(255,149,0,0.3);"></div>
-    <div id="boostStatusContainer" style="flex: 1; display: flex; align-items: center; gap: 8px; padding-left: 5px;">
-        <i class="fas fa-rocket" style="color: var(--text-gray); font-size: 16px;"></i>
-        <span style="font-size: 13px; color: var(--text-gray);">Нет активных бустов</span>
-    </div>
-</div>
-
 <div class="balance-card">
     <p class="balance-label">ВАШ БАЛАНС</p>
     <div class="balance-main"><span id="userBalance">0</span> <i class="fas fa-book-open gold-book"></i></div>
@@ -6489,32 +6475,57 @@ body:not([data-theme]) .modal-content,
     </div>
 </div>
 
+<!-- ========== СКИПЫ И БУСТЫ (информационный) ========== -->
+<div class="tasks-section" style="margin-top: 15px;">
+    <div class="tasks-header" style="cursor: default;">
+        <span>⚡ Скипы и бусты</span>
+    </div>
+    <div class="tasks-content" style="display: block; padding: 15px;">
+        <div style="display: flex; gap: 15px; align-items: stretch;">
+            <div style="flex: 1; background: linear-gradient(135deg, rgba(255,149,0,0.15), rgba(255,149,0,0.05)); border-radius: 16px; padding: 14px 16px; display: flex; align-items: center; gap: 10px; border: 1px solid rgba(255,149,0,0.3);">
+                <i class="fas fa-forward" style="color: var(--accent); font-size: 20px;"></i>
+                <div>
+                    <div style="font-size: 11px; color: var(--text-gray);">Скипы</div>
+                    <span id="skipCountDisplay" style="font-weight: 700; color: var(--accent); font-size: 22px;">0</span>
+                </div>
+            </div>
+            <div style="flex: 1; background: linear-gradient(135deg, rgba(255,149,0,0.15), rgba(255,149,0,0.05)); border-radius: 16px; padding: 14px 16px; display: flex; align-items: center; gap: 10px; border: 1px solid rgba(255,149,0,0.3);">
+                <i class="fas fa-rocket" style="color: var(--accent); font-size: 20px;"></i>
+                <div id="boostStatusContainer">
+                    <div style="font-size: 11px; color: var(--text-gray);">Буст x2</div>
+                    <span style="font-weight: 700; color: var(--text-gray); font-size: 22px;">—</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div id="rewards-section" class="rewards-section">
     <h3>💰 Магазин</h3>
     
-  <div style="display: flex; gap: 6px; margin-bottom: 15px; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; padding-bottom: 5px;">
-       <button class="shop-tab" data-tab="bundles" onclick="switchShopTab('bundles')" style="flex-shrink: 0; white-space: nowrap;">
-        <i class="fas fa-gift"></i> Наборы
-    </button>
-      <button class="shop-tab active" data-tab="statuses" onclick="switchShopTab('statuses')" style="flex-shrink: 0; white-space: nowrap;">
-        <i class="fas fa-crown"></i> Статусы
-    </button>
-    <button class="shop-tab" data-tab="status_bg" onclick="switchShopTab('status_bg')" style="flex-shrink: 0; white-space: nowrap;">
-        <i class="fas fa-crown"></i> Фон статуса
-    </button>
-    <button class="shop-tab" data-tab="backgrounds" onclick="switchShopTab('backgrounds')" style="flex-shrink: 0; white-space: nowrap;">
-        <i class="fas fa-paint-roller"></i> Подложки
-    </button>
-    <button class="shop-tab" data-tab="avatar_border" onclick="switchShopTab('avatar_border')" style="flex-shrink: 0; white-space: nowrap;">
-        <i class="fas fa-circle"></i> Обводка
-    </button>
-    <button class="shop-tab" data-tab="skips" onclick="switchShopTab('skips')" style="flex-shrink: 0; white-space: nowrap;">
-        <i class="fas fa-forward"></i> Скипы
-    </button>
-    <button class="shop-tab" data-tab="boosts" onclick="switchShopTab('boosts')" style="flex-shrink: 0; white-space: nowrap;">
-        <i class="fas fa-rocket"></i> Бусты
-    </button>
-</div>
+    <div style="display: flex; gap: 6px; margin-bottom: 15px; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; padding-bottom: 5px;">
+        <button class="shop-tab" data-tab="bundles" onclick="switchShopTab('bundles')" style="flex-shrink: 0; white-space: nowrap;">
+            <i class="fas fa-gift"></i> Наборы
+        </button>
+        <button class="shop-tab active" data-tab="statuses" onclick="switchShopTab('statuses')" style="flex-shrink: 0; white-space: nowrap;">
+            <i class="fas fa-crown"></i> Статусы
+        </button>
+        <button class="shop-tab" data-tab="status_bg" onclick="switchShopTab('status_bg')" style="flex-shrink: 0; white-space: nowrap;">
+            <i class="fas fa-crown"></i> Фон статуса
+        </button>
+        <button class="shop-tab" data-tab="backgrounds" onclick="switchShopTab('backgrounds')" style="flex-shrink: 0; white-space: nowrap;">
+            <i class="fas fa-paint-roller"></i> Подложки
+        </button>
+        <button class="shop-tab" data-tab="avatar_border" onclick="switchShopTab('avatar_border')" style="flex-shrink: 0; white-space: nowrap;">
+            <i class="fas fa-circle"></i> Обводка
+        </button>
+        <button class="shop-tab" data-tab="skips" onclick="switchShopTab('skips')" style="flex-shrink: 0; white-space: nowrap;">
+            <i class="fas fa-forward"></i> Скипы
+        </button>
+        <button class="shop-tab" data-tab="boosts" onclick="switchShopTab('boosts')" style="flex-shrink: 0; white-space: nowrap;">
+            <i class="fas fa-rocket"></i> Бусты
+        </button>
+    </div>
     
     <div id="shop-statuses" class="shop-tab-content active">
         <div class="rewards-grid" id="statusShopGrid"></div>
@@ -8807,7 +8818,6 @@ function updateSkipDisplay() {
     const display = document.getElementById('skipCountDisplay');
     if (display) {
         display.innerText = userSkips;
-        display.style.color = 'var(--accent)';
     }
 }
 
@@ -8829,15 +8839,13 @@ async function updateBoostDisplay() {
     
     if (userBoosts.active && userBoosts.remainingWorks > 0) {
         container.innerHTML = `
-            <i class="fas fa-rocket" style="color: var(--accent); font-size: 18px;"></i>
-            <span style="font-size: 13px; color: var(--text);">Буст x2:</span>
-            <span style="font-weight: 700; color: var(--accent); font-size: 16px;">${userBoosts.remainingWorks}</span>
+            <div style="font-size: 11px; color: var(--text-gray);">Буст x2</div>
+            <span style="font-weight: 700; color: var(--accent); font-size: 22px;">${userBoosts.remainingWorks}</span>
         `;
     } else {
         container.innerHTML = `
-            <i class="fas fa-rocket" style="color: var(--text-gray); font-size: 18px;"></i>
-            <span style="font-size: 13px; color: var(--text-gray);">Буст x2:</span>
-            <span style="font-weight: 700; color: var(--text-gray); font-size: 16px;">—</span>
+            <div style="font-size: 11px; color: var(--text-gray);">Буст x2</div>
+            <span style="font-weight: 700; color: var(--text-gray); font-size: 22px;">—</span>
         `;
     }
 }
@@ -21490,7 +21498,6 @@ window.onload = async () => {
     setInterval(async () => { await loadFriendProgressFromServer(); }, 30000);
     
     updateUI();
-    //startProgressRefresh();
     initSwipeListeners();
     
     window.onclick = function(event) {
@@ -21504,7 +21511,7 @@ window.onload = async () => {
         });
     };
     
-    // ✅ ЗАГРУЖАЕМ БУСТ С СЕРВЕРА (вместо localStorage)
+    // ✅ ЗАГРУЖАЕМ БУСТ С СЕРВЕРА
     try {
         const boostResponse = await fetch(`${SERVER_URL}/api/get_boost_status?user_id=${userId}`);
         const boostData = await boostResponse.json();
@@ -21545,15 +21552,13 @@ window.onload = async () => {
         if (boostContainer) {
             if (userBoosts && userBoosts.active && userBoosts.remainingWorks > 0) {
                 boostContainer.innerHTML = `
-                    <i class="fas fa-rocket" style="color: var(--accent); font-size: 18px;"></i>
-                    <span style="font-size: 13px; color: var(--text);">Буст x2:</span>
-                    <span style="font-weight: 700; color: var(--accent); font-size: 16px;">${userBoosts.remainingWorks} работ</span>
+                    <div style="font-size: 11px; color: var(--text-gray);">Буст x2</div>
+                    <span style="font-weight: 700; color: var(--accent); font-size: 22px;">${userBoosts.remainingWorks}</span>
                 `;
             } else {
                 boostContainer.innerHTML = `
-                    <i class="fas fa-rocket" style="color: var(--text-gray); font-size: 18px;"></i>
-                    <span style="font-size: 13px; color: var(--text-gray);">Буст x2:</span>
-                    <span style="font-weight: 700; color: var(--text-gray); font-size: 16px;">—</span>
+                    <div style="font-size: 11px; color: var(--text-gray);">Буст x2</div>
+                    <span style="font-weight: 700; color: var(--text-gray); font-size: 22px;">—</span>
                 `;
             }
         }
