@@ -16085,7 +16085,12 @@ function switchShopTab(tab) {
             });
         });
 }
-
+function applySponsorBackground(css) {
+    const profileBlock = document.querySelector('.profile-header-block');
+    if (profileBlock && css) {
+        profileBlock.style.cssText = css + ' margin: 15px; padding: 20px; border-radius: 24px; display: flex; align-items: center; gap: 20px;';
+    }
+}
 async function buyStatusBg(id, price) {
     const bg = STATUS_BG_SHOP.find(b => b.id === id);
     if (!bg) return;
@@ -16202,6 +16207,7 @@ async function buyBackground(id, price) {
             saveUserData();
             updateUI();
             renderBackgroundsShop();
+            applySponsorBackground(bg.css);
             tg.showAlert(`✅ Подложка «${bg.name}» применена!`);
         }
     } catch(e) {
@@ -20553,6 +20559,17 @@ window.onload = async () => {
     
     await loadUserBalance();
     updateUI();
+    // Загружаем подложку профиля и фон статуса
+fetch(`${SERVER_URL}/api/stats?user_id=${userId}`)
+    .then(r => r.json())
+    .then(stats => {
+        if (stats.sponsor_background) {
+            applySponsorBackground(stats.sponsor_background);
+        }
+        if (stats.status_background) {
+            applyStatusBackground(stats.status_background);
+        }
+    });
     // Загружаем фон статуса
 fetch(`${SERVER_URL}/api/stats?user_id=${userId}`)
     .then(r => r.json())
