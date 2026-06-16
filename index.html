@@ -15673,7 +15673,7 @@ function showLeagueLeaderboard(league) {
                 </div>
                 <img src="${avatarUrl}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" onerror="this.src='https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png'">
                 <div style="flex: 1; min-width: 0;">
-                    <div style="font-weight: 600; font-size: 14px; margin-bottom: 4px;">${user.name || user.username}</div>
+                   <div style="font-weight: 600; font-size: 14px; margin-bottom: 4px;">${user.username || user.name}</div>
                     <span style="${statusStyle}">${user.status || 'Без статуса'}</span>
                 </div>
                 <div style="text-align: right;">
