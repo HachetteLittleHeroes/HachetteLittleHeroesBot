@@ -15639,11 +15639,7 @@ function showLeagueLeaderboard(league) {
         const sponsorBgId = user.sponsor_background_id || '';
         let bgStyle = '';
         
-        if (sponsorBgId && sponsorBgId.startsWith('bg_emoji_')) {
-            const emoji = EMOJI_BG_MAP[sponsorBgId] || '⭐';
-            const hex = getAccentHex();
-            bgStyle = `background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='55' height='55' viewBox='0 0 55 55'%3E%3Ctext x='8' y='25' font-size='20' fill='%23${hex}' opacity='0.15'%3E${encodeURIComponent(emoji)}%3C/text%3E%3Ctext x='30' y='45' font-size='16' fill='%23${hex}' opacity='0.10'%3E${encodeURIComponent(emoji)}%3C/text%3E%3C/svg%3E"); background-size: 55px 55px;`;
-        } else if (user.sponsor_background) {
+        if (user.sponsor_background) {
             bgStyle = user.sponsor_background;
         }
         
@@ -15651,8 +15647,8 @@ function showLeagueLeaderboard(league) {
             bgStyle = `background: ${isMe ? 'color-mix(in srgb, var(--accent) 10%, transparent)' : 'var(--card-bg)'};`;
         }
         
-       html += `
-    <div style="${bgStyle} display: flex; align-items: center; gap: 12px; padding: 12px; margin-bottom: 8px; border-radius: 12px; border: 1px solid var(--border-color); cursor: pointer;" onclick="openPublicProfile('${user.user_id}')">
+        html += `
+            <div style="display: flex; align-items: center; gap: 12px; padding: 12px; margin-bottom: 8px; ${bgStyle} border-radius: 12px; border: 1px solid var(--border-color); cursor: pointer;" onclick="openPublicProfile('${user.user_id}')">
                 <div style="font-size: 18px; font-weight: 800; color: var(--accent); min-width: 35px;">
                     ${placeIcon}
                 </div>
@@ -15671,6 +15667,26 @@ function showLeagueLeaderboard(league) {
     });
     
     container.innerHTML = html;
+    
+    // Применяем эмодзи-подложки через JS (инлайн-стили не работают с SVG)
+    const cards = container.querySelectorAll('div[style*="display: flex"]');
+    cards.forEach(card => {
+        const onclick = card.getAttribute('onclick') || '';
+        const match = onclick.match(/openPublicProfile\('(\d+)'\)/);
+        if (!match) return;
+        
+        const cardUserId = match[1];
+        const user = lb.leaderboard.find(u => String(u.user_id) === cardUserId);
+        if (!user) return;
+        
+        const sponsorBgId = user.sponsor_background_id || '';
+        if (sponsorBgId && sponsorBgId.startsWith('bg_emoji_')) {
+            const emoji = EMOJI_BG_MAP[sponsorBgId] || '⭐';
+            const hex = getAccentHex();
+            card.style.backgroundImage = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='55' height='55' viewBox='0 0 55 55'%3E%3Ctext x='8' y='25' font-size='20' fill='%23${hex}' opacity='0.15'%3E${encodeURIComponent(emoji)}%3C/text%3E%3Ctext x='30' y='45' font-size='16' fill='%23${hex}' opacity='0.10'%3E${encodeURIComponent(emoji)}%3C/text%3E%3C/svg%3E")`;
+            card.style.backgroundSize = '55px 55px';
+        }
+    });
 }
 let currentCommunitySubtask = null;
 
