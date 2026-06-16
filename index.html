@@ -15917,6 +15917,20 @@ const STATUS_SHOP = [
     { id: 'in_flow', name: 'В потоке', price: 300 },
     { id: 'understood_genius', name: 'Недопонятый гений', price: 300 }
 ];
+        const AVATAR_BORDER_SHOP = [
+    { id: 'avatar_border_bronze', name: 'Бронза', price: 300, css: 'border: 3px solid rgba(205,127,50,0.8); box-shadow: 0 0 8px rgba(205,127,50,0.4);' },
+    { id: 'avatar_border_arctic', name: 'Арктика', price: 350, css: 'border: 3px solid rgba(180,220,255,0.8); box-shadow: 0 0 8px rgba(180,220,255,0.4);' },
+    { id: 'avatar_border_silver', name: 'Серебро', price: 400, css: 'border: 3px solid rgba(192,192,192,0.8); box-shadow: 0 0 8px rgba(192,192,192,0.4);' },
+    { id: 'avatar_border_amethyst', name: 'Аметист', price: 400, css: 'border: 3px solid rgba(160,100,200,0.8); box-shadow: 0 0 8px rgba(160,100,200,0.4);' },
+    { id: 'avatar_border_sunset', name: 'Закат', price: 400, css: 'border: 3px solid rgba(255,150,100,0.8); box-shadow: 0 0 8px rgba(255,150,100,0.4);' },
+    { id: 'avatar_border_emerald', name: 'Изумруд', price: 450, css: 'border: 3px solid rgba(80,200,120,0.8); box-shadow: 0 0 8px rgba(80,200,120,0.4);' },
+    { id: 'avatar_border_sapphire', name: 'Сапфир', price: 450, css: 'border: 3px solid rgba(70,130,200,0.8); box-shadow: 0 0 8px rgba(70,130,200,0.4);' },
+    { id: 'avatar_border_gold', name: 'Золото', price: 500, css: 'border: 3px solid rgba(255,215,0,0.8); box-shadow: 0 0 8px rgba(255,215,0,0.4);' },
+    { id: 'avatar_border_ruby', name: 'Рубин', price: 500, css: 'border: 3px solid rgba(220,60,60,0.8); box-shadow: 0 0 8px rgba(220,60,60,0.4);' },
+    { id: 'avatar_border_rose_gold', name: 'Розовое золото', price: 550, css: 'border: 3px solid rgba(231,156,148,0.8); box-shadow: 0 0 8px rgba(231,156,148,0.4);' },
+    { id: 'avatar_border_adaptive', name: 'Адаптивный', price: 600, css: 'border: 3px solid color-mix(in srgb, var(--accent) 60%, transparent); box-shadow: 0 0 8px color-mix(in srgb, var(--accent) 35%, transparent);' },
+    { id: 'avatar_border_platinum', name: 'Платина', price: 650, css: 'border: 3px solid rgba(180,200,220,0.8); box-shadow: 0 0 8px rgba(180,200,220,0.4);' }
+];
 const BACKGROUNDS_SHOP = [
     { 
         id: 'bg_canvas', 
@@ -16052,7 +16066,9 @@ function switchShopTab(tab) {
     document.getElementById('shop-skips').style.display = tab === 'skips' ? 'block' : 'none';
     document.getElementById('shop-boosts').style.display = tab === 'boosts' ? 'block' : 'none';
     document.getElementById('shop-backgrounds').style.display = tab === 'backgrounds' ? 'block' : 'none';
-    document.getElementById('shop-status_bg').style.display = tab === 'status_bg' ? 'block' : 'none';  // ← ДОБАВИТЬ
+    document.getElementById('shop-status_bg').style.display = tab === 'status_bg' ? 'block' : 'none';
+    document.getElementById('shop-avatar_border').style.display = tab === 'avatar_border' ? 'block' : 'none';
+    if (tab === 'avatar_border') renderAvatarBorderShop();
     if (tab === 'statuses') renderStatusShop();
     if (tab === 'skips') renderSkipShop();
     if (tab === 'boosts') renderBoostShop();
@@ -16089,6 +16105,86 @@ function applySponsorBackground(css) {
     const profileBlock = document.querySelector('.profile-header-block');
     if (profileBlock && css) {
         profileBlock.style.cssText = css + ' margin: 15px; padding: 20px; border-radius: 24px; display: flex; align-items: center; gap: 20px;';
+    }
+}
+        function renderAvatarBorderShop() {
+    const container = document.getElementById('avatarBorderShopGrid');
+    if (!container) return;
+    container.innerHTML = '';
+    
+    fetch(`${SERVER_URL}/api/stats?user_id=${userId}`)
+        .then(r => r.json())
+        .then(stats => {
+            const currentBorder = stats.avatar_border || '';
+            
+            AVATAR_BORDER_SHOP.forEach(border => {
+                const isActive = (currentBorder === border.css);
+                const canBuy = user.balance >= border.price;
+                
+                container.innerHTML += `
+                    <div class="shop-item-card ${isActive ? 'owned' : ''}">
+                        <div style="width: 60px; height: 60px; border-radius: 50%; margin: 0 auto 10px; ${border.css} background: var(--bg); display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-user" style="font-size: 24px; color: var(--text-gray);"></i>
+                        </div>
+                        <div class="shop-item-title">${border.name}</div>
+                        <div class="shop-item-price">${border.price} <i class="fas fa-book-open gold-book"></i></div>
+                        ${isActive ? '<div style="color:green;font-size:12px;">✅ Активна</div>' : 
+                            `<button class="shop-item-btn" onclick="buyAvatarBorder('${border.id}', ${border.price})" ${!canBuy ? 'disabled' : ''}>${canBuy ? '🎨 Купить' : '❌ Недостаточно'}</button>`}
+                    </div>
+                `;
+            });
+        });
+}
+
+async function buyAvatarBorder(id, price) {
+    const border = AVATAR_BORDER_SHOP.find(b => b.id === id);
+    if (!border) return;
+    
+    try {
+        const statsRes = await fetch(`${SERVER_URL}/api/stats?user_id=${userId}`);
+        const stats = await statsRes.json();
+        const currentBorder = stats.avatar_border || '';
+        
+        if (currentBorder === border.css) {
+            if (tg) tg.showAlert('✅ Эта обводка уже активна!');
+            return;
+        }
+    } catch(e) {}
+    
+    if (user.balance < price) return tg.showAlert(`❌ Нужно ${price} ашетиков`);
+    if (!confirm(`Купить обводку аватара «${border.name}» за ${price} ашетиков?`)) return;
+    
+    try {
+        let r = await fetch(`${SERVER_URL}/api/add_balance`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId, amount: -price, reason: `Покупка обводки аватара "${border.name}"` })
+        });
+        let res = await r.json();
+        
+        if (res.status === 'ok') {
+            await fetch(`${SERVER_URL}/api/save_avatar_border`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_id: userId, border: border.css })
+            });
+            
+            user.balance = res.new_balance;
+            saveUserData();
+            updateUI();
+            renderAvatarBorderShop();
+            applyAvatarBorder(border.css);
+            tg.showAlert(`✅ Обводка аватара «${border.name}» применена!`);
+        }
+    } catch(e) {
+        tg.showAlert('❌ Ошибка');
+    }
+}
+
+function applyAvatarBorder(css) {
+    const avatarWrapper = document.querySelector('.avatar-wrapper');
+    if (avatarWrapper && css) {
+        avatarWrapper.style.cssText = css + ' width: 90px; height: 90px; border-radius: 50%; padding: 3px; background: var(--bg); position: relative; flex-shrink: 0; cursor: pointer;';
     }
 }
 async function buyStatusBg(id, price) {
@@ -20530,7 +20626,6 @@ function confirmSkipTask() {
             });
         });
 }
-
 // ==========================================
 // ИНИЦИАЛИЗАЦИЯ
 // ==========================================
@@ -20559,25 +20654,6 @@ window.onload = async () => {
     
     await loadUserBalance();
     updateUI();
-    // Загружаем подложку профиля и фон статуса
-fetch(`${SERVER_URL}/api/stats?user_id=${userId}`)
-    .then(r => r.json())
-    .then(stats => {
-        if (stats.sponsor_background) {
-            applySponsorBackground(stats.sponsor_background);
-        }
-        if (stats.status_background) {
-            applyStatusBackground(stats.status_background);
-        }
-    });
-    // Загружаем фон статуса
-fetch(`${SERVER_URL}/api/stats?user_id=${userId}`)
-    .then(r => r.json())
-    .then(stats => {
-        if (stats.status_background) {
-            applyStatusBackground(stats.status_background);
-        }
-    });
     
     await loadUserProgress();
     await loadUnlockedStatuses();
@@ -20596,6 +20672,21 @@ fetch(`${SERVER_URL}/api/stats?user_id=${userId}`)
             document.getElementById('user-avatar').src = user.avatar;
             localStorage.setItem('coloring_user', JSON.stringify(user));
         }
+        
+        // ✅ Загружаем все кастомизации из ОДНОГО ответа stats
+        if (stats.sponsor_background) {
+            applySponsorBackground(stats.sponsor_background);
+        }
+        if (stats.status_background) {
+            applyStatusBackground(stats.status_background);
+        }
+        if (stats.avatar_border) {
+            applyAvatarBorder(stats.avatar_border);
+        }
+        if (stats.avatar_emoji) {
+            applyAvatarEmoji(stats.avatar_emoji);
+        }
+        
     } catch (error) {
         console.error('❌ Ошибка загрузки аватара:', error);
     }
@@ -20663,7 +20754,6 @@ fetch(`${SERVER_URL}/api/stats?user_id=${userId}`)
         console.log('📊 Буст загружен с сервера:', userBoosts);
     } catch (e) {
         console.error('❌ Ошибка загрузки буста с сервера:', e);
-        // Fallback на localStorage
         const savedBoosts = localStorage.getItem(`user_boosts_${userId}`);
         if (savedBoosts) {
             try { userBoosts = JSON.parse(savedBoosts); } catch(e) {}
@@ -20718,7 +20808,6 @@ fetch(`${SERVER_URL}/api/stats?user_id=${userId}`)
                 remainingWorks: boost.remaining || 0
             };
             
-            // Обновляем только если изменилось
             if (JSON.stringify(userBoosts) !== JSON.stringify(newBoost)) {
                 userBoosts = newBoost;
                 if (typeof updateBoostDisplay === 'function') {
@@ -30588,7 +30677,7 @@ function renderPublicProfile(profile) {
         return;
     }
     
-    const userId = profile.user_id || currentPublicUserId;
+    const profileUserId = profile.user_id || currentPublicUserId;
     const avatarUrl = profile.avatar || 'https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png';
     const userName = profile.name || profile.username || 'Пользователь';
     const userStatus = profile.status || 'Без статуса';
@@ -30619,7 +30708,7 @@ function renderPublicProfile(profile) {
     const wishlist = profile.wishlist || [];
     const wishlistCount = wishlist.length;
     
-    const isOwnProfile = (String(profile.user_id) === String(userId));
+    const isOwnProfile = (String(profile.user_id) === String(profileUserId));
     const isFriend = myFriends.some(function(f) { 
         return String(f.user_id) === String(profile.user_id) || String(f.id) === String(profile.user_id); 
     });
@@ -30652,7 +30741,7 @@ function renderPublicProfile(profile) {
         if (isFriend) {
             return '<button class="already-friend-btn" disabled><i class="fas fa-check"></i> В друзьях</button>';
         }
-        return '<button class="add-friend-btn" onclick="addFriend(\'' + userId + '\')"><i class="fas fa-user-plus"></i> Добавить в друзья</button>';
+        return '<button class="add-friend-btn" onclick="addFriend(\'' + profileUserId + '\')"><i class="fas fa-user-plus"></i> Добавить в друзья</button>';
     })();
     
     const html = `
@@ -30756,7 +30845,7 @@ function renderPublicProfile(profile) {
     
     container._pubBooksStats = booksStats;
     container._pubPeriod = 'lastmonth';
-    container._pubUserId = userId;
+    container._pubUserId = profileUserId;
     container._lastMonthStart = lastMonthStart;
     container._lastMonthEnd = lastMonthEnd;
     container._monthAgo = monthAgo;
@@ -30787,7 +30876,7 @@ function renderPublicProfile(profile) {
         
         const booksContainer = document.getElementById('modalBooksList');
         if (booksContainer && typeof renderPublicBooks === 'function') {
-            renderPublicBooks(coloringBooks, artworks, userId);
+            renderPublicBooks(coloringBooks, artworks, profileUserId);
         }
         
         const wishlistContainer = document.getElementById('modalWishlistGrid');
