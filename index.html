@@ -16317,7 +16317,7 @@ async function buyBundle(bundleId, price) {
         tg.showAlert('❌ Ошибка');
     }
 }
-        function renderStatusBgShop() {
+       function renderStatusBgShop() {
     const container = document.getElementById('statusBgShopGrid');
     if (!container) return;
     container.innerHTML = '';
@@ -16325,11 +16325,13 @@ async function buyBundle(bundleId, price) {
     fetch(`${SERVER_URL}/api/stats?user_id=${userId}`)
         .then(r => r.json())
         .then(stats => {
-            const currentBg = stats.status_background || '';
+            const currentBgId = stats.status_background_id || '';
+            const ownedStatusBgs = stats.owned_status_backgrounds || [];
             
             STATUS_BG_SHOP.forEach(bg => {
-                const isActive = (currentBg === bg.css);
-                const canBuy = user.balance >= bg.price;
+                const isActive = (currentBgId === bg.id);
+                const isOwned = ownedStatusBgs.includes(bg.id);
+                const canBuy = !isOwned && user.balance >= bg.price;
                 
                 container.innerHTML += `
                     <div class="shop-item-card ${isActive ? 'owned' : ''}">
@@ -16337,6 +16339,7 @@ async function buyBundle(bundleId, price) {
                         <div class="shop-item-title">${bg.name}</div>
                         <div class="shop-item-price">${bg.price} <i class="fas fa-book-open gold-book"></i></div>
                         ${isActive ? '<div style="color:green;font-size:12px;">✅ Активен</div>' : 
+                            isOwned ? `<button class="shop-item-btn" onclick="activateStatusBg('${bg.id}')" style="background: var(--status-green);">✅ Выбрать</button>` :
                             `<button class="shop-item-btn" onclick="buyStatusBg('${bg.id}', ${bg.price})" ${!canBuy ? 'disabled' : ''}>${canBuy ? '🎨 Купить' : '❌ Недостаточно'}</button>`}
                     </div>
                 `;
@@ -16374,11 +16377,13 @@ function applySponsorBackground(css, bgId) {
     fetch(`${SERVER_URL}/api/stats?user_id=${userId}`)
         .then(r => r.json())
         .then(stats => {
-            const currentBorder = stats.avatar_border || '';
+            const currentBorderId = stats.avatar_border_id || '';
+            const ownedBorders = stats.owned_borders || [];
             
             AVATAR_BORDER_SHOP.forEach(border => {
-                const isActive = (currentBorder === border.css);
-                const canBuy = user.balance >= border.price;
+                const isActive = (currentBorderId === border.id);
+                const isOwned = ownedBorders.includes(border.id);
+                const canBuy = !isOwned && user.balance >= border.price;
                 
                 container.innerHTML += `
                     <div class="shop-item-card ${isActive ? 'owned' : ''}">
@@ -16388,6 +16393,7 @@ function applySponsorBackground(css, bgId) {
                         <div class="shop-item-title">${border.name}</div>
                         <div class="shop-item-price">${border.price} <i class="fas fa-book-open gold-book"></i></div>
                         ${isActive ? '<div style="color:green;font-size:12px;">✅ Активна</div>' : 
+                            isOwned ? `<button class="shop-item-btn" onclick="activateAvatarBorder('${border.id}')" style="background: var(--status-green);">✅ Выбрать</button>` :
                             `<button class="shop-item-btn" onclick="buyAvatarBorder('${border.id}', ${border.price})" ${!canBuy ? 'disabled' : ''}>${canBuy ? '🎨 Купить' : '❌ Недостаточно'}</button>`}
                     </div>
                 `;
