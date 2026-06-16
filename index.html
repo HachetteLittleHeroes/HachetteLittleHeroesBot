@@ -16232,11 +16232,22 @@ async function buyBundle(bundleId, price) {
     const bundle = BUNDLES_SHOP.find(b => b.id === bundleId);
     if (!bundle) return;
     
+    // Проверяем, не куплен ли уже набор
+    try {
+        const statsRes = await fetch(`${SERVER_URL}/api/stats?user_id=${userId}`);
+        const stats = await statsRes.json();
+        const ownedBundles = stats.owned_bundles || [];
+        
+        if (ownedBundles.includes(bundleId)) {
+            if (tg) tg.showAlert('✅ Этот набор уже куплен!');
+            return;
+        }
+    } catch(e) {}
+    
     if (user.balance < price) return tg.showAlert(`❌ Нужно ${price} ашетиков`);
     if (!confirm(`Купить набор «${bundle.name}» за ${price} ашетиков?`)) return;
     
     try {
-        // Списываем ашетики
         let r = await fetch(`${SERVER_URL}/api/add_balance`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -16245,7 +16256,6 @@ async function buyBundle(bundleId, price) {
         let res = await r.json();
         
         if (res.status === 'ok') {
-            // Активируем подложку
             const bgItem = BACKGROUNDS_SHOP.find(b => b.id === bundle.items.background);
             if (bgItem) {
                 await fetch(`${SERVER_URL}/api/save_background`, {
@@ -16256,7 +16266,6 @@ async function buyBundle(bundleId, price) {
                 applySponsorBackground(bgItem.css, bgItem.id);
             }
             
-            // Активируем фон статуса
             const statusBgItem = STATUS_BG_SHOP.find(b => b.id === bundle.items.status_bg);
             if (statusBgItem) {
                 await fetch(`${SERVER_URL}/api/save_status_background`, {
@@ -16267,7 +16276,6 @@ async function buyBundle(bundleId, price) {
                 applyStatusBackground(statusBgItem.css);
             }
             
-            // Активируем обводку
             const borderItem = AVATAR_BORDER_SHOP.find(b => b.id === bundle.items.avatar_border);
             if (borderItem) {
                 await fetch(`${SERVER_URL}/api/save_avatar_border`, {
@@ -16277,6 +16285,12 @@ async function buyBundle(bundleId, price) {
                 });
                 applyAvatarBorder(borderItem.css);
             }
+            
+            await fetch(`${SERVER_URL}/api/save_bundle`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_id: userId, bundle_id: bundleId })
+            });
             
             user.balance = res.new_balance;
             saveUserData();
