@@ -16390,14 +16390,14 @@ function switchShopTab(tab) {
     if (tab === 'status_bg') renderStatusBgShop();
     if (tab === 'avatar_border') renderAvatarBorderShop();
 }
-     function renderBundlesShop() {
+   function renderBundlesShop() {
     const weeklyContainer = document.getElementById('weeklyBundleContainer');
     const weeklyBundle = getWeeklyBundle();
     const weeklyPrice = getWeeklyBundlePrice();
     const originalPrice = weeklyBundle.price;
     
     weeklyContainer.innerHTML = `
-        <div style="background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,149,0,0.05)); border: 2px solid gold; border-radius: 16px; padding: 15px; text-align: center; margin-bottom: 15px;">
+        <div style="background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,149,0,0.05)); border: 2px solid gold; border-radius: 16px; padding: 15px; text-align: center; margin-bottom: 15px; box-sizing: border-box; max-width: 100%;">
             <div style="font-size: 12px; color: gold; font-weight: 700; margin-bottom: 5px;">🔥 НАБОР НЕДЕЛИ (-30%)</div>
             <div style="font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 5px;">${weeklyBundle.name}</div>
             <div style="font-size: 12px; color: var(--text-gray); margin-bottom: 10px;">${weeklyBundle.description}</div>
@@ -16422,11 +16422,11 @@ function switchShopTab(tab) {
                 } else {
                     const canBuy = user.balance >= weeklyPrice;
                     buttonsDiv.innerHTML = `
-                        <div style="display: flex; gap: 8px;">
-                            <button class="shop-item-btn" onclick="buyBundle('${weeklyBundle.id}', ${weeklyPrice})" ${!canBuy ? 'disabled' : ''} style="flex: 1; background: gold; color: #333; font-weight: 700;">
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <button class="shop-item-btn" onclick="buyBundle('${weeklyBundle.id}', ${weeklyPrice})" ${!canBuy ? 'disabled' : ''} style="width: 100%; background: gold; color: #333; font-weight: 700; padding: 12px;">
                                 🎁 Купить
                             </button>
-                            <button class="shop-item-btn" onclick="openGiftModal('${weeklyBundle.id}', ${weeklyPrice})" ${!canBuy ? 'disabled' : ''} style="flex: 1; background: color-mix(in srgb, var(--accent) 70%, transparent); color: white; font-weight: 600;">
+                            <button class="shop-item-btn" onclick="openGiftModal('${weeklyBundle.id}', ${weeklyPrice})" ${!canBuy ? 'disabled' : ''} style="width: 100%; background: color-mix(in srgb, var(--accent) 70%, transparent); color: white; font-weight: 600; padding: 12px;">
                                 🎀 Подарить
                             </button>
                         </div>
@@ -16444,7 +16444,7 @@ function switchShopTab(tab) {
                 const canBuy = !isOwned && user.balance >= price;
                 
                 container.innerHTML += `
-                    <div class="shop-item-card" style="${isWeekly ? 'border: 2px solid gold;' : ''}">
+                    <div class="shop-item-card" style="${isWeekly ? 'border: 2px solid gold;' : ''} box-sizing: border-box; max-width: 100%;">
                         <div style="font-size: 32px; margin-bottom: 8px;">🎁</div>
                         <div class="shop-item-title">${bundle.name}</div>
                         <div class="shop-item-desc">${bundle.description}</div>
@@ -16453,11 +16453,11 @@ function switchShopTab(tab) {
                             ${price} <i class="fas fa-book-open gold-book"></i>
                         </div>
                         ${isOwned ? '<div style="color:green;font-size:14px;font-weight:600;">✅ Куплен</div>' : `
-                            <div style="display: flex; gap: 8px;">
-                                <button class="shop-item-btn" onclick="buyBundle('${bundle.id}', ${price})" ${!canBuy ? 'disabled' : ''} style="flex: 1;">
+                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                <button class="shop-item-btn" onclick="buyBundle('${bundle.id}', ${price})" ${!canBuy ? 'disabled' : ''} style="width: 100%; padding: 12px;">
                                     ${canBuy ? '🎁 Купить' : '❌ Недостаточно'}
                                 </button>
-                                <button class="shop-item-btn" onclick="openGiftModal('${bundle.id}', ${price})" ${!canBuy ? 'disabled' : ''} style="flex: 1; background: color-mix(in srgb, var(--accent) 70%, transparent); color: white; font-weight: 600;">
+                                <button class="shop-item-btn" onclick="openGiftModal('${bundle.id}', ${price})" ${!canBuy ? 'disabled' : ''} style="width: 100%; background: color-mix(in srgb, var(--accent) 70%, transparent); color: white; font-weight: 600; padding: 12px;">
                                     🎀 Подарить
                                 </button>
                             </div>
