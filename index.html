@@ -9226,7 +9226,7 @@ function renderBranchTasks() {
         console.error('Error refreshing progress:', error);
     }
 }
- // ==========================================
+// ==========================================
 // ВРЕМЕННЫЕ ЗАДАНИЯ (ЕЖЕНЕДЕЛЬНЫЕ И ЕЖЕМЕСЯЧНЫЕ)
 // ==========================================
 
@@ -9234,6 +9234,14 @@ function getWeeklyTask() {
     const weekNumber = Math.floor(Date.now() / (7 * 24 * 60 * 60 * 1000));
     const charIndex = weekNumber % BESTIARY.length;
     const char = BESTIARY[charIndex];
+    
+    // Считаем количество появлений в бестиарии
+    let totalAppearances = 0;
+    char.appearances.forEach(a => totalAppearances += a.pages.length);
+    
+    let reward = 5;
+    if (totalAppearances === 2 || totalAppearances === 3) reward = 10;
+    if (totalAppearances === 1) reward = 15;
     
     // Вычисляем дату окончания (следующее воскресенье 00:00 МСК)
     const now = new Date();
@@ -9244,11 +9252,12 @@ function getWeeklyTask() {
     return {
         id: 'weekly_task',
         title: `Персонаж недели: ${char.name}`,
-        description: `Раскрась картинку с ${char.name} из м/ф «${char.film}»`,
-        reward: 10,
+        description: `Раскрась картинку с ${char.name} из м/ф «${char.film}» (${totalAppearances} появлений в бестиарии)`,
+        reward: reward,
         deadline: deadlineStr,
         type: 'weekly',
-        character: char
+        character: char,
+        totalAppearances: totalAppearances
     };
 }
 
@@ -9256,7 +9265,6 @@ function getMonthlyTask() {
     const now = new Date();
     const monthIndex = now.getFullYear() * 12 + now.getMonth();
     
-    // 4 случайных персонажа на месяц (детерминировано по месяцу)
     const chars = [];
     const usedIndices = new Set();
     const seed = monthIndex * 12345;
@@ -9270,26 +9278,23 @@ function getMonthlyTask() {
         chars.push(BESTIARY[idx]);
     }
     
-    // Вычисляем дату окончания (последний день месяца 00:00 МСК)
     const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
     const deadlineStr = `${String(lastDay.getDate()).padStart(2, '0')}.${String(lastDay.getMonth() + 1).padStart(2, '0')}.${lastDay.getFullYear()}`;
     
     const subtasks = chars.map((char, i) => {
-        // Считаем количество появлений персонажа в бестиарии
         let totalAppearances = 0;
         char.appearances.forEach(a => totalAppearances += a.pages.length);
         
-        // Если персонаж встречается на 3 и меньше страницах — повышенная награда
-        const isRare = totalAppearances <= 3;
-        const reward = isRare ? 10 : 5;
+        let reward = 5;
+        if (totalAppearances === 2 || totalAppearances === 3) reward = 10;
+        if (totalAppearances === 1) reward = 15;
         
         return {
-            name: `Раскрась картинку с ${char.name} из м/ф «${char.film}»${isRare ? ' (редкий!)' : ''}`,
+            name: `Раскрась картинку с ${char.name} из м/ф «${char.film}»`,
             required: 1,
             reward: reward,
             character: char,
-            totalAppearances: totalAppearances,
-            isRare: isRare
+            totalAppearances: totalAppearances
         };
     });
     
@@ -9322,7 +9327,7 @@ function checkTimeTasksReset() {
 }
 
 function loadTimeTasksStatus() {
-    // Оставлено для совместимости
+    // Совместимость
 }
 
 function toggleTimeTasks() {
@@ -9360,7 +9365,7 @@ function renderTimeTasks() {
             <div class="time-header">
                 <h3>${weeklyTask.title}</h3>
                 <p>${weeklyTask.description}</p>
-                <div class="time-reward">🎁 Награда: +${weeklyTask.reward} ашетиков</div>
+                <div class="time-reward">🎁 +${weeklyTask.reward} ашетиков (${weeklyTask.totalAppearances} появлений)</div>
             </div>
             <div class="level-card">
                 ${weeklyCompleted ? `
@@ -9383,7 +9388,7 @@ function renderTimeTasks() {
             <div class="time-header">
                 <h3>${monthlyTask.title}</h3>
                 <p>${monthlyTask.description}</p>
-                <div class="time-reward">🎁 Награда: до +${monthlyTask.reward} ашетиков</div>
+                <div class="time-reward">🎁 До +${monthlyTask.reward} ашетиков</div>
             </div>
             <div class="level-card">
     `;
@@ -9401,8 +9406,7 @@ function renderTimeTasks() {
                     <span style="font-size: 12px; color: var(--accent);">${progress}/${subtask.required}</span>
                 </div>
                 <div style="font-size: 11px; color: var(--text-gray); margin-bottom: 6px;">
-                    🎁 +${subtask.reward} ашетиков${subtask.isRare ? ' (редкий персонаж!)' : ''}
-                    <span style="font-size: 10px;">(${subtask.totalAppearances} появлений в бестиарии)</span>
+                    🎁 +${subtask.reward} ашетиков (${subtask.totalAppearances} появлений)
                 </div>
                 <div class="progress-bar-container" style="height: 6px; margin: 0 0 8px 0;">
                     <div class="progress-bar-fill" style="width: ${(progress / subtask.required) * 100}%;"></div>
