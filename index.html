@@ -15624,7 +15624,6 @@ function showLeagueLeaderboard(league) {
     const leagueIcons = { 'bronze': '🥉', 'silver': '🥈', 'gold': '🥇', 'platinum': '💠' };
     const leagueNames = { 'bronze': 'Бронзовая', 'silver': 'Серебряная', 'gold': 'Золотая', 'platinum': 'Алмазная' };
     
-    // Приз для лиги из rewards
     const rewards = communityEventData.rewards || {};
     const leaguePrize = rewards[league] || '';
     
@@ -15638,11 +15637,25 @@ function showLeagueLeaderboard(league) {
         const avatarUrl = user.avatar || 'https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png';
         const placeIcon = user.place <= 3 ? ['🥇','🥈','🥉'][user.place - 1] : `#${user.place}`;
         
-        const sponsorBg = user.sponsor_background || '';
-const bgStyle = sponsorBg ? sponsorBg : `background: ${isMe ? 'color-mix(in srgb, var(--accent) 10%, transparent)' : 'var(--card-bg)'};`;
-
-html += `
-    <div style="display: flex; align-items: center; gap: 12px; padding: 12px; margin-bottom: 8px; ${bgStyle} border-radius: 12px; border: 1px solid var(--border-color); cursor: pointer;" onclick="openPublicProfile('${user.user_id}')">
+        // Подложка: сначала проверяем эмодзи-подложку по ID, потом обычную
+        const sponsorBgId = user.sponsor_background_id || '';
+        let bgStyle = '';
+        
+        if (sponsorBgId && sponsorBgId.startsWith('bg_emoji_')) {
+            const bgItem = BACKGROUNDS_SHOP.find(b => b.id === sponsorBgId);
+            if (bgItem) {
+                bgStyle = bgItem.css;
+            }
+        } else if (user.sponsor_background) {
+            bgStyle = user.sponsor_background;
+        }
+        
+        if (!bgStyle) {
+            bgStyle = `background: ${isMe ? 'color-mix(in srgb, var(--accent) 10%, transparent)' : 'var(--card-bg)'};`;
+        }
+        
+        html += `
+            <div style="display: flex; align-items: center; gap: 12px; padding: 12px; margin-bottom: 8px; ${bgStyle} border-radius: 12px; border: 1px solid var(--border-color); cursor: pointer;" onclick="openPublicProfile('${user.user_id}')">
                 <div style="font-size: 18px; font-weight: 800; color: var(--accent); min-width: 35px;">
                     ${placeIcon}
                 </div>
@@ -16046,10 +16059,22 @@ function switchShopTab(tab) {
     const accent = style.getPropertyValue('--accent').trim();
     return accent.replace('#', '');
 }
-function applySponsorBackground(css) {
+function applySponsorBackground(css, bgId) {
     const profileBlock = document.querySelector('.profile-header-block');
-    if (profileBlock && css) {
-        profileBlock.style.cssText = css + ' margin: 15px; padding: 20px; border-radius: 24px; display: flex; align-items: center; gap: 20px;';
+    if (!profileBlock) return;
+    
+    let finalCss = css;
+    
+    // Для эмодзи-подложек пересоздаём SVG с актуальным цветом
+    if (bgId && bgId.startsWith('bg_emoji_')) {
+        const bgItem = BACKGROUNDS_SHOP.find(b => b.id === bgId);
+        if (bgItem) {
+            finalCss = bgItem.css; // getAccentHex() вызовется здесь с актуальным цветом
+        }
+    }
+    
+    if (finalCss) {
+        profileBlock.style.cssText = finalCss + ' margin: 15px; padding: 20px; border-radius: 24px; display: flex; align-items: center; gap: 20px;';
     }
 }
         function renderAvatarBorderShop() {
@@ -16194,7 +16219,7 @@ function renderBackgroundsShop() {
             const currentBg = stats.sponsor_background || '';
             
             BACKGROUNDS_SHOP.forEach(bg => {
-                const isActive = (currentBg === bg.css);
+                const isActive = (stats.sponsor_background_id === bg.id);
                 const canBuy = user.balance >= bg.price;
                 
                 container.innerHTML += `
@@ -16233,7 +16258,7 @@ async function buyBackground(id, price) {
         let r = await fetch(`${SERVER_URL}/api/add_balance`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ user_id: userId, amount: -price, reason: `Покупка подложки "${bg.name}"` })
+            body: JSON.stringify({ user_id: userId, background: bg.css, background_id: bg.id })
         });
         let res = await r.json();
         
@@ -30642,17 +30667,24 @@ function renderPublicProfile(profile) {
     const userName = profile.name || profile.username || 'Пользователь';
     const userStatus = profile.status || 'Без статуса';
     
-    // Подложка и кастомизация
-    const sponsorBg = profile.sponsor_background || '';
-    const profileBgStyle = sponsorBg ? sponsorBg + ' margin: 0; padding: 15px; border-radius: 24px; display: flex; align-items: center; gap: 20px;' : 'margin: 0; padding: 15px;';
+    // Подложка: сначала проверяем эмодзи-подложку по ID, потом обычную
+    const sponsorBgId = profile.sponsor_background_id || '';
+    let profileBgStyle = 'margin: 0; padding: 15px;';
+    
+    if (sponsorBgId && sponsorBgId.startsWith('bg_emoji_')) {
+        const bgItem = BACKGROUNDS_SHOP.find(b => b.id === sponsorBgId);
+        if (bgItem) {
+            profileBgStyle = bgItem.css + ' margin: 0; padding: 15px; border-radius: 24px; display: flex; align-items: center; gap: 20px;';
+        }
+    } else if (profile.sponsor_background) {
+        profileBgStyle = profile.sponsor_background + ' margin: 0; padding: 15px; border-radius: 24px; display: flex; align-items: center; gap: 20px;';
+    }
     
     const statusBg = profile.status_background || '';
     const statusStyle = statusBg ? statusBg + ' padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; display: inline-block; color: var(--text);' : '';
     
     const avatarBorder = profile.avatar_border || '';
     const avatarBorderStyle = avatarBorder ? avatarBorder + ' width: 90px; height: 90px; border-radius: 50%; padding: 3px; background: var(--bg);' : '';
-    
-    const avatarEmoji = profile.avatar_emoji || '';
     
     const figures = profile.figures || [];
     const figuresCount = figures.length;
@@ -30708,7 +30740,6 @@ function renderPublicProfile(profile) {
         <div class="profile-header-block" style="${profileBgStyle}">
             <div class="avatar-wrapper" style="${avatarBorderStyle}">
                 <img src="${avatarUrl}" onerror="this.src='https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png'">
-                ${avatarEmoji ? `<div style="position: absolute; top: -5px; right: -5px; width: 28px; height: 28px; border-radius: 50%; background: var(--bg-header); display: flex; align-items: center; justify-content: center; font-size: 16px; border: 2px solid var(--border-color); box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 5; pointer-events: none;">${avatarEmoji}</div>` : ''}
             </div>
             <div class="profile-info">
                 <div class="name-row"><h2>${escapeHtml(userName)}</h2></div>
