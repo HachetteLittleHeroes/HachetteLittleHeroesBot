@@ -16728,7 +16728,44 @@ async function buyStatusBg(id, price) {
         tg.showAlert('❌ Ошибка');
     }
 }
-
+async function activateStatusBg(id) {
+    const bg = STATUS_BG_SHOP.find(b => b.id === id);
+    if (!bg) return;
+    
+    try {
+        await fetch(`${SERVER_URL}/api/save_status_background`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId, background: bg.css, background_id: bg.id })
+        });
+        
+        applyStatusBackground(bg.css);
+        renderStatusBgShop();
+        if (typeof renderPurchasedItems === 'function') renderPurchasedItems();
+        tg.showAlert(`✅ Фон статуса «${bg.name}» активирован!`);
+    } catch(e) {
+        tg.showAlert('❌ Ошибка');
+    }
+}
+        async function activateAvatarBorder(id) {
+    const border = AVATAR_BORDER_SHOP.find(b => b.id === id);
+    if (!border) return;
+    
+    try {
+        await fetch(`${SERVER_URL}/api/save_avatar_border`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId, border: border.css, border_id: border.id })
+        });
+        
+        applyAvatarBorder(border.css);
+        renderAvatarBorderShop();
+        if (typeof renderPurchasedItems === 'function') renderPurchasedItems();
+        tg.showAlert(`✅ Обводка «${border.name}» активирована!`);
+    } catch(e) {
+        tg.showAlert('❌ Ошибка');
+    }
+}
 function applyStatusBackground(css) {
     const statusBadge = document.getElementById('currentStatus');
     if (statusBadge && css) {
