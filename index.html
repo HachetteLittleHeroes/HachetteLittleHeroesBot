@@ -6476,17 +6476,18 @@ body:not([data-theme]) .modal-content,
 </div>
 
 <!-- ========== СКИПЫ И БУСТЫ ========== -->
-<div style="display: flex; gap: 10px; margin: 10px 15px;">
-    <div style="flex: 1; background: var(--bg-header); border-radius: 16px; padding: 10px 14px; display: flex; align-items: center; gap: 10px; border: 1px solid var(--border-color);">
+<div style="display: flex; gap: 0; margin: 10px 15px; background: var(--bg-header); border-radius: 16px; border: 1px solid var(--border-color); overflow: hidden;">
+    <div style="flex: 1; padding: 12px 14px; display: flex; align-items: center; justify-content: center; gap: 10px;">
         <i class="fas fa-forward" style="color: var(--accent); font-size: 18px;"></i>
-        <div>
+        <div style="text-align: center;">
             <div style="font-size: 11px; color: var(--text-gray);">Скипы</div>
             <span id="skipCountDisplay" style="font-weight: 700; color: var(--accent); font-size: 20px;">0</span>
         </div>
     </div>
-    <div style="flex: 1; background: var(--bg-header); border-radius: 16px; padding: 10px 14px; display: flex; align-items: center; gap: 10px; border: 1px solid var(--border-color);">
+    <div style="width: 1px; background: var(--border-color);"></div>
+    <div style="flex: 1; padding: 12px 14px; display: flex; align-items: center; justify-content: center; gap: 10px;">
         <i class="fas fa-rocket" style="color: var(--accent); font-size: 18px;"></i>
-        <div id="boostStatusContainer">
+        <div id="boostStatusContainer" style="text-align: center;">
             <div style="font-size: 11px; color: var(--text-gray);">Буст x2</div>
             <span style="font-weight: 700; color: var(--text-gray); font-size: 20px;">—</span>
         </div>
