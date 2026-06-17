@@ -9239,6 +9239,22 @@ function getMoscowTime() {
 function getWeeklyTask() {
     const moscowNow = getMoscowTime();
     const weekNumber = Math.floor(moscowNow.getTime() / (7 * 24 * 60 * 60 * 1000));
+    
+    // Фиксированное задание на неделю до 21.06.2026
+    if (weekNumber === 2943) {
+        return {
+            id: 'weekly_task',
+            title: 'Персонаж недели: Сержант Тибс',
+            description: 'Раскрась картинку с сержантом Тибсом',
+            reward: 10,
+            deadline: '21.06.2026',
+            type: 'weekly',
+            character: { name: 'Сержант Тибс', film: '101 далматинец' },
+            totalAppearances: 1
+        };
+    }
+    
+    // Обычная логика
     const charIndex = weekNumber % BESTIARY.length;
     const char = BESTIARY[charIndex];
     
@@ -9249,7 +9265,6 @@ function getWeeklyTask() {
     if (totalAppearances === 2 || totalAppearances === 3) reward = 10;
     if (totalAppearances === 1) reward = 15;
     
-    // Дедлайн — следующее воскресенье 00:00 МСК
     const daysUntilSunday = (7 - moscowNow.getDay()) % 7 || 7;
     const deadline = new Date(moscowNow.getFullYear(), moscowNow.getMonth(), moscowNow.getDate() + daysUntilSunday);
     const deadlineStr = `${String(deadline.getDate()).padStart(2, '0')}.${String(deadline.getMonth() + 1).padStart(2, '0')}.${deadline.getFullYear()}`;
