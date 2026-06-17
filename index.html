@@ -9227,11 +9227,18 @@ function renderBranchTasks() {
     }
 }
 // ==========================================
-// ВРЕМЕННЫЕ ЗАДАНИЯ (СИНХРОНИЗИРОВАННЫЕ)
+// ВРЕМЕННЫЕ ЗАДАНИЯ (СИНХРОНИЗИРОВАННЫЕ, МСК)
 // ==========================================
 
+function getMoscowTime() {
+    const now = new Date();
+    const moscowOffset = 3 * 60 * 60 * 1000; // UTC+3
+    return new Date(now.getTime() + moscowOffset);
+}
+
 function getWeeklyTask() {
-    const weekNumber = Math.floor(Date.now() / (7 * 24 * 60 * 60 * 1000));
+    const moscowNow = getMoscowTime();
+    const weekNumber = Math.floor(moscowNow.getTime() / (7 * 24 * 60 * 60 * 1000));
     const charIndex = weekNumber % BESTIARY.length;
     const char = BESTIARY[charIndex];
     
@@ -9242,9 +9249,9 @@ function getWeeklyTask() {
     if (totalAppearances === 2 || totalAppearances === 3) reward = 10;
     if (totalAppearances === 1) reward = 15;
     
-    const now = new Date();
-    const daysUntilSunday = (7 - now.getDay()) % 7 || 7;
-    const deadline = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysUntilSunday);
+    // Дедлайн — следующее воскресенье 00:00 МСК
+    const daysUntilSunday = (7 - moscowNow.getDay()) % 7 || 7;
+    const deadline = new Date(moscowNow.getFullYear(), moscowNow.getMonth(), moscowNow.getDate() + daysUntilSunday);
     const deadlineStr = `${String(deadline.getDate()).padStart(2, '0')}.${String(deadline.getMonth() + 1).padStart(2, '0')}.${deadline.getFullYear()}`;
     
     return {
@@ -9260,8 +9267,8 @@ function getWeeklyTask() {
 }
 
 function getMonthlyTask() {
-    const now = new Date();
-    const monthIndex = now.getFullYear() * 12 + now.getMonth();
+    const moscowNow = getMoscowTime();
+    const monthIndex = moscowNow.getFullYear() * 12 + moscowNow.getMonth();
     const seed = monthIndex * 12345;
     
     const chars = [];
@@ -9279,7 +9286,8 @@ function getMonthlyTask() {
         chars.push(BESTIARY[idx]);
     }
     
-    const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    // Дедлайн — последний день месяца 00:00 МСК
+    const lastDay = new Date(moscowNow.getFullYear(), moscowNow.getMonth() + 1, 0);
     const deadlineStr = `${String(lastDay.getDate()).padStart(2, '0')}.${String(lastDay.getMonth() + 1).padStart(2, '0')}.${lastDay.getFullYear()}`;
     
     const subtasks = chars.map((char, i) => {
@@ -9313,9 +9321,9 @@ function getMonthlyTask() {
 }
 
 function checkTimeTasksReset() {
-    const now = new Date();
-    const weekNumber = Math.floor(Date.now() / (7 * 24 * 60 * 60 * 1000));
-    const monthIndex = now.getFullYear() * 12 + now.getMonth();
+    const moscowNow = getMoscowTime();
+    const weekNumber = Math.floor(moscowNow.getTime() / (7 * 24 * 60 * 60 * 1000));
+    const monthIndex = moscowNow.getFullYear() * 12 + moscowNow.getMonth();
     
     const savedWeek = localStorage.getItem('time_tasks_week');
     const savedMonth = localStorage.getItem('time_tasks_month');
@@ -9357,13 +9365,14 @@ function renderTimeTasks() {
     
     let html = '';
     
+    // Еженедельное задание
     html += `
         <div class="time-task-card ${weeklyCompleted ? 'completed' : ''}">
             <div class="time-badge" style="font-size: 10px; padding: 3px 8px; top: 8px; right: 8px;">📅 до ${weeklyTask.deadline}</div>
             <div class="time-header" style="padding-right: 85px;">
                 <h3 style="font-size: 16px; padding-right: 5px;">${weeklyTask.title}</h3>
                 <p style="font-size: 12px;">${weeklyTask.description}</p>
-                <div class="time-reward" style="font-size: 12px;"><i class="fas fa-book-open gold-book"></i> +${weeklyTask.reward} ашетиков</div>
+                <div class="time-reward" style="font-size: 13px;"><i class="fas fa-book-open gold-book"></i> +${weeklyTask.reward} ашетиков</div>
             </div>
             <div class="level-card">
                 ${weeklyCompleted ? `
@@ -9379,6 +9388,7 @@ function renderTimeTasks() {
         </div>
     `;
     
+    // Ежемесячное задание
     html += `
         <div class="time-task-card">
             <div class="time-badge" style="font-size: 10px; padding: 3px 8px; top: 8px; right: 8px;">📆 до ${monthlyTask.deadline}</div>
@@ -9398,9 +9408,12 @@ function renderTimeTasks() {
         
         html += `
             <div class="subtask-card">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
                     <span style="font-weight: 600; font-size: 13px;">${subtask.name}</span>
                     <span style="font-size: 12px; color: var(--accent);">${progress}/${subtask.required}</span>
+                </div>
+                <div style="font-size: 11px; color: var(--text-gray); margin-bottom: 6px;">
+                    <i class="fas fa-book-open gold-book"></i> +${subtask.reward} ашетиков
                 </div>
                 <div class="progress-bar-container" style="height: 6px; margin: 0 0 8px 0;">
                     <div class="progress-bar-fill" style="width: ${(progress / subtask.required) * 100}%;"></div>
@@ -9433,7 +9446,6 @@ function renderTimeTasks() {
     
     container.innerHTML = html;
 }
-
 let currentTimeTaskId = null;
 let currentTimeTaskReward = null;
 let currentTimeTaskSubtask = 0;
