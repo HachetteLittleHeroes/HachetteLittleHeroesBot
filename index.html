@@ -9240,21 +9240,20 @@ function getWeeklyTask() {
     const moscowNow = getMoscowTime();
     const weekNumber = Math.floor(moscowNow.getTime() / (7 * 24 * 60 * 60 * 1000));
     
-    // Фиксированное задание на неделю до 21.06.2026
-    if (weekNumber === 2943) {
+    // Фиксированное задание на неделю до 21.06.2026 (номер недели 2945)
+    if (weekNumber === 2945) {
         return {
             id: 'weekly_task',
             title: 'Персонаж недели: Сержант Тибс',
-            description: 'Раскрась картинку с сержантом Тибсом',
+            description: 'Раскрась картинку с сержантом Тибсом из м/ф «Вольт»',
             reward: 10,
             deadline: '21.06.2026',
             type: 'weekly',
-            character: { name: 'Сержант Тибс', film: '101 далматинец' },
+            character: { name: 'Сержант Тибс', film: 'Вольт' },
             totalAppearances: 1
         };
     }
     
-    // Обычная логика
     const charIndex = weekNumber % BESTIARY.length;
     const char = BESTIARY[charIndex];
     
