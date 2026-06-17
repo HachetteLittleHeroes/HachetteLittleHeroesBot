@@ -9227,35 +9227,13 @@ function renderBranchTasks() {
     }
 }
 // ==========================================
-// ВРЕМЕННЫЕ ЗАДАНИЯ (ЕЖЕНЕДЕЛЬНЫЕ И ЕЖЕМЕСЯЧНЫЕ)
+// ВРЕМЕННЫЕ ЗАДАНИЯ (СИНХРОНИЗИРОВАННЫЕ)
 // ==========================================
-
-function getUsedCharacters() {
-    const saved = localStorage.getItem('used_time_task_characters');
-    return saved ? JSON.parse(saved) : [];
-}
-
-function addUsedCharacter(charName) {
-    const used = getUsedCharacters();
-    if (!used.includes(charName)) {
-        used.push(charName);
-        localStorage.setItem('used_time_task_characters', JSON.stringify(used));
-    }
-}
 
 function getWeeklyTask() {
     const weekNumber = Math.floor(Date.now() / (7 * 24 * 60 * 60 * 1000));
-    const usedChars = getUsedCharacters();
-    
-    let availableChars = BESTIARY.filter(c => !usedChars.includes(c.name));
-    if (availableChars.length === 0) {
-        localStorage.setItem('used_time_task_characters', '[]');
-        availableChars = [...BESTIARY];
-    }
-    
-    const charIndex = weekNumber % availableChars.length;
-    const char = availableChars[charIndex];
-    addUsedCharacter(char.name);
+    const charIndex = weekNumber % BESTIARY.length;
+    const char = BESTIARY[charIndex];
     
     let totalAppearances = 0;
     char.appearances.forEach(a => totalAppearances += a.pages.length);
@@ -9272,7 +9250,7 @@ function getWeeklyTask() {
     return {
         id: 'weekly_task',
         title: `Персонаж недели: ${char.name}`,
-        description: `Раскрась картинку с ${char.name} из м/ф «${char.film}» (${totalAppearances} появлений)`,
+        description: `Раскрась картинку с ${char.name} из м/ф «${char.film}»`,
         reward: reward,
         deadline: deadlineStr,
         type: 'weekly',
@@ -9284,46 +9262,21 @@ function getWeeklyTask() {
 function getMonthlyTask() {
     const now = new Date();
     const monthIndex = now.getFullYear() * 12 + now.getMonth();
-    const usedChars = getUsedCharacters();
-    
-    let availableChars = BESTIARY.filter(c => !usedChars.includes(c.name));
-    if (availableChars.length < 4) {
-        localStorage.setItem('used_time_task_characters', '[]');
-        availableChars = [...BESTIARY];
-    }
+    const seed = monthIndex * 12345;
     
     const chars = [];
     const usedFilms = new Set();
-    const usedIndices = new Set();
-    const seed = monthIndex * 12345;
     
     for (let i = 0; i < 4; i++) {
-        let found = false;
+        let idx = (seed + i * 7919) % BESTIARY.length;
         let attempts = 0;
-        let idx = (seed + i * 7919) % availableChars.length;
         
-        while (!found && attempts < 100) {
-            const char = availableChars[idx];
-            if (!usedIndices.has(idx) && !usedFilms.has(char.film)) {
-                usedIndices.add(idx);
-                usedFilms.add(char.film);
-                chars.push(char);
-                addUsedCharacter(char.name);
-                found = true;
-            }
-            idx = (idx + 1) % availableChars.length;
+        while (usedFilms.has(BESTIARY[idx].film) && attempts < 100) {
+            idx = (idx + 1) % BESTIARY.length;
             attempts++;
         }
-        
-        if (!found) {
-            idx = (seed + i * 7919) % availableChars.length;
-            while (usedIndices.has(idx)) {
-                idx = (idx + 1) % availableChars.length;
-            }
-            usedIndices.add(idx);
-            chars.push(availableChars[idx]);
-            addUsedCharacter(availableChars[idx].name);
-        }
+        usedFilms.add(BESTIARY[idx].film);
+        chars.push(BESTIARY[idx]);
     }
     
     const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
@@ -9404,7 +9357,6 @@ function renderTimeTasks() {
     
     let html = '';
     
-    // Еженедельное задание
     html += `
         <div class="time-task-card ${weeklyCompleted ? 'completed' : ''}">
             <div class="time-badge" style="font-size: 10px; padding: 3px 8px; top: 8px; right: 8px;">📅 до ${weeklyTask.deadline}</div>
@@ -9427,7 +9379,6 @@ function renderTimeTasks() {
         </div>
     `;
     
-    // Ежемесячное задание
     html += `
         <div class="time-task-card">
             <div class="time-badge" style="font-size: 10px; padding: 3px 8px; top: 8px; right: 8px;">📆 до ${monthlyTask.deadline}</div>
@@ -9482,6 +9433,7 @@ function renderTimeTasks() {
     
     container.innerHTML = html;
 }
+
 let currentTimeTaskId = null;
 let currentTimeTaskReward = null;
 let currentTimeTaskSubtask = 0;
