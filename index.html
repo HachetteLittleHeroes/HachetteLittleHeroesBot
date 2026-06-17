@@ -16244,59 +16244,74 @@ const STATUS_SHOP = [
 ];
 const BACKGROUNDS_SHOP = [
     { id: 'bg_canvas', name: 'Холст', price: 200, css: 'background: repeating-linear-gradient(0deg, transparent, transparent 3px, color-mix(in srgb, var(--accent) 5%, transparent) 3px, color-mix(in srgb, var(--accent) 5%, transparent) 4px), repeating-linear-gradient(90deg, transparent, transparent 3px, color-mix(in srgb, var(--accent) 5%, transparent) 3px, color-mix(in srgb, var(--accent) 5%, transparent) 4px); border: 1px solid var(--border-color);' },
-    { id: 'bg_soft_gradient', name: 'Мягкий градиент', price: 200, css: 'background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 8%, transparent), color-mix(in srgb, var(--accent) 3%, transparent)); border: 1px solid color-mix(in srgb, var(--accent) 15%, transparent);' },
     { id: 'bg_glass', name: 'Стекло', price: 250, css: 'background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 10%, transparent), color-mix(in srgb, var(--accent) 4%, transparent)); backdrop-filter: blur(10px); border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);' },
-    { id: 'bg_minimal', name: 'Минимал', price: 250, css: 'background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 6%, transparent), transparent); border: 1px solid var(--border-color);' },
-    { id: 'bg_vignette', name: 'Виньетка', price: 250, css: 'background: radial-gradient(ellipse at center, transparent 55%, color-mix(in srgb, var(--accent) 8%, transparent) 100%); border: 1px solid var(--border-color);' },
     { id: 'bg_subtle_lines', name: 'Тонкие линии', price: 300, css: 'background: repeating-linear-gradient(45deg, transparent, transparent 5px, color-mix(in srgb, var(--accent) 5%, transparent) 5px, color-mix(in srgb, var(--accent) 5%, transparent) 10px); border: 1px solid var(--border-color);' },
     { id: 'bg_dots', name: 'Точечки', price: 300, css: 'background: radial-gradient(circle, color-mix(in srgb, var(--accent) 8%, transparent) 1.5px, transparent 1.5px); background-size: 16px 16px; border: 1px solid var(--border-color);' },
-    { id: 'bg_silk', name: 'Шёлк', price: 300, css: 'background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 5%, transparent) 0%, transparent 30%, transparent 70%, color-mix(in srgb, var(--accent) 5%, transparent) 100%); border: 1px solid var(--border-color);' },
-    { id: 'bg_card', name: 'Карточка', price: 350, css: 'background: var(--card-bg); box-shadow: 0 2px 12px color-mix(in srgb, var(--accent) 15%, transparent); border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);' },
-    { id: 'bg_brushed', name: 'Брашированный металл', price: 350, css: 'background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 5%, transparent) 0%, color-mix(in srgb, var(--accent) 3%, transparent) 50%, color-mix(in srgb, var(--accent) 5%, transparent) 100%); border: 1px solid color-mix(in srgb, var(--accent) 15%, transparent);' },
-    { id: 'bg_frost', name: 'Иней', price: 350, css: 'background: radial-gradient(circle at 20% 30%, color-mix(in srgb, var(--accent) 8%, transparent) 0%, transparent 50%), radial-gradient(circle at 80% 70%, color-mix(in srgb, var(--accent) 5%, transparent) 0%, transparent 50%); border: 1px solid var(--border-color);' },
-    { id: 'bg_soft_glow', name: 'Мягкое свечение', price: 400, css: 'background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 8%, transparent), transparent 60%); border: 1px solid var(--border-color);' },
-    { id: 'bg_watercolor', name: 'Акварель', price: 400, css: 'background: radial-gradient(ellipse at 30% 20%, color-mix(in srgb, var(--accent) 7%, transparent), transparent 40%), radial-gradient(ellipse at 70% 80%, color-mix(in srgb, var(--accent) 5%, transparent), transparent 40%); border: 1px solid var(--border-color);' },
-    { id: 'bg_prism', name: 'Призма', price: 450, css: 'background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 6%, transparent) 0%, transparent 25%, color-mix(in srgb, var(--accent) 5%, transparent) 50%, transparent 75%, color-mix(in srgb, var(--accent) 6%, transparent) 100%); background-size: 200% 200%; border: 1px solid var(--border-color);' },
-    { id: 'bg_nebula', name: 'Туманность', price: 500, css: 'background: radial-gradient(ellipse at top left, color-mix(in srgb, var(--accent) 10%, transparent), transparent 50%), radial-gradient(ellipse at bottom right, color-mix(in srgb, var(--accent) 7%, transparent), transparent 50%); border: 1px solid var(--border-color);' },
-    { id: 'bg_marble', name: 'Мрамор', price: 500, css: 'background: radial-gradient(ellipse at 40% 40%, color-mix(in srgb, var(--accent) 6%, transparent) 0%, transparent 50%), radial-gradient(ellipse at 60% 60%, color-mix(in srgb, var(--accent) 4%, transparent) 0%, transparent 40%), linear-gradient(135deg, color-mix(in srgb, var(--accent) 3%, transparent) 0%, transparent 50%); border: 1px solid var(--border-color);' },
     
-    // ЭМОДЗИ-ПОДЛОЖКИ (preview с url('...'), кавычки экранированы)
+    // ЭМОДЗИ-ПОДЛОЖКИ (22 шт.)
     { id: 'bg_emoji_stars', name: '⭐ Звёздочки', price: 600, 
-      preview: `background-image: url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2760%27 height=%2760%27 viewBox=%270 0 60 60%27%3E%3Ctext x=%2710%27 y=%2725%27 font-size=%2720%27 fill=%27%23ff9500%27 opacity=%270.2%27%3E⭐%3C/text%3E%3C/svg%3E'); background-size: 60px 60px;`,
+      preview: `background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Ctext x='10' y='25' font-size='20' fill='%23ff9500' opacity='0.2'%3E⭐%3C/text%3E%3Ctext x='35' y='50' font-size='16' fill='%23ff9500' opacity='0.15'%3E⭐%3C/text%3E%3C/svg%3E"); background-size: 60px 60px;`,
       css: `background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Ctext x='10' y='25' font-size='20' fill='%23${getAccentHex()}' opacity='0.15'%3E⭐%3C/text%3E%3Ctext x='35' y='50' font-size='16' fill='%23${getAccentHex()}' opacity='0.10'%3E⭐%3C/text%3E%3C/svg%3E"); background-size: 60px 60px; border: 1px solid var(--border-color);` },
     { id: 'bg_emoji_hearts', name: '❤️ Сердечки', price: 600, 
-      preview: `background-image: url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2750%27 height=%2750%27 viewBox=%270 0 50 50%27%3E%3Ctext x=%275%27 y=%2730%27 font-size=%2718%27 fill=%27%23ff9500%27 opacity=%270.18%27%3E❤️%3C/text%3E%3C/svg%3E'); background-size: 50px 50px;`,
+      preview: `background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50' viewBox='0 0 50 50'%3E%3Ctext x='5' y='30' font-size='18' fill='%23ff9500' opacity='0.18'%3E❤️%3C/text%3E%3Ctext x='28' y='15' font-size='14' fill='%23ff9500' opacity='0.12'%3E❤️%3C/text%3E%3C/svg%3E"); background-size: 50px 50px;`,
       css: `background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50' viewBox='0 0 50 50'%3E%3Ctext x='5' y='30' font-size='18' fill='%23${getAccentHex()}' opacity='0.12'%3E❤️%3C/text%3E%3Ctext x='28' y='15' font-size='14' fill='%23${getAccentHex()}' opacity='0.08'%3E❤️%3C/text%3E%3C/svg%3E"); background-size: 50px 50px; border: 1px solid var(--border-color);` },
     { id: 'bg_emoji_money', name: '$ Доллары', price: 800, 
-      preview: `background-image: url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2755%27 height=%2755%27 viewBox=%270 0 55 55%27%3E%3Ctext x=%2710%27 y=%2725%27 font-size=%2722%27 font-weight=%27bold%27 fill=%27%23ff9500%27 opacity=%270.2%27%3E$%3C/text%3E%3C/svg%3E'); background-size: 55px 55px;`,
+      preview: `background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='55' height='55' viewBox='0 0 55 55'%3E%3Ctext x='10' y='25' font-size='22' font-weight='bold' fill='%23ff9500' opacity='0.2'%3E$%3C/text%3E%3Ctext x='35' y='45' font-size='18' fill='%23ff9500' opacity='0.15'%3E$%3C/text%3E%3C/svg%3E"); background-size: 55px 55px;`,
       css: `background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='55' height='55' viewBox='0 0 55 55'%3E%3Ctext x='10' y='25' font-size='22' font-weight='bold' fill='%23${getAccentHex()}' opacity='0.15'%3E$%3C/text%3E%3Ctext x='35' y='45' font-size='18' fill='%23${getAccentHex()}' opacity='0.10'%3E$%3C/text%3E%3C/svg%3E"); background-size: 55px 55px; border: 1px solid var(--border-color);` },
     { id: 'bg_emoji_crowns', name: '👑 Короны', price: 750, 
-      preview: `background-image: url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2765%27 height=%2765%27 viewBox=%270 0 65 65%27%3E%3Ctext x=%2710%27 y=%2730%27 font-size=%2724%27 fill=%27%23ff9500%27 opacity=%270.2%27%3E👑%3C/text%3E%3C/svg%3E'); background-size: 65px 65px;`,
+      preview: `background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='65' height='65' viewBox='0 0 65 65'%3E%3Ctext x='10' y='30' font-size='24' fill='%23ff9500' opacity='0.2'%3E👑%3C/text%3E%3Ctext x='40' y='55' font-size='18' fill='%23ff9500' opacity='0.15'%3E👑%3C/text%3E%3C/svg%3E"); background-size: 65px 65px;`,
       css: `background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='65' height='65' viewBox='0 0 65 65'%3E%3Ctext x='10' y='30' font-size='24' fill='%23${getAccentHex()}' opacity='0.15'%3E👑%3C/text%3E%3Ctext x='40' y='55' font-size='18' fill='%23${getAccentHex()}' opacity='0.10'%3E👑%3C/text%3E%3C/svg%3E"); background-size: 65px 65px; border: 1px solid var(--border-color);` },
     { id: 'bg_emoji_diamonds', name: '💎 Бриллианты', price: 700, 
-      preview: `background-image: url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2750%27 height=%2750%27 viewBox=%270 0 50 50%27%3E%3Ctext x=%278%27 y=%2728%27 font-size=%2720%27 fill=%27%23ff9500%27 opacity=%270.2%27%3E💎%3C/text%3E%3C/svg%3E'); background-size: 50px 50px;`,
+      preview: `background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50' viewBox='0 0 50 50'%3E%3Ctext x='8' y='28' font-size='20' fill='%23ff9500' opacity='0.2'%3E💎%3C/text%3E%3Ctext x='30' y='12' font-size='14' fill='%23ff9500' opacity='0.15'%3E💎%3C/text%3E%3C/svg%3E"); background-size: 50px 50px;`,
       css: `background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50' viewBox='0 0 50 50'%3E%3Ctext x='8' y='28' font-size='20' fill='%23${getAccentHex()}' opacity='0.15'%3E💎%3C/text%3E%3Ctext x='30' y='12' font-size='14' fill='%23${getAccentHex()}' opacity='0.10'%3E💎%3C/text%3E%3C/svg%3E"); background-size: 50px 50px; border: 1px solid var(--border-color);` },
     { id: 'bg_emoji_fire', name: '🔥 Огоньки', price: 650, 
-      preview: `background-image: url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2755%27 height=%2755%27 viewBox=%270 0 55 55%27%3E%3Ctext x=%278%27 y=%2725%27 font-size=%2718%27 fill=%27%23ff9500%27 opacity=%270.2%27%3E🔥%3C/text%3E%3C/svg%3E'); background-size: 55px 55px;`,
+      preview: `background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='55' height='55' viewBox='0 0 55 55'%3E%3Ctext x='8' y='25' font-size='18' fill='%23ff9500' opacity='0.2'%3E🔥%3C/text%3E%3Ctext x='30' y='45' font-size='14' fill='%23ff9500' opacity='0.15'%3E🔥%3C/text%3E%3C/svg%3E"); background-size: 55px 55px;`,
       css: `background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='55' height='55' viewBox='0 0 55 55'%3E%3Ctext x='8' y='25' font-size='18' fill='%23${getAccentHex()}' opacity='0.15'%3E🔥%3C/text%3E%3Ctext x='30' y='45' font-size='14' fill='%23${getAccentHex()}' opacity='0.10'%3E🔥%3C/text%3E%3C/svg%3E"); background-size: 55px 55px; border: 1px solid var(--border-color);` },
     { id: 'bg_emoji_rocket', name: '🚀 Ракеты', price: 700, 
-      preview: `background-image: url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2755%27 height=%2755%27 viewBox=%270 0 55 55%27%3E%3Ctext x=%2710%27 y=%2725%27 font-size=%2718%27 fill=%27%23ff9500%27 opacity=%270.2%27%3E🚀%3C/text%3E%3C/svg%3E'); background-size: 55px 55px;`,
+      preview: `background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='55' height='55' viewBox='0 0 55 55'%3E%3Ctext x='10' y='25' font-size='18' fill='%23ff9500' opacity='0.2'%3E🚀%3C/text%3E%3Ctext x='32' y='45' font-size='14' fill='%23ff9500' opacity='0.15'%3E🚀%3C/text%3E%3C/svg%3E"); background-size: 55px 55px;`,
       css: `background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='55' height='55' viewBox='0 0 55 55'%3E%3Ctext x='10' y='25' font-size='18' fill='%23${getAccentHex()}' opacity='0.15'%3E🚀%3C/text%3E%3Ctext x='32' y='45' font-size='14' fill='%23${getAccentHex()}' opacity='0.10'%3E🚀%3C/text%3E%3C/svg%3E"); background-size: 55px 55px; border: 1px solid var(--border-color);` },
     { id: 'bg_emoji_clown', name: '🤡 Клоуны', price: 650, 
-      preview: `background-image: url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2755%27 height=%2755%27 viewBox=%270 0 55 55%27%3E%3Ctext x=%278%27 y=%2725%27 font-size=%2720%27 fill=%27%23ff9500%27 opacity=%270.2%27%3E🤡%3C/text%3E%3C/svg%3E'); background-size: 55px 55px;`,
+      preview: `background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='55' height='55' viewBox='0 0 55 55'%3E%3Ctext x='8' y='25' font-size='20' fill='%23ff9500' opacity='0.2'%3E🤡%3C/text%3E%3Ctext x='30' y='45' font-size='16' fill='%23ff9500' opacity='0.15'%3E🤡%3C/text%3E%3C/svg%3E"); background-size: 55px 55px;`,
       css: `background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='55' height='55' viewBox='0 0 55 55'%3E%3Ctext x='8' y='25' font-size='20' fill='%23${getAccentHex()}' opacity='0.15'%3E🤡%3C/text%3E%3Ctext x='30' y='45' font-size='16' fill='%23${getAccentHex()}' opacity='0.10'%3E🤡%3C/text%3E%3C/svg%3E"); background-size: 55px 55px; border: 1px solid var(--border-color);` },
     { id: 'bg_emoji_dino', name: '🦖 Ти-Рекс', price: 700, 
-      preview: `background-image: url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2755%27 height=%2755%27 viewBox=%270 0 55 55%27%3E%3Ctext x=%278%27 y=%2725%27 font-size=%2720%27 fill=%27%23ff9500%27 opacity=%270.2%27%3E🦖%3C/text%3E%3C/svg%3E'); background-size: 55px 55px;`,
+      preview: `background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='55' height='55' viewBox='0 0 55 55'%3E%3Ctext x='8' y='25' font-size='20' fill='%23ff9500' opacity='0.2'%3E🦖%3C/text%3E%3Ctext x='30' y='45' font-size='16' fill='%23ff9500' opacity='0.15'%3E🦖%3C/text%3E%3C/svg%3E"); background-size: 55px 55px;`,
       css: `background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='55' height='55' viewBox='0 0 55 55'%3E%3Ctext x='8' y='25' font-size='20' fill='%23${getAccentHex()}' opacity='0.15'%3E🦖%3C/text%3E%3Ctext x='30' y='45' font-size='16' fill='%23${getAccentHex()}' opacity='0.10'%3E🦖%3C/text%3E%3C/svg%3E"); background-size: 55px 55px; border: 1px solid var(--border-color);` },
     { id: 'bg_emoji_dragon', name: '🐉 Драконы', price: 750, 
-      preview: `background-image: url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2755%27 height=%2755%27 viewBox=%270 0 55 55%27%3E%3Ctext x=%278%27 y=%2725%27 font-size=%2720%27 fill=%27%23ff9500%27 opacity=%270.2%27%3E🐉%3C/text%3E%3C/svg%3E'); background-size: 55px 55px;`,
+      preview: `background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='55' height='55' viewBox='0 0 55 55'%3E%3Ctext x='8' y='25' font-size='20' fill='%23ff9500' opacity='0.2'%3E🐉%3C/text%3E%3Ctext x='30' y='45' font-size='16' fill='%23ff9500' opacity='0.15'%3E🐉%3C/text%3E%3C/svg%3E"); background-size: 55px 55px;`,
       css: `background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='55' height='55' viewBox='0 0 55 55'%3E%3Ctext x='8' y='25' font-size='20' fill='%23${getAccentHex()}' opacity='0.15'%3E🐉%3C/text%3E%3Ctext x='30' y='45' font-size='16' fill='%23${getAccentHex()}' opacity='0.10'%3E🐉%3C/text%3E%3C/svg%3E"); background-size: 55px 55px; border: 1px solid var(--border-color);` },
     { id: 'bg_emoji_rainbow', name: '🌈 Радуги', price: 700, 
-      preview: `background-image: url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2755%27 height=%2755%27 viewBox=%270 0 55 55%27%3E%3Ctext x=%278%27 y=%2725%27 font-size=%2720%27 fill=%27%23ff9500%27 opacity=%270.2%27%3E🌈%3C/text%3E%3C/svg%3E'); background-size: 55px 55px;`,
+      preview: `background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='55' height='55' viewBox='0 0 55 55'%3E%3Ctext x='8' y='25' font-size='20' fill='%23ff9500' opacity='0.2'%3E🌈%3C/text%3E%3Ctext x='30' y='45' font-size='16' fill='%23ff9500' opacity='0.15'%3E🌈%3C/text%3E%3C/svg%3E"); background-size: 55px 55px;`,
       css: `background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='55' height='55' viewBox='0 0 55 55'%3E%3Ctext x='8' y='25' font-size='20' fill='%23${getAccentHex()}' opacity='0.15'%3E🌈%3C/text%3E%3Ctext x='30' y='45' font-size='16' fill='%23${getAccentHex()}' opacity='0.10'%3E🌈%3C/text%3E%3C/svg%3E"); background-size: 55px 55px; border: 1px solid var(--border-color);` },
     { id: 'bg_emoji_butterfly', name: '🦋 Бабочки', price: 700, 
-      preview: `background-image: url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2755%27 height=%2755%27 viewBox=%270 0 55 55%27%3E%3Ctext x=%278%27 y=%2725%27 font-size=%2720%27 fill=%27%23429bdf%27 opacity=%270.25%27%3E🦋%3C/text%3E%3C/svg%3E'); background-size: 55px 55px;`,
-      css: `background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='55' height='55' viewBox='0 0 55 55'%3E%3Ctext x='8' y='25' font-size='20' fill='%23${getAccentHex()}' opacity='0.15'%3E🦋%3C/text%3E%3Ctext x='30' y='45' font-size='16' fill='%23${getAccentHex()}' opacity='0.10'%3E🦋%3C/text%3E%3C/svg%3E"); background-size: 55px 55px; border: 1px solid var(--border-color);` }
+      preview: `background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='55' height='55' viewBox='0 0 55 55'%3E%3Ctext x='8' y='25' font-size='20' fill='%23429bdf' opacity='0.25'%3E🦋%3C/text%3E%3Ctext x='30' y='45' font-size='16' fill='%23429bdf' opacity='0.18'%3E🦋%3C/text%3E%3C/svg%3E"); background-size: 55px 55px;`,
+      css: `background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='55' height='55' viewBox='0 0 55 55'%3E%3Ctext x='8' y='25' font-size='20' fill='%23${getAccentHex()}' opacity='0.15'%3E🦋%3C/text%3E%3Ctext x='30' y='45' font-size='16' fill='%23${getAccentHex()}' opacity='0.10'%3E🦋%3C/text%3E%3C/svg%3E"); background-size: 55px 55px; border: 1px solid var(--border-color);` },
+    { id: 'bg_emoji_alien', name: '👽 Пришельцы', price: 700, 
+      preview: `background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='55' height='55' viewBox='0 0 55 55'%3E%3Ctext x='8' y='25' font-size='20' fill='%23ff9500' opacity='0.2'%3E👽%3C/text%3E%3Ctext x='30' y='45' font-size='16' fill='%23ff9500' opacity='0.15'%3E👽%3C/text%3E%3C/svg%3E"); background-size: 55px 55px;`,
+      css: `background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='55' height='55' viewBox='0 0 55 55'%3E%3Ctext x='8' y='25' font-size='20' fill='%23${getAccentHex()}' opacity='0.15'%3E👽%3C/text%3E%3Ctext x='30' y='45' font-size='16' fill='%23${getAccentHex()}' opacity='0.10'%3E👽%3C/text%3E%3C/svg%3E"); background-size: 55px 55px; border: 1px solid var(--border-color);` },
+    { id: 'bg_emoji_flower', name: '🌸 Цветочки', price: 650, 
+      preview: `background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50' viewBox='0 0 50 50'%3E%3Ctext x='5' y='28' font-size='18' fill='%23ff9500' opacity='0.2'%3E🌸%3C/text%3E%3Ctext x='28' y='15' font-size='14' fill='%23ff9500' opacity='0.15'%3E🌸%3C/text%3E%3C/svg%3E"); background-size: 50px 50px;`,
+      css: `background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50' viewBox='0 0 50 50'%3E%3Ctext x='5' y='28' font-size='18' fill='%23${getAccentHex()}' opacity='0.12'%3E🌸%3C/text%3E%3Ctext x='28' y='15' font-size='14' fill='%23${getAccentHex()}' opacity='0.08'%3E🌸%3C/text%3E%3C/svg%3E"); background-size: 50px 50px; border: 1px solid var(--border-color);` },
+    { id: 'bg_emoji_ghost', name: '👻 Приведения', price: 700, 
+      preview: `background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='55' height='55' viewBox='0 0 55 55'%3E%3Ctext x='8' y='25' font-size='20' fill='%23ff9500' opacity='0.2'%3E👻%3C/text%3E%3Ctext x='30' y='45' font-size='16' fill='%23ff9500' opacity='0.15'%3E👻%3C/text%3E%3C/svg%3E"); background-size: 55px 55px;`,
+      css: `background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='55' height='55' viewBox='0 0 55 55'%3E%3Ctext x='8' y='25' font-size='20' fill='%23${getAccentHex()}' opacity='0.15'%3E👻%3C/text%3E%3Ctext x='30' y='45' font-size='16' fill='%23${getAccentHex()}' opacity='0.10'%3E👻%3C/text%3E%3C/svg%3E"); background-size: 55px 55px; border: 1px solid var(--border-color);` },
+    { id: 'bg_emoji_skull', name: '💀 Черепа', price: 750, 
+      preview: `background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='55' height='55' viewBox='0 0 55 55'%3E%3Ctext x='8' y='25' font-size='20' fill='%23ff9500' opacity='0.2'%3E💀%3C/text%3E%3Ctext x='30' y='45' font-size='16' fill='%23ff9500' opacity='0.15'%3E💀%3C/text%3E%3C/svg%3E"); background-size: 55px 55px;`,
+      css: `background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='55' height='55' viewBox='0 0 55 55'%3E%3Ctext x='8' y='25' font-size='20' fill='%23${getAccentHex()}' opacity='0.15'%3E💀%3C/text%3E%3Ctext x='30' y='45' font-size='16' fill='%23${getAccentHex()}' opacity='0.10'%3E💀%3C/text%3E%3C/svg%3E"); background-size: 55px 55px; border: 1px solid var(--border-color);` },
+    { id: 'bg_emoji_unicorn', name: '🦄 Единороги', price: 700, 
+      preview: `background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='55' height='55' viewBox='0 0 55 55'%3E%3Ctext x='8' y='25' font-size='20' fill='%23ff9500' opacity='0.2'%3E🦄%3C/text%3E%3Ctext x='30' y='45' font-size='16' fill='%23ff9500' opacity='0.15'%3E🦄%3C/text%3E%3C/svg%3E"); background-size: 55px 55px;`,
+      css: `background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='55' height='55' viewBox='0 0 55 55'%3E%3Ctext x='8' y='25' font-size='20' fill='%23${getAccentHex()}' opacity='0.15'%3E🦄%3C/text%3E%3Ctext x='30' y='45' font-size='16' fill='%23${getAccentHex()}' opacity='0.10'%3E🦄%3C/text%3E%3C/svg%3E"); background-size: 55px 55px; border: 1px solid var(--border-color);` },
+    { id: 'bg_emoji_clover', name: '🍀 Клевер', price: 650, 
+      preview: `background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50' viewBox='0 0 50 50'%3E%3Ctext x='5' y='28' font-size='18' fill='%23ff9500' opacity='0.2'%3E🍀%3C/text%3E%3Ctext x='28' y='15' font-size='14' fill='%23ff9500' opacity='0.15'%3E🍀%3C/text%3E%3C/svg%3E"); background-size: 50px 50px;`,
+      css: `background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50' viewBox='0 0 50 50'%3E%3Ctext x='5' y='28' font-size='18' fill='%23${getAccentHex()}' opacity='0.12'%3E🍀%3C/text%3E%3Ctext x='28' y='15' font-size='14' fill='%23${getAccentHex()}' opacity='0.08'%3E🍀%3C/text%3E%3C/svg%3E"); background-size: 50px 50px; border: 1px solid var(--border-color);` },
+    { id: 'bg_emoji_meteor', name: '☄️ Метеориты', price: 700, 
+      preview: `background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='55' height='55' viewBox='0 0 55 55'%3E%3Ctext x='8' y='25' font-size='20' fill='%23ff9500' opacity='0.2'%3E☄️%3C/text%3E%3Ctext x='30' y='45' font-size='16' fill='%23ff9500' opacity='0.15'%3E☄️%3C/text%3E%3C/svg%3E"); background-size: 55px 55px;`,
+      css: `background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='55' height='55' viewBox='0 0 55 55'%3E%3Ctext x='8' y='25' font-size='20' fill='%23${getAccentHex()}' opacity='0.15'%3E☄️%3C/text%3E%3Ctext x='30' y='45' font-size='16' fill='%23${getAccentHex()}' opacity='0.10'%3E☄️%3C/text%3E%3C/svg%3E"); background-size: 55px 55px; border: 1px solid var(--border-color);` },
+    { id: 'bg_emoji_lightning', name: '⚡ Молнии', price: 700, 
+      preview: `background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='55' height='55' viewBox='0 0 55 55'%3E%3Ctext x='8' y='25' font-size='20' fill='%23ff9500' opacity='0.2'%3E⚡%3C/text%3E%3Ctext x='30' y='45' font-size='16' fill='%23ff9500' opacity='0.15'%3E⚡%3C/text%3E%3C/svg%3E"); background-size: 55px 55px;`,
+      css: `background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='55' height='55' viewBox='0 0 55 55'%3E%3Ctext x='8' y='25' font-size='20' fill='%23${getAccentHex()}' opacity='0.15'%3E⚡%3C/text%3E%3Ctext x='30' y='45' font-size='16' fill='%23${getAccentHex()}' opacity='0.10'%3E⚡%3C/text%3E%3C/svg%3E"); background-size: 55px 55px; border: 1px solid var(--border-color);` },
+    { id: 'bg_emoji_pill', name: '💊 Таблетки', price: 650, 
+      preview: `background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50' viewBox='0 0 50 50'%3E%3Ctext x='5' y='28' font-size='18' fill='%23ff9500' opacity='0.2'%3E💊%3C/text%3E%3Ctext x='28' y='15' font-size='14' fill='%23ff9500' opacity='0.15'%3E💊%3C/text%3E%3C/svg%3E"); background-size: 50px 50px;`,
+      css: `background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50' viewBox='0 0 50 50'%3E%3Ctext x='5' y='28' font-size='18' fill='%23${getAccentHex()}' opacity='0.12'%3E💊%3C/text%3E%3Ctext x='28' y='15' font-size='14' fill='%23${getAccentHex()}' opacity='0.08'%3E💊%3C/text%3E%3C/svg%3E"); background-size: 50px 50px; border: 1px solid var(--border-color);` }
 ];
         const STATUS_BG_SHOP = [
     { id: 'status_bg_bronze', name: 'Бронза', price: 400, css: 'background: linear-gradient(135deg, rgba(205,127,50,0.25), rgba(180,100,30,0.1)); border: 1px solid rgba(205,127,50,0.4);' },
@@ -16325,7 +16340,7 @@ const BUNDLES_SHOP = [
     {
         id: 'bundle_rose_gold',
         name: 'Розовое золото',
-        price: 950, // по отдельности: 600+550+650 = 1800
+        price: 950,
         items: {
             background: 'bg_emoji_hearts',
             status_bg: 'status_bg_rose_gold',
@@ -16336,7 +16351,7 @@ const BUNDLES_SHOP = [
     {
         id: 'bundle_gold',
         name: 'Золотой',
-        price: 900, // по отдельности: 600+600+500 = 1700
+        price: 900,
         items: {
             background: 'bg_emoji_stars',
             status_bg: 'status_bg_gold',
@@ -16347,18 +16362,18 @@ const BUNDLES_SHOP = [
     {
         id: 'bundle_emerald',
         name: 'Изумрудный',
-        price: 750, // по отдельности: 350+550+450 = 1350
+        price: 700,
         items: {
-            background: 'bg_card',
+            background: 'bg_dots',
             status_bg: 'status_bg_emerald',
             avatar_border: 'avatar_border_emerald'
         },
-        description: 'Карточка + Изумруд + Изумруд'
+        description: 'Точечки + Изумруд + Изумруд'
     },
     {
         id: 'bundle_sapphire',
         name: 'Сапфировый',
-        price: 750,
+        price: 700,
         items: {
             background: 'bg_glass',
             status_bg: 'status_bg_sapphire',
@@ -16369,13 +16384,13 @@ const BUNDLES_SHOP = [
     {
         id: 'bundle_platinum',
         name: 'Платиновый',
-        price: 1000, // по отдельности: 500+750+650 = 1900
+        price: 900,
         items: {
-            background: 'bg_marble',
+            background: 'bg_emoji_crowns',
             status_bg: 'status_bg_platinum',
             avatar_border: 'avatar_border_platinum'
         },
-        description: 'Мрамор + Платина + Платина'
+        description: 'Короны + Платина + Платина'
     },
     {
         id: 'bundle_ruby',
@@ -16393,22 +16408,66 @@ const BUNDLES_SHOP = [
         name: 'Аметистовый',
         price: 700,
         items: {
-            background: 'bg_dots',
+            background: 'bg_subtle_lines',
             status_bg: 'status_bg_amethyst',
             avatar_border: 'avatar_border_amethyst'
         },
-        description: 'Точечки + Аметист + Аметист'
+        description: 'Тонкие линии + Аметист + Аметист'
     },
     {
         id: 'bundle_arctic',
         name: 'Арктический',
         price: 650,
         items: {
-            background: 'bg_frost',
+            background: 'bg_emoji_butterfly',
             status_bg: 'status_bg_arctic',
             avatar_border: 'avatar_border_arctic'
         },
-        description: 'Иней + Арктика + Арктика'
+        description: 'Бабочки + Арктика + Арктика'
+    },
+    {
+        id: 'bundle_dragon',
+        name: 'Драконий',
+        price: 850,
+        items: {
+            background: 'bg_emoji_dragon',
+            status_bg: 'status_bg_ruby',
+            avatar_border: 'avatar_border_ruby'
+        },
+        description: 'Драконы + Рубин + Рубин'
+    },
+    {
+        id: 'bundle_dark',
+        name: 'Тёмный',
+        price: 850,
+        items: {
+            background: 'bg_emoji_skull',
+            status_bg: 'status_bg_amethyst',
+            avatar_border: 'avatar_border_amethyst'
+        },
+        description: 'Черепа + Аметист + Аметист'
+    },
+    {
+        id: 'bundle_magic',
+        name: 'Магический',
+        price: 800,
+        items: {
+            background: 'bg_emoji_unicorn',
+            status_bg: 'status_bg_amethyst',
+            avatar_border: 'avatar_border_rose_gold'
+        },
+        description: 'Единороги + Аметист + Розовое золото'
+    },
+    {
+        id: 'bundle_lucky',
+        name: 'Счастливый',
+        price: 700,
+        items: {
+            background: 'bg_emoji_clover',
+            status_bg: 'status_bg_gold',
+            avatar_border: 'avatar_border_gold'
+        },
+        description: 'Клевер + Золото + Золото'
     }
 ];
 
@@ -31495,7 +31554,16 @@ function closePublicProfile() {
     'bg_emoji_dino': '🦖',
     'bg_emoji_dragon': '🐉',
     'bg_emoji_rainbow': '🌈',
-    'bg_emoji_butterfly': '🦋'
+    'bg_emoji_butterfly': '🦋',
+    'bg_emoji_alien': '👽',
+    'bg_emoji_flower': '🌸',
+    'bg_emoji_ghost': '👻',
+    'bg_emoji_skull': '💀',
+    'bg_emoji_unicorn': '🦄',
+    'bg_emoji_clover': '🍀',
+    'bg_emoji_meteor': '☄️',
+    'bg_emoji_lightning': '⚡',
+    'bg_emoji_pill': '💊'
 };
         
 function renderPublicProfile(profile) {
