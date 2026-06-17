@@ -9370,7 +9370,8 @@ function renderTimeTasks() {
         <div class="time-task-card ${weeklyCompleted ? 'completed' : ''}">
             <div class="time-badge" style="font-size: 10px; padding: 3px 8px; top: 8px; right: 8px;">📅 до ${weeklyTask.deadline}</div>
             <div class="time-header" style="padding-right: 85px;">
-                <h3 style="font-size: 16px; padding-right: 5px;">${weeklyTask.title}</h3>
+                <h3 style="font-size: 14px; padding-right: 5px; margin-bottom: 2px;">Персонаж недели</h3>
+                <h3 style="font-size: 18px; padding-right: 5px; margin-top: 0; margin-bottom: 8px;">${weeklyTask.character.name}</h3>
                 <p style="font-size: 12px;">${weeklyTask.description}</p>
                 <div class="time-reward" style="font-size: 13px;"><i class="fas fa-book-open gold-book"></i> +${weeklyTask.reward} ашетиков</div>
             </div>
