@@ -9240,8 +9240,8 @@ function getWeeklyTask() {
     const moscowNow = getMoscowTime();
     const weekNumber = Math.floor(moscowNow.getTime() / (7 * 24 * 60 * 60 * 1000));
     
-    // Фиксированное задание на неделю до 21.06.2026 (номер недели 2945)
-    if (weekNumber === 2945) {
+    // Фиксированное задание с сержантом Тибсом (17.06.2026 — 21.06.2026)
+    if (moscowNow >= new Date('2026-06-17T00:00:00+03:00') && moscowNow < new Date('2026-06-22T00:00:00+03:00')) {
         return {
             id: 'weekly_task',
             title: 'Персонаж недели: Сержант Тибс',
@@ -9279,7 +9279,6 @@ function getWeeklyTask() {
         totalAppearances: totalAppearances
     };
 }
-
 function getMonthlyTask() {
     const moscowNow = getMoscowTime();
     const monthIndex = moscowNow.getFullYear() * 12 + moscowNow.getMonth();
@@ -9346,6 +9345,13 @@ function checkTimeTasksReset() {
         localStorage.setItem('time_tasks_status', '{}');
         localStorage.setItem('time_tasks_week', weekNumber);
         localStorage.setItem('time_tasks_month', monthIndex);
+        
+        // Сбрасываем серверный прогресс
+        fetch(`${SERVER_URL}/api/reset_time_tasks`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId })
+        }).catch(e => console.error('Ошибка сброса:', e));
     }
 }
 
@@ -32998,7 +33004,6 @@ function toggleCategory(category) {
         if (arrow) arrow.style.transform = 'rotate(0deg)';
     }
 }
-
 function openAllCategories() {
     ['paint_by_number', 'alcohol', 'pencil', 'custom'].forEach(cat => {
         const content = document.getElementById(`category-${cat}`);
