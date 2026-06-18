@@ -1381,339 +1381,7 @@
             font-size: 15px;
             cursor: pointer;
         }
-        /* ==========================================
-           16. ИИ ПАЛИТРА
-           ========================================== */
-        .ai-section {
-            padding: 0 15px;
-        }
-
-        .upload-area {
-            border: 2px dashed var(--accent);
-            border-radius: 24px;
-            padding: 40px 20px;
-            text-align: center;
-            cursor: pointer;
-            background: rgba(255,149,0,0.05);
-            margin: 0 15px;
-        }
-
-        .upload-area i {
-            font-size: 40px;
-            color: var(--accent);
-            margin-bottom: 12px;
-        }
-
-        .upload-area p {
-            color: var(--accent);
-            font-weight: 600;
-            margin: 0;
-        }
-
-        .admin-panel {
-            margin-top: 20px;
-            padding: 20px;
-            background: var(--bg-header);
-            border: 2px solid var(--status-green);
-            border-radius: 24px;
-            margin: 15px;
-            display: none;
-        }
-
-        .admin-panel h4 {
-            color: var(--status-green);
-            margin: 0 0 15px 0;
-            text-align: center;
-            font-size: 18px;
-        }
-
-        .admin-panel .form-group {
-            margin-bottom: 15px;
-        }
-
-        .admin-panel label {
-            display: block;
-            color: var(--text-gray);
-            font-size: 12px;
-            margin-bottom: 5px;
-        }
-
-        .admin-panel input,
-        .admin-panel select {
-            width: 100%;
-            padding: 12px;
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-            background: var(--input-bg);
-            color: var(--text);
-            font-size: 14px;
-        }
-
-        .admin-panel button {
-            background: var(--status-green);
-            color: white;
-            width: 100%;
-            padding: 14px;
-            border-radius: 14px;
-            font-weight: 600;
-            font-size: 15px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-
-        .admin-panel .info-text {
-            color: var(--text-gray);
-            font-size: 11px;
-            margin-top: 10px;
-            text-align: center;
-        }
-
-        .ai-result {
-            margin-top: 20px;
-            padding: 20px;
-            background: var(--bg-header);
-            border-radius: 16px;
-            display: none;
-            border: 1px solid var(--border-color);
-            margin: 15px;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 20px;
-            color: var(--text-gray);
-        }
-
-        .loading i {
-            animation: spin 1s linear infinite;
-            margin-right: 10px;
-        }
-
-        @keyframes spin {
-            from {
-                transform: rotate(0deg);
-            }
-            to {
-                transform: rotate(360deg);
-            }
-        }
-        /* ИИ Палитра — фильтры */
-        .ai-filter-container {
-            margin: 15px;
-        }
-
-        .ai-filter-container label {
-            color: var(--text);
-            font-weight: 600;
-            margin-bottom: 8px;
-            display: block;
-        }
-
-        .ai-filter-container select {
-            width: 100%;
-            padding: 12px;
-            border-radius: 12px;
-            background: var(--bg-header);
-            color: var(--text);
-            border: 1px solid var(--border-color);
-            font-size: 14px;
-            margin-bottom: 10px;
-        }
-
-        /* ИИ Палитра — результаты */
-        .ai-results-container {
-            margin: 15px;
-        }
-
-        .ai-result-card {
-            background: var(--bg-header);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 15px;
-            border: 1px solid var(--border-color);
-        }
-
-        .ai-result-filename {
-            font-size: 14px;
-            color: var(--text-gray);
-            margin-bottom: 10px;
-            word-break: break-word;
-        }
-
-        .ai-color-preview {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 20px;
-            background: var(--card-bg);
-            padding: 15px;
-            border-radius: 16px;
-        }
-
-        .ai-color-circle {
-            width: 70px;
-            height: 70px;
-            border-radius: 16px;
-            border: 2px solid var(--border-color);
-            flex-shrink: 0;
-        }
-
-        .ai-color-info {
-            flex: 1;
-        }
-
-        .ai-color-hex {
-            font-weight: 800;
-            font-size: 22px;
-            color: var(--text);
-        }
-
-        .ai-color-rgb {
-            font-size: 13px;
-            color: var(--text-gray);
-            margin-top: 4px;
-        }
-
-        .ai-marker-title {
-            margin: 15px 0 10px;
-            color: var(--text);
-            font-size: 16px;
-            font-weight: 600;
-        }
-
-        .ai-marker-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px;
-            margin-bottom: 8px;
-            background: var(--bg);
-            border-radius: 12px;
-        }
-
-        .ai-marker-brand {
-            font-weight: 700;
-            color: var(--text);
-        }
-
-        .ai-marker-number {
-            font-size: 16px;
-            margin-left: 5px;
-        }
-
-        .ai-marker-actions {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .ai-marker-accuracy {
-            font-weight: 700;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 13px;
-        }
-
-        .ai-marker-accuracy.high {
-            background: var(--status-green);
-            color: white;
-        }
-
-        .ai-marker-accuracy.medium {
-            background: var(--status-orange);
-            color: white;
-        }
-
-        .ai-marker-accuracy.low {
-            background: var(--text-gray);
-            color: white;
-        }
-
-        .ai-wrong-btn {
-            background: none;
-            border: 1px solid var(--border-color);
-            color: var(--text-gray);
-            padding: 8px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            margin-top: 10px;
-            cursor: pointer;
-            width: 100%;
-            transition: all 0.2s;
-        }
-
-        .ai-wrong-btn:hover {
-            background: rgba(255, 59, 48, 0.1);
-            border-color: var(--status-red);
-            color: var(--status-red);
-        }
-
-        .ai-correct-select {
-            display: none;
-            margin-top: 10px;
-            padding: 12px;
-            background: var(--bg);
-            border-radius: 12px;
-        }
-
-        .ai-correct-select input {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 8px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            background: var(--input-bg);
-            color: var(--text);
-            font-size: 14px;
-        }
-
-        .ai-correct-select button {
-            width: 100%;
-            margin-top: 8px;
-        }
-
-        .ai-cart-btn {
-            background: var(--accent);
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .ai-cart-btn:active {
-            transform: scale(0.95);
-        }
-
-        .ai-no-marker {
-            padding: 15px;
-            text-align: center;
-            color: var(--text-gray);
-            background: var(--bg);
-            border-radius: 12px;
-        }
-
-        .upload-area small {
-            display: block;
-            margin-top: 8px;
-            color: var(--text-gray);
-            font-size: 12px;
-            font-weight: normal;
-        }
-
-        .ai-alpha-badge {
-            display: inline-block;
-            background: rgba(255, 149, 0, 0.2);
-            color: var(--accent);
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 600;
-            margin-left: 10px;
-            vertical-align: middle;
-        }
+      
 
         /* ==========================================
            17. НАВИГАЦИЯ
@@ -3262,15 +2930,6 @@
     display: block;
 }
 
-.book-page-btn img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 10px;
-}
 
 /* Развороты — такой же размер, как обычные */
 .book-page-btn.spread {
@@ -3653,24 +3312,7 @@
     color: var(--text-gray);
 }
 
-.wishlist-heart-btn {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: rgba(0, 0, 0, 0.5);
-    border: none;
-    color: white;
-    cursor: pointer;
-    z-index: 10;
-}
-
-.wishlist-heart-btn.active {
-    background: #ff6b6b;
-}
-        /* Кнопка-сердечко на карточке раскраски */
+/* Кнопка-сердечко на карточке раскраски */
 .wishlist-heart-btn {
     position: absolute;
     top: 8px;
@@ -3689,21 +3331,17 @@
     transition: all 0.2s;
     z-index: 10;
 }
-
 .wishlist-heart-btn:hover {
     background: rgba(0, 0, 0, 0.7);
     transform: scale(1.1);
 }
-
 .wishlist-heart-btn i {
     font-size: 16px;
     color: #ff6b6b;
 }
-
 .wishlist-heart-btn.active {
     background: var(--accent);
 }
-
 .wishlist-heart-btn.active i {
     color: white;
 }
@@ -3974,7 +3612,10 @@
     object-fit: cover;
     border-radius: 10px;
 }
-
+.book-page-btn.uploaded {
+    border: 2px solid var(--accent);
+}
+        
 .book-page-btn small {
     position: absolute;
     bottom: 3px;
@@ -3985,7 +3626,9 @@
     padding: 2px 5px;
     border-radius: 10px;
 }
-        .editor-btn {
+       
+
+.editor-btn {
     width: 50px;
     height: 50px;
     border-radius: 50%;
@@ -3999,27 +3642,22 @@
     justify-content: center;
     transition: all 0.2s;
 }
-
 .editor-btn:active {
     transform: scale(0.9);
     background: var(--accent);
     color: white;
 }
-
 #editorContainer {
     -webkit-user-select: none;
     user-select: none;
     -webkit-touch-callout: none;
 }
-      #bestiarySearch {
-    caret-color: var(--accent);
-}  
-        .editor-btn2 {
+.editor-btn2 {
     width: 48px;
     height: 48px;
     border-radius: 50%;
     border: none;
-    background: rgba(255,255,255,0.15);
+    background: rgba(255, 255, 255, 0.15);
     color: white;
     font-size: 20px;
     cursor: pointer;
@@ -4027,16 +3665,13 @@
     align-items: center;
     justify-content: center;
 }
-        .book-page-btn img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain !important;
-    border-radius: 10px;
-    background: var(--bg);
-}
-    .book-page-btn.uploaded {
-    border: none;
-}   
+
+
+      #bestiarySearch {
+    caret-color: var(--accent);
+}  
+      
+      
         .book-page-btn.uploaded img {
     object-fit: cover !important;
     width: 100% !important;
@@ -4173,20 +3808,9 @@
     font-weight: 600;
     color: var(--accent);
 }
-        .dnd-character-card {
-    background: var(--card-bg);
-    border: 2px solid var(--border-color);
-    border-radius: 16px;
-    padding: 20px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.2s;
-}
+       
 .dnd-character-card:active { transform: scale(0.95); }
 .dnd-character-card.selected { border-color: var(--accent); background: rgba(255,149,0,0.1); }
-.dnd-char-img { font-size: 48px; margin-bottom: 10px; }
-.dnd-char-name { font-weight: 700; font-size: 16px; color: var(--text); }
-.dnd-char-desc { font-size: 12px; color: var(--text-gray); margin-top: 4px; }
 
 /* 3D Кубик */
 .dnd-dice {
@@ -6297,57 +5921,7 @@ body:not([data-theme]) .modal-content,
     opacity: 0.8;
     filter: grayscale(0.2);
 }
-        /* Стили для разных статусов в профиле */
-.status-badge[data-status="🌈 Мастер радуги"] {
-    background: linear-gradient(135deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3);
-    color: white;
-    text-shadow: 0 0 5px rgba(0,0,0,0.5);
-    animation: rainbow 3s linear infinite;
-}
-
-.status-badge[data-status="🌙 Ночной страж"] {
-    background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
-    color: #c4d0ff;
-    border: 1px solid #4a6fa5;
-    box-shadow: 0 0 10px rgba(74, 111, 165, 0.5);
-}
-
-.status-badge[data-status="✨ Ткач звёздной пыли"] {
-    background: linear-gradient(135deg, #2d1b4e, #1a0f2e);
-    color: #ffd700;
-    border: 1px solid #ffd700;
-    box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-    animation: starGlow 2s ease-in-out infinite;
-}
-
-.status-badge[data-status="🔥 Вечное пламя"] {
-    background: linear-gradient(135deg, #ff4500, #ff0000, #8b0000);
-    color: #ffeb99;
-    border: 1px solid #ff6600;
-    box-shadow: 0 0 10px rgba(255, 69, 0, 0.5);
-}
-
-.status-badge[data-status="💎 Хрустальный мечтатель"] {
-    background: linear-gradient(135deg, #00ced1, #20b2aa, #008b8b);
-    color: #e0ffff;
-    border: 1px solid #00ffff;
-    box-shadow: 0 0 15px rgba(0, 206, 209, 0.5);
-}
-
-.status-badge[data-status="🌌 Путешественник пустоты"] {
-    background: linear-gradient(135deg, #4b0082, #2e0047, #1a0030);
-    color: #dda0dd;
-    border: 1px solid #9400d3;
-    box-shadow: 0 0 15px rgba(148, 0, 211, 0.5);
-}
-
-.status-badge[data-status="🎨 Космический художник"] {
-    background: linear-gradient(135deg, #ff69b4, #ff1493, #c71585);
-    color: #ffe4f3;
-    border: 1px solid #ff69b4;
-    box-shadow: 0 0 20px rgba(255, 105, 180, 0.5);
-    animation: mythicPulse 3s ease-in-out infinite;
-}
+       
 
 @keyframes rainbow {
     0% { background-position: 0% 50%; }
