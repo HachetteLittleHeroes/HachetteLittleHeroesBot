@@ -21103,21 +21103,122 @@ window.onload = async () => {
     }
     
     loadMarkersCollection();
-    
-    // Проверяем сброс временных заданий
     checkTimeTasksReset();
     
-    await loadUserBalance();
-    updateUI();
+    // ========== ЕДИНЫЙ ЗАПРОС ИНИЦИАЛИЗАЦИИ ==========
+    try {
+        console.log('⚡ Загрузка через /api/init...');
+        const initResponse = await fetch(`${SERVER_URL}/api/init?user_id=${userId}`);
+        const initData = await initResponse.json();
+        
+        if (initData.status === 'ok') {
+            // Баланс
+            user.balance = initData.balance;
+            
+            // Статистика и прогресс
+            userProgress = initData.stats || {};
+            localStorage.setItem(`coloring_progress_${userId}`, JSON.stringify(userProgress));
+            
+            // Статусы
+            user.unlockedStatuses = initData.stats?.unlocked_statuses || ['Без статуса'];
+            if (!user.unlockedStatuses.includes('Без статуса')) {
+                user.unlockedStatuses.unshift('Без статуса');
+            }
+            
+            // Достижения
+            user.achievements = initData.achievements || [];
+            
+            // Бусты
+            userBoosts = initData.boost || { active: false, remaining: 0 };
+            
+            // Season Pass
+            claimedSeasonRewards = initData.season_rewards || { free: [], premium: [] };
+            window._seasonRewardsLoaded = true;
+            
+            // Раскраски
+            userColoringBooks = initData.coloring_books || { paint_by_number: [], alcohol: [], pencil: [], custom: [] };
+            localStorage.setItem(`coloring_books_${userId}`, JSON.stringify(userColoringBooks));
+            
+            // Артворки
+            userArtworks = initData.artworks || {};
+            
+            // Коллекция фигурок
+            userCollection = COLLECTION_FIGURES.map(f => ({
+                id: f.id,
+                unlocked: (initData.collection || []).includes(f.id) || (initData.collection || []).includes(String(f.id))
+            }));
+            
+            // Друзья (базовый список, аватарки загрузятся отдельно)
+            myFriends = (initData.friend_ids || []).map(fid => ({ user_id: fid, id: fid, name: '', username: '', avatar: '' }));
+            
+            // Органайзеры
+            if (initData.organizers && initData.organizers.length > 0) {
+                inventory.organizers = initData.organizers;
+            }
+            if (!inventory.userMarkers) inventory.userMarkers = {};
+            
+            // Имя
+            if (initData.name) {
+                user.name = initData.name;
+            }
+            
+            // Аватар
+            if (initData.avatar) {
+                user.avatar = initData.avatar;
+            }
+            
+            // Подложки
+            if (initData.sponsor_background) {
+                applySponsorBackground(initData.sponsor_background, initData.sponsor_background_id);
+            }
+            if (initData.status_background) {
+                applyStatusBackground(initData.status_background);
+            }
+            if (initData.avatar_border) {
+                applyAvatarBorder(initData.avatar_border);
+            }
+            
+            // Completed pages
+            if (initData.stats?.completed_pages) {
+                userCompletedPages = initData.stats.completed_pages;
+                localStorage.setItem(`completed_pages_${userId}`, JSON.stringify(userCompletedPages));
+            }
+            
+            // Даты
+            if (initData.stats?.completed_pages_dates) {
+                for (var dk in initData.stats.completed_pages_dates) {
+                    if (!window.completedPagesDates[dk]) {
+                        window.completedPagesDates[dk] = initData.stats.completed_pages_dates[dk];
+                    }
+                }
+                localStorage.setItem('completed_pages_dates_' + userId, JSON.stringify(window.completedPagesDates));
+            }
+            
+            saveUserData();
+            updateUI();
+            console.log('✅ Все данные загружены через /api/init');
+        } else {
+            throw new Error('Init failed');
+        }
+    } catch (error) {
+        console.error('❌ Ошибка /api/init, загружаем по-старому:', error);
+        await loadUserBalance();
+        await loadUserProgress();
+        await loadUnlockedStatuses();
+        await loadUserAchievements();
+        await loadColoringBooks();
+        await loadCompletedPages();
+    }
     
-    await loadUserProgress();
-    await loadUnlockedStatuses();
-    await loadUserAchievements();
     await checkBalanceStatus();
     await checkAndUnlockStatuses();
-    await loadColoringBooks();
-    await loadMyFriends();
-    await loadCompletedPages();
+    
+    // Догружаем друзей с аватарками
+    try {
+        await loadMyFriends();
+    } catch(e) {}
+    
+    updateUI();
     
     try {
         const response = await fetch(`${SERVER_URL}/api/stats?user_id=${userId}`);
