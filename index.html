@@ -16270,35 +16270,51 @@ function applySponsorBackground(css, bgId) {
         // Тёмная подложка — светлый текст
         if (nameEl) nameEl.style.color = '#ffffff';
         if (statusBadge) {
-            statusBadge.style.cssText = 'color: #ffffff !important; background: rgba(255,255,255,0.2) !important; padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; display: inline-block; border: none !important;';
+            // Проверяем, есть ли цветной фон статуса
+            const hasStatusBg = statusBadge.style.background && 
+                               !statusBadge.style.background.includes('rgba(255,255,255,0.2)') &&
+                               statusBadge.style.background !== '';
+            if (!hasStatusBg) {
+                statusBadge.style.color = '#ffffff';
+                statusBadge.style.background = 'rgba(255,255,255,0.2)';
+            } else {
+                // Оставляем цветной фон, меняем только цвет текста
+                statusBadge.style.color = '#ffffff';
+            }
         }
         if (levelEl) {
             levelEl.style.color = '#ffffff';
-            const bars = levelEl.querySelectorAll('.progress-bar-fill');
-            bars.forEach(b => { b.style.background = 'rgba(255,255,255,0.4)'; });
+            // Прогресс-бар НЕ трогаем — остаётся цвет акцента
         }
     } else if (textColor === 'dark') {
         // Светлая подложка — тёмный текст
         if (nameEl) nameEl.style.color = '#1c1c1e';
         if (statusBadge) {
-            statusBadge.style.cssText = 'color: #1c1c1e !important; background: rgba(0,0,0,0.08) !important; padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; display: inline-block; border: none !important;';
+            const hasStatusBg = statusBadge.style.background && 
+                               statusBadge.style.background !== '';
+            if (!hasStatusBg) {
+                statusBadge.style.color = '#1c1c1e';
+                statusBadge.style.background = 'rgba(0,0,0,0.08)';
+            } else {
+                statusBadge.style.color = '#1c1c1e';
+            }
         }
         if (levelEl) {
             levelEl.style.color = '#8e8e93';
-            const bars = levelEl.querySelectorAll('.progress-bar-fill');
-            bars.forEach(b => { b.style.background = ''; });
         }
     } else {
         // Нет textColor — вернуть цвета темы
         if (nameEl) nameEl.style.color = '';
         if (statusBadge) {
-            statusBadge.style.cssText = '';
+            statusBadge.style.color = '';
+            const hasStatusBg = statusBadge.style.background && 
+                               !statusBadge.style.background.includes('rgba(0,0,0,0.08)') &&
+                               !statusBadge.style.background.includes('rgba(255,255,255,0.2)');
+            if (!hasStatusBg) {
+                statusBadge.style.background = '';
+            }
         }
-        if (levelEl) {
-            levelEl.style.color = '';
-            const bars = levelEl.querySelectorAll('.progress-bar-fill');
-            bars.forEach(b => { b.style.background = ''; });
-        }
+        if (levelEl) levelEl.style.color = '';
     }
 }
         function renderAvatarBorderShop() {
