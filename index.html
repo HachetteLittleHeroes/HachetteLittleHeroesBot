@@ -15785,6 +15785,32 @@ function renderUserLevel() {
         </div>
         <div style="font-size: 10px; color: var(--text-gray); margin-top: 2px;">${levelInfo.xp} / ${levelInfo.nextXP} XP</div>
     `;
+    
+    // ✅ После рендера — применить цвет подложки
+    setTimeout(() => {
+        const stats = JSON.parse(localStorage.getItem('coloring_user') || '{}');
+        // Пробуем получить sponsor_background_id из userProgress
+        const bgId = (userProgress && userProgress.sponsor_background_id) || '';
+        if (bgId) {
+            const bgItem = BACKGROUNDS_SHOP.find(b => b.id === bgId);
+            if (bgItem && bgItem.textColor) {
+                const levelEl = document.getElementById('userLevelDisplay');
+                if (levelEl && bgItem.textColor === 'light') {
+                    levelEl.style.setProperty('color', '#ffffff', 'important');
+                    const children = levelEl.querySelectorAll('*');
+                    children.forEach(c => {
+                        if (c.style) c.style.setProperty('color', '#ffffff', 'important');
+                    });
+                } else if (levelEl && bgItem.textColor === 'dark') {
+                    levelEl.style.setProperty('color', '#8e8e93', 'important');
+                    const children = levelEl.querySelectorAll('*');
+                    children.forEach(c => {
+                        if (c.style) c.style.setProperty('color', '#8e8e93', 'important');
+                    });
+                }
+            }
+        }
+    }, 100);
 }
         function calculatePublicXP(profile) {
     let xp = 0;
@@ -16305,11 +16331,25 @@ function applySponsorBackground(css, bgId) {
     const bgItem = BACKGROUNDS_SHOP.find(b => b.id === bgId);
     const textColor = bgItem ? bgItem.textColor : null;
     
+    // Функция для принудительной установки цвета уровня
+    function forceLevelColor(color) {
+        const levelEl = document.getElementById('userLevelDisplay');
+        if (levelEl) {
+            levelEl.style.setProperty('color', color, 'important');
+            const allChildren = levelEl.querySelectorAll('*');
+            allChildren.forEach(child => {
+                child.style.setProperty('color', color, 'important');
+            });
+            // Прогресс-бар не трогаем
+            const bars = levelEl.querySelectorAll('.progress-bar-fill');
+            bars.forEach(b => { b.style.removeProperty('color'); });
+        }
+    }
+    
     // Применяем с задержкой чтобы DOM точно обновился
     setTimeout(() => {
         const nameEl = document.getElementById('displayUsername');
         const statusBadge = document.getElementById('currentStatus');
-        const levelEl = document.getElementById('userLevelDisplay');
         
         if (textColor === 'light') {
             if (nameEl) nameEl.style.setProperty('color', '#ffffff', 'important');
@@ -16323,13 +16363,7 @@ function applySponsorBackground(css, bgId) {
                     statusBadge.style.setProperty('border', 'none', 'important');
                 }
             }
-            if (levelEl) {
-                levelEl.style.setProperty('color', '#ffffff', 'important');
-                const allChildren = levelEl.querySelectorAll('*');
-                allChildren.forEach(child => {
-                    child.style.setProperty('color', '#ffffff', 'important');
-                });
-            }
+            forceLevelColor('#ffffff');
         } else if (textColor === 'dark') {
             if (nameEl) nameEl.style.setProperty('color', '#1c1c1e', 'important');
             if (statusBadge) {
@@ -16342,15 +16376,26 @@ function applySponsorBackground(css, bgId) {
                     statusBadge.style.setProperty('border', 'none', 'important');
                 }
             }
-            if (levelEl) {
-                levelEl.style.setProperty('color', '#8e8e93', 'important');
-                const allChildren = levelEl.querySelectorAll('*');
-                allChildren.forEach(child => {
-                    child.style.setProperty('color', '#8e8e93', 'important');
-                });
-            }
+            forceLevelColor('#8e8e93');
         }
     }, 300);
+    
+    // Дополнительно — добиваем цвет уровня через 800мс (после renderUserLevel)
+    if (textColor) {
+        setTimeout(() => {
+            const color = textColor === 'light' ? '#ffffff' : '#8e8e93';
+            const levelEl = document.getElementById('userLevelDisplay');
+            if (levelEl) {
+                levelEl.style.setProperty('color', color, 'important');
+                const allChildren = levelEl.querySelectorAll('*');
+                allChildren.forEach(child => {
+                    child.style.setProperty('color', color, 'important');
+                });
+                const bars = levelEl.querySelectorAll('.progress-bar-fill');
+                bars.forEach(b => { b.style.removeProperty('color'); });
+            }
+        }, 800);
+    }
 }
         function renderAvatarBorderShop() {
     const container = document.getElementById('avatarBorderShopGrid');
