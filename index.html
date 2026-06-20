@@ -15353,25 +15353,40 @@ function showLeagueLeaderboard(league) {
         const avatarUrl = user.avatar || 'https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png';
         const placeIcon = user.place <= 3 ? ['🥇','🥈','🥉'][user.place - 1] : `#${user.place}`;
         
+        // Определяем цвет текста по подложке
+        const sponsorBgId = user.sponsor_background_id || '';
+        const bgItem = BACKGROUNDS_SHOP.find(b => b.id === sponsorBgId);
+        const textColor = bgItem ? bgItem.textColor : null;
+        let nameColor = '';
+        let statusTextColor = '';
+        let statusDefaultBg = '';
+        
+        if (textColor === 'light') {
+            nameColor = 'color: #ffffff;';
+            statusTextColor = 'color: #ffffff;';
+            statusDefaultBg = 'background: rgba(255,255,255,0.2);';
+        } else if (textColor === 'dark') {
+            nameColor = 'color: #1c1c1e;';
+            statusTextColor = 'color: #1c1c1e;';
+            statusDefaultBg = 'background: rgba(0,0,0,0.08);';
+        }
+        
         // Фон статуса
         const statusBg = user.status_background || '';
         const statusStyle = statusBg 
-            ? statusBg + ' padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; display: inline-block; color: var(--text);' 
-            : 'font-size: 13px; font-weight: 600;';
+            ? statusBg + ' padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; display: inline-block; ' + statusTextColor
+            : statusDefaultBg + ' padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; display: inline-block; ' + statusTextColor;
         
         // Обводка аватара
         const avatarBorder = user.avatar_border || '';
-       const avatarImgStyle = avatarBorder 
-    ? `width: 48px; height: 48px; border-radius: 50%; object-fit: cover; ${avatarBorder}` 
-    : 'width: 48px; height: 48px; border-radius: 50%; object-fit: cover;';
+        const avatarImgStyle = avatarBorder 
+            ? `width: 48px; height: 48px; border-radius: 50%; object-fit: cover; ${avatarBorder}` 
+            : 'width: 48px; height: 48px; border-radius: 50%; object-fit: cover;';
         
-        const sponsorBgId = user.sponsor_background_id || '';
         let bgStyle = '';
-        
         if (user.sponsor_background) {
             bgStyle = user.sponsor_background;
         }
-        
         if (!bgStyle) {
             bgStyle = `background: ${isMe ? 'color-mix(in srgb, var(--accent) 10%, transparent)' : 'var(--card-bg)'};`;
         }
@@ -15383,7 +15398,7 @@ function showLeagueLeaderboard(league) {
                 </div>
                 <img src="${avatarUrl}" style="${avatarImgStyle}" onerror="this.src='https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png'">
                 <div style="flex: 1; min-width: 0;">
-                   <div style="font-weight: 600; font-size: 14px; margin-bottom: 4px;">${user.username || user.name}</div>
+                   <div style="font-weight: 600; font-size: 14px; margin-bottom: 4px; ${nameColor}">${user.username || user.name}</div>
                     <span style="${statusStyle}">${user.status || 'Без статуса'}</span>
                 </div>
                 <div style="text-align: right;">
@@ -15396,7 +15411,7 @@ function showLeagueLeaderboard(league) {
     
     container.innerHTML = html;
     
-    // Применяем эмодзи-подложки через JS
+    // Применяем эмодзи-подложки и цвета текста через JS
     const cards = container.querySelectorAll('div[style*="display: flex"]');
     cards.forEach(card => {
         const onclick = card.getAttribute('onclick') || '';
@@ -15408,11 +15423,39 @@ function showLeagueLeaderboard(league) {
         if (!user) return;
         
         const sponsorBgId = user.sponsor_background_id || '';
+        
+        // Эмодзи-подложка
         if (sponsorBgId && sponsorBgId.startsWith('bg_emoji_')) {
             const emoji = EMOJI_BG_MAP[sponsorBgId] || '⭐';
             const hex = getAccentHex();
             card.style.backgroundImage = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='55' height='55' viewBox='0 0 55 55'%3E%3Ctext x='8' y='25' font-size='20' fill='%23${hex}' opacity='0.15'%3E${encodeURIComponent(emoji)}%3C/text%3E%3Ctext x='30' y='45' font-size='16' fill='%23${hex}' opacity='0.10'%3E${encodeURIComponent(emoji)}%3C/text%3E%3C/svg%3E")`;
             card.style.backgroundSize = '55px 55px';
+        }
+        
+        // GIF-подложка — цвет текста
+        const bgItem = BACKGROUNDS_SHOP.find(b => b.id === sponsorBgId);
+        if (bgItem && bgItem.textColor) {
+            const tc = bgItem.textColor;
+            const nameEl = card.querySelector('div[style*="font-weight: 600"]');
+            const statusEl = card.querySelector('span[style*="border-radius: 20px"]');
+            
+            if (tc === 'light') {
+                if (nameEl) nameEl.style.setProperty('color', '#ffffff', 'important');
+                if (statusEl) {
+                    statusEl.style.setProperty('color', '#ffffff', 'important');
+                    if (!user.status_background) {
+                        statusEl.style.setProperty('background', 'rgba(255,255,255,0.2)', 'important');
+                    }
+                }
+            } else if (tc === 'dark') {
+                if (nameEl) nameEl.style.setProperty('color', '#1c1c1e', 'important');
+                if (statusEl) {
+                    statusEl.style.setProperty('color', '#1c1c1e', 'important');
+                    if (!user.status_background) {
+                        statusEl.style.setProperty('background', 'rgba(0,0,0,0.08)', 'important');
+                    }
+                }
+            }
         }
     });
 }
@@ -16262,68 +16305,52 @@ function applySponsorBackground(css, bgId) {
     const bgItem = BACKGROUNDS_SHOP.find(b => b.id === bgId);
     const textColor = bgItem ? bgItem.textColor : null;
     
-    const nameEl = document.getElementById('displayUsername');
-    const statusBadge = document.getElementById('currentStatus');
-    const levelEl = document.getElementById('userLevelDisplay');
-    
-    if (textColor === 'light') {
-        if (nameEl) nameEl.style.color = '#ffffff';
-        if (statusBadge) {
-            const hasStatusBg = statusBadge.style.background && 
-                               !statusBadge.style.background.includes('rgba(255,255,255,0.2)') &&
-                               statusBadge.style.background !== '';
-            if (!hasStatusBg) {
-                statusBadge.style.cssText = 'color: #ffffff !important; background: rgba(255,255,255,0.2) !important; padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; display: inline-block; border: none !important;';
-            } else {
-                statusBadge.style.color = '#ffffff';
+    // Применяем с задержкой чтобы DOM точно обновился
+    setTimeout(() => {
+        const nameEl = document.getElementById('displayUsername');
+        const statusBadge = document.getElementById('currentStatus');
+        const levelEl = document.getElementById('userLevelDisplay');
+        
+        if (textColor === 'light') {
+            if (nameEl) nameEl.style.setProperty('color', '#ffffff', 'important');
+            if (statusBadge) {
+                const hasStatusBg = statusBadge.style.background && 
+                                   !statusBadge.style.background.includes('rgba(255,255,255,0.2)') &&
+                                   statusBadge.style.background !== '';
+                statusBadge.style.setProperty('color', '#ffffff', 'important');
+                if (!hasStatusBg) {
+                    statusBadge.style.setProperty('background', 'rgba(255,255,255,0.2)', 'important');
+                    statusBadge.style.setProperty('border', 'none', 'important');
+                }
+            }
+            if (levelEl) {
+                levelEl.style.setProperty('color', '#ffffff', 'important');
+                const allChildren = levelEl.querySelectorAll('*');
+                allChildren.forEach(child => {
+                    child.style.setProperty('color', '#ffffff', 'important');
+                });
+            }
+        } else if (textColor === 'dark') {
+            if (nameEl) nameEl.style.setProperty('color', '#1c1c1e', 'important');
+            if (statusBadge) {
+                const hasStatusBg = statusBadge.style.background && 
+                                   statusBadge.style.background !== '' &&
+                                   !statusBadge.style.background.includes('rgba(0,0,0,0.08)');
+                statusBadge.style.setProperty('color', '#1c1c1e', 'important');
+                if (!hasStatusBg) {
+                    statusBadge.style.setProperty('background', 'rgba(0,0,0,0.08)', 'important');
+                    statusBadge.style.setProperty('border', 'none', 'important');
+                }
+            }
+            if (levelEl) {
+                levelEl.style.setProperty('color', '#8e8e93', 'important');
+                const allChildren = levelEl.querySelectorAll('*');
+                allChildren.forEach(child => {
+                    child.style.setProperty('color', '#8e8e93', 'important');
+                });
             }
         }
-        if (levelEl) {
-            levelEl.style.color = '#ffffff';
-            const allChildren = levelEl.querySelectorAll('*');
-            allChildren.forEach(child => {
-                child.style.color = '#ffffff';
-            });
-            const bars = levelEl.querySelectorAll('.progress-bar-fill');
-            bars.forEach(b => { b.style.color = ''; });
-        }
-    } else if (textColor === 'dark') {
-        if (nameEl) nameEl.style.color = '#1c1c1e';
-        if (statusBadge) {
-            const hasStatusBg = statusBadge.style.background && statusBadge.style.background !== '';
-            if (!hasStatusBg) {
-                statusBadge.style.cssText = 'color: #1c1c1e !important; background: rgba(0,0,0,0.08) !important; padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; display: inline-block; border: none !important;';
-            } else {
-                statusBadge.style.color = '#1c1c1e';
-            }
-        }
-        if (levelEl) {
-            levelEl.style.color = '#8e8e93';
-            const allChildren = levelEl.querySelectorAll('*');
-            allChildren.forEach(child => {
-                child.style.color = '#8e8e93';
-            });
-        }
-    } else {
-        if (nameEl) nameEl.style.color = '';
-        if (statusBadge) {
-            const hasStatusBg = statusBadge.style.background && 
-                               !statusBadge.style.background.includes('rgba(0,0,0,0.08)') &&
-                               !statusBadge.style.background.includes('rgba(255,255,255,0.2)');
-            if (!hasStatusBg) {
-                statusBadge.style.cssText = '';
-            } else {
-                statusBadge.style.color = '';
-            }
-        }
-        if (levelEl) {
-            levelEl.style.color = '';
-            const allChildren = levelEl.querySelectorAll('*');
-            allChildren.forEach(child => {
-                child.style.color = '';
-            });
-        }
-    }
+    }, 300);
 }
         function renderAvatarBorderShop() {
     const container = document.getElementById('avatarBorderShopGrid');
