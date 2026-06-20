@@ -15796,8 +15796,10 @@ const BACKGROUNDS_SHOP = [
   { id: 'bg_dots', name: 'Точечки', price: 200, css: 'background: radial-gradient(circle, color-mix(in srgb, var(--accent) 15%, transparent) 2.5px, transparent 2.5px); background-size: 14px 14px; border: 1px solid var(--border-color);' },
 
     // GIF-подложки
-{ id: 'starnight', name: '✨ Звездное небо', price: 2000, css: `background-image: url('https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/backgrounds/starnight.gif'); background-size: cover;` },
-    { id: 'waterfall', name: 'Умиротворенный водопад', price: 2000, css: `background-image: url('https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/backgrounds/waterfall.gif'); background-size: cover;` },
+{ id: 'starnight', name: '✨ Звездное небо', price: 2000, textColor: 'light',
+  css: `background-image: url('https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/backgrounds/starnight.gif'); background-size: cover;` },
+   { id: 'waterfall', name: 'Умиротворенный водопад', price: 700, textColor: 'light',
+  css: `background-image: url('https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/backgrounds/waterfall.gif'); background-size: cover;` },
     
     // ЭМОДЗИ-ПОДЛОЖКИ
    { id: 'bg_emoji_stars', name: '⭐ Звёздочки', price: 600, 
@@ -16253,18 +16255,41 @@ function applySponsorBackground(css, bgId) {
     const profileBlock = document.querySelector('.profile-header-block');
     if (!profileBlock) return;
     
-    let finalCss = css;
-    
-    // Для эмодзи-подложек пересоздаём SVG с актуальным цветом
-    if (bgId && bgId.startsWith('bg_emoji_')) {
-        const bgItem = BACKGROUNDS_SHOP.find(b => b.id === bgId);
-        if (bgItem) {
-            finalCss = bgItem.css; // getAccentHex() вызовется здесь с актуальным цветом
-        }
+    if (css) {
+        profileBlock.style.cssText = css + ' margin: 15px; padding: 20px; border-radius: 24px; display: flex; align-items: center; gap: 20px;';
     }
     
-    if (finalCss) {
-        profileBlock.style.cssText = finalCss + ' margin: 15px; padding: 20px; border-radius: 24px; display: flex; align-items: center; gap: 20px;';
+    const bgItem = BACKGROUNDS_SHOP.find(b => b.id === bgId);
+    const textColor = bgItem ? bgItem.textColor : null;
+    
+    const nameEl = document.getElementById('displayUsername');
+    const statusBadge = document.getElementById('currentStatus');
+    const levelEl = document.getElementById('userLevelDisplay');
+    
+    if (textColor === 'light') {
+        // Тёмная подложка — светлый текст
+        if (nameEl) nameEl.style.color = '#ffffff';
+        if (statusBadge) {
+            statusBadge.style.color = '#ffffff';
+            statusBadge.style.background = 'rgba(255,255,255,0.2)';
+        }
+        if (levelEl) levelEl.style.color = '#cccccc';
+    } else if (textColor === 'dark') {
+        // Светлая подложка — тёмный текст
+        if (nameEl) nameEl.style.color = '#1c1c1e';
+        if (statusBadge) {
+            statusBadge.style.color = '#1c1c1e';
+            statusBadge.style.background = 'rgba(0,0,0,0.08)';
+        }
+        if (levelEl) levelEl.style.color = '#8e8e93';
+    } else {
+        // Нет textColor — вернуть цвета темы
+        if (nameEl) nameEl.style.color = '';
+        if (statusBadge) {
+            statusBadge.style.color = '';
+            statusBadge.style.background = '';
+        }
+        if (levelEl) levelEl.style.color = '';
     }
 }
         function renderAvatarBorderShop() {
