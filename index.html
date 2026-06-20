@@ -9522,7 +9522,7 @@ function approveNadyaTask() {
         // ПРОФИЛЬ И UI
         // ==========================================
         
-     function updateUI() {
+   function updateUI() {
     const nameEl = document.getElementById('displayUsername');
     const avatarEl = document.getElementById('user-avatar');
     const balanceEl = document.getElementById('userBalance');
@@ -9533,8 +9533,8 @@ function approveNadyaTask() {
     if (balanceEl) balanceEl.innerText = user.balance;
     if (statusBadge) {
         statusBadge.innerText = user.status || 'Без статуса';
-        // ✅ Добавляем data-status для применения стилей
         statusBadge.setAttribute('data-status', user.status || 'Без статуса');
+        // Не сбрасываем цвет и фон — их устанавливает applySponsorBackground
     }
     
     renderUserLevel();
@@ -21151,14 +21151,21 @@ window.onload = async () => {
             // Достижения
             user.achievements = initData.achievements || [];
             
-            // Бусты
-            userBoosts = initData.boost || { active: false, remaining: 0 };
-            
-            // Скипы — из /api/init
-            if (initData.skips !== undefined) {
-                userSkips = initData.skips;
-                localStorage.setItem(`user_skips_${userId}`, userSkips);
+            // Бусты — берём большее из /api/init и localStorage
+            const savedBoosts = JSON.parse(localStorage.getItem(`user_boosts_${userId}`) || '{}');
+            const apiBoost = initData.boost || { active: false, remaining: 0 };
+            if (savedBoosts.active && savedBoosts.remaining > apiBoost.remaining) {
+                userBoosts = { active: savedBoosts.active, remainingWorks: savedBoosts.remaining };
+            } else {
+                userBoosts = { active: apiBoost.active, remainingWorks: apiBoost.remaining || 0 };
+                localStorage.setItem(`user_boosts_${userId}`, JSON.stringify({ active: apiBoost.active, remaining: apiBoost.remaining || 0 }));
             }
+            
+            // Скипы — берём большее из /api/init и localStorage
+            const savedSkipsLocal = parseInt(localStorage.getItem(`user_skips_${userId}`) || '0');
+            const apiSkips = initData.skips || 0;
+            userSkips = Math.max(apiSkips, savedSkipsLocal);
+            localStorage.setItem(`user_skips_${userId}`, userSkips);
             
             // Season Pass
             claimedSeasonRewards = initData.season_rewards || { free: [], premium: [] };
@@ -21250,7 +21257,6 @@ window.onload = async () => {
     updateUI();
     
     // Проверяем имя и аватар (если не загрузились через /api/init)
-    // ❗ Без повторной загрузки подложек — они уже в /api/init
     try {
         const response = await fetch(`${SERVER_URL}/api/stats?user_id=${userId}`);
         const stats = await response.json();
@@ -21264,6 +21270,17 @@ window.onload = async () => {
             user.name = stats.name;
             document.getElementById('displayUsername').innerText = stats.name;
             localStorage.setItem('coloring_user', JSON.stringify(user));
+        }
+        
+        // Повторно применяем подложки если они есть в stats
+        if (stats.sponsor_background && stats.sponsor_background_id) {
+            applySponsorBackground(stats.sponsor_background, stats.sponsor_background_id);
+        }
+        if (stats.status_background) {
+            applyStatusBackground(stats.status_background);
+        }
+        if (stats.avatar_border) {
+            applyAvatarBorder(stats.avatar_border);
         }
     } catch (error) {
         console.error('❌ Ошибка загрузки аватара:', error);
@@ -21323,18 +21340,21 @@ window.onload = async () => {
         });
     };
     
-    // Буст уже загружен через /api/init
-    if (!userBoosts) {
-        userBoosts = { active: false, remainingWorks: 0 };
+    // Буст — финальная проверка
+    if (!userBoosts || !userBoosts.active) {
+        const savedBoostsCheck = JSON.parse(localStorage.getItem(`user_boosts_${userId}`) || '{}');
+        if (savedBoostsCheck.active && savedBoostsCheck.remaining > 0) {
+            userBoosts = { active: true, remainingWorks: savedBoostsCheck.remaining };
+        } else {
+            userBoosts = userBoosts || { active: false, remainingWorks: 0 };
+        }
     }
     
-    // Скипы — загружаем из localStorage если не из /api/init
-    if (userSkips === undefined || userSkips === null) {
-        const savedSkips = localStorage.getItem(`user_skips_${userId}`);
-        if (savedSkips) {
-            userSkips = parseInt(savedSkips) || 0;
-        } else {
-            userSkips = 0;
+    // Скипы — финальная проверка
+    if (userSkips === undefined || userSkips === null || userSkips === 0) {
+        const savedSkipsCheck = parseInt(localStorage.getItem(`user_skips_${userId}`) || '0');
+        if (savedSkipsCheck > 0) {
+            userSkips = savedSkipsCheck;
         }
     }
     
@@ -31270,16 +31290,39 @@ function renderPublicProfile(profile) {
     const userName = profile.name || profile.username || 'Пользователь';
     const userStatus = profile.status || 'Без статуса';
     
-    // Подложка: обычная применяется сразу, эмодзи — после рендеринга
+    // Подложка и цвета текста
     const sponsorBgId = profile.sponsor_background_id || '';
+    const sponsorBg = profile.sponsor_background || '';
     let profileBgStyle = 'margin: 0; padding: 15px;';
     
-    if (profile.sponsor_background && !sponsorBgId.startsWith('bg_emoji_')) {
-        profileBgStyle = profile.sponsor_background + ' margin: 0; padding: 15px; border-radius: 24px; display: flex; align-items: center; gap: 20px;';
+    // Определяем цвет текста по подложке
+    const bgItem = BACKGROUNDS_SHOP.find(b => b.id === sponsorBgId);
+    const textColor = bgItem ? bgItem.textColor : null;
+    let nameColor = '';
+    let statusColor = '';
+    let statusBgStyle = '';
+    let levelColor = '';
+    
+    if (textColor === 'light') {
+        nameColor = 'color: #ffffff;';
+        statusColor = 'color: #ffffff;';
+        statusBgStyle = 'background: rgba(255,255,255,0.2);';
+        levelColor = 'color: #ffffff;';
+    } else if (textColor === 'dark') {
+        nameColor = 'color: #1c1c1e;';
+        statusColor = 'color: #1c1c1e;';
+        statusBgStyle = 'background: rgba(0,0,0,0.08);';
+        levelColor = 'color: #8e8e93;';
+    }
+    
+    if (sponsorBg && !sponsorBgId.startsWith('bg_emoji_')) {
+        profileBgStyle = sponsorBg + ' margin: 0; padding: 15px; border-radius: 24px; display: flex; align-items: center; gap: 20px;';
     }
     
     const statusBg = profile.status_background || '';
-    const statusStyle = statusBg ? statusBg + ' padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; display: inline-block; color: var(--text);' : '';
+    const statusStyle = statusBg 
+        ? statusBg + ' padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; display: inline-block; ' + statusColor
+        : statusBgStyle + ' padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; display: inline-block; ' + statusColor;
     
     const avatarBorder = profile.avatar_border || '';
     const avatarBorderStyle = avatarBorder ? avatarBorder + ' width: 90px; height: 90px; border-radius: 50%; padding: 3px; background: var(--bg);' : '';
@@ -31340,9 +31383,9 @@ function renderPublicProfile(profile) {
                 <img src="${avatarUrl}" onerror="this.src='https://raw.githubusercontent.com/HachetteLittleHeroes/ColoringWithAI/main/assets/avatars/av1.png'">
             </div>
             <div class="profile-info">
-                <div class="name-row"><h2>${escapeHtml(userName)}</h2></div>
+                <div class="name-row"><h2 style="${nameColor}">${escapeHtml(userName)}</h2></div>
                 <span class="status-badge" style="${statusStyle}">${escapeHtml(userStatus)}</span>
-                <div id="publicUserLevel" style="margin-top: 8px;"></div>
+                <div id="publicUserLevel" style="margin-top: 8px; ${levelColor}"></div>
                 ${friendButtonHtml}
             </div>
         </div>
@@ -31417,6 +31460,48 @@ function renderPublicProfile(profile) {
         }, 150);
     }
     
+    // Применяем цвета текста для GIF-подложек
+    if (textColor) {
+        setTimeout(() => {
+            const block = container.querySelector('.profile-header-block');
+            if (block) {
+                if (textColor === 'light') {
+                    const nameEl = block.querySelector('h2');
+                    const statusEl = block.querySelector('.status-badge');
+                    const levelEl = block.querySelector('#publicUserLevel');
+                    if (nameEl) nameEl.style.color = '#ffffff';
+                    if (statusEl && !profile.status_background) {
+                        statusEl.style.color = '#ffffff';
+                        statusEl.style.background = 'rgba(255,255,255,0.2)';
+                    } else if (statusEl) {
+                        statusEl.style.color = '#ffffff';
+                    }
+                    if (levelEl) {
+                        levelEl.style.color = '#ffffff';
+                        const children = levelEl.querySelectorAll('*');
+                        children.forEach(c => { if (c.style) c.style.color = '#ffffff'; });
+                    }
+                } else if (textColor === 'dark') {
+                    const nameEl = block.querySelector('h2');
+                    const statusEl = block.querySelector('.status-badge');
+                    const levelEl = block.querySelector('#publicUserLevel');
+                    if (nameEl) nameEl.style.color = '#1c1c1e';
+                    if (statusEl && !profile.status_background) {
+                        statusEl.style.color = '#1c1c1e';
+                        statusEl.style.background = 'rgba(0,0,0,0.08)';
+                    } else if (statusEl) {
+                        statusEl.style.color = '#1c1c1e';
+                    }
+                    if (levelEl) {
+                        levelEl.style.color = '#8e8e93';
+                        const children = levelEl.querySelectorAll('*');
+                        children.forEach(c => { if (c.style) c.style.color = '#8e8e93'; });
+                    }
+                }
+            }
+        }, 200);
+    }
+    
     const booksStats = {};
     for (const bookKey in completedPages) {
         if (completedPages.hasOwnProperty(bookKey)) {
@@ -31463,11 +31548,11 @@ function renderPublicProfile(profile) {
         const levelEl = document.getElementById('publicUserLevel');
         if (levelEl) {
             levelEl.innerHTML = `
-                <div style="font-size: 12px; color: var(--text-gray); margin-bottom: 4px;">${levelInfo.name}</div>
+                <div style="font-size: 12px; margin-bottom: 4px; ${levelColor}">${levelInfo.name}</div>
                 <div class="progress-bar-container" style="height: 4px;">
                     <div class="progress-bar-fill" style="width: ${levelInfo.progress}%;"></div>
                 </div>
-                <div style="font-size: 10px; color: var(--text-gray); margin-top: 2px;">${levelInfo.xp} / ${levelInfo.nextXP} XP</div>
+                <div style="font-size: 10px; margin-top: 2px; ${levelColor}">${levelInfo.xp} / ${levelInfo.nextXP} XP</div>
             `;
         }
         
