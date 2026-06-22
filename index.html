@@ -15900,6 +15900,32 @@ function renderUserLevel() {
     
     return xp;
 }
+        // ==========================================
+// ПЕРСОНАЖИ ИСТОРИИ
+// ==========================================
+const CASTLE_CHARACTERS = {
+    mystic: {
+        id: 'mystic',
+        name: 'Мистий',
+        desc: 'Охотник на нежить. Полукровка: мать — человек, отец — из лесного народа.',
+        stats: { strength: 14, agility: 4, intelligence: 2 },
+        bonus: 'Чувствует скрытое. Доверяет чутью больше, чем книгам.'
+    },
+    thief: {
+        id: 'thief',
+        name: 'Воровка',
+        desc: 'Лучшая воровка гильдии. Выросла в трущобах у подножия гор.',
+        stats: { strength: 5, agility: 13, intelligence: 2 },
+        bonus: 'Мастер скрытности. Находит тайники и скрытые проходы.'
+    },
+    alchemist: {
+        id: 'alchemist',
+        name: 'Алхимик',
+        desc: 'Маг и учёный из далёкой академии. Всю жизнь изучал проклятия.',
+        stats: { strength: 2, agility: 4, intelligence: 14 },
+        bonus: 'Читает древние языки и руны. Чувствует магию.'
+    }
+};
         // История Ашетвиля
     const CASTLE_STORY = {
     id: 'castle_mystery',
