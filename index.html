@@ -16809,6 +16809,7 @@ function submitCastleChoice(cardId, choiceIdx) {
     const card = CASTLE_STORY.cards[cardId];
     const choice = card.choices[choiceIdx];
     if (!choice) return;
+    
     if (choice.isPremium && choice.skipCost) {
         if ((userSkips||0) < choice.skipCost) { alert('Недостаточно скипов!'); return; }
         userSkips -= choice.skipCost;
@@ -16818,30 +16819,51 @@ function submitCastleChoice(cardId, choiceIdx) {
         proceedToCard(choice.nextCard);
         return;
     }
+    
     if (!choice.task) { applyCastleReward(choice); proceedToCard(choice.nextCard); return; }
+    
     if (!castleCompletedChoices) castleCompletedChoices = {};
     const choiceKey = cardId + '_choice_' + choiceIdx;
     castleCompletedChoices[choiceKey] = true;
     saveCastleProgress();
+    
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
     fileInput.accept = 'image/*';
     fileInput.multiple = true;
+    
     fileInput.onchange = async function(event) {
         const files = Array.from(event.target.files);
         if (files.length === 0) return;
+        
         const container = document.getElementById('castleStoryContainer');
         if (container) container.innerHTML = '<div style="text-align: center; padding: 20px;"><i class="fas fa-spinner fa-spin"></i> Отправка фото...</div>';
+        
         const formData = new FormData();
         formData.append('user', userId.toString());
         formData.append('castle_choice_key', choiceKey);
+        formData.append('subtaskName', choice.text || 'Задание');
         for (let i = 0; i < files.length; i++) formData.append('photos', files[i]);
+        
         try {
             const response = await fetch(`${SERVER_URL}/api/check_castle_task`, { method: 'POST', body: formData });
             const result = await response.json();
-            if (result && result.status === 'ok') { alert('✅ Фото отправлено!'); renderCastleCard(cardId); }
-            else throw new Error(result?.message || 'Ошибка');
-        } catch (error) { alert('❌ Ошибка: ' + error.message); delete castleCompletedChoices[choiceKey]; saveCastleProgress(); renderCastleCard(cardId); }
+            
+            console.log('📡 Ответ сервера:', result);
+            
+            if (result && result.status === 'ok') {
+                alert('✅ Фото отправлено на проверку! Ожидайте одобрения.');
+                renderCastleCard(cardId);
+            } else {
+                throw new Error(result?.message || 'Ошибка сервера: ' + JSON.stringify(result));
+            }
+        } catch (error) {
+            console.error('❌ Ошибка отправки:', error);
+            alert('❌ Ошибка: ' + error.message);
+            delete castleCompletedChoices[choiceKey];
+            saveCastleProgress();
+            renderCastleCard(cardId);
+        }
     };
     fileInput.click();
 }
