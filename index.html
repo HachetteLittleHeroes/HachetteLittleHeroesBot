@@ -16753,18 +16753,46 @@ function selectCastleCharacter(charId) {
     const prefix = prefixMap[charId] || charId.charAt(0).toUpperCase();
     currentCastleCard = '1' + prefix + '_1';
     
+    console.log('🎮 Выбран персонаж:', charId, 'начальная карта:', currentCastleCard);
+    
     // Закрываем модальное окно
     document.querySelectorAll('.modal-overlay').forEach(m => {
         if (m.innerHTML.includes('Выберите персонажа')) m.remove();
     });
     
-    // Убеждаемся, что родительский контейнер видим
     const content = document.getElementById('castleStoryContent');
     if (content) {
         content.style.display = 'block';
         const arrow = document.getElementById('castleStoryArrow');
         if (arrow) arrow.style.transform = 'rotate(180deg)';
     }
+    
+    // ПРИНУДИТЕЛЬНО СОХРАНЯЕМ НА СЕРВЕР СРАЗУ ПОСЛЕ ВЫБОРА
+    const progress = {
+        currentCard: currentCastleCard,
+        stats: userCastleStats,
+        character: selectedCastleCharacter,
+        completedEndings: castleCompletedEndings,
+        metEliza: metEliza,
+        completedChoices: castleCompletedChoices,
+        approvedChoices: castleApprovedChoices
+    };
+    
+    console.log('💾 ПРИНУДИТЕЛЬНОЕ СОХРАНЕНИЕ:', JSON.stringify(progress));
+    
+    localStorage.setItem(`castle_progress_${userId}`, JSON.stringify(progress));
+    
+    fetch(`${SERVER_URL}/api/castle/save_progress`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: userId, progress: progress })
+    }).then(r => r.json()).then(res => {
+        console.log('✅ Сохранено на сервер:', res);
+        // Проверяем что сохранилось
+        fetch(`${SERVER_URL}/api/castle/get_progress?user_id=${userId}`)
+            .then(r => r.json())
+            .then(check => console.log('🔍 Проверка сервера:', JSON.stringify(check)));
+    }).catch(e => console.log('❌ Ошибка:', e));
     
     renderCastleCard(currentCastleCard);
     saveCastleProgress();
