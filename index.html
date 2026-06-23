@@ -16684,11 +16684,21 @@ function toggleCastleStory() {
             if (loaded && currentCastleCard) {
                 renderCastleCard(currentCastleCard);
             }
-            // Если не загрузилось — начальный экран уже отображается из HTML
         });
+        
+        // Запускаем проверку одобрений только когда замок открыт
+        if (!window._castleApprovalInterval) {
+            window._castleApprovalInterval = setInterval(checkCastleApprovals, 5000);
+        }
     } else {
         content.style.display = 'none';
         arrow.style.transform = 'rotate(0deg)';
+        
+        // Останавливаем проверку когда замок закрыт
+        if (window._castleApprovalInterval) {
+            clearInterval(window._castleApprovalInterval);
+            window._castleApprovalInterval = null;
+        }
     }
 }
 
@@ -17128,7 +17138,14 @@ function saveCastleProgress() {
 }
 
 async function loadCastleProgress() {
-    // Сначала пробуем сервер с таймаутом 3 секунды
+    if (!userId) {
+        console.log('⚠️ userId ещё не определён, ждём...');
+        return false;
+    }
+    
+    console.log('🔄 Загружаем прогресс для userId:', userId);
+    
+    // Сначала пробуем сервер
     try {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 3000);
@@ -17139,7 +17156,9 @@ async function loadCastleProgress() {
         clearTimeout(timeoutId);
         
         const result = await response.json();
-        if (result && result.status === 'ok' && result.progress) {
+        console.log('📡 Ответ сервера:', JSON.stringify(result));
+        
+        if (result && result.status === 'ok' && result.progress && result.progress.currentCard) {
             const data = result.progress;
             currentCastleCard = data.currentCard;
             userCastleStats = data.stats || { strength: 0, agility: 0, intelligence: 0 };
@@ -17148,13 +17167,14 @@ async function loadCastleProgress() {
             metEliza = data.metEliza || false;
             castleCompletedChoices = data.completedChoices || {};
             castleApprovedChoices = data.approvedChoices || {};
-            // Сохраняем локально как копию
             localStorage.setItem(`castle_progress_${userId}`, JSON.stringify(data));
             console.log('✅ Прогресс загружен с сервера:', currentCastleCard);
             return true;
+        } else {
+            console.log('⚠️ Сервер вернул пустой прогресс');
         }
     } catch(e) {
-        console.log('⚠️ Сервер недоступен, пробуем localStorage');
+        console.log('⚠️ Сервер недоступен:', e.message);
     }
     
     // Если сервер не ответил — загружаем из localStorage
@@ -17162,15 +17182,17 @@ async function loadCastleProgress() {
     if (saved) {
         try {
             const data = JSON.parse(saved);
-            currentCastleCard = data.currentCard;
-            userCastleStats = data.stats || { strength: 0, agility: 0, intelligence: 0 };
-            selectedCastleCharacter = data.character;
-            castleCompletedEndings = data.completedEndings || [];
-            metEliza = data.metEliza || false;
-            castleCompletedChoices = data.completedChoices || {};
-            castleApprovedChoices = data.approvedChoices || {};
-            console.log('✅ Прогресс загружен из localStorage');
-            return true;
+            if (data.currentCard) {
+                currentCastleCard = data.currentCard;
+                userCastleStats = data.stats || { strength: 0, agility: 0, intelligence: 0 };
+                selectedCastleCharacter = data.character;
+                castleCompletedEndings = data.completedEndings || [];
+                metEliza = data.metEliza || false;
+                castleCompletedChoices = data.completedChoices || {};
+                castleApprovedChoices = data.approvedChoices || {};
+                console.log('✅ Прогресс загружен из localStorage');
+                return true;
+            }
         } catch(e) {}
     }
     
@@ -17210,25 +17232,13 @@ async function checkCastleApprovals() {
             
             if (changed) {
                 saveCastleProgress();
-                // Если сейчас отображается карточка с выборами, обновляем её
                 if (currentCastleCard) {
-                    const card = CASTLE_STORY.cards[currentCastleCard];
-                    if (card && card.isChoice) {
-                        renderCastleCard(currentCastleCard);
-                    }
+                    renderCastleCard(currentCastleCard);
                 }
             }
         }
-    } catch (error) {
-        // Игнорируем ошибки при проверке
-    }
+    } catch (error) {}
 }
-
-// Запускаем проверку одобрений каждые 5 секунд
-setInterval(checkCastleApprovals, 5000);
-
-// Первая проверка при загрузке
-checkCastleApprovals();
         // ==========================================
 // ПРОВЕРКА ОДОБРЕНИЙ С СЕРВЕРА
 // ==========================================
@@ -17262,9 +17272,6 @@ async function checkCastleApprovals() {
     }
 }
 
-// Запускаем проверку каждые 5 секунд
-setInterval(checkCastleApprovals, 5000);
-checkCastleApprovals();
        // ==========================================
 // МАГАЗИН
 // ==========================================
