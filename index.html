@@ -16805,20 +16805,23 @@ function renderCastleCard(cardId) {
             if (choice.requireSkipOr === 'metEliza') meetsReq = metEliza || ((userSkips||0) >= (choice.skipCost||99));
             const isDisabled = !meetsReq || (hasSkip && (userSkips||0) < (choice.skipCost||0));
             
-            // Формируем строку требований ТОЛЬКО если не выполнены
-            let reqBadge = '';
-            if (!meetsReq) {
-                if (reqStat) {
-                    reqBadge = ` (нужно ${statNames[reqStat.stat]}${reqStat.min})`;
-                } else if (hasSkip) {
-                    reqBadge = ` (нужно 🎫${choice.skipCost})`;
-                }
+            let reqText = '';
+            if (hasSkip) {
+                reqText = `🎫${choice.skipCost}`;
+            }
+            if (reqStat) {
+                reqText = `${statNames[reqStat.stat]}${reqStat.min}`;
+            }
+            if (!meetsReq && reqText) {
+                reqText = ` (нужно ${reqText}) 🔒`;
+            } else if (meetsReq && reqText) {
+                reqText = ` (${reqText})`;
             }
             
             choicesHtml += `<div class="castle-choice-wrapper" style="margin-bottom: 10px;">
                 <button class="task-submit-btn castle-choice-btn" style="width: 100%; text-align: left; padding: 12px; ${isDisabled?'opacity: 0.5;':''}" ${isDisabled?'disabled':''} onclick="submitCastleChoice('${cardId}',${idx})">
-                    <div style="font-weight: 500;">${choice.text}${hasSkip && meetsReq ? ` (🎫${choice.skipCost})` : ''}${reqBadge}${isDisabled && !meetsReq ? ' 🔒' : ''}</div>
-                   ${choice.task ? `<div style="font-size: 11px; opacity: 0.8; margin-top: 4px; display: block;">📸 ${choice.task}</div>` : ''}
+                    <div style="font-weight: 500;">${choice.text}${reqText}</div>
+                    ${choice.task ? `<div style="font-size: 11px; opacity: 0.8; margin-top: 4px; display: block;">📸 ${choice.task}</div>` : ''}
                 </button>
             </div>`;
         });
