@@ -16832,14 +16832,15 @@ function renderCastleCard(cardId) {
             if (reqStat && !meetsReq) badge += ` (${statNames[reqStat.stat]}${reqStat.min})`;
             if (!meetsReq) badge += ' 🔒';
             
-            choicesHtml += `
-                <div class="castle-choice-wrapper" style="margin-bottom: 10px;">
-                    <button class="task-submit-btn castle-choice-btn" 
-                            style="width: 100%; text-align: left; padding: 12px; ${isDisabled ? 'opacity: 0.5;' : ''}"
-                            ${isDisabled ? 'disabled' : ''}
-                            onclick="submitCastleChoice('${cardId}', ${idx})">
-                        ${btnLabel}${badge}
-                    </button>
+           choicesHtml += `
+    <div class="castle-choice-wrapper" style="margin-bottom: 10px;">
+        <button class="task-submit-btn castle-choice-btn" 
+                style="width: 100%; text-align: left; padding: 12px; ${isDisabled ? 'opacity: 0.5;' : ''}"
+                ${isDisabled ? 'disabled' : ''}
+                data-idx="${idx}"
+                onclick="submitCastleChoice('${cardId}', this.getAttribute('data-idx'))">
+            ${btnLabel}${badge}
+        </button>
                     ${choice.task ? `
                         <div style="font-size: 11px; color: var(--text-gray); margin-top: 4px; margin-left: 5px;">
                             📸 ${choice.task}
