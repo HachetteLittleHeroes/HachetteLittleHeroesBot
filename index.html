@@ -16804,9 +16804,15 @@ function renderCastleCard(cardId) {
             if (choice.requireSkipOr === 'metEliza') meetsReq = metEliza || ((userSkips||0) >= (choice.skipCost||99));
             const isDisabled = !meetsReq || (hasSkip && (userSkips||0) < (choice.skipCost||0));
             
+            let costBadge = '';
+            if (hasSkip && !choice.text.includes('🎫')) {
+                costBadge = ` (🎫${choice.skipCost})`;
+            }
+            
             choicesHtml += `<div class="castle-choice-wrapper" style="margin-bottom: 10px;">
                 <button class="task-submit-btn castle-choice-btn" style="width: 100%; text-align: left; padding: 12px; ${isDisabled?'opacity: 0.5;':''}" ${isDisabled?'disabled':''} onclick="submitCastleChoice('${cardId}',${idx})">
-                    ${choice.text}${choice.task ? '<br><span style="font-size: 11px; opacity: 0.8;">📸 ' + choice.task + '</span>' : ''}
+                    <div>${choice.text}${costBadge}</div>
+                    ${choice.task ? '<div style="font-size: 11px; opacity: 0.8; margin-top: 4px;">📸 ' + choice.task + '</div>' : ''}
                 </button>
             </div>`;
         });
