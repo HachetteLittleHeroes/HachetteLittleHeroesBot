@@ -16659,6 +16659,7 @@ const CASTLE_CHARACTERS = {
 // ПЕРЕМЕННЫЕ
 // ==========================================
 let selectedCastleCharacter = null;
+let currentEndingClaimed = false;
 let userCastleStats = { strength: 0, agility: 0, intelligence: 0 };
 let currentCastleCard = null;
 let castleCompletedEndings = [];
@@ -16715,7 +16716,7 @@ function startCastleStory() {
     const content = document.getElementById('castleStoryContent');
     const arrow = document.getElementById('castleStoryArrow');
     if (content) { content.style.display = 'block'; if (arrow) arrow.style.transform = 'rotate(180deg)'; }
-    castleCompletedEndings = [];
+    currentEndingClaimed = false;
     showCharacterSelect();
 }
 
@@ -16741,7 +16742,7 @@ function selectCastleCharacter(charId) {
     metEliza = false;
     castleCompletedChoices = {};
     castleApprovedChoices = {};
-    castleCompletedEndings = [];
+    currentEndingClaimed = false;
     const prefixMap = { mystic: 'M', thief: 'V', alchemist: 'A' };
     currentCastleCard = '1' + prefixMap[charId] + '_1';
     document.querySelectorAll('.modal-overlay').forEach(m => { if (m.innerHTML.includes('Выберите персонажа')) m.remove(); });
@@ -16861,6 +16862,13 @@ function claimCastleEnding(cardId) {
     const card = CASTLE_STORY.cards[cardId];
     if (!card || !card.isEnding) return;
     
+    // Проверяем, не нажата ли уже кнопка в этом прохождении
+    if (currentEndingClaimed) {
+        return; // Просто ничего не делаем
+    }
+    
+    currentEndingClaimed = true;
+    
     const reward = ENDING_REWARDS[card.endingId];
     const alreadyGot = castleCompletedEndings[card.endingId];
     const statusAlreadyUnlocked = alreadyGot && alreadyGot.status_unlocked;
@@ -16893,7 +16901,6 @@ function claimCastleEnding(cardId) {
         }
     }
     
-    // Сохраняем результат
     castleCompletedEndings[card.endingId] = {
         status_unlocked: statusUnlocked,
         status_name: reward ? reward.status : ''
@@ -16917,7 +16924,7 @@ function claimCastleEnding(cardId) {
     if (statusUnlocked) {
         message = `✨ Выпал статус «${reward.status}»! (шанс был ${chancePercent}%)`;
     } else if (reward && reward.status) {
-        message = `🎲 Статус «${reward.status}» не выпал (шанс ${chancePercent}%)\nПройдите ещё раз — шанс есть!`;
+        message = `🎲 Статус «${reward.status}» не выпал (шанс ${chancePercent}%)\nПройтите ещё раз — шанс есть!`;
     } else {
         message = '🏆 Концовка получена!';
     }
