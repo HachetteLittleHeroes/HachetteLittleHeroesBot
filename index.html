@@ -16667,27 +16667,6 @@ let castleApprovedChoices = {};
 let metEliza = false;
 
 // ==========================================
-// БЕЗОПАСНОЕ УВЕДОМЛЕНИЕ
-// ==========================================
-function safeAlert(message) {
-    try {
-        if (typeof tg !== 'undefined' && tg) {
-            if (typeof tg.showPopup === 'function') {
-                tg.showPopup({ title: 'Уведомление', message: message });
-            } else if (typeof tg.showAlert === 'function') {
-                tg.showAlert(message);
-            } else {
-                alert(message);
-            }
-        } else {
-            alert(message);
-        }
-    } catch(e) {
-        alert(message);
-    }
-}
-
-// ==========================================
 // ФУНКЦИИ ИСТОРИИ
 // ==========================================
 
@@ -16992,14 +16971,14 @@ function submitCastleChoice(cardId, choiceIdx) {
             const result = await response.json();
             
             if (result && result.status === 'ok') {
-                safeAlert('✅ Фото отправлено на проверку! Ожидайте одобрения.');
+                alert('✅ Фото отправлено на проверку! Ожидайте одобрения.');
                 renderCastleCard(cardId);
             } else {
                 throw new Error(result?.message || 'Ошибка сервера');
             }
         } catch (error) {
             console.error('Ошибка отправки:', error);
-            safeAlert('❌ Ошибка: ' + error.message);
+            alert('❌ Ошибка: ' + error.message);
             delete castleCompletedChoices[choiceKey];
             saveCastleProgress();
             renderCastleCard(cardId);
@@ -17078,7 +17057,7 @@ function claimCastleEnding(cardId) {
     }
     
     saveCastleProgress();
-    safeAlert('🏆 Концовка получена! Можете пройти историю заново или выбрать другого персонажа.');
+    alert('🏆 Концовка получена! Можете пройти историю заново или выбрать другого персонажа.');
     
     const container = document.getElementById('castleStoryContainer');
     if (container) {
