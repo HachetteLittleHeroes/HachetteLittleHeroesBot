@@ -16802,10 +16802,17 @@ function renderCastleCard(cardId) {
             if (choice.requireOrSkip && !meetsReq) meetsReq = (userSkips||0) >= choice.requireOrSkip;
             if (choice.requireSkipOr === 'metEliza') meetsReq = metEliza || ((userSkips||0) >= (choice.skipCost||99));
             const isDisabled = !meetsReq || (hasSkip && (userSkips||0) < (choice.skipCost||0));
-            let badge = '';
-            if (hasSkip) badge += ` 🎫${choice.skipCost}`;
-            if (reqStat && !meetsReq) badge += ` (${statNames[reqStat.stat]}${reqStat.min}) 🔒`;
-            choicesHtml += `<div class="castle-choice-wrapper" style="margin-bottom: 10px;"><button class="task-submit-btn castle-choice-btn" style="width: 100%; text-align: left; padding: 12px; ${isDisabled?'opacity: 0.5;':''}" ${isDisabled?'disabled':''} onclick="submitCastleChoice('${cardId}',${idx})">${choice.text}${badge}${choice.task?`<br><span style="font-size: 11px; color: var(--text-gray);">📸 ${choice.task}</span>`:''}</button></div>`;
+            
+            let reqText = '';
+            if (reqStat && !meetsReq) reqText = ` (${statNames[reqStat.stat]}${reqStat.min}) 🔒`;
+            if (hasSkip) reqText = ` (🎫${choice.skipCost})`;
+            
+            choicesHtml += `<div class="castle-choice-wrapper" style="margin-bottom: 10px;">
+                <button class="task-submit-btn castle-choice-btn" style="width: 100%; text-align: left; padding: 12px; ${isDisabled?'opacity: 0.5;':''}" ${isDisabled?'disabled':''} onclick="submitCastleChoice('${cardId}',${idx})">
+                    <div style="font-weight: 500;">${choice.text}${reqText}</div>
+                    ${choice.task ? `<div style="font-size: 11px; color: var(--text-gray); margin-top: 3px;">📸 ${choice.task}</div>` : ''}
+                </button>
+            </div>`;
         });
         container.innerHTML = `<div class="castle-card">
             ${card.chapter ? `<div style="font-weight: 700; font-size: 16px; color: var(--accent); margin-bottom: 10px;">📖 ${card.chapter}</div>` : ''}
