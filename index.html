@@ -15942,10 +15942,10 @@ const CASTLE_CHARACTERS = {
         '1M_2': { stage: 1, character: 'mystic', text: 'Тропа приводит к обрыву. Чёрная река. Каменный мост. На мосту — призрак в ржавых доспехах.', nextCard: '1M_3' },
         '1M_3': { stage: 1, character: 'mystic', isChoice: true, text: 'Призрак изучает вас. Его амулет — фокус заклинания привязки. Вы можете сразиться, обмануть, заговорить или призвать духов.',
             choices: [
-                { id: 1, text: '⚔️ Сразиться с призраком', requireStat: { stat: 'strength', min: 6 }, reward: { strength: 2 }, penalty: { strength: -1 }, penaltyNext: '2M_A_1', nextCard: '2M_A_1', task: 'Раскрась страницу с рыцарем или битвой' },
-                { id: 2, text: '🏃 Обмануть призрака — отвлечь голосом', requireStat: { stat: 'agility', min: 6 }, reward: { agility: 2 }, penalty: { agility: -1 }, penaltyNext: '2M_A_1', nextCard: '2M_B_1', task: 'Раскрась страницу с тенями' },
-                { id: 3, text: '🧠 Заговорить на языке полукровок', requireStat: { stat: 'intelligence', min: 6 }, reward: { intelligence: 2 }, nextCard: '2M_A_1', task: 'Раскрась страницу с духом' },
-                { id: 4, text: '🌟 Призвать духов леса на помощь', skipCost: 2, isPremium: true, reward: { all: 1 }, nextCard: '2M_V_1' }
+                { id: 1, text: 'Сразиться с призраком', requireStat: { stat: 'strength', min: 6 }, reward: { strength: 2 }, penalty: { strength: -1 }, penaltyNext: '2M_A_1', nextCard: '2M_A_1', task: 'Раскрась страницу с рыцарем или битвой' },
+                { id: 2, text: 'Обмануть призрака — отвлечь голосом', requireStat: { stat: 'agility', min: 6 }, reward: { agility: 2 }, penalty: { agility: -1 }, penaltyNext: '2M_A_1', nextCard: '2M_B_1', task: 'Раскрась страницу с тенями' },
+                { id: 3, text: 'Заговорить на языке полукровок', requireStat: { stat: 'intelligence', min: 6 }, reward: { intelligence: 2 }, nextCard: '2M_A_1', task: 'Раскрась страницу с духом' },
+                { id: 4, text: 'Призвать духов леса на помощь', skipCost: 2, isPremium: true, reward: { all: 1 }, nextCard: '2M_V_1' }
             ]
         },
         
@@ -15954,9 +15954,9 @@ const CASTLE_CHARACTERS = {
         '2M_A_2': { stage: 2, character: 'mystic', text: 'Видение: отец, прикованный цепями, куёт меч в кузнице. «Найди меч. В нём моя кровь. Моя душа».', nextCard: '2M_A_3' },
         '2M_A_3': { stage: 2, character: 'mystic', isChoice: true, text: 'В конце коридора — Зал Стражей. Боковая лестница — в кузницу.',
             choices: [
-                { id: 1, text: '⚔️ Войти в Зал Стражей', nextCard: '3M_1_1', task: 'Раскрась страницу с доспехами' },
-                { id: 2, text: '🏃 Спуститься в кузницу', nextCard: '3M_2_1', task: 'Раскрась страницу с кузницей' },
-                { id: 3, text: '🌟 Снять герб отца и выйти во двор', skipCost: 1, isPremium: true, reward: { all: 1 }, nextCard: '3M_3_1' }
+                { id: 1, text: 'Войти в Зал Стражей', nextCard: '3M_1_1', task: 'Раскрась страницу с доспехами' },
+                { id: 2, text: 'Спуститься в кузницу', nextCard: '3M_2_1', task: 'Раскрась страницу с кузницей' },
+                { id: 3, text: 'Снять герб отца и выйти во двор', skipCost: 1, isPremium: true, reward: { all: 1 }, nextCard: '3M_3_1' }
             ]
         },
         
@@ -15965,9 +15965,9 @@ const CASTLE_CHARACTERS = {
         '2M_B_2': { stage: 2, character: 'mystic', text: 'Коридор раздваивается. Тень шепчет: «Твой отец был здесь. Спустись в кузницу. Найди его меч. Освободи нас».', nextCard: '2M_B_3' },
         '2M_B_3': { stage: 2, character: 'mystic', isChoice: true,
             choices: [
-                { id: 1, text: '🏃 Спуститься в кузницу', nextCard: '3M_2_1', task: 'Раскрась страницу с кузницей' },
-                { id: 2, text: '⚔️ Подняться во двор', nextCard: '3M_3_1', task: 'Раскрась страницу с двором' },
-                { id: 3, text: '🌟 Попросить теней провести через Зал Стражей', skipCost: 1, isPremium: true, reward: { agility: 1 }, nextCard: '3M_1_1' }
+                { id: 1, text: 'Спуститься в кузницу', nextCard: '3M_2_1', task: 'Раскрась страницу с кузницей' },
+                { id: 2, text: 'Подняться во двор', nextCard: '3M_3_1', task: 'Раскрась страницу с двором' },
+                { id: 3, text: 'Попросить теней провести через Зал Стражей', skipCost: 1, isPremium: true, reward: { agility: 1 }, nextCard: '3M_1_1' }
             ]
         },
         
@@ -15976,9 +15976,9 @@ const CASTLE_CHARACTERS = {
         '2M_V_2': { stage: 2, character: 'mystic', text: 'Лодка скользит по воде. Лодочник: «Твой отец нашёл древний храм под замком. Там лежит звезда — источник проклятия».', nextCard: '2M_V_3' },
         '2M_V_3': { stage: 2, character: 'mystic', isChoice: true,
             choices: [
-                { id: 1, text: '🏃 Спуститься в пещеры', nextCard: '3M_4_1', task: 'Раскрась страницу с пещерами' },
-                { id: 2, text: '⚔️ Подняться к кузнице', nextCard: '3M_2_1', task: 'Раскрась страницу с кузницей' },
-                { id: 3, text: '🌟 Отправиться прямо к древнему храму', skipCost: 2, isPremium: true, reward: { all: 2 }, nextCard: '3M_5_1' }
+                { id: 1, text: 'Спуститься в пещеры', nextCard: '3M_4_1', task: 'Раскрась страницу с пещерами' },
+                { id: 2, text: 'Подняться к кузнице', nextCard: '3M_2_1', task: 'Раскрась страницу с кузницей' },
+                { id: 3, text: 'Отправиться прямо к древнему храму', skipCost: 2, isPremium: true, reward: { all: 2 }, nextCard: '3M_5_1' }
             ]
         },
         
@@ -15987,9 +15987,9 @@ const CASTLE_CHARACTERS = {
         '3M_1_2': { stage: 3, character: 'mystic', text: 'Восьмой доспех слева пустой — обманка. Если ударить по нему — строй нарушится.', nextCard: '3M_1_3' },
         '3M_1_3': { stage: 3, character: 'mystic', isChoice: true,
             choices: [
-                { id: 1, text: '⚔️ Прорваться силой (💪≥8)', requireStat: { stat: 'strength', min: 8 }, reward: { strength: 3 }, penalty: { all: -1 }, penaltyNext: '4M_2_1', nextCard: '4M_1_1', task: 'Раскрась страницу с битвой' },
-                { id: 2, text: '🏃 Ударить в пустой доспех (🏃≥6)', requireStat: { stat: 'agility', min: 6 }, reward: { agility: 2 }, penalty: { agility: -1 }, penaltyNext: '4M_3_1', nextCard: '4M_2_1', task: 'Раскрась страницу с обманом' },
-                { id: 3, text: '🌟 Использовать кровь полукровки', skipCost: 2, isPremium: true, reward: { all: 2 }, nextCard: '4M_3_1' }
+                { id: 1, text: 'Прорваться силой (💪≥8)', requireStat: { stat: 'strength', min: 8 }, reward: { strength: 3 }, penalty: { all: -1 }, penaltyNext: '4M_2_1', nextCard: '4M_1_1', task: 'Раскрась страницу с битвой' },
+                { id: 2, text: 'Ударить в пустой доспех (🏃≥6)', requireStat: { stat: 'agility', min: 6 }, reward: { agility: 2 }, penalty: { agility: -1 }, penaltyNext: '4M_3_1', nextCard: '4M_2_1', task: 'Раскрась страницу с обманом' },
+                { id: 3, text: 'Использовать кровь полукровки', skipCost: 2, isPremium: true, reward: { all: 2 }, nextCard: '4M_3_1' }
             ]
         },
         
@@ -15998,9 +15998,9 @@ const CASTLE_CHARACTERS = {
         '3M_2_2': { stage: 3, character: 'mystic', text: 'На наковальне — Меч Ашетвиля. В этом металле — кровь вашего отца. «Возьми его — и освободи меня», — рычит Элементаль.', nextCard: '3M_2_3' },
         '3M_2_3': { stage: 3, character: 'mystic', isChoice: true,
             choices: [
-                { id: 1, text: '⚔️ Взять меч отца (💪≥8)', requireStat: { stat: 'strength', min: 8 }, reward: { strength: 4 }, penalty: { strength: -2 }, penaltyNext: '4M_2_1', nextCard: '4M_1_1', task: 'Раскрась страницу с мечом' },
-                { id: 2, text: '🧠 Освободить элементаля (🧠≥6)', requireStat: { stat: 'intelligence', min: 6 }, reward: { all: 3 }, nextCard: '4M_2_1', task: 'Раскрась страницу с элементалем' },
-                { id: 3, text: '🌟 Выковать новый меч из крови', skipCost: 2, isPremium: true, reward: { strength: 3 }, nextCard: '4M_3_1' }
+                { id: 1, text: 'Взять меч отца (💪≥8)', requireStat: { stat: 'strength', min: 8 }, reward: { strength: 4 }, penalty: { strength: -2 }, penaltyNext: '4M_2_1', nextCard: '4M_1_1', task: 'Раскрась страницу с мечом' },
+                { id: 2, text: 'Освободить элементаля (🧠≥6)', requireStat: { stat: 'intelligence', min: 6 }, reward: { all: 3 }, nextCard: '4M_2_1', task: 'Раскрась страницу с элементалем' },
+                { id: 3, text: 'Выковать новый меч из крови', skipCost: 2, isPremium: true, reward: { strength: 3 }, nextCard: '4M_3_1' }
             ]
         },
         
@@ -16009,9 +16009,9 @@ const CASTLE_CHARACTERS = {
         '3M_3_2': { stage: 3, character: 'mystic', text: 'Горгулья открывает жёлтые глаза. «Полукровка. Твой отец пил из этого колодца. Вода дала ему силы выжить».', nextCard: '3M_3_3' },
         '3M_3_3': { stage: 3, character: 'mystic', isChoice: true,
             choices: [
-                { id: 1, text: '⚔️ Сразиться с горгульей (💪≥8)', requireStat: { stat: 'strength', min: 8 }, reward: { strength: 4 }, penalty: { strength: -1 }, penaltyNext: '4M_2_1', nextCard: '4M_1_1', task: 'Раскрась страницу с горгульей' },
-                { id: 2, text: '🏃 Испить воды из колодца', reward: { all: 2 }, nextCard: '4M_2_1', task: 'Раскрась страницу с водой' },
-                { id: 3, text: '🌟 Дать горгулье каплю крови', skipCost: 2, isPremium: true, reward: { all: 2 }, nextCard: '4M_3_1' }
+                { id: 1, text: 'Сразиться с горгульей (💪≥8)', requireStat: { stat: 'strength', min: 8 }, reward: { strength: 4 }, penalty: { strength: -1 }, penaltyNext: '4M_2_1', nextCard: '4M_1_1', task: 'Раскрась страницу с горгульей' },
+                { id: 2, text: 'Испить воды из колодца', reward: { all: 2 }, nextCard: '4M_2_1', task: 'Раскрась страницу с водой' },
+                { id: 3, text: 'Дать горгулье каплю крови', skipCost: 2, isPremium: true, reward: { all: 2 }, nextCard: '4M_3_1' }
             ]
         },
         
@@ -16020,9 +16020,9 @@ const CASTLE_CHARACTERS = {
         '3M_4_2': { stage: 3, character: 'mystic', text: 'На берегу — остатки лагеря отца. Нож с рукоятью из оленьего рога, обрывок карты. Он искал источник проклятия — и нашёл.', nextCard: '3M_4_3' },
         '3M_4_3': { stage: 3, character: 'mystic', isChoice: true,
             choices: [
-                { id: 1, text: '🏃 Идти в затопленный зал', nextCard: '4M_4_1', task: 'Раскрась страницу с озером' },
-                { id: 2, text: '⚔️ Взять нож отца и вернуться в кузницу', nextCard: '4M_2_1', task: 'Раскрась страницу с оружием' },
-                { id: 3, text: '🌟 Нырнуть в озеро — найти тайный проход', skipCost: 2, isPremium: true, reward: { all: 2 }, nextCard: '4M_5_1' }
+                { id: 1, text: 'Идти в затопленный зал', nextCard: '4M_4_1', task: 'Раскрась страницу с озером' },
+                { id: 2, text: 'Взять нож отца и вернуться в кузницу', nextCard: '4M_2_1', task: 'Раскрась страницу с оружием' },
+                { id: 3, text: 'Нырнуть в озеро — найти тайный проход', skipCost: 2, isPremium: true, reward: { all: 2 }, nextCard: '4M_5_1' }
             ]
         },
         
@@ -16031,9 +16031,9 @@ const CASTLE_CHARACTERS = {
         '3M_5_2': { stage: 3, character: 'mystic', text: 'Звезда говорит образами: первый лорд нашёл её, попросил силу. Звезда потребовала плату — память. Лорд отказался.', nextCard: '3M_5_3' },
         '3M_5_3': { stage: 3, character: 'mystic', isChoice: true,
             choices: [
-                { id: 1, text: '🧠 Поговорить со звездой (🧠≥6)', requireStat: { stat: 'intelligence', min: 6 }, reward: { intelligence: 3 }, nextCard: '4M_5_1', task: 'Раскрась страницу со звездой' },
-                { id: 2, text: '🏃 Коснуться звезды — получить видение', reward: { all: 2 }, nextCard: '4M_4_1', task: 'Раскрась страницу с видением' },
-                { id: 3, text: '🌟 Взять осколок звезды', skipCost: 2, isPremium: true, reward: { all: 3 }, nextCard: '4M_3_1' }
+                { id: 1, text: 'Поговорить со звездой (🧠≥6)', requireStat: { stat: 'intelligence', min: 6 }, reward: { intelligence: 3 }, nextCard: '4M_5_1', task: 'Раскрась страницу со звездой' },
+                { id: 2, text: 'Коснуться звезды — получить видение', reward: { all: 2 }, nextCard: '4M_4_1', task: 'Раскрась страницу с видением' },
+                { id: 3, text: 'Взять осколок звезды', skipCost: 2, isPremium: true, reward: { all: 3 }, nextCard: '4M_3_1' }
             ]
         },
         
@@ -16042,9 +16042,9 @@ const CASTLE_CHARACTERS = {
         '4M_1_2': { stage: 4, character: 'mystic', text: '«Сын. Освободи лорда — и я освобожусь. Убей его — и я исчезну. Или займи его место».', nextCard: '4M_1_3' },
         '4M_1_3': { stage: 4, character: 'mystic', isChoice: true,
             choices: [
-                { id: 1, text: '⚔️ Поклясться освободить лорда и отца', reward: { strength: 2 }, nextCard: '5M_1_1', task: 'Раскрась страницу с клятвой' },
-                { id: 2, text: '🏃 Решить занять трон', reward: { all: 2 }, nextCard: '5M_2_1', task: 'Раскрась страницу с троном' },
-                { id: 3, text: '🌟 Отдать отцу свою кровь', skipCost: 2, isPremium: true, reward: { all: 3 }, nextCard: '5M_3_1' }
+                { id: 1, text: 'Поклясться освободить лорда и отца', reward: { strength: 2 }, nextCard: '5M_1_1', task: 'Раскрась страницу с клятвой' },
+                { id: 2, text: 'Решить занять трон', reward: { all: 2 }, nextCard: '5M_2_1', task: 'Раскрась страницу с троном' },
+                { id: 3, text: 'Отдать отцу свою кровь', skipCost: 2, isPremium: true, reward: { all: 3 }, nextCard: '5M_3_1' }
             ]
         },
         
@@ -16053,9 +16053,9 @@ const CASTLE_CHARACTERS = {
         '4M_2_2': { stage: 4, character: 'mystic', text: 'Дневник: «Лорд приказал сделать серебряные болты против того, кто не умирает от стали». В углу — запертый шкаф с магической печатью.', nextCard: '4M_2_3' },
         '4M_2_3': { stage: 4, character: 'mystic', isChoice: true,
             choices: [
-                { id: 1, text: '🏃 Взять серебряный болт', reward: { all: 1 }, nextCard: '5M_2_1', task: 'Раскрась страницу с оружием' },
-                { id: 2, text: '⚔️ Сломать печать на шкафу (💪≥8)', requireStat: { stat: 'strength', min: 8 }, reward: { strength: 2 }, penalty: { all: -1 }, penaltyNext: '5M_1_1', nextCard: '5M_3_1', task: 'Раскрась страницу с магией' },
-                { id: 3, text: '🌟 Открыть шкаф особой монетой', skipCost: 2, isPremium: true, reward: { strength: 3 }, nextCard: '5M_1_1' }
+                { id: 1, text: 'Взять серебряный болт', reward: { all: 1 }, nextCard: '5M_2_1', task: 'Раскрась страницу с оружием' },
+                { id: 2, text: 'Сломать печать на шкафу (💪≥8)', requireStat: { stat: 'strength', min: 8 }, reward: { strength: 2 }, penalty: { all: -1 }, penaltyNext: '5M_1_1', nextCard: '5M_3_1', task: 'Раскрась страницу с магией' },
+                { id: 3, text: 'Открыть шкаф особой монетой', skipCost: 2, isPremium: true, reward: { strength: 3 }, nextCard: '5M_1_1' }
             ]
         },
         
@@ -16064,9 +16064,9 @@ const CASTLE_CHARACTERS = {
         '4M_3_2': { stage: 4, character: 'mystic', text: 'Наверху — зеркало в серебряной раме. В отражении — ваш отец с Советником. Они о чём-то говорят.', nextCard: '4M_3_3' },
         '4M_3_3': { stage: 4, character: 'mystic', isChoice: true,
             choices: [
-                { id: 1, text: '⚔️ Разбить зеркало (💪≥8)', requireStat: { stat: 'strength', min: 8 }, reward: { strength: 2 }, nextCard: '5M_3_1', task: 'Раскрась страницу с зеркалом' },
-                { id: 2, text: '🧠 Спросить у теней (🧠≥6)', requireStat: { stat: 'intelligence', min: 6 }, reward: { intelligence: 2 }, nextCard: '5M_1_1', task: 'Раскрась страницу с тенями' },
-                { id: 3, text: '🌟 Войти в зеркало', skipCost: 2, isPremium: true, reward: { all: 3 }, nextCard: '5M_2_1' }
+                { id: 1, text: 'Разбить зеркало (💪≥8)', requireStat: { stat: 'strength', min: 8 }, reward: { strength: 2 }, nextCard: '5M_3_1', task: 'Раскрась страницу с зеркалом' },
+                { id: 2, text: 'Спросить у теней (🧠≥6)', requireStat: { stat: 'intelligence', min: 6 }, reward: { intelligence: 2 }, nextCard: '5M_1_1', task: 'Раскрась страницу с тенями' },
+                { id: 3, text: 'Войти в зеркало', skipCost: 2, isPremium: true, reward: { all: 3 }, nextCard: '5M_2_1' }
             ]
         },
         
@@ -16075,9 +16075,9 @@ const CASTLE_CHARACTERS = {
         '4M_4_2': { stage: 4, character: 'mystic', text: 'Видение: отец разорвал эту цепь. Освободил Элизу — жену лорда. Она спряталась в саду.', nextCard: '4M_4_3' },
         '4M_4_3': { stage: 4, character: 'mystic', isChoice: true,
             choices: [
-                { id: 1, text: '🏃 Идти по следу Элизы в сад', nextCard: '5M_4_1', task: 'Раскрась страницу с садом' },
-                { id: 2, text: '⚔️ Взять обрывок цепи с собой', reward: { all: 1 }, nextCard: '5M_2_1', task: 'Раскрась страницу с цепью' },
-                { id: 3, text: '🌟 Восстановить видение полностью', skipCost: 2, isPremium: true, reward: { intelligence: 2 }, nextCard: '5M_1_1' }
+                { id: 1, text: 'Идти по следу Элизы в сад', nextCard: '5M_4_1', task: 'Раскрась страницу с садом' },
+                { id: 2, text: 'Взять обрывок цепи с собой', reward: { all: 1 }, nextCard: '5M_2_1', task: 'Раскрась страницу с цепью' },
+                { id: 3, text: 'Восстановить видение полностью', skipCost: 2, isPremium: true, reward: { intelligence: 2 }, nextCard: '5M_1_1' }
             ]
         },
         
@@ -16086,9 +16086,9 @@ const CASTLE_CHARACTERS = {
         '4M_5_2': { stage: 4, character: 'mystic', text: 'Звезда показывает: ваш отец предложил свою память в обмен на свободу Элизы. Звезда согласилась. Отец забыл всё.', nextCard: '4M_5_3' },
         '4M_5_3': { stage: 4, character: 'mystic', isChoice: true,
             choices: [
-                { id: 1, text: '🧠 Предложить звезде свою память', penalty: { intelligence: -1 }, nextCard: '5M_5_1', task: 'Раскрась страницу с жертвой' },
-                { id: 2, text: '⚔️ Потребовать вернуть память отца (💪≥8)', requireStat: { stat: 'strength', min: 8 }, reward: { strength: 2 }, nextCard: '5M_3_1', task: 'Раскрась страницу с требованием' },
-                { id: 3, text: '🌟 Договориться — разделить бремя', skipCost: 2, isPremium: true, reward: { all: 2 }, nextCard: '5M_4_1' }
+                { id: 1, text: 'Предложить звезде свою память', penalty: { intelligence: -1 }, nextCard: '5M_5_1', task: 'Раскрась страницу с жертвой' },
+                { id: 2, text: 'Потребовать вернуть память отца (💪≥8)', requireStat: { stat: 'strength', min: 8 }, reward: { strength: 2 }, nextCard: '5M_3_1', task: 'Раскрась страницу с требованием' },
+                { id: 3, text: 'Договориться — разделить бремя', skipCost: 2, isPremium: true, reward: { all: 2 }, nextCard: '5M_4_1' }
             ]
         },
         
@@ -16097,9 +16097,9 @@ const CASTLE_CHARACTERS = {
         '5M_1_2': { stage: 5, character: 'mystic', text: 'Рядом — медальон с портретом Элизы. Лорд любил её. Проклятие — трагедия любви.', nextCard: '5M_1_3' },
         '5M_1_3': { stage: 5, character: 'mystic', isChoice: true,
             choices: [
-                { id: 1, text: '🧠 Взять письмо и медальон', reward: { intelligence: 1 }, nextCard: '6M_1_1', task: 'Раскрась страницу с письмом' },
-                { id: 2, text: '🏃 Искать следы Элизы (🏃≥6)', requireStat: { stat: 'agility', min: 6 }, reward: { agility: 2 }, nextCard: '6M_2_1', task: 'Раскрась страницу с поиском' },
-                { id: 3, text: '🌟 Прочесть письмо вслух', skipCost: 2, isPremium: true, reward: { all: 2 }, nextCard: '6M_3_1' }
+                { id: 1, text: 'Взять письмо и медальон', reward: { intelligence: 1 }, nextCard: '6M_1_1', task: 'Раскрась страницу с письмом' },
+                { id: 2, text: 'Искать следы Элизы (🏃≥6)', requireStat: { stat: 'agility', min: 6 }, reward: { agility: 2 }, nextCard: '6M_2_1', task: 'Раскрась страницу с поиском' },
+                { id: 3, text: 'Прочесть письмо вслух', skipCost: 2, isPremium: true, reward: { all: 2 }, nextCard: '6M_3_1' }
             ]
         },
         
@@ -16108,9 +16108,9 @@ const CASTLE_CHARACTERS = {
         '5M_2_2': { stage: 5, character: 'mystic', text: 'Тень выступает вперёд: «Я знал твоего отца. Он жалел только об одном — что не увидит, как ты вырастешь».', nextCard: '5M_2_3' },
         '5M_2_3': { stage: 5, character: 'mystic', isChoice: true,
             choices: [
-                { id: 1, text: '🧠 Спросить о матери', reward: { intelligence: 1 }, nextCard: '6M_2_1', task: 'Раскрась страницу с духом' },
-                { id: 2, text: '🏃 Попросить провести к лорду', reward: { agility: 1 }, nextCard: '6M_1_1', task: 'Раскрась страницу с проводником' },
-                { id: 3, text: '🌟 Попросить духов о помощи', skipCost: 2, isPremium: true, reward: { all: 2 }, nextCard: '6M_3_1' }
+                { id: 1, text: 'Спросить о матери', reward: { intelligence: 1 }, nextCard: '6M_2_1', task: 'Раскрась страницу с духом' },
+                { id: 2, text: 'Попросить провести к лорду', reward: { agility: 1 }, nextCard: '6M_1_1', task: 'Раскрась страницу с проводником' },
+                { id: 3, text: 'Попросить духов о помощи', skipCost: 2, isPremium: true, reward: { all: 2 }, nextCard: '6M_3_1' }
             ]
         },
         
@@ -16119,9 +16119,9 @@ const CASTLE_CHARACTERS = {
         '5M_3_2': { stage: 5, character: 'mystic', text: '«Элиза. Я люблю её. Но она выбрала Эдварда. Я найду способ забрать её. Даже если для этого придётся проклясть весь замок».', nextCard: '5M_3_3' },
         '5M_3_3': { stage: 5, character: 'mystic', isChoice: true,
             choices: [
-                { id: 1, text: '⚔️ Уничтожить дневник (💪≥6)', requireStat: { stat: 'strength', min: 6 }, reward: { strength: 2 }, nextCard: '6M_3_1', task: 'Раскрась страницу с уничтожением' },
-                { id: 2, text: '🧠 Изучить записи о звезде (🧠≥6)', requireStat: { stat: 'intelligence', min: 6 }, reward: { intelligence: 2 }, nextCard: '6M_1_1', task: 'Раскрась страницу с книгой' },
-                { id: 3, text: '🌟 Найти противоядие от проклятия', skipCost: 2, isPremium: true, reward: { all: 2 }, nextCard: '6M_2_1' }
+                { id: 1, text: 'Уничтожить дневник (💪≥6)', requireStat: { stat: 'strength', min: 6 }, reward: { strength: 2 }, nextCard: '6M_3_1', task: 'Раскрась страницу с уничтожением' },
+                { id: 2, text: 'Изучить записи о звезде (🧠≥6)', requireStat: { stat: 'intelligence', min: 6 }, reward: { intelligence: 2 }, nextCard: '6M_1_1', task: 'Раскрась страницу с книгой' },
+                { id: 3, text: 'Найти противоядие от проклятия', skipCost: 2, isPremium: true, reward: { all: 2 }, nextCard: '6M_2_1' }
             ]
         },
         
@@ -16130,9 +16130,9 @@ const CASTLE_CHARACTERS = {
         '5M_4_2': { stage: 5, character: 'mystic', text: 'Элиза. Полупрозрачная. «Твой отец спас меня. Освободи Эдварда. Пожалуйста».', nextCard: '5M_4_3' },
         '5M_4_3': { stage: 5, character: 'mystic', isChoice: true,
             choices: [
-                { id: 1, text: '⚔️ Пообещать освободить лорда', reward: { all: 1 }, nextCard: '6M_1_1', task: 'Раскрась страницу с обещанием' },
-                { id: 2, text: '🧠 Спросить о Советнике', reward: { intelligence: 1 }, nextCard: '6M_2_1', task: 'Раскрась страницу с разговором' },
-                { id: 3, text: '🌟 Взять Элизу с собой', skipCost: 2, isPremium: true, reward: { all: 3 }, nextCard: '6M_3_1' }
+                { id: 1, text: 'Пообещать освободить лорда', reward: { all: 1 }, nextCard: '6M_1_1', task: 'Раскрась страницу с обещанием' },
+                { id: 2, text: 'Спросить о Советнике', reward: { intelligence: 1 }, nextCard: '6M_2_1', task: 'Раскрась страницу с разговором' },
+                { id: 3, text: 'Взять Элизу с собой', skipCost: 2, isPremium: true, reward: { all: 3 }, nextCard: '6M_3_1' }
             ]
         },
         
@@ -16141,9 +16141,9 @@ const CASTLE_CHARACTERS = {
         '5M_5_2': { stage: 5, character: 'mystic', text: 'Три цепи, держащие лорда, тянутся сюда. Если разорвать их здесь — лорд освободится.', nextCard: '5M_5_3' },
         '5M_5_3': { stage: 5, character: 'mystic', isChoice: true,
             choices: [
-                { id: 1, text: '⚔️ Разорвать цепи (💪≥8)', requireStat: { stat: 'strength', min: 8 }, reward: { strength: 3 }, nextCard: '6M_1_1', task: 'Раскрась страницу с цепями' },
-                { id: 2, text: '🧠 Изучить механизм цепей (🧠≥6)', requireStat: { stat: 'intelligence', min: 6 }, reward: { intelligence: 2 }, nextCard: '6M_3_1', task: 'Раскрась страницу с механизмом' },
-                { id: 3, text: '🌟 Попросить звезду разорвать цепи', skipCost: 2, isPremium: true, reward: { all: 2 }, nextCard: '6M_2_1' }
+                { id: 1, text: 'Разорвать цепи (💪≥8)', requireStat: { stat: 'strength', min: 8 }, reward: { strength: 3 }, nextCard: '6M_1_1', task: 'Раскрась страницу с цепями' },
+                { id: 2, text: 'Изучить механизм цепей (🧠≥6)', requireStat: { stat: 'intelligence', min: 6 }, reward: { intelligence: 2 }, nextCard: '6M_3_1', task: 'Раскрась страницу с механизмом' },
+                { id: 3, text: 'Попросить звезду разорвать цепи', skipCost: 2, isPremium: true, reward: { all: 2 }, nextCard: '6M_2_1' }
             ]
         },
         
@@ -16152,25 +16152,25 @@ const CASTLE_CHARACTERS = {
         '6M_1_2': { stage: 6, character: 'mystic', text: 'Отец является в последний раз: «Ты готов, сын. Я горжусь тобой».', nextCard: '6M_1_3' },
         '6M_1_3': { stage: 6, character: 'mystic', isChoice: true,
             choices: [
-                { id: 1, text: '⚔️ Идти в тронный зал', nextCard: '7M_1_1', task: 'Раскрась страницу с тронным залом' },
-                { id: 2, text: '🏃 Искать Советника', nextCard: '7M_2_1', task: 'Раскрась страницу с поиском' },
-                { id: 3, text: '🌟 Пойти в сад — найти Элизу', skipCost: 3, isPremium: true, nextCard: '7M_3_1' }
+                { id: 1, text: 'Идти в тронный зал', nextCard: '7M_1_1', task: 'Раскрась страницу с тронным залом' },
+                { id: 2, text: 'Искать Советника', nextCard: '7M_2_1', task: 'Раскрась страницу с поиском' },
+                { id: 3, text: 'Пойти в сад — найти Элизу', skipCost: 3, isPremium: true, nextCard: '7M_3_1' }
             ]
         },
         '6M_2_1': { stage: 6, character: 'mystic', text: 'Духи собираются вокруг вас. «Лорд не виноват. Советник держит проклятие. Иди и освободи нас».', nextCard: '6M_2_2' },
         '6M_2_2': { stage: 6, character: 'mystic', isChoice: true,
             choices: [
-                { id: 1, text: '⚔️ Идти к лорду', nextCard: '7M_1_1', task: 'Раскрась страницу с освобождением' },
-                { id: 2, text: '🏃 Идти к Советнику', nextCard: '7M_2_1', task: 'Раскрась страницу с изгнанием' },
-                { id: 3, text: '🌟 Попросить духов показать тайный ход', skipCost: 3, isPremium: true, nextCard: '7M_3_1' }
+                { id: 1, text: 'Идти к лорду', nextCard: '7M_1_1', task: 'Раскрась страницу с освобождением' },
+                { id: 2, text: 'Идти к Советнику', nextCard: '7M_2_1', task: 'Раскрась страницу с изгнанием' },
+                { id: 3, text: 'Попросить духов показать тайный ход', skipCost: 3, isPremium: true, nextCard: '7M_3_1' }
             ]
         },
         '6M_3_1': { stage: 6, character: 'mystic', text: 'Вы возвращаетесь в лабораторию. В потайном ящике — амулет, которым Советник сковал лорда.', nextCard: '6M_3_2' },
         '6M_3_2': { stage: 6, character: 'mystic', isChoice: true,
             choices: [
-                { id: 1, text: '⚔️ Разрушить амулет (💪≥8)', requireStat: { stat: 'strength', min: 8 }, reward: { strength: 3 }, nextCard: '7M_1_1', task: 'Раскрась страницу с амулетом' },
-                { id: 2, text: '🏃 Надеть амулет', reward: { all: 1 }, nextCard: '7M_2_1', task: 'Раскрась страницу с силой' },
-                { id: 3, text: '🌟 Перековать амулет — сделать ключ', skipCost: 3, isPremium: true, reward: { all: 2 }, nextCard: '7M_3_1' }
+                { id: 1, text: 'Разрушить амулет (💪≥8)', requireStat: { stat: 'strength', min: 8 }, reward: { strength: 3 }, nextCard: '7M_1_1', task: 'Раскрась страницу с амулетом' },
+                { id: 2, text: 'Надеть амулет', reward: { all: 1 }, nextCard: '7M_2_1', task: 'Раскрась страницу с силой' },
+                { id: 3, text: 'Перековать амулет — сделать ключ', skipCost: 3, isPremium: true, reward: { all: 2 }, nextCard: '7M_3_1' }
             ]
         },
         
@@ -16178,33 +16178,33 @@ const CASTLE_CHARACTERS = {
         '7M_1_1': { stage: 7, character: 'mystic', chapter: 'Тронный Зал', text: 'Лорд на троне. «Сын кузнеца. Ты вернулся. Говори».', nextCard: '7M_1_2' },
         '7M_1_2': { stage: 7, character: 'mystic', isChoice: true,
             choices: [
-                { id: 1, text: '⚔️ Освободить лорда (💪≥10)', requireStat: { stat: 'strength', min: 10 }, reward: { strength: 2 }, nextCard: '8M_1', task: 'Раскрась страницу с освобождением' },
-                { id: 2, text: '🏃 Потребовать трон (💪≥12)', requireStat: { stat: 'strength', min: 12 }, reward: { strength: 2 }, nextCard: '8M_1', task: 'Раскрась страницу с троном' },
-                { id: 3, text: '🌟 Произнести имя лорда и имя Элизы', skipCost: 3, isPremium: true, reward: { all: 2 }, nextCard: '8M_1' }
+                { id: 1, text: 'Освободить лорда (💪≥10)', requireStat: { stat: 'strength', min: 10 }, reward: { strength: 2 }, nextCard: '8M_1', task: 'Раскрась страницу с освобождением' },
+                { id: 2, text: 'Потребовать трон (💪≥12)', requireStat: { stat: 'strength', min: 12 }, reward: { strength: 2 }, nextCard: '8M_1', task: 'Раскрась страницу с троном' },
+                { id: 3, text: 'Произнести имя лорда и имя Элизы', skipCost: 3, isPremium: true, reward: { all: 2 }, nextCard: '8M_1' }
             ]
         },
         '7M_2_1': { stage: 7, character: 'mystic', chapter: 'Ритуальный Зал', text: 'Советник ждёт. «Полукровка. Уходи. Или присоединяйся ко мне».', nextCard: '7M_2_2' },
         '7M_2_2': { stage: 7, character: 'mystic', isChoice: true,
             choices: [
-                { id: 1, text: '⚔️ Сразиться (💪≥10)', requireStat: { stat: 'strength', min: 10 }, reward: { strength: 3 }, penalty: { strength: -2 }, penaltyNext: '8M_2', nextCard: '8M_1', task: 'Раскрась страницу с битвой' },
-                { id: 2, text: '🏃 Обмануть (🏃≥8)', requireStat: { stat: 'agility', min: 8 }, reward: { agility: 2 }, nextCard: '8M_1', task: 'Раскрась страницу с обманом' },
-                { id: 3, text: '🌟 Изгнать с помощью духов', skipCost: 3, isPremium: true, reward: { all: 2 }, nextCard: '8M_1' }
+                { id: 1, text: 'Сразиться (💪≥10)', requireStat: { stat: 'strength', min: 10 }, reward: { strength: 3 }, penalty: { strength: -2 }, penaltyNext: '8M_2', nextCard: '8M_1', task: 'Раскрась страницу с битвой' },
+                { id: 2, text: 'Обмануть (🏃≥8)', requireStat: { stat: 'agility', min: 8 }, reward: { agility: 2 }, nextCard: '8M_1', task: 'Раскрась страницу с обманом' },
+                { id: 3, text: 'Изгнать с помощью духов', skipCost: 3, isPremium: true, reward: { all: 2 }, nextCard: '8M_1' }
             ]
         },
         '7M_3_1': { stage: 7, character: 'mystic', chapter: 'Сад Душ', text: 'Элиза ждёт. «Ты понял. Замок — не тюрьма. Это дом. Его можно исцелить».', nextCard: '7M_3_2' },
         '7M_3_2': { stage: 7, character: 'mystic', isChoice: true,
             choices: [
-                { id: 1, text: '⚔️ Отвести Элизу к лорду', reward: { all: 1 }, nextCard: '8M_1', task: 'Раскрась страницу с Элизой' },
-                { id: 2, text: '🧠 Попросить помочь в ритуале', reward: { intelligence: 2 }, nextCard: '8M_1', task: 'Раскрась страницу с ритуалом' },
-                { id: 3, text: '🌟 Провести ритуал в саду', skipCost: 3, isPremium: true, reward: { all: 3 }, nextCard: '8M_1' }
+                { id: 1, text: 'Отвести Элизу к лорду', reward: { all: 1 }, nextCard: '8M_1', task: 'Раскрась страницу с Элизой' },
+                { id: 2, text: 'Попросить помочь в ритуале', reward: { intelligence: 2 }, nextCard: '8M_1', task: 'Раскрась страницу с ритуалом' },
+                { id: 3, text: 'Провести ритуал в саду', skipCost: 3, isPremium: true, reward: { all: 3 }, nextCard: '8M_1' }
             ]
         },
         '8M_1': { stage: 8, character: 'mystic', chapter: 'Финальный выбор', text: 'Всё готово. Лорд, Советник, Элиза, отец — все ждут вашего решения.', nextCard: '8M_2' },
         '8M_2': { stage: 8, character: 'mystic', isChoice: true, isFinalChoice: true,
             choices: [
-                { id: 1, text: '⚔️ Освободить лорда (💪≥14)', requireStat: { stat: 'strength', min: 14 }, nextCard: '9M_1_1', task: 'Раскрась страницу с освобождением' },
-                { id: 2, text: '🏃 Занять трон (💪≥16 или 🎫3)', requireStat: { stat: 'strength', min: 16 }, requireOrSkip: 3, nextCard: '9M_2_1', task: 'Раскрась страницу с троном' },
-                { id: 3, text: '🌟 Снять проклятие навсегда', requireSkipOr: 'metEliza', skipCost: 4, isPremium: true, nextCard: '9M_3_1' }
+                { id: 1, text: 'Освободить лорда (💪≥14)', requireStat: { stat: 'strength', min: 14 }, nextCard: '9M_1_1', task: 'Раскрась страницу с освобождением' },
+                { id: 2, text: 'Занять трон (💪≥16 или 🎫3)', requireStat: { stat: 'strength', min: 16 }, requireOrSkip: 3, nextCard: '9M_2_1', task: 'Раскрась страницу с троном' },
+                { id: 3, text: 'Снять проклятие навсегда', requireSkipOr: 'metEliza', skipCost: 4, isPremium: true, nextCard: '9M_3_1' }
             ]
         },
         '9M_1_1': { stage: 9, character: 'mystic', text: 'Вы разрываете цепи. Лорд поднимается с трона. Впервые за триста лет.', nextCard: '9M_1_2' },
@@ -16224,208 +16224,208 @@ const CASTLE_CHARACTERS = {
         '1V_2': { stage: 1, character: 'thief', text: 'Чёрная река. Каменный мост. На мосту — призрак в доспехах. Он не видит вас. Пока.', nextCard: '1V_3' },
         '1V_3': { stage: 1, character: 'thief', isChoice: true, text: 'Призрак устал, рассеян. Можно проскользнуть мимо, забраться на крышу или найти подземный ход.',
             choices: [
-                { id: 1, text: '🏃 Проскользнуть мимо (🏃≥6)', requireStat: { stat: 'agility', min: 6 }, reward: { agility: 2 }, penalty: { agility: -1 }, penaltyNext: '2V_A_1', nextCard: '2V_A_1', task: 'Раскрась страницу с тенями' },
-                { id: 2, text: '🏃 Забраться на крышу (🏃≥8)', requireStat: { stat: 'agility', min: 8 }, reward: { agility: 2 }, penalty: { agility: -1 }, penaltyNext: '2V_A_1', nextCard: '2V_B_1', task: 'Раскрась страницу с крышей' },
-                { id: 3, text: '🏃 Отвлечь брошенным камнем (🏃≥6)', requireStat: { stat: 'agility', min: 6 }, reward: { agility: 2 }, nextCard: '2V_A_1', task: 'Раскрась страницу с отвлечением' },
-                { id: 4, text: '🌟 Найти старый подземный ход', skipCost: 2, isPremium: true, reward: { all: 1 }, nextCard: '2V_V_1' }
+                { id: 1, text: 'Проскользнуть мимо (🏃≥6)', requireStat: { stat: 'agility', min: 6 }, reward: { agility: 2 }, penalty: { agility: -1 }, penaltyNext: '2V_A_1', nextCard: '2V_A_1', task: 'Раскрась страницу с тенями' },
+                { id: 2, text: 'Забраться на крышу (🏃≥8)', requireStat: { stat: 'agility', min: 8 }, reward: { agility: 2 }, penalty: { agility: -1 }, penaltyNext: '2V_A_1', nextCard: '2V_B_1', task: 'Раскрась страницу с крышей' },
+                { id: 3, text: 'Отвлечь брошенным камнем (🏃≥6)', requireStat: { stat: 'agility', min: 6 }, reward: { agility: 2 }, nextCard: '2V_A_1', task: 'Раскрась страницу с отвлечением' },
+                { id: 4, text: 'Найти старый подземный ход', skipCost: 2, isPremium: true, reward: { all: 1 }, nextCard: '2V_V_1' }
             ]
         },
         '2V_A_1': { stage: 2, character: 'thief', chapter: 'Тайный вход', text: 'Боковая дверца для слуг. Не заперта. Узкий коридор, запах плесени. Темнота — ваш друг.', nextCard: '2V_A_2' },
         '2V_A_2': { stage: 2, character: 'thief', text: 'Коридор раздваивается. Карта на стене: тайник в кладовой, покои лорда наверху.', nextCard: '2V_A_3' },
         '2V_A_3': { stage: 2, character: 'thief', isChoice: true,
             choices: [
-                { id: 1, text: '🏃 Пройти через Зал Стражей с тыла', nextCard: '3V_1_1', task: 'Раскрась страницу с доспехами' },
-                { id: 2, text: '🏃 Заглянуть в кладовую', nextCard: '3V_2_1', task: 'Раскрась страницу с кладовой' },
-                { id: 3, text: '🌟 Подняться прямо в покои лорда', skipCost: 1, isPremium: true, reward: { agility: 1 }, nextCard: '3V_3_1' }
+                { id: 1, text: 'Пройти через Зал Стражей с тыла', nextCard: '3V_1_1', task: 'Раскрась страницу с доспехами' },
+                { id: 2, text: 'Заглянуть в кладовую', nextCard: '3V_2_1', task: 'Раскрась страницу с кладовой' },
+                { id: 3, text: 'Подняться прямо в покои лорда', skipCost: 1, isPremium: true, reward: { agility: 1 }, nextCard: '3V_3_1' }
             ]
         },
         '2V_B_1': { stage: 2, character: 'thief', chapter: 'Крыша', text: 'Вы карабкаетесь по скале. Залезть на крышу — дерзко, но лучший способ войти незамеченным.', nextCard: '2V_B_2' },
         '2V_B_2': { stage: 2, character: 'thief', text: 'На крыше ветер. Вы видите: двор с колодцем, башню, окно в покои лорда. Оно приоткрыто.', nextCard: '2V_B_3' },
         '2V_B_3': { stage: 2, character: 'thief', isChoice: true,
             choices: [
-                { id: 1, text: '🏃 Проникнуть в покои лорда', nextCard: '3V_3_1', task: 'Раскрась страницу с покоями' },
-                { id: 2, text: '🏃 Пробраться в башню', nextCard: '3V_4_1', task: 'Раскрась страницу с башней' },
-                { id: 3, text: '🌟 Спуститься по стене к кладовой', skipCost: 1, isPremium: true, reward: { agility: 1 }, nextCard: '3V_2_1' }
+                { id: 1, text: 'Проникнуть в покои лорда', nextCard: '3V_3_1', task: 'Раскрась страницу с покоями' },
+                { id: 2, text: 'Пробраться в башню', nextCard: '3V_4_1', task: 'Раскрась страницу с башней' },
+                { id: 3, text: 'Спуститься по стене к кладовой', skipCost: 1, isPremium: true, reward: { agility: 1 }, nextCard: '3V_2_1' }
             ]
         },
         '2V_V_1': { stage: 2, character: 'thief', chapter: 'Подземный ход', text: 'Старый ход под мостом. Узкий туннель. Никаких призраков. Вы идёте в темноте, ориентируясь на ощупь.', nextCard: '2V_V_2' },
         '2V_V_2': { stage: 2, character: 'thief', text: 'Туннель выводит в подземелье замка. Где-то рядом журчит вода. Катакомбы? Винный погреб?', nextCard: '2V_V_3' },
         '2V_V_3': { stage: 2, character: 'thief', isChoice: true,
             choices: [
-                { id: 1, text: '🏃 Идти на звук воды — в катакомбы', nextCard: '3V_5_1', task: 'Раскрась страницу с катакомбами' },
-                { id: 2, text: '🏃 Подняться в кладовую', nextCard: '3V_2_1', task: 'Раскрась страницу с кладовой' },
-                { id: 3, text: '🌟 Найти потайную лестницу в башню', skipCost: 1, isPremium: true, reward: { agility: 1 }, nextCard: '3V_4_1' }
+                { id: 1, text: 'Идти на звук воды — в катакомбы', nextCard: '3V_5_1', task: 'Раскрась страницу с катакомбами' },
+                { id: 2, text: 'Подняться в кладовую', nextCard: '3V_2_1', task: 'Раскрась страницу с кладовой' },
+                { id: 3, text: 'Найти потайную лестницу в башню', skipCost: 1, isPremium: true, reward: { agility: 1 }, nextCard: '3V_4_1' }
             ]
         },
         '3V_1_1': { stage: 3, character: 'thief', chapter: 'Зал Стражей с тыла', text: 'Восемь доспехов стоят к вам спиной. У одного алебарда держится неплотно. В углу — сундук с замком.', nextCard: '3V_1_2' },
         '3V_1_2': { stage: 3, character: 'thief', text: 'В нише — рычаг для отключения доспехов. Заминирован простой магической ловушкой.', nextCard: '3V_1_3' },
         '3V_1_3': { stage: 3, character: 'thief', isChoice: true,
             choices: [
-                { id: 1, text: '🏃 Вскрыть сундук (🏃≥8)', requireStat: { stat: 'agility', min: 8 }, reward: { agility: 3 }, penalty: { agility: -1 }, penaltyNext: '4V_2_1', nextCard: '4V_1_1', task: 'Раскрась страницу с сундуком' },
-                { id: 2, text: '🏃 Обезвредить рычаг (🏃≥6)', requireStat: { stat: 'agility', min: 6 }, reward: { agility: 2 }, nextCard: '4V_2_1', task: 'Раскрась страницу с механизмом' },
-                { id: 3, text: '🌟 Украсть алебарду', skipCost: 1, isPremium: true, reward: { strength: 1, agility: 1 }, nextCard: '4V_3_1' }
+                { id: 1, text: 'Вскрыть сундук (🏃≥8)', requireStat: { stat: 'agility', min: 8 }, reward: { agility: 3 }, penalty: { agility: -1 }, penaltyNext: '4V_2_1', nextCard: '4V_1_1', task: 'Раскрась страницу с сундуком' },
+                { id: 2, text: 'Обезвредить рычаг (🏃≥6)', requireStat: { stat: 'agility', min: 6 }, reward: { agility: 2 }, nextCard: '4V_2_1', task: 'Раскрась страницу с механизмом' },
+                { id: 3, text: 'Украсть алебарду', skipCost: 1, isPremium: true, reward: { strength: 1, agility: 1 }, nextCard: '4V_3_1' }
             ]
         },
         '3V_2_1': { stage: 3, character: 'thief', chapter: 'Кладовая', text: 'Полки с припасами — всё сгнило. Но вы ищете тайник, отмеченный на карте слуг.', nextCard: '3V_2_2' },
         '3V_2_2': { stage: 3, character: 'thief', text: 'За бочкой — камень в стене. Тайник. Шкатулка с монетами, кольцом и запиской: «Главное сокровище в оранжерее. Цветы ядовиты».', nextCard: '3V_2_3' },
         '3V_2_3': { stage: 3, character: 'thief', isChoice: true,
             choices: [
-                { id: 1, text: '🏃 Взять всё и идти в сокровищницу', reward: { agility: 1 }, nextCard: '4V_1_1', task: 'Раскрась страницу с кольцом' },
-                { id: 2, text: '🏃 Идти в оранжерею', nextCard: '4V_4_1', task: 'Раскрась страницу с оранжереей' },
-                { id: 3, text: '🌟 Взломать двойное дно шкатулки', skipCost: 1, isPremium: true, reward: { agility: 2 }, nextCard: '4V_3_1' }
+                { id: 1, text: 'Взять всё и идти в сокровищницу', reward: { agility: 1 }, nextCard: '4V_1_1', task: 'Раскрась страницу с кольцом' },
+                { id: 2, text: 'Идти в оранжерею', nextCard: '4V_4_1', task: 'Раскрась страницу с оранжереей' },
+                { id: 3, text: 'Взломать двойное дно шкатулки', skipCost: 1, isPremium: true, reward: { agility: 2 }, nextCard: '4V_3_1' }
             ]
         },
         '3V_3_1': { stage: 3, character: 'thief', chapter: 'Покои Лорда', text: 'Кровать с балдахином. Письменный стол. Запертая шкатулка. Замок простой.', nextCard: '3V_3_2' },
         '3V_3_2': { stage: 3, character: 'thief', text: 'В шкатулке — дневник леди Элизы: «Эдвард забывает меня. Я спрятала драгоценности в саду. Помоги нам».', nextCard: '3V_3_3' },
         '3V_3_3': { stage: 3, character: 'thief', isChoice: true,
             choices: [
-                { id: 1, text: '🧠 Взять дневник и медальон', reward: { intelligence: 1 }, nextCard: '4V_2_1', task: 'Раскрась страницу с дневником' },
-                { id: 2, text: '🏃 Обыскать покои (🏃≥8)', requireStat: { stat: 'agility', min: 8 }, reward: { agility: 2 }, nextCard: '4V_4_1', task: 'Раскрась страницу с поиском' },
-                { id: 3, text: '🌟 Прочесть дневник полностью', skipCost: 1, isPremium: true, reward: { intelligence: 2 }, nextCard: '4V_5_1' }
+                { id: 1, text: 'Взять дневник и медальон', reward: { intelligence: 1 }, nextCard: '4V_2_1', task: 'Раскрась страницу с дневником' },
+                { id: 2, text: 'Обыскать покои (🏃≥8)', requireStat: { stat: 'agility', min: 8 }, reward: { agility: 2 }, nextCard: '4V_4_1', task: 'Раскрась страницу с поиском' },
+                { id: 3, text: 'Прочесть дневник полностью', skipCost: 1, isPremium: true, reward: { intelligence: 2 }, nextCard: '4V_5_1' }
             ]
         },
         '3V_4_1': { stage: 3, character: 'thief', chapter: 'Башня Теней', text: 'Узкая лестница. Тени на стенах шепчутся: «Воровка... мы знаем, где золото лорда».', nextCard: '3V_4_2' },
         '3V_4_2': { stage: 3, character: 'thief', text: 'Наверху — зеркало. В отражении — не вы. Тени: «Советник спрятал сокровище в ритуальном зале. Нужен ключ».', nextCard: '3V_4_3' },
         '3V_4_3': { stage: 3, character: 'thief', isChoice: true,
             choices: [
-                { id: 1, text: '🏃 Договориться с тенями (🏃≥6)', requireStat: { stat: 'agility', min: 6 }, reward: { agility: 2 }, nextCard: '4V_3_1', task: 'Раскрась страницу с тенями' },
-                { id: 2, text: '🏃 Украсть ключ у теней (🏃≥8)', requireStat: { stat: 'agility', min: 8 }, reward: { agility: 3 }, nextCard: '4V_5_1', task: 'Раскрась страницу с кражей' },
-                { id: 3, text: '🌟 Купить у теней факел Истинного Света', skipCost: 1, isPremium: true, reward: { all: 1 }, nextCard: '4V_1_1' }
+                { id: 1, text: 'Договориться с тенями (🏃≥6)', requireStat: { stat: 'agility', min: 6 }, reward: { agility: 2 }, nextCard: '4V_3_1', task: 'Раскрась страницу с тенями' },
+                { id: 2, text: 'Украсть ключ у теней (🏃≥8)', requireStat: { stat: 'agility', min: 8 }, reward: { agility: 3 }, nextCard: '4V_5_1', task: 'Раскрась страницу с кражей' },
+                { id: 3, text: 'Купить у теней факел Истинного Света', skipCost: 1, isPremium: true, reward: { all: 1 }, nextCard: '4V_1_1' }
             ]
         },
         '3V_5_1': { stage: 3, character: 'thief', chapter: 'Катакомбы', text: 'Древняя кладка. Саркофаги. Синее пламя. На алтаре — мумия домового.', nextCard: '3V_5_2' },
         '3V_5_2': { stage: 3, character: 'thief', text: 'Рядом — горсть монет и свиток с заклинанием призыва духа-хранителя.', nextCard: '3V_5_3' },
         '3V_5_3': { stage: 3, character: 'thief', isChoice: true,
             choices: [
-                { id: 1, text: '🏃 Взять монеты и уйти', reward: { agility: 2 }, nextCard: '4V_4_1', task: 'Раскрась страницу с монетами' },
-                { id: 2, text: '🧠 Прочесть заклинание (🧠≥6)', requireStat: { stat: 'intelligence', min: 6 }, reward: { all: 2 }, nextCard: '4V_5_1', task: 'Раскрась страницу с магией' },
-                { id: 3, text: '🌟 Оставить домовому монету', skipCost: 1, isPremium: true, reward: { all: 1 }, nextCard: '4V_2_1' }
+                { id: 1, text: 'Взять монеты и уйти', reward: { agility: 2 }, nextCard: '4V_4_1', task: 'Раскрась страницу с монетами' },
+                { id: 2, text: 'Прочесть заклинание (🧠≥6)', requireStat: { stat: 'intelligence', min: 6 }, reward: { all: 2 }, nextCard: '4V_5_1', task: 'Раскрась страницу с магией' },
+                { id: 3, text: 'Оставить домовому монету', skipCost: 1, isPremium: true, reward: { all: 1 }, nextCard: '4V_2_1' }
             ]
         },
         '4V_1_1': { stage: 4, character: 'thief', chapter: 'Сокровищница', text: 'Комната за потайной дверью. Сундуки с золотом. Магические печати.', nextCard: '4V_1_2' },
         '4V_1_2': { stage: 4, character: 'thief', text: 'Печати старые. В гильдии вас учили: такие можно обойти. Или сломать.', nextCard: '4V_1_3' },
         '4V_1_3': { stage: 4, character: 'thief', isChoice: true,
             choices: [
-                { id: 1, text: '🏃 Взломать печати (🏃≥8)', requireStat: { stat: 'agility', min: 8 }, reward: { agility: 3 }, nextCard: '5V_1_1', task: 'Раскрась страницу с печатями' },
-                { id: 2, text: '🏃 Искать ключ в соседних комнатах', nextCard: '5V_3_1', task: 'Раскрась страницу с поиском' },
-                { id: 3, text: '🌟 Использовать особую отмычку', skipCost: 2, isPremium: true, reward: { all: 2 }, nextCard: '5V_1_1' }
+                { id: 1, text: 'Взломать печати (🏃≥8)', requireStat: { stat: 'agility', min: 8 }, reward: { agility: 3 }, nextCard: '5V_1_1', task: 'Раскрась страницу с печатями' },
+                { id: 2, text: 'Искать ключ в соседних комнатах', nextCard: '5V_3_1', task: 'Раскрась страницу с поиском' },
+                { id: 3, text: 'Использовать особую отмычку', skipCost: 2, isPremium: true, reward: { all: 2 }, nextCard: '5V_1_1' }
             ]
         },
         '4V_2_1': { stage: 4, character: 'thief', chapter: 'Оранжерея', text: 'Огромный сад под куполом. Чёрные розы. Серебряное дерево. В корнях — сундук.', nextCard: '4V_2_2' },
         '4V_2_2': { stage: 4, character: 'thief', text: 'Дерево шепчет: «Дай мне воду — отдам сокровище». Вокруг — ядовитые цветы.', nextCard: '4V_2_3' },
         '4V_2_3': { stage: 4, character: 'thief', isChoice: true,
             choices: [
-                { id: 1, text: '🏃 Пройти через цветы (🏃≥8)', requireStat: { stat: 'agility', min: 8 }, reward: { agility: 3 }, penalty: { agility: -2 }, penaltyNext: '5V_3_1', nextCard: '5V_2_1', task: 'Раскрась страницу с цветами' },
-                { id: 2, text: '🏃 Полить дерево водой', reward: { all: 1 }, nextCard: '5V_2_1', task: 'Раскрась страницу с деревом' },
-                { id: 3, text: '🌟 Договориться с деревом', skipCost: 2, isPremium: true, reward: { all: 2 }, nextCard: '5V_2_1' }
+                { id: 1, text: 'Пройти через цветы (🏃≥8)', requireStat: { stat: 'agility', min: 8 }, reward: { agility: 3 }, penalty: { agility: -2 }, penaltyNext: '5V_3_1', nextCard: '5V_2_1', task: 'Раскрась страницу с цветами' },
+                { id: 2, text: 'Полить дерево водой', reward: { all: 1 }, nextCard: '5V_2_1', task: 'Раскрась страницу с деревом' },
+                { id: 3, text: 'Договориться с деревом', skipCost: 2, isPremium: true, reward: { all: 2 }, nextCard: '5V_2_1' }
             ]
         },
         '4V_3_1': { stage: 4, character: 'thief', chapter: 'Гостевая комната', text: 'Здесь кто-то жил недавно. Следы на пыли. Карта замка — свежая.', nextCard: '4V_3_2' },
         '4V_3_2': { stage: 4, character: 'thief', text: 'Дневник: «Я близко. Советник обещал ключ от сокровищницы в обмен на услугу. Я должен найти Элизу».', nextCard: '4V_3_3' },
         '4V_3_3': { stage: 4, character: 'thief', isChoice: true,
             choices: [
-                { id: 1, text: '🏃 Идти по следу (🏃≥6)', requireStat: { stat: 'agility', min: 6 }, reward: { agility: 2 }, nextCard: '5V_3_1', task: 'Раскрась страницу со следом' },
-                { id: 2, text: '🏃 Обыскать комнату тщательнее', reward: { agility: 1 }, nextCard: '5V_1_1', task: 'Раскрась страницу с поиском' },
-                { id: 3, text: '🌟 Найти тайник незнакомца', skipCost: 2, isPremium: true, reward: { all: 2 }, nextCard: '5V_3_1' }
+                { id: 1, text: 'Идти по следу (🏃≥6)', requireStat: { stat: 'agility', min: 6 }, reward: { agility: 2 }, nextCard: '5V_3_1', task: 'Раскрась страницу со следом' },
+                { id: 2, text: 'Обыскать комнату тщательнее', reward: { agility: 1 }, nextCard: '5V_1_1', task: 'Раскрась страницу с поиском' },
+                { id: 3, text: 'Найти тайник незнакомца', skipCost: 2, isPremium: true, reward: { all: 2 }, nextCard: '5V_3_1' }
             ]
         },
         '4V_4_1': { stage: 4, character: 'thief', chapter: 'Тайник Советника', text: 'Тайник Советника. Бухгалтерская книга: он годами вывозил золото.', nextCard: '4V_4_2' },
         '4V_4_2': { stage: 4, character: 'thief', text: 'Последняя запись: «Главное сокровище — Элиза. Она жива. Я держу её в саду».', nextCard: '4V_4_3' },
         '4V_4_3': { stage: 4, character: 'thief', isChoice: true,
             choices: [
-                { id: 1, text: '🏃 Идти в сад — найти Элизу', nextCard: '5V_4_1', task: 'Раскрась страницу с садом' },
-                { id: 2, text: '🏃 Забрать книгу — продать информацию', reward: { all: 1 }, nextCard: '5V_2_1', task: 'Раскрась страницу с книгой' },
-                { id: 3, text: '🌟 Расшифровать записи — найти координаты', skipCost: 2, isPremium: true, reward: { agility: 2 }, nextCard: '5V_4_1' }
+                { id: 1, text: 'Идти в сад — найти Элизу', nextCard: '5V_4_1', task: 'Раскрась страницу с садом' },
+                { id: 2, text: 'Забрать книгу — продать информацию', reward: { all: 1 }, nextCard: '5V_2_1', task: 'Раскрась страницу с книгой' },
+                { id: 3, text: 'Расшифровать записи — найти координаты', skipCost: 2, isPremium: true, reward: { agility: 2 }, nextCard: '5V_4_1' }
             ]
         },
         '4V_5_1': { stage: 4, character: 'thief', chapter: 'Картинная галерея', text: 'Портреты на стенах. Глаза следят. Портрет Элизы с засушенным цветком.', nextCard: '4V_5_2' },
         '4V_5_2': { stage: 4, character: 'thief', text: 'Цветок — ключ. Он ведёт в сад.', nextCard: '4V_5_3' },
         '4V_5_3': { stage: 4, character: 'thief', isChoice: true,
             choices: [
-                { id: 1, text: '🏃 Взять цветок (🏃≥6)', requireStat: { stat: 'agility', min: 6 }, reward: { agility: 2 }, nextCard: '5V_5_1', task: 'Раскрась страницу с цветком' },
-                { id: 2, text: '🏃 Искать тайник за портретом', reward: { agility: 1 }, nextCard: '5V_3_1', task: 'Раскрась страницу с тайником' },
-                { id: 3, text: '🌟 Поговорить с портретом Элизы', skipCost: 2, isPremium: true, reward: { intelligence: 2 }, nextCard: '5V_5_1' }
+                { id: 1, text: 'Взять цветок (🏃≥6)', requireStat: { stat: 'agility', min: 6 }, reward: { agility: 2 }, nextCard: '5V_5_1', task: 'Раскрась страницу с цветком' },
+                { id: 2, text: 'Искать тайник за портретом', reward: { agility: 1 }, nextCard: '5V_3_1', task: 'Раскрась страницу с тайником' },
+                { id: 3, text: 'Поговорить с портретом Элизы', skipCost: 2, isPremium: true, reward: { intelligence: 2 }, nextCard: '5V_5_1' }
             ]
         },
         '5V_1_1': { stage: 5, character: 'thief', chapter: 'Сокровищница', text: 'Сундук открыт. Золото. Письмо от лорда: «Освободи меня — отдам всё».', nextCard: '5V_1_2' },
         '5V_1_2': { stage: 5, character: 'thief', isChoice: true,
             choices: [
-                { id: 1, text: '🏃 Взять золото и уйти', reward: { agility: 2 }, nextCard: '6V_1_1', task: 'Раскрась страницу с золотом' },
-                { id: 2, text: '🧠 Пойти к лорду', nextCard: '6V_2_1', task: 'Раскрась страницу с лордом' },
-                { id: 3, text: '🌟 Найти карту замка в сокровищнице', skipCost: 2, isPremium: true, reward: { all: 1 }, nextCard: '6V_3_1' }
+                { id: 1, text: 'Взять золото и уйти', reward: { agility: 2 }, nextCard: '6V_1_1', task: 'Раскрась страницу с золотом' },
+                { id: 2, text: 'Пойти к лорду', nextCard: '6V_2_1', task: 'Раскрась страницу с лордом' },
+                { id: 3, text: 'Найти карту замка в сокровищнице', skipCost: 2, isPremium: true, reward: { all: 1 }, nextCard: '6V_3_1' }
             ]
         },
         '5V_2_1': { stage: 5, character: 'thief', chapter: 'Оранжерея', text: 'Сундук открыт. Документы на владение замком. Письмо Элизы.', nextCard: '5V_2_2' },
         '5V_2_2': { stage: 5, character: 'thief', isChoice: true,
             choices: [
-                { id: 1, text: '🏃 Принять — освободить лорда', reward: { all: 1 }, nextCard: '6V_2_1', task: 'Раскрась страницу с решением' },
-                { id: 2, text: '🏃 Продать документы Советнику', reward: { agility: 2 }, nextCard: '6V_3_1', task: 'Раскрась страницу со сделкой' },
-                { id: 3, text: '🌟 Найти Элизу в саду', skipCost: 2, isPremium: true, reward: { intelligence: 2 }, nextCard: '6V_1_1' }
+                { id: 1, text: 'Принять — освободить лорда', reward: { all: 1 }, nextCard: '6V_2_1', task: 'Раскрась страницу с решением' },
+                { id: 2, text: 'Продать документы Советнику', reward: { agility: 2 }, nextCard: '6V_3_1', task: 'Раскрась страницу со сделкой' },
+                { id: 3, text: 'Найти Элизу в саду', skipCost: 2, isPremium: true, reward: { intelligence: 2 }, nextCard: '6V_1_1' }
             ]
         },
         '5V_3_1': { stage: 5, character: 'thief', chapter: 'Подземелье', text: 'След ведёт в подземелье. В камере — человек, прикованный цепью.', nextCard: '5V_3_2' },
         '5V_3_2': { stage: 5, character: 'thief', text: '«Я — охотник за сокровищами. Советник обманул меня. Освободи — помогу».', nextCard: '5V_3_3' },
         '5V_3_3': { stage: 5, character: 'thief', isChoice: true,
             choices: [
-                { id: 1, text: '🏃 Освободить (🏃≥6)', requireStat: { stat: 'agility', min: 6 }, reward: { agility: 2 }, nextCard: '6V_3_1', task: 'Раскрась страницу с освобождением' },
-                { id: 2, text: '🏃 Оставить и идти дальше', reward: { agility: 1 }, nextCard: '6V_1_1', task: 'Раскрась страницу с выбором' },
-                { id: 3, text: '🌟 Допросить — узнать тайну', skipCost: 2, isPremium: true, reward: { intelligence: 2 }, nextCard: '6V_2_1' }
+                { id: 1, text: 'Освободить (🏃≥6)', requireStat: { stat: 'agility', min: 6 }, reward: { agility: 2 }, nextCard: '6V_3_1', task: 'Раскрась страницу с освобождением' },
+                { id: 2, text: 'Оставить и идти дальше', reward: { agility: 1 }, nextCard: '6V_1_1', task: 'Раскрась страницу с выбором' },
+                { id: 3, text: 'Допросить — узнать тайну', skipCost: 2, isPremium: true, reward: { intelligence: 2 }, nextCard: '6V_2_1' }
             ]
         },
         '5V_4_1': { stage: 5, character: 'thief', chapter: 'Тайник', text: 'Последний тайник. На столе — ключ от цепей лорда.', nextCard: '5V_4_2' },
         '5V_4_2': { stage: 5, character: 'thief', isChoice: true,
             choices: [
-                { id: 1, text: '🏃 Взять ключ', reward: { all: 2 }, nextCard: '6V_2_1', task: 'Раскрась страницу с ключом' },
-                { id: 2, text: '🏃 Оставить — это ловушка', reward: { agility: 1 }, nextCard: '6V_1_1', task: 'Раскрась страницу с осторожностью' },
-                { id: 3, text: '🌟 Проверить ключ на магию', skipCost: 2, isPremium: true, reward: { intelligence: 2 }, nextCard: '6V_3_1' }
+                { id: 1, text: 'Взять ключ', reward: { all: 2 }, nextCard: '6V_2_1', task: 'Раскрась страницу с ключом' },
+                { id: 2, text: 'Оставить — это ловушка', reward: { agility: 1 }, nextCard: '6V_1_1', task: 'Раскрась страницу с осторожностью' },
+                { id: 3, text: 'Проверить ключ на магию', skipCost: 2, isPremium: true, reward: { intelligence: 2 }, nextCard: '6V_3_1' }
             ]
         },
         '5V_5_1': { stage: 5, character: 'thief', chapter: 'Сад', text: 'Цветок привёл в сад. Элиза спит триста лет.', nextCard: '5V_5_2' },
         '5V_5_2': { stage: 5, character: 'thief', isChoice: true,
             choices: [
-                { id: 1, text: '🏃 Спуститься в сад', nextCard: '6V_1_1', task: 'Раскрась страницу с садом' },
-                { id: 2, text: '🏃 Вернуться — искать другой путь', nextCard: '6V_2_1', task: 'Раскрась страницу с выбором' },
-                { id: 3, text: '🌟 Активировать цветок — открыть портал', skipCost: 2, isPremium: true, reward: { all: 2 }, nextCard: '6V_3_1' }
+                { id: 1, text: 'Спуститься в сад', nextCard: '6V_1_1', task: 'Раскрась страницу с садом' },
+                { id: 2, text: 'Вернуться — искать другой путь', nextCard: '6V_2_1', task: 'Раскрась страницу с выбором' },
+                { id: 3, text: 'Активировать цветок — открыть портал', skipCost: 2, isPremium: true, reward: { all: 2 }, nextCard: '6V_3_1' }
             ]
         },
         '6V_1_1': { stage: 6, character: 'thief', chapter: 'Покои Элизы', text: 'Элиза спит. Рядом записка Советника: «Ты будешь спать, пока я не получу замок».', nextCard: '6V_1_2' },
         '6V_1_2': { stage: 6, character: 'thief', isChoice: true,
             choices: [
-                { id: 1, text: '🏃 Разбудить Элизу', reward: { all: 1 }, nextCard: '7V_1_1', task: 'Раскрась страницу с пробуждением' },
-                { id: 2, text: '🏃 Взять украшения и уйти', reward: { agility: 2 }, nextCard: '7V_2_1', task: 'Раскрась страницу с украшениями' },
-                { id: 3, text: '🌟 Разбудить и рассказать правду', skipCost: 3, isPremium: true, reward: { all: 3 }, nextCard: '7V_3_1' }
+                { id: 1, text: 'Разбудить Элизу', reward: { all: 1 }, nextCard: '7V_1_1', task: 'Раскрась страницу с пробуждением' },
+                { id: 2, text: 'Взять украшения и уйти', reward: { agility: 2 }, nextCard: '7V_2_1', task: 'Раскрась страницу с украшениями' },
+                { id: 3, text: 'Разбудить и рассказать правду', skipCost: 3, isPremium: true, reward: { all: 3 }, nextCard: '7V_3_1' }
             ]
         },
         '6V_2_1': { stage: 6, character: 'thief', chapter: 'Библиотека', text: 'Дневник лорда: «Я забываю. Но я помню её имя. Произнеси моё имя в тронном зале. Эдвард».', nextCard: '6V_2_2' },
         '6V_2_2': { stage: 6, character: 'thief', isChoice: true,
             choices: [
-                { id: 1, text: '🧠 Запомнить имя — пойти к лорду', reward: { intelligence: 1 }, nextCard: '7V_1_1', task: 'Раскрась страницу с именем' },
-                { id: 2, text: '🏃 Искать карту сокровищ', reward: { agility: 1 }, nextCard: '7V_2_1', task: 'Раскрась страницу с картой' },
-                { id: 3, text: '🌟 Прочесть дневник полностью', skipCost: 3, isPremium: true, reward: { intelligence: 2 }, nextCard: '7V_3_1' }
+                { id: 1, text: 'Запомнить имя — пойти к лорду', reward: { intelligence: 1 }, nextCard: '7V_1_1', task: 'Раскрась страницу с именем' },
+                { id: 2, text: 'Искать карту сокровищ', reward: { agility: 1 }, nextCard: '7V_2_1', task: 'Раскрась страницу с картой' },
+                { id: 3, text: 'Прочесть дневник полностью', skipCost: 3, isPremium: true, reward: { intelligence: 2 }, nextCard: '7V_3_1' }
             ]
         },
         '6V_3_1': { stage: 6, character: 'thief', chapter: 'Лаборатория', text: 'Книга ритуалов открыта: «Ритуал подчинения. Как сковать душу цепями».', nextCard: '6V_3_2' },
         '6V_3_2': { stage: 6, character: 'thief', isChoice: true,
             choices: [
-                { id: 1, text: '🧠 Вырвать страницу', reward: { intelligence: 1 }, nextCard: '7V_1_1', task: 'Раскрась страницу с ритуалом' },
-                { id: 2, text: '🏃 Искать ценности', reward: { agility: 1 }, nextCard: '7V_2_1', task: 'Раскрась страницу с поиском' },
-                { id: 3, text: '🌟 Украсть книгу целиком', skipCost: 3, isPremium: true, reward: { intelligence: 2 }, nextCard: '7V_3_1' }
+                { id: 1, text: 'Вырвать страницу', reward: { intelligence: 1 }, nextCard: '7V_1_1', task: 'Раскрась страницу с ритуалом' },
+                { id: 2, text: 'Искать ценности', reward: { agility: 1 }, nextCard: '7V_2_1', task: 'Раскрась страницу с поиском' },
+                { id: 3, text: 'Украсть книгу целиком', skipCost: 3, isPremium: true, reward: { intelligence: 2 }, nextCard: '7V_3_1' }
             ]
         },
         '7V_1_1': { stage: 7, character: 'thief', chapter: 'Тронный зал', text: 'Лорд на троне: «Воровка. Я могу дать тебе больше, чем золото. Освободи меня».', nextCard: '7V_1_2' },
         '7V_1_2': { stage: 7, character: 'thief', isChoice: true,
             choices: [
-                { id: 1, text: '🏃 Взломать замки цепей (🏃≥10)', requireStat: { stat: 'agility', min: 10 }, reward: { agility: 3 }, nextCard: '8V_1', task: 'Раскрась страницу с цепями' },
-                { id: 2, text: '🏃 Потребовать плату вперёд', reward: { all: 1 }, nextCard: '8V_2', task: 'Раскрась страницу со сделкой' },
-                { id: 3, text: '🌟 Использовать ключ Советника', skipCost: 3, isPremium: true, reward: { all: 2 }, nextCard: '8V_1' }
+                { id: 1, text: 'Взломать замки цепей (🏃≥10)', requireStat: { stat: 'agility', min: 10 }, reward: { agility: 3 }, nextCard: '8V_1', task: 'Раскрась страницу с цепями' },
+                { id: 2, text: 'Потребовать плату вперёд', reward: { all: 1 }, nextCard: '8V_2', task: 'Раскрась страницу со сделкой' },
+                { id: 3, text: 'Использовать ключ Советника', skipCost: 3, isPremium: true, reward: { all: 2 }, nextCard: '8V_1' }
             ]
         },
         '7V_2_1': { stage: 7, character: 'thief', chapter: 'Ритуальный зал', text: 'Советник: «Воровка. Тебе нужно золото. У меня есть. Помоги мне».', nextCard: '7V_2_2' },
         '7V_2_2': { stage: 7, character: 'thief', isChoice: true,
             choices: [
-                { id: 1, text: '🏃 Согласиться', reward: { agility: 2 }, nextCard: '8V_2', task: 'Раскрась страницу со сделкой' },
-                { id: 2, text: '🏃 Обмануть — украсть кошелёк (🏃≥10)', requireStat: { stat: 'agility', min: 10 }, reward: { agility: 3 }, nextCard: '8V_1', task: 'Раскрась страницу с кражей' },
-                { id: 3, text: '🌟 Украсть ключ от цепей', skipCost: 3, isPremium: true, reward: { all: 2 }, nextCard: '8V_1' }
+                { id: 1, text: 'Согласиться', reward: { agility: 2 }, nextCard: '8V_2', task: 'Раскрась страницу со сделкой' },
+                { id: 2, text: 'Обмануть — украсть кошелёк (🏃≥10)', requireStat: { stat: 'agility', min: 10 }, reward: { agility: 3 }, nextCard: '8V_1', task: 'Раскрась страницу с кражей' },
+                { id: 3, text: 'Украсть ключ от цепей', skipCost: 3, isPremium: true, reward: { all: 2 }, nextCard: '8V_1' }
             ]
         },
         '7V_3_1': { stage: 7, character: 'thief', chapter: 'Сад', text: 'Элиза идёт с вами. Вы входите в тронный зал. Лорд видит её. Цепи дрожат.', nextCard: '7V_3_2' },
@@ -16433,17 +16433,17 @@ const CASTLE_CHARACTERS = {
         '8V_1': { stage: 8, character: 'thief', chapter: 'Тронный зал', text: 'Лорд ждёт. «Воровка. Ты могла просто украсть золото. Почему ты здесь?»', nextCard: '8V_1_2' },
         '8V_1_2': { stage: 8, character: 'thief', isChoice: true,
             choices: [
-                { id: 1, text: '🏃 «Свобода стоит дороже золота»', nextCard: '9V_1_1', task: 'Раскрась страницу с ответом' },
-                { id: 2, text: '🏃 «Ты обещал заплатить»', nextCard: '9V_2_1', task: 'Раскрась страницу со сделкой' },
-                { id: 3, text: '🌟 «Я хочу этот замок»', skipCost: 4, isPremium: true, nextCard: '9V_3_1' }
+                { id: 1, text: '«Свобода стоит дороже золота»', nextCard: '9V_1_1', task: 'Раскрась страницу с ответом' },
+                { id: 2, text: '«Ты обещал заплатить»', nextCard: '9V_2_1', task: 'Раскрась страницу со сделкой' },
+                { id: 3, text: '«Я хочу этот замок»', skipCost: 4, isPremium: true, nextCard: '9V_3_1' }
             ]
         },
         '8V_2': { stage: 8, character: 'thief', chapter: 'Ритуальный зал', text: 'Советник: «Ты приняла правильное решение».', nextCard: '8V_2_2' },
         '8V_2_2': { stage: 8, character: 'thief', isChoice: true,
             choices: [
-                { id: 1, text: '🏃 Помочь Советнику', nextCard: '9V_2_1', task: 'Раскрась страницу с помощью' },
-                { id: 2, text: '🏃 Предать Советника (🏃≥12)', requireStat: { stat: 'agility', min: 12 }, nextCard: '9V_1_1', task: 'Раскрась страницу с предательством' },
-                { id: 3, text: '🌟 Обмануть обоих', skipCost: 4, isPremium: true, nextCard: '9V_3_1' }
+                { id: 1, text: 'Помочь Советнику', nextCard: '9V_2_1', task: 'Раскрась страницу с помощью' },
+                { id: 2, text: 'Предать Советника (🏃≥12)', requireStat: { stat: 'agility', min: 12 }, nextCard: '9V_1_1', task: 'Раскрась страницу с предательством' },
+                { id: 3, text: 'Обмануть обоих', skipCost: 4, isPremium: true, nextCard: '9V_3_1' }
             ]
         },
         '8V_3': { stage: 8, character: 'thief', text: 'Элиза и Эдвард вместе. Проклятие спадает. Любовь сильнее магии.', nextCard: '9V_3_1' },
@@ -16461,239 +16461,239 @@ const CASTLE_CHARACTERS = {
         '1A_2': { stage: 1, character: 'alchemist', text: 'Каменный мост. Призрак в доспехах. Амулет с рунами привязки. Вы узнаёте заклинание клятвы.', nextCard: '1A_3' },
         '1A_3': { stage: 1, character: 'alchemist', isChoice: true, text: 'Руны складываются в имя: «Сир Грегор, рыцарь Серебряного Ворона». Вы можете освободить его.',
             choices: [
-                { id: 1, text: '🧠 Прочесть руны (🧠≥6)', requireStat: { stat: 'intelligence', min: 6 }, reward: { intelligence: 2 }, nextCard: '2A_A_1', task: 'Раскрась страницу с рунами' },
-                { id: 2, text: '🧠 Произнести заклинание изгнания (🧠≥8)', requireStat: { stat: 'intelligence', min: 8 }, reward: { intelligence: 2 }, nextCard: '2A_B_1', task: 'Раскрась страницу с заклинанием' },
-                { id: 3, text: '🧠 Изучить мост — следы древней магии (🧠≥6)', requireStat: { stat: 'intelligence', min: 6 }, reward: { intelligence: 2 }, nextCard: '2A_A_1', task: 'Раскрась страницу с магией' },
-                { id: 4, text: '🌟 Открыть портал прямо в замок', skipCost: 2, isPremium: true, reward: { all: 1 }, nextCard: '2A_V_1' }
+                { id: 1, text: 'Прочесть руны (🧠≥6)', requireStat: { stat: 'intelligence', min: 6 }, reward: { intelligence: 2 }, nextCard: '2A_A_1', task: 'Раскрась страницу с рунами' },
+                { id: 2, text: 'Произнести заклинание изгнания (🧠≥8)', requireStat: { stat: 'intelligence', min: 8 }, reward: { intelligence: 2 }, nextCard: '2A_B_1', task: 'Раскрась страницу с заклинанием' },
+                { id: 3, text: 'Изучить мост — следы древней магии (🧠≥6)', requireStat: { stat: 'intelligence', min: 6 }, reward: { intelligence: 2 }, nextCard: '2A_A_1', task: 'Раскрась страницу с магией' },
+                { id: 4, text: 'Открыть портал прямо в замок', skipCost: 2, isPremium: true, reward: { all: 1 }, nextCard: '2A_V_1' }
             ]
         },
         '2A_A_1': { stage: 2, character: 'alchemist', chapter: 'Врата Знания', text: 'Главные врата. Руны на петлях: «Входящий со знанием да обрящет истину». Замок распознаёт намерения.', nextCard: '2A_A_2' },
         '2A_A_2': { stage: 2, character: 'alchemist', text: 'Ворота открываются. Лестница в библиотеку. Но есть магический след в башню — там был звездочёт.', nextCard: '2A_A_3' },
         '2A_A_3': { stage: 2, character: 'alchemist', isChoice: true,
             choices: [
-                { id: 1, text: '🧠 Подняться в библиотеку', nextCard: '3A_1_1', task: 'Раскрась страницу с библиотекой' },
-                { id: 2, text: '🧠 Пойти по следу в башню', nextCard: '3A_2_1', task: 'Раскрась страницу с башней' },
-                { id: 3, text: '🌟 Расшифровать руны на петлях', skipCost: 1, isPremium: true, reward: { intelligence: 2 }, nextCard: '3A_3_1' }
+                { id: 1, text: 'Подняться в библиотеку', nextCard: '3A_1_1', task: 'Раскрась страницу с библиотекой' },
+                { id: 2, text: 'Пойти по следу в башню', nextCard: '3A_2_1', task: 'Раскрась страницу с башней' },
+                { id: 3, text: 'Расшифровать руны на петлях', skipCost: 1, isPremium: true, reward: { intelligence: 2 }, nextCard: '3A_3_1' }
             ]
         },
         '2A_B_1': { stage: 2, character: 'alchemist', chapter: 'Старая часовня', text: 'Заброшенная часовня. Древняя магия. Здесь молились первые Ашетвили.', nextCard: '2A_B_2' },
         '2A_B_2': { stage: 2, character: 'alchemist', text: 'На алтаре — гримуар первого лорда. Заклинание звезды, заклинание цепей, заклинание памяти.', nextCard: '2A_B_3' },
         '2A_B_3': { stage: 2, character: 'alchemist', isChoice: true,
             choices: [
-                { id: 1, text: '🧠 Изучить гримуар (🧠≥8)', requireStat: { stat: 'intelligence', min: 8 }, reward: { intelligence: 3 }, nextCard: '3A_3_1', task: 'Раскрась страницу с гримуаром' },
-                { id: 2, text: '🧠 Идти в склеп первого лорда', nextCard: '3A_4_1', task: 'Раскрась страницу со склепом' },
-                { id: 3, text: '🌟 Прочесть заклинание памяти', skipCost: 1, isPremium: true, reward: { intelligence: 2 }, nextCard: '3A_2_1' }
+                { id: 1, text: 'Изучить гримуар (🧠≥8)', requireStat: { stat: 'intelligence', min: 8 }, reward: { intelligence: 3 }, nextCard: '3A_3_1', task: 'Раскрась страницу с гримуаром' },
+                { id: 2, text: 'Идти в склеп первого лорда', nextCard: '3A_4_1', task: 'Раскрась страницу со склепом' },
+                { id: 3, text: 'Прочесть заклинание памяти', skipCost: 1, isPremium: true, reward: { intelligence: 2 }, nextCard: '3A_2_1' }
             ]
         },
         '2A_V_1': { stage: 2, character: 'alchemist', chapter: 'Портал', text: 'Вы открываете портал. Оказываетесь в зеркальном зале. Десятки отражений прошлого.', nextCard: '2A_V_2' },
         '2A_V_2': { stage: 2, character: 'alchemist', text: 'Вы видите: первый лорд заключает сделку, Советник накладывает цепи, Элиза плачет в саду.', nextCard: '2A_V_3' },
         '2A_V_3': { stage: 2, character: 'alchemist', isChoice: true,
             choices: [
-                { id: 1, text: '🧠 Изучить зеркала', nextCard: '3A_5_1', task: 'Раскрась страницу с зеркалом' },
-                { id: 2, text: '🧠 Шагнуть в зеркало с первым лордом', nextCard: '3A_4_1', task: 'Раскрась страницу с лордом' },
-                { id: 3, text: '🌟 Найти зеркало, ведущее в архив', skipCost: 1, isPremium: true, reward: { intelligence: 1 }, nextCard: '3A_1_1' }
+                { id: 1, text: 'Изучить зеркала', nextCard: '3A_5_1', task: 'Раскрась страницу с зеркалом' },
+                { id: 2, text: 'Шагнуть в зеркало с первым лордом', nextCard: '3A_4_1', task: 'Раскрась страницу с лордом' },
+                { id: 3, text: 'Найти зеркало, ведущее в архив', skipCost: 1, isPremium: true, reward: { intelligence: 1 }, nextCard: '3A_1_1' }
             ]
         },
         '3A_1_1': { stage: 3, character: 'alchemist', chapter: 'Архив', text: 'Тысячи пустых книг. Проклятие высосало память книг. Кроме одной — дневника лорда.', nextCard: '3A_1_2' },
         '3A_1_2': { stage: 3, character: 'alchemist', text: 'Призрак-библиотекарь: «Я — память замка. Спрашивай».', nextCard: '3A_1_3' },
         '3A_1_3': { stage: 3, character: 'alchemist', isChoice: true,
             choices: [
-                { id: 1, text: '🧠 Прочесть дневник лорда (🧠≥8)', requireStat: { stat: 'intelligence', min: 8 }, reward: { intelligence: 3 }, nextCard: '4A_1_1', task: 'Раскрась страницу с дневником' },
-                { id: 2, text: '🧠 Расспросить библиотекаря о звезде', reward: { intelligence: 2 }, nextCard: '4A_2_1', task: 'Раскрась страницу с разговором' },
-                { id: 3, text: '🌟 Попросить карту замка', skipCost: 1, isPremium: true, reward: { intelligence: 2 }, nextCard: '4A_3_1' }
+                { id: 1, text: 'Прочесть дневник лорда (🧠≥8)', requireStat: { stat: 'intelligence', min: 8 }, reward: { intelligence: 3 }, nextCard: '4A_1_1', task: 'Раскрась страницу с дневником' },
+                { id: 2, text: 'Расспросить библиотекаря о звезде', reward: { intelligence: 2 }, nextCard: '4A_2_1', task: 'Раскрась страницу с разговором' },
+                { id: 3, text: 'Попросить карту замка', skipCost: 1, isPremium: true, reward: { intelligence: 2 }, nextCard: '4A_3_1' }
             ]
         },
         '3A_2_1': { stage: 3, character: 'alchemist', chapter: 'Башня Звездочёта', text: 'Круглая комната под куполом. Старик-призрак в мантии со звёздами.', nextCard: '3A_2_2' },
         '3A_2_2': { stage: 3, character: 'alchemist', text: '«Я ждал тебя, коллега. Я видел, как звезда упала. Я предупреждал лорда».', nextCard: '3A_2_3' },
         '3A_2_3': { stage: 3, character: 'alchemist', isChoice: true,
             choices: [
-                { id: 1, text: '🧠 Узнать как снять проклятие (🧠≥8)', requireStat: { stat: 'intelligence', min: 8 }, reward: { intelligence: 3 }, nextCard: '4A_2_1', task: 'Раскрась страницу со знанием' },
-                { id: 2, text: '🧠 Попросить показать звёзды', reward: { intelligence: 2 }, nextCard: '4A_4_1', task: 'Раскрась страницу со звёздами' },
-                { id: 3, text: '🌟 Купить осколок упавшей звезды', skipCost: 1, isPremium: true, reward: { all: 2 }, nextCard: '4A_5_1' }
+                { id: 1, text: 'Узнать как снять проклятие (🧠≥8)', requireStat: { stat: 'intelligence', min: 8 }, reward: { intelligence: 3 }, nextCard: '4A_2_1', task: 'Раскрась страницу со знанием' },
+                { id: 2, text: 'Попросить показать звёзды', reward: { intelligence: 2 }, nextCard: '4A_4_1', task: 'Раскрась страницу со звёздами' },
+                { id: 3, text: 'Купить осколок упавшей звезды', skipCost: 1, isPremium: true, reward: { all: 2 }, nextCard: '4A_5_1' }
             ]
         },
         '3A_3_1': { stage: 3, character: 'alchemist', chapter: 'Лаборатория Советника', text: 'Колбы, свитки. Всё пропитано тёмной магией. Дневник Советника.', nextCard: '3A_3_2' },
         '3A_3_2': { stage: 3, character: 'alchemist', text: '«Я нашёл способ. Звезда — источник силы. Если сковать лорда цепями, я заберу его власть».', nextCard: '3A_3_3' },
         '3A_3_3': { stage: 3, character: 'alchemist', isChoice: true,
             choices: [
-                { id: 1, text: '🧠 Изучить дневник (🧠≥8)', requireStat: { stat: 'intelligence', min: 8 }, reward: { intelligence: 3 }, nextCard: '4A_3_1', task: 'Раскрась страницу с дневником' },
-                { id: 2, text: '🧠 Найти инструменты для снятия проклятия', reward: { intelligence: 1 }, nextCard: '4A_5_1', task: 'Раскрась страницу с инструментами' },
-                { id: 3, text: '🌟 Расшифровать заклинание цепей', skipCost: 1, isPremium: true, reward: { intelligence: 2 }, nextCard: '4A_1_1' }
+                { id: 1, text: 'Изучить дневник (🧠≥8)', requireStat: { stat: 'intelligence', min: 8 }, reward: { intelligence: 3 }, nextCard: '4A_3_1', task: 'Раскрась страницу с дневником' },
+                { id: 2, text: 'Найти инструменты для снятия проклятия', reward: { intelligence: 1 }, nextCard: '4A_5_1', task: 'Раскрась страницу с инструментами' },
+                { id: 3, text: 'Расшифровать заклинание цепей', skipCost: 1, isPremium: true, reward: { intelligence: 2 }, nextCard: '4A_1_1' }
             ]
         },
         '3A_4_1': { stage: 3, character: 'alchemist', chapter: 'Склеп первого лорда', text: 'Саркофаг основателя. Руны: «Здесь лежит тот, кто заключил сделку со звездой».', nextCard: '3A_4_2' },
         '3A_4_2': { stage: 3, character: 'alchemist', text: 'Табличка: «Я обманул звезду: отдал не свою душу, а душу врага. Звезда разгневалась».', nextCard: '3A_4_3' },
         '3A_4_3': { stage: 3, character: 'alchemist', isChoice: true,
             choices: [
-                { id: 1, text: '🧠 Изучить руны (🧠≥8)', requireStat: { stat: 'intelligence', min: 8 }, reward: { intelligence: 3 }, nextCard: '4A_4_1', task: 'Раскрась страницу с рунами' },
-                { id: 2, text: '🧠 Взять амулет первого лорда', reward: { all: 1 }, nextCard: '4A_1_1', task: 'Раскрась страницу с амулетом' },
-                { id: 3, text: '🌟 Провести ритуал связи с духом', skipCost: 1, isPremium: true, reward: { intelligence: 2 }, nextCard: '4A_2_1' }
+                { id: 1, text: 'Изучить руны (🧠≥8)', requireStat: { stat: 'intelligence', min: 8 }, reward: { intelligence: 3 }, nextCard: '4A_4_1', task: 'Раскрась страницу с рунами' },
+                { id: 2, text: 'Взять амулет первого лорда', reward: { all: 1 }, nextCard: '4A_1_1', task: 'Раскрась страницу с амулетом' },
+                { id: 3, text: 'Провести ритуал связи с духом', skipCost: 1, isPremium: true, reward: { intelligence: 2 }, nextCard: '4A_2_1' }
             ]
         },
         '3A_5_1': { stage: 3, character: 'alchemist', chapter: 'Зеркальный зал', text: 'Десятки отражений прошлого. Одно зеркало показывает будущее — три концовки.', nextCard: '3A_5_2' },
         '3A_5_2': { stage: 3, character: 'alchemist', text: 'Вы видите: лорд свободен, трон занимает другой, проклятие снято навсегда.', nextCard: '3A_5_3' },
         '3A_5_3': { stage: 3, character: 'alchemist', isChoice: true,
             choices: [
-                { id: 1, text: '🧠 Шагнуть в зеркало будущего (🧠≥8)', requireStat: { stat: 'intelligence', min: 8 }, reward: { intelligence: 3 }, nextCard: '4A_5_1', task: 'Раскрась страницу с будущим' },
-                { id: 2, text: '🧠 Изучить зеркало с Элизой', reward: { intelligence: 1 }, nextCard: '4A_3_1', task: 'Раскрась страницу с Элизой' },
-                { id: 3, text: '🌟 Активировать все зеркала', skipCost: 1, isPremium: true, reward: { all: 2 }, nextCard: '4A_4_1' }
+                { id: 1, text: 'Шагнуть в зеркало будущего (🧠≥8)', requireStat: { stat: 'intelligence', min: 8 }, reward: { intelligence: 3 }, nextCard: '4A_5_1', task: 'Раскрась страницу с будущим' },
+                { id: 2, text: 'Изучить зеркало с Элизой', reward: { intelligence: 1 }, nextCard: '4A_3_1', task: 'Раскрась страницу с Элизой' },
+                { id: 3, text: 'Активировать все зеркала', skipCost: 1, isPremium: true, reward: { all: 2 }, nextCard: '4A_4_1' }
             ]
         },
         '4A_1_1': { stage: 4, character: 'alchemist', chapter: 'Встреча с лордом', text: 'Лорд Эдвард: «Ты — учёный. Ты хочешь понять. Я расскажу правду».', nextCard: '4A_1_2' },
         '4A_1_2': { stage: 4, character: 'alchemist', text: 'Лорд показывает воспоминания. Звезда. Сделка. Отказ платить. Советник воспользовался.', nextCard: '4A_1_3' },
         '4A_1_3': { stage: 4, character: 'alchemist', isChoice: true,
             choices: [
-                { id: 1, text: '🧠 Согласиться помочь лорду', reward: { all: 1 }, nextCard: '5A_1_1', task: 'Раскрась страницу с согласием' },
-                { id: 2, text: '🧠 Попросить показать цепь (🧠≥8)', requireStat: { stat: 'intelligence', min: 8 }, reward: { intelligence: 2 }, nextCard: '5A_2_1', task: 'Раскрась страницу с цепью' },
-                { id: 3, text: '🌟 Провести ритуал частичного снятия', skipCost: 2, isPremium: true, reward: { intelligence: 2 }, nextCard: '5A_3_1' }
+                { id: 1, text: 'Согласиться помочь лорду', reward: { all: 1 }, nextCard: '5A_1_1', task: 'Раскрась страницу с согласием' },
+                { id: 2, text: 'Попросить показать цепь (🧠≥8)', requireStat: { stat: 'intelligence', min: 8 }, reward: { intelligence: 2 }, nextCard: '5A_2_1', task: 'Раскрась страницу с цепью' },
+                { id: 3, text: 'Провести ритуал частичного снятия', skipCost: 2, isPremium: true, reward: { intelligence: 2 }, nextCard: '5A_3_1' }
             ]
         },
         '4A_2_1': { stage: 4, character: 'alchemist', chapter: 'Звёздный зал', text: 'Магические линии сходятся здесь. Три цепи — три аспекта проклятия.', nextCard: '4A_2_2' },
         '4A_2_2': { stage: 4, character: 'alchemist', text: 'Звездочёт: «Ты можешь разорвать цепи. Или перековать их. Выбор за тобой».', nextCard: '4A_2_3' },
         '4A_2_3': { stage: 4, character: 'alchemist', isChoice: true,
             choices: [
-                { id: 1, text: '🧠 Изучить линии (🧠≥8)', requireStat: { stat: 'intelligence', min: 8 }, reward: { intelligence: 3 }, nextCard: '5A_2_1', task: 'Раскрась страницу с магией' },
-                { id: 2, text: '🧠 Разорвать одну цепь (🧠≥6)', requireStat: { stat: 'intelligence', min: 6 }, reward: { intelligence: 2 }, nextCard: '5A_4_1', task: 'Раскрась страницу с цепью' },
-                { id: 3, text: '🌟 Перенаправить магию', skipCost: 2, isPremium: true, reward: { all: 2 }, nextCard: '5A_5_1' }
+                { id: 1, text: 'Изучить линии (🧠≥8)', requireStat: { stat: 'intelligence', min: 8 }, reward: { intelligence: 3 }, nextCard: '5A_2_1', task: 'Раскрась страницу с магией' },
+                { id: 2, text: 'Разорвать одну цепь (🧠≥6)', requireStat: { stat: 'intelligence', min: 6 }, reward: { intelligence: 2 }, nextCard: '5A_4_1', task: 'Раскрась страницу с цепью' },
+                { id: 3, text: 'Перенаправить магию', skipCost: 2, isPremium: true, reward: { all: 2 }, nextCard: '5A_5_1' }
             ]
         },
         '4A_3_1': { stage: 4, character: 'alchemist', chapter: 'Ритуальная комната', text: 'Круг на полу. Свечи. Здесь Советник проводил ритуал проклятия.', nextCard: '4A_3_2' },
         '4A_3_2': { stage: 4, character: 'alchemist', text: 'Руны активны. Обратный ритуал возможен. Нужно имя лорда, имя Элизы и источник силы.', nextCard: '4A_3_3' },
         '4A_3_3': { stage: 4, character: 'alchemist', isChoice: true,
             choices: [
-                { id: 1, text: '🧠 Начать подготовку (🧠≥8)', requireStat: { stat: 'intelligence', min: 8 }, reward: { intelligence: 3 }, nextCard: '5A_3_1', task: 'Раскрась страницу с ритуалом' },
-                { id: 2, text: '🧠 Изучить книгу заклинаний', reward: { intelligence: 2 }, nextCard: '5A_1_1', task: 'Раскрась страницу с книгой' },
-                { id: 3, text: '🌟 Активировать руны', skipCost: 2, isPremium: true, reward: { all: 2 }, nextCard: '5A_5_1' }
+                { id: 1, text: 'Начать подготовку (🧠≥8)', requireStat: { stat: 'intelligence', min: 8 }, reward: { intelligence: 3 }, nextCard: '5A_3_1', task: 'Раскрась страницу с ритуалом' },
+                { id: 2, text: 'Изучить книгу заклинаний', reward: { intelligence: 2 }, nextCard: '5A_1_1', task: 'Раскрась страницу с книгой' },
+                { id: 3, text: 'Активировать руны', skipCost: 2, isPremium: true, reward: { all: 2 }, nextCard: '5A_5_1' }
             ]
         },
         '4A_4_1': { stage: 4, character: 'alchemist', chapter: 'Катакомбы', text: 'Саркофаги. Синее пламя. Мумия домового на алтаре.', nextCard: '4A_4_2' },
         '4A_4_2': { stage: 4, character: 'alchemist', text: 'Свиток с заклинанием призыва духа-хранителя. Домовой служил Ашетвилям пятьсот лет.', nextCard: '4A_4_3' },
         '4A_4_3': { stage: 4, character: 'alchemist', isChoice: true,
             choices: [
-                { id: 1, text: '🧠 Оживить домового (🧠≥6)', requireStat: { stat: 'intelligence', min: 6 }, reward: { all: 2 }, nextCard: '5A_4_1', task: 'Раскрась страницу с домовым' },
-                { id: 2, text: '🧠 Изучить саркофаги', reward: { intelligence: 1 }, nextCard: '5A_1_1', task: 'Раскрась страницу с артефактами' },
-                { id: 3, text: '🌟 Провести ритуал полного пробуждения', skipCost: 2, isPremium: true, reward: { all: 3 }, nextCard: '5A_2_1' }
+                { id: 1, text: 'Оживить домового (🧠≥6)', requireStat: { stat: 'intelligence', min: 6 }, reward: { all: 2 }, nextCard: '5A_4_1', task: 'Раскрась страницу с домовым' },
+                { id: 2, text: 'Изучить саркофаги', reward: { intelligence: 1 }, nextCard: '5A_1_1', task: 'Раскрась страницу с артефактами' },
+                { id: 3, text: 'Провести ритуал полного пробуждения', skipCost: 2, isPremium: true, reward: { all: 3 }, nextCard: '5A_2_1' }
             ]
         },
         '4A_5_1': { stage: 4, character: 'alchemist', chapter: 'Святилище Звезды', text: 'Упавшая звезда. Живая. «Маг. Я ждала того, кто поймёт».', nextCard: '4A_5_2' },
         '4A_5_2': { stage: 4, character: 'alchemist', text: '«Я дала силу — лорд обманул. Отдай память — сниму проклятие. Или забери силу — стань хранителем».', nextCard: '4A_5_3' },
         '4A_5_3': { stage: 4, character: 'alchemist', isChoice: true,
             choices: [
-                { id: 1, text: '🧠 Отдать часть памяти (🧠≥8)', requireStat: { stat: 'intelligence', min: 8 }, penalty: { intelligence: -1 }, nextCard: '5A_5_1', task: 'Раскрась страницу с жертвой' },
-                { id: 2, text: '🧠 Изучить звезду', reward: { intelligence: 3 }, nextCard: '5A_3_1', task: 'Раскрась страницу со звездой' },
-                { id: 3, text: '🌟 Предложить звезде сделку', skipCost: 2, isPremium: true, reward: { all: 2 }, nextCard: '5A_4_1' }
+                { id: 1, text: 'Отдать часть памяти (🧠≥8)', requireStat: { stat: 'intelligence', min: 8 }, penalty: { intelligence: -1 }, nextCard: '5A_5_1', task: 'Раскрась страницу с жертвой' },
+                { id: 2, text: 'Изучить звезду', reward: { intelligence: 3 }, nextCard: '5A_3_1', task: 'Раскрась страницу со звездой' },
+                { id: 3, text: 'Предложить звезде сделку', skipCost: 2, isPremium: true, reward: { all: 2 }, nextCard: '5A_4_1' }
             ]
         },
         '5A_1_1': { stage: 5, character: 'alchemist', chapter: 'Встреча с лордом', text: 'Лорд: «Я хочу исправить. Помоги мне — отдам все знания замка».', nextCard: '5A_1_2' },
         '5A_1_2': { stage: 5, character: 'alchemist', isChoice: true,
             choices: [
-                { id: 1, text: '🧠 Согласиться', reward: { all: 1 }, nextCard: '6A_1_1', task: 'Раскрась страницу с согласием' },
-                { id: 2, text: '🧠 Потребовать знания вперёд (🧠≥8)', requireStat: { stat: 'intelligence', min: 8 }, reward: { intelligence: 2 }, nextCard: '6A_2_1', task: 'Раскрась страницу со знанием' },
-                { id: 3, text: '🌟 Заключить магический контракт', skipCost: 2, isPremium: true, reward: { intelligence: 2 }, nextCard: '6A_3_1' }
+                { id: 1, text: 'Согласиться', reward: { all: 1 }, nextCard: '6A_1_1', task: 'Раскрась страницу с согласием' },
+                { id: 2, text: 'Потребовать знания вперёд (🧠≥8)', requireStat: { stat: 'intelligence', min: 8 }, reward: { intelligence: 2 }, nextCard: '6A_2_1', task: 'Раскрась страницу со знанием' },
+                { id: 3, text: 'Заключить магический контракт', skipCost: 2, isPremium: true, reward: { intelligence: 2 }, nextCard: '6A_3_1' }
             ]
         },
         '5A_2_1': { stage: 5, character: 'alchemist', chapter: 'Звёздный зал', text: 'Магические линии пульсируют. Вы можете управлять ими.', nextCard: '5A_2_2' },
         '5A_2_2': { stage: 5, character: 'alchemist', isChoice: true,
             choices: [
-                { id: 1, text: '🧠 Разорвать линии (🧠≥8)', requireStat: { stat: 'intelligence', min: 8 }, reward: { intelligence: 3 }, nextCard: '6A_2_1', task: 'Раскрась страницу с магией' },
-                { id: 2, text: '🧠 Перековать линии', reward: { intelligence: 2 }, nextCard: '6A_3_1', task: 'Раскрась страницу с изменением' },
-                { id: 3, text: '🌟 Впитать магию линий', skipCost: 2, isPremium: true, reward: { all: 3 }, nextCard: '6A_4_1' }
+                { id: 1, text: 'Разорвать линии (🧠≥8)', requireStat: { stat: 'intelligence', min: 8 }, reward: { intelligence: 3 }, nextCard: '6A_2_1', task: 'Раскрась страницу с магией' },
+                { id: 2, text: 'Перековать линии', reward: { intelligence: 2 }, nextCard: '6A_3_1', task: 'Раскрась страницу с изменением' },
+                { id: 3, text: 'Впитать магию линий', skipCost: 2, isPremium: true, reward: { all: 3 }, nextCard: '6A_4_1' }
             ]
         },
         '5A_3_1': { stage: 5, character: 'alchemist', chapter: 'Ритуальная комната', text: 'Руны светятся. Не хватает только имени.', nextCard: '5A_3_2' },
         '5A_3_2': { stage: 5, character: 'alchemist', isChoice: true,
             choices: [
-                { id: 1, text: '🧠 Использовать свою магию (🧠≥8)', requireStat: { stat: 'intelligence', min: 8 }, penalty: { intelligence: -1 }, nextCard: '6A_3_1', task: 'Раскрась страницу с ритуалом' },
-                { id: 2, text: '🧠 Использовать осколок звезды', reward: { intelligence: 2 }, nextCard: '6A_1_1', task: 'Раскрась страницу со звездой' },
-                { id: 3, text: '🌟 Использовать магию замка', skipCost: 2, isPremium: true, reward: { all: 2 }, nextCard: '6A_4_1' }
+                { id: 1, text: 'Использовать свою магию (🧠≥8)', requireStat: { stat: 'intelligence', min: 8 }, penalty: { intelligence: -1 }, nextCard: '6A_3_1', task: 'Раскрась страницу с ритуалом' },
+                { id: 2, text: 'Использовать осколок звезды', reward: { intelligence: 2 }, nextCard: '6A_1_1', task: 'Раскрась страницу со звездой' },
+                { id: 3, text: 'Использовать магию замка', skipCost: 2, isPremium: true, reward: { all: 2 }, nextCard: '6A_4_1' }
             ]
         },
         '5A_4_1': { stage: 5, character: 'alchemist', chapter: 'Катакомбы', text: 'Домовой оживлён. «Я знаю, как снять проклятие. Нужно вернуть звезде память».', nextCard: '5A_4_2' },
         '5A_4_2': { stage: 5, character: 'alchemist', isChoice: true,
             choices: [
-                { id: 1, text: '🧠 Идти к звезде', nextCard: '6A_4_1', task: 'Раскрась страницу с путём' },
-                { id: 2, text: '🧠 Расспросить домового о первом лорде', reward: { intelligence: 2 }, nextCard: '6A_2_1', task: 'Раскрась страницу с историей' },
-                { id: 3, text: '🌟 Усилить домового', skipCost: 2, isPremium: true, reward: { all: 2 }, nextCard: '6A_1_1' }
+                { id: 1, text: 'Идти к звезде', nextCard: '6A_4_1', task: 'Раскрась страницу с путём' },
+                { id: 2, text: 'Расспросить домового о первом лорде', reward: { intelligence: 2 }, nextCard: '6A_2_1', task: 'Раскрась страницу с историей' },
+                { id: 3, text: 'Усилить домового', skipCost: 2, isPremium: true, reward: { all: 2 }, nextCard: '6A_1_1' }
             ]
         },
         '5A_5_1': { stage: 5, character: 'alchemist', chapter: 'Святилище', text: 'Звезда: «Я хочу домой. Освободи меня — сниму проклятие. Или останься — дам силу».', nextCard: '5A_5_2' },
         '5A_5_2': { stage: 5, character: 'alchemist', isChoice: true,
             choices: [
-                { id: 1, text: '🧠 Пообещать освободить', reward: { all: 1 }, nextCard: '6A_4_1', task: 'Раскрась страницу с обещанием' },
-                { id: 2, text: '🧠 Попросить силу (🧠≥8)', requireStat: { stat: 'intelligence', min: 8 }, reward: { intelligence: 3 }, nextCard: '6A_3_1', task: 'Раскрась страницу с силой' },
-                { id: 3, text: '🌟 Заключить союз', skipCost: 2, isPremium: true, reward: { all: 2 }, nextCard: '6A_2_1' }
+                { id: 1, text: 'Пообещать освободить', reward: { all: 1 }, nextCard: '6A_4_1', task: 'Раскрась страницу с обещанием' },
+                { id: 2, text: 'Попросить силу (🧠≥8)', requireStat: { stat: 'intelligence', min: 8 }, reward: { intelligence: 3 }, nextCard: '6A_3_1', task: 'Раскрась страницу с силой' },
+                { id: 3, text: 'Заключить союз', skipCost: 2, isPremium: true, reward: { all: 2 }, nextCard: '6A_2_1' }
             ]
         },
         '6A_1_1': { stage: 6, character: 'alchemist', chapter: 'Покои лорда', text: 'Письмо Элизе: «Произнеси моё имя в тронном зале. Эдвард». Медальон с портретом.', nextCard: '6A_1_2' },
         '6A_1_2': { stage: 6, character: 'alchemist', isChoice: true,
             choices: [
-                { id: 1, text: '🧠 Взять письмо и медальон', reward: { all: 1 }, nextCard: '7A_1_1', task: 'Раскрась страницу с письмом' },
-                { id: 2, text: '🧠 Искать Элизу в саду', nextCard: '7A_2_1', task: 'Раскрась страницу с поиском' },
-                { id: 3, text: '🌟 Произнести имя лорда — ослабить цепи', skipCost: 3, isPremium: true, reward: { intelligence: 2 }, nextCard: '7A_3_1' }
+                { id: 1, text: 'Взять письмо и медальон', reward: { all: 1 }, nextCard: '7A_1_1', task: 'Раскрась страницу с письмом' },
+                { id: 2, text: 'Искать Элизу в саду', nextCard: '7A_2_1', task: 'Раскрась страницу с поиском' },
+                { id: 3, text: 'Произнести имя лорда — ослабить цепи', skipCost: 3, isPremium: true, reward: { intelligence: 2 }, nextCard: '7A_3_1' }
             ]
         },
         '6A_2_1': { stage: 6, character: 'alchemist', chapter: 'Библиотека', text: 'Библиотекарь: «Я — память замка. Я могу заплатить звезде».', nextCard: '6A_2_2' },
         '6A_2_2': { stage: 6, character: 'alchemist', isChoice: true,
             choices: [
-                { id: 1, text: '🧠 Принять жертву', reward: { intelligence: 2 }, nextCard: '7A_1_1', task: 'Раскрась страницу с жертвой' },
-                { id: 2, text: '🧠 Отказаться — найти другой способ', reward: { all: 1 }, nextCard: '7A_2_1', task: 'Раскрась страницу с решением' },
-                { id: 3, text: '🌟 Разделить плату', skipCost: 3, isPremium: true, reward: { all: 2 }, nextCard: '7A_3_1' }
+                { id: 1, text: 'Принять жертву', reward: { intelligence: 2 }, nextCard: '7A_1_1', task: 'Раскрась страницу с жертвой' },
+                { id: 2, text: 'Отказаться — найти другой способ', reward: { all: 1 }, nextCard: '7A_2_1', task: 'Раскрась страницу с решением' },
+                { id: 3, text: 'Разделить плату', skipCost: 3, isPremium: true, reward: { all: 2 }, nextCard: '7A_3_1' }
             ]
         },
         '6A_3_1': { stage: 6, character: 'alchemist', chapter: 'Лаборатория', text: 'Ингредиенты собраны. Осколок звезды, имя лорда, имя Элизы, капля крови.', nextCard: '6A_3_2' },
         '6A_3_2': { stage: 6, character: 'alchemist', isChoice: true,
             choices: [
-                { id: 1, text: '🧠 Провести ритуал (🧠≥8)', requireStat: { stat: 'intelligence', min: 8 }, reward: { intelligence: 3 }, nextCard: '7A_1_1', task: 'Раскрась страницу с ритуалом' },
-                { id: 2, text: '🧠 Подготовиться тщательнее', reward: { intelligence: 1 }, nextCard: '7A_3_1', task: 'Раскрась страницу с подготовкой' },
-                { id: 3, text: '🌟 Усилить ритуал своей магией', skipCost: 3, isPremium: true, reward: { all: 3 }, nextCard: '7A_2_1' }
+                { id: 1, text: 'Провести ритуал (🧠≥8)', requireStat: { stat: 'intelligence', min: 8 }, reward: { intelligence: 3 }, nextCard: '7A_1_1', task: 'Раскрась страницу с ритуалом' },
+                { id: 2, text: 'Подготовиться тщательнее', reward: { intelligence: 1 }, nextCard: '7A_3_1', task: 'Раскрась страницу с подготовкой' },
+                { id: 3, text: 'Усилить ритуал своей магией', skipCost: 3, isPremium: true, reward: { all: 3 }, nextCard: '7A_2_1' }
             ]
         },
         '6A_4_1': { stage: 6, character: 'alchemist', chapter: 'Древний храм', text: 'Звезда: «Три пути. Освободи меня. Возьми силу. Или дай память».', nextCard: '6A_4_2' },
         '6A_4_2': { stage: 6, character: 'alchemist', isChoice: true,
             choices: [
-                { id: 1, text: '🧠 Освободить звезду (🧠≥8)', requireStat: { stat: 'intelligence', min: 8 }, reward: { intelligence: 3 }, nextCard: '7A_2_1', task: 'Раскрась страницу с освобождением' },
-                { id: 2, text: '🧠 Взять силу звезды', reward: { all: 2 }, nextCard: '7A_1_1', task: 'Раскрась страницу с силой' },
-                { id: 3, text: '🌟 Дать звезде память Советника', skipCost: 3, isPremium: true, reward: { intelligence: 3 }, nextCard: '7A_3_1' }
+                { id: 1, text: 'Освободить звезду (🧠≥8)', requireStat: { stat: 'intelligence', min: 8 }, reward: { intelligence: 3 }, nextCard: '7A_2_1', task: 'Раскрась страницу с освобождением' },
+                { id: 2, text: 'Взять силу звезды', reward: { all: 2 }, nextCard: '7A_1_1', task: 'Раскрась страницу с силой' },
+                { id: 3, text: 'Дать звезде память Советника', skipCost: 3, isPremium: true, reward: { intelligence: 3 }, nextCard: '7A_3_1' }
             ]
         },
         '7A_1_1': { stage: 7, character: 'alchemist', chapter: 'Тронный зал', text: 'Лорд: «Ты знаешь моё имя. Ты держишь в руках мою судьбу. Я приму любой исход».', nextCard: '7A_1_2' },
         '7A_1_2': { stage: 7, character: 'alchemist', isChoice: true,
             choices: [
-                { id: 1, text: '🧠 Произнести имя лорда (🧠≥10)', requireStat: { stat: 'intelligence', min: 10 }, reward: { intelligence: 3 }, nextCard: '8A_1', task: 'Раскрась страницу с именем' },
-                { id: 2, text: '🧠 Провести ритуал снятия (🧠≥8)', requireStat: { stat: 'intelligence', min: 8 }, reward: { intelligence: 2 }, nextCard: '8A_2', task: 'Раскрась страницу с ритуалом' },
-                { id: 3, text: '🌟 Использовать все артефакты', skipCost: 3, isPremium: true, reward: { all: 3 }, nextCard: '8A_3' }
+                { id: 1, text: 'Произнести имя лорда (🧠≥10)', requireStat: { stat: 'intelligence', min: 10 }, reward: { intelligence: 3 }, nextCard: '8A_1', task: 'Раскрась страницу с именем' },
+                { id: 2, text: 'Провести ритуал снятия (🧠≥8)', requireStat: { stat: 'intelligence', min: 8 }, reward: { intelligence: 2 }, nextCard: '8A_2', task: 'Раскрась страницу с ритуалом' },
+                { id: 3, text: 'Использовать все артефакты', skipCost: 3, isPremium: true, reward: { all: 3 }, nextCard: '8A_3' }
             ]
         },
         '7A_2_1': { stage: 7, character: 'alchemist', chapter: 'Ритуальный зал', text: 'Советник: «Маг. Присоединяйся ко мне. Вместе будем править».', nextCard: '7A_2_2' },
         '7A_2_2': { stage: 7, character: 'alchemist', isChoice: true,
             choices: [
-                { id: 1, text: '🧠 Отказаться — сразиться (🧠≥10)', requireStat: { stat: 'intelligence', min: 10 }, reward: { intelligence: 3 }, nextCard: '8A_1', task: 'Раскрась страницу с битвой' },
-                { id: 2, text: '🧠 Принять предложение', reward: { intelligence: 2 }, nextCard: '8A_2', task: 'Раскрась страницу со сделкой' },
-                { id: 3, text: '🌟 Перехитрить Советника', skipCost: 3, isPremium: true, reward: { all: 3 }, nextCard: '8A_3' }
+                { id: 1, text: 'Отказаться — сразиться (🧠≥10)', requireStat: { stat: 'intelligence', min: 10 }, reward: { intelligence: 3 }, nextCard: '8A_1', task: 'Раскрась страницу с битвой' },
+                { id: 2, text: 'Принять предложение', reward: { intelligence: 2 }, nextCard: '8A_2', task: 'Раскрась страницу со сделкой' },
+                { id: 3, text: 'Перехитрить Советника', skipCost: 3, isPremium: true, reward: { all: 3 }, nextCard: '8A_3' }
             ]
         },
         '7A_3_1': { stage: 7, character: 'alchemist', chapter: 'Сад душ', text: 'Элиза: «Я не помню Эдварда. Но чувствую: он где-то здесь. Помоги вспомнить».', nextCard: '7A_3_2' },
         '7A_3_2': { stage: 7, character: 'alchemist', isChoice: true,
             choices: [
-                { id: 1, text: '🧠 Отвести Элизу к лорду', reward: { all: 2 }, nextCard: '8A_1', task: 'Раскрась страницу с Элизой' },
-                { id: 2, text: '🧠 Провести ритуал в саду (🧠≥8)', requireStat: { stat: 'intelligence', min: 8 }, reward: { intelligence: 3 }, nextCard: '8A_3', task: 'Раскрась страницу с ритуалом' },
-                { id: 3, text: '🌟 Объединить память Элизы и лорда', skipCost: 3, isPremium: true, reward: { all: 3 }, nextCard: '8A_3' }
+                { id: 1, text: 'Отвести Элизу к лорду', reward: { all: 2 }, nextCard: '8A_1', task: 'Раскрась страницу с Элизой' },
+                { id: 2, text: 'Провести ритуал в саду (🧠≥8)', requireStat: { stat: 'intelligence', min: 8 }, reward: { intelligence: 3 }, nextCard: '8A_3', task: 'Раскрась страницу с ритуалом' },
+                { id: 3, text: 'Объединить память Элизы и лорда', skipCost: 3, isPremium: true, reward: { all: 3 }, nextCard: '8A_3' }
             ]
         },
         '8A_1': { stage: 8, character: 'alchemist', chapter: 'Финальный выбор', text: 'Лорд: «Маг. Что ты выберешь?»', nextCard: '8A_1_2' },
         '8A_1_2': { stage: 8, character: 'alchemist', isChoice: true,
             choices: [
-                { id: 1, text: '🧠 Освободить лорда (🧠≥12)', requireStat: { stat: 'intelligence', min: 12 }, nextCard: '9A_1_1', task: 'Раскрась страницу с освобождением' },
-                { id: 2, text: '🧠 Снять проклятие', requireOrSkip: 3, nextCard: '9A_2_1', task: 'Раскрась страницу со снятием' },
-                { id: 3, text: '🌟 Забрать силу замка', skipCost: 4, isPremium: true, nextCard: '9A_3_1' }
+                { id: 1, text: 'Освободить лорда (🧠≥12)', requireStat: { stat: 'intelligence', min: 12 }, nextCard: '9A_1_1', task: 'Раскрась страницу с освобождением' },
+                { id: 2, text: 'Снять проклятие', requireOrSkip: 3, nextCard: '9A_2_1', task: 'Раскрась страницу со снятием' },
+                { id: 3, text: 'Забрать силу замка', skipCost: 4, isPremium: true, nextCard: '9A_3_1' }
             ]
         },
         '8A_2': { stage: 8, character: 'alchemist', chapter: 'Ритуальный зал', text: 'Советник: «Вместе мы получим всё».', nextCard: '8A_2_2' },
         '8A_2_2': { stage: 8, character: 'alchemist', isChoice: true,
             choices: [
-                { id: 1, text: '🧠 Победить Советника (🧠≥12)', requireStat: { stat: 'intelligence', min: 12 }, nextCard: '9A_1_1', task: 'Раскрась страницу с победой' },
-                { id: 2, text: '🧠 Присоединиться к Советнику', nextCard: '9A_2_1', task: 'Раскрась страницу с союзом' },
-                { id: 3, text: '🌟 Переиграть обоих', skipCost: 4, isPremium: true, nextCard: '9A_3_1' }
+                { id: 1, text: 'Победить Советника (🧠≥12)', requireStat: { stat: 'intelligence', min: 12 }, nextCard: '9A_1_1', task: 'Раскрась страницу с победой' },
+                { id: 2, text: 'Присоединиться к Советнику', nextCard: '9A_2_1', task: 'Раскрась страницу с союзом' },
+                { id: 3, text: 'Переиграть обоих', skipCost: 4, isPremium: true, nextCard: '9A_3_1' }
             ]
         },
         '8A_3': { stage: 8, character: 'alchemist', text: 'Элиза и Эдвард встречаются. Цепи спадают. Любовь сильнее магии.', nextCard: '9A_3_1' },
@@ -16856,11 +16856,11 @@ function renderCastleCard(cardId) {
             const canSkip = !hasSkip || userSkips >= (choice.skipCost || 0);
             const isDisabled = !meetsReq || (hasSkip && !canSkip);
             
-            let btnText = choice.text;
-            let badges = '';
-            if (hasSkip) badges += ` 🎫${choice.skipCost}`;
-            if (reqStat) badges += ` (${statNames[reqStat.stat]}≥${reqStat.min})`;
-            if (!meetsReq) badges += ' 🔒';
+          let btnText = choice.text;
+let badges = '';
+if (hasSkip) badges += ` 🎫${choice.skipCost}`;
+if (reqStat) badges += ` (≥${reqStat.min})`;
+if (!meetsReq) badges += ' 🔒';
             
             choicesHtml += `
                 <div class="castle-choice-wrapper" style="margin-bottom: 10px;">
