@@ -17086,15 +17086,17 @@ function saveCastleProgress() {
         approvedChoices: castleApprovedChoices
     };
     
-    // Сохраняем локально
+    console.log('💾 СОХРАНЯЕМ ПРОГРЕСС:', JSON.stringify(progress));
+    
     localStorage.setItem(`castle_progress_${userId}`, JSON.stringify(progress));
     
-    // Сохраняем на сервер
     fetch(`${SERVER_URL}/api/castle/save_progress`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_id: userId, progress: progress })
-    }).catch(e => console.log('Save progress error:', e));
+    }).then(r => r.json()).then(res => {
+        console.log('✅ Прогресс сохранён на сервер:', res);
+    }).catch(e => console.log('❌ Ошибка сохранения:', e));
 }
 
 async function loadCastleProgress() {
