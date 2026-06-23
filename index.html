@@ -16809,10 +16809,12 @@ function renderCastleCard(cardId) {
                 costBadge = ` (🎫${choice.skipCost})`;
             }
             
+            const hasTask = choice.task && choice.task !== 'null';
+            
             choicesHtml += `<div class="castle-choice-wrapper" style="margin-bottom: 10px;">
                 <button class="task-submit-btn castle-choice-btn" style="width: 100%; text-align: left; padding: 12px; ${isDisabled?'opacity: 0.5;':''}" ${isDisabled?'disabled':''} onclick="submitCastleChoice('${cardId}',${idx})">
                     <div>${choice.text}${costBadge}</div>
-                    ${choice.task ? '<div style="font-size: 11px; opacity: 0.8; margin-top: 4px;">📸 ' + choice.task + '</div>' : ''}
+                    ${hasTask ? '<div style="font-size: 11px; opacity: 0.8; margin-top: 4px;">📸 ' + choice.task + '</div>' : ''}
                 </button>
             </div>`;
         });
