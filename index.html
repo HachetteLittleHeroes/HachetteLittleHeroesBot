@@ -16715,6 +16715,7 @@ function startCastleStory() {
     const content = document.getElementById('castleStoryContent');
     const arrow = document.getElementById('castleStoryArrow');
     if (content) { content.style.display = 'block'; if (arrow) arrow.style.transform = 'rotate(180deg)'; }
+    castleCompletedEndings = [];
     showCharacterSelect();
 }
 
@@ -16740,6 +16741,7 @@ function selectCastleCharacter(charId) {
     metEliza = false;
     castleCompletedChoices = {};
     castleApprovedChoices = {};
+    castleCompletedEndings = [];
     const prefixMap = { mystic: 'M', thief: 'V', alchemist: 'A' };
     currentCastleCard = '1' + prefixMap[charId] + '_1';
     document.querySelectorAll('.modal-overlay').forEach(m => { if (m.innerHTML.includes('Выберите персонажа')) m.remove(); });
