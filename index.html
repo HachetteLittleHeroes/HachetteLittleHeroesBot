@@ -17098,24 +17098,7 @@ function saveCastleProgress() {
 }
 
 async function loadCastleProgress() {
-    // Сначала пробуем localStorage (быстро)
-    const saved = localStorage.getItem(`castle_progress_${userId}`);
-    if (saved) {
-        try {
-            const data = JSON.parse(saved);
-            currentCastleCard = data.currentCard;
-            userCastleStats = data.stats || { strength: 0, agility: 0, intelligence: 0 };
-            selectedCastleCharacter = data.character;
-            castleCompletedEndings = data.completedEndings || [];
-            metEliza = data.metEliza || false;
-            castleCompletedChoices = data.completedChoices || {};
-            castleApprovedChoices = data.approvedChoices || {};
-            console.log('✅ Прогресс загружен из localStorage');
-            return true;
-        } catch(e) {}
-    }
-    
-    // Потом пробуем сервер с таймаутом
+    // Сначала пробуем сервер с таймаутом 3 секунды
     try {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 3000);
@@ -17135,14 +17118,33 @@ async function loadCastleProgress() {
             metEliza = data.metEliza || false;
             castleCompletedChoices = data.completedChoices || {};
             castleApprovedChoices = data.approvedChoices || {};
+            // Сохраняем локально как копию
             localStorage.setItem(`castle_progress_${userId}`, JSON.stringify(data));
-            console.log('✅ Прогресс загружен с сервера');
+            console.log('✅ Прогресс загружен с сервера:', currentCastleCard);
             return true;
         }
     } catch(e) {
-        console.log('⚠️ Сервер недоступен');
+        console.log('⚠️ Сервер недоступен, пробуем localStorage');
     }
     
+    // Если сервер не ответил — загружаем из localStorage
+    const saved = localStorage.getItem(`castle_progress_${userId}`);
+    if (saved) {
+        try {
+            const data = JSON.parse(saved);
+            currentCastleCard = data.currentCard;
+            userCastleStats = data.stats || { strength: 0, agility: 0, intelligence: 0 };
+            selectedCastleCharacter = data.character;
+            castleCompletedEndings = data.completedEndings || [];
+            metEliza = data.metEliza || false;
+            castleCompletedChoices = data.completedChoices || {};
+            castleApprovedChoices = data.approvedChoices || {};
+            console.log('✅ Прогресс загружен из localStorage');
+            return true;
+        } catch(e) {}
+    }
+    
+    console.log('ℹ️ Прогресс не найден');
     return false;
 }
 
