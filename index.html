@@ -16861,6 +16861,7 @@ function claimCastleEnding(cardId) {
     const card = CASTLE_STORY.cards[cardId];
     if (!card || !card.isEnding) return;
     
+    // Проверяем, не получена ли уже эта концовка
     if (castleCompletedEndings.includes(card.endingId)) {
         alert('Эта концовка уже получена!');
         return;
@@ -16868,6 +16869,13 @@ function claimCastleEnding(cardId) {
     
     castleCompletedEndings.push(card.endingId);
     const reward = ENDING_REWARDS[card.endingId];
+    
+    // Сохраняем концовку на сервере
+    fetch(`${SERVER_URL}/api/castle/save_ending`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: userId, ending_id: card.endingId })
+    }).catch(e => {});
     
     let statusUnlocked = false;
     if (reward && reward.status && reward.statusChance) {
@@ -16936,6 +16944,17 @@ function saveCastleProgress() {
 }
 async function loadCastleProgress() {
     if (!userId) return false;
+    
+    // Загружаем полученные концовки с сервера
+    try {
+        const endingsResp = await fetch(`${SERVER_URL}/api/castle/get_endings?user_id=${userId}`);
+        const endingsData = await endingsResp.json();
+        if (endingsData && endingsData.status === 'ok') {
+            castleCompletedEndings = endingsData.endings || [];
+        }
+    } catch(e) {}
+    
+    // Загружаем прогресс
     try {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 3000);
@@ -16947,7 +16966,6 @@ async function loadCastleProgress() {
             currentCastleCard = data.currentCard;
             userCastleStats = data.stats || { strength: 0, agility: 0, intelligence: 0 };
             selectedCastleCharacter = data.character;
-            castleCompletedEndings = [];
             metEliza = data.metEliza || false;
             castleCompletedChoices = data.completedChoices || {};
             castleApprovedChoices = data.approvedChoices || {};
@@ -16955,6 +16973,7 @@ async function loadCastleProgress() {
             return true;
         }
     } catch(e) {}
+    
     const saved = localStorage.getItem(`castle_progress_${userId}`);
     if (saved) {
         try {
@@ -16963,7 +16982,6 @@ async function loadCastleProgress() {
                 currentCastleCard = data.currentCard;
                 userCastleStats = data.stats || { strength: 0, agility: 0, intelligence: 0 };
                 selectedCastleCharacter = data.character;
-                castleCompletedEndings = [];
                 metEliza = data.metEliza || false;
                 castleCompletedChoices = data.completedChoices || {};
                 castleApprovedChoices = data.approvedChoices || {};
