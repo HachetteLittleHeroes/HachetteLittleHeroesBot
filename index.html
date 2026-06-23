@@ -16944,7 +16944,6 @@ function showEndingScreen(message) {
                 <p style="color: var(--text-gray);">Концовок открыто: ${endingsCount}/9</p>
                 <p style="color: var(--text-gray); font-size: 12px;">Шанс статуса: обычные 25% | секретные 60%</p>
                 <button class="task-submit-btn" onclick="startCastleStory()" style="margin-top: 15px;">🔄 Пройти заново</button>
-                <button class="task-submit-btn" onclick="resetCastleProgress()" style="margin-top: 10px; background: #666;">🗑️ Сбросить</button>
             </div>
         `;
     }
@@ -17026,15 +17025,24 @@ function resetCastleProgress() {
 }
 
 async function checkCastleApprovals() {
+    // Не проверяем, если показан экран концовки
+    if (currentEndingClaimed) return;
+    
     try {
         const response = await fetch(`${SERVER_URL}/api/get_castle_approvals?user_id=${userId}`);
         const result = await response.json();
         if (result && result.status === 'ok' && result.approved) {
             let changed = false;
             for (const [key, value] of Object.entries(result.approved)) {
-                if (value === true && !castleApprovedChoices[key]) { castleApprovedChoices[key] = true; changed = true; }
+                if (value === true && !castleApprovedChoices[key]) { 
+                    castleApprovedChoices[key] = true; 
+                    changed = true; 
+                }
             }
-            if (changed) { saveCastleProgress(); if (currentCastleCard) renderCastleCard(currentCastleCard); }
+            if (changed) { 
+                saveCastleProgress(); 
+                if (currentCastleCard && !currentEndingClaimed) renderCastleCard(currentCastleCard); 
+            }
         }
     } catch(e) {}
 }
