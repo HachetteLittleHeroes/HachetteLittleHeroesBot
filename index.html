@@ -16667,6 +16667,27 @@ let castleApprovedChoices = {};
 let metEliza = false;
 
 // ==========================================
+// БЕЗОПАСНОЕ УВЕДОМЛЕНИЕ
+// ==========================================
+function safeAlert(message) {
+    try {
+        if (typeof tg !== 'undefined' && tg) {
+            if (typeof tg.showPopup === 'function') {
+                tg.showPopup({ title: 'Уведомление', message: message });
+            } else if (typeof tg.showAlert === 'function') {
+                tg.showAlert(message);
+            } else {
+                alert(message);
+            }
+        } else {
+            alert(message);
+        }
+    } catch(e) {
+        alert(message);
+    }
+}
+
+// ==========================================
 // ФУНКЦИИ ИСТОРИИ
 // ==========================================
 
@@ -16945,7 +16966,7 @@ function submitCastleChoice(cardId, choiceIdx) {
         
         const container = document.getElementById('castleStoryContainer');
         if (container) {
-            container.innerHTML = '<div style="text-align: center; padding: 20px;"><div class="loading"><i class="fas fa-spinner fa-spin"></i> Отправка фото...</div></div>';
+            container.innerHTML = '<div style="text-align: center; padding: 20px;"><i class="fas fa-spinner fa-spin"></i> Отправка фото...</div>';
         }
         
         const formData = new FormData();
@@ -16953,9 +16974,9 @@ function submitCastleChoice(cardId, choiceIdx) {
         formData.append('branchKey', 'castle_mystery');
         formData.append('levelIndex', cardId);
         formData.append('subtaskIndex', choiceIdx.toString());
-        formData.append('subtaskName', choice.text);
+        formData.append('subtaskName', choice.text || 'Задание');
         formData.append('castle_choice_key', choiceKey);
-        formData.append('castle_next_card', choice.nextCard);
+        formData.append('castle_next_card', choice.nextCard || '');
         formData.append('castle_reward', JSON.stringify(choice.reward || {}));
         formData.append('type', 'castle_story');
         
@@ -16971,13 +16992,14 @@ function submitCastleChoice(cardId, choiceIdx) {
             const result = await response.json();
             
             if (result && result.status === 'ok') {
-                if (typeof tg !== 'undefined' && tg) tg.showAlert('✅ Фото отправлено на проверку! Ожидайте одобрения.');
+                safeAlert('✅ Фото отправлено на проверку! Ожидайте одобрения.');
                 renderCastleCard(cardId);
             } else {
-                throw new Error(result?.message || 'Ошибка');
+                throw new Error(result?.message || 'Ошибка сервера');
             }
         } catch (error) {
-            if (typeof tg !== 'undefined' && tg) tg.showAlert('❌ Ошибка: ' + error.message);
+            console.error('Ошибка отправки:', error);
+            safeAlert('❌ Ошибка: ' + error.message);
             delete castleCompletedChoices[choiceKey];
             saveCastleProgress();
             renderCastleCard(cardId);
@@ -17056,7 +17078,7 @@ function claimCastleEnding(cardId) {
     }
     
     saveCastleProgress();
-    alert('🏆 Концовка получена! Можете пройти историю заново или выбрать другого персонажа.');
+    safeAlert('🏆 Концовка получена! Можете пройти историю заново или выбрать другого персонажа.');
     
     const container = document.getElementById('castleStoryContainer');
     if (container) {
@@ -17114,6 +17136,45 @@ function resetCastleProgress() {
     metEliza = false;
     startCastleStory();
 }
+
+// ==========================================
+// ПРОВЕРКА ОДОБРЕНИЙ С СЕРВЕРА
+// ==========================================
+async function checkCastleApprovals() {
+    try {
+        const response = await fetch(`${SERVER_URL}/api/get_castle_approvals?user_id=${userId}`);
+        const result = await response.json();
+        
+        if (result && result.status === 'ok' && result.approved) {
+            let changed = false;
+            for (const [key, value] of Object.entries(result.approved)) {
+                if (value === true && !castleApprovedChoices[key]) {
+                    castleApprovedChoices[key] = true;
+                    changed = true;
+                }
+            }
+            
+            if (changed) {
+                saveCastleProgress();
+                // Если сейчас отображается карточка с выборами, обновляем её
+                if (currentCastleCard) {
+                    const card = CASTLE_STORY.cards[currentCastleCard];
+                    if (card && card.isChoice) {
+                        renderCastleCard(currentCastleCard);
+                    }
+                }
+            }
+        }
+    } catch (error) {
+        // Игнорируем ошибки при проверке
+    }
+}
+
+// Запускаем проверку одобрений каждые 5 секунд
+setInterval(checkCastleApprovals, 5000);
+
+// Первая проверка при загрузке
+checkCastleApprovals();
        // ==========================================
 // МАГАЗИН
 // ==========================================
