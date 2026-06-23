@@ -17074,7 +17074,7 @@ function claimCastleEnding(cardId) {
 }
 
 function saveCastleProgress() {
-    localStorage.setItem(`castle_progress_${userId}`, JSON.stringify({
+    const progress = {
         currentCard: currentCastleCard,
         stats: userCastleStats,
         character: selectedCastleCharacter,
@@ -17082,10 +17082,40 @@ function saveCastleProgress() {
         metEliza: metEliza,
         completedChoices: castleCompletedChoices,
         approvedChoices: castleApprovedChoices
-    }));
+    };
+    
+    // Сохраняем локально
+    localStorage.setItem(`castle_progress_${userId}`, JSON.stringify(progress));
+    
+    // Сохраняем на сервер
+    fetch(`${SERVER_URL}/api/castle/save_progress`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: userId, progress: progress })
+    }).catch(e => console.log('Save progress error:', e));
 }
 
-function loadCastleProgress() {
+async function loadCastleProgress() {
+    // Сначала пробуем загрузить с сервера
+    try {
+        const response = await fetch(`${SERVER_URL}/api/castle/get_progress?user_id=${userId}`);
+        const result = await response.json();
+        if (result && result.status === 'ok' && result.progress) {
+            const data = result.progress;
+            currentCastleCard = data.currentCard;
+            userCastleStats = data.stats || { strength: 0, agility: 0, intelligence: 0 };
+            selectedCastleCharacter = data.character;
+            castleCompletedEndings = data.completedEndings || [];
+            metEliza = data.metEliza || false;
+            castleCompletedChoices = data.completedChoices || {};
+            castleApprovedChoices = data.approvedChoices || {};
+            // Сохраняем локально
+            localStorage.setItem(`castle_progress_${userId}`, JSON.stringify(data));
+            return true;
+        }
+    } catch(e) {}
+    
+    // Если сервер недоступен — загружаем локально
     const saved = localStorage.getItem(`castle_progress_${userId}`);
     if (saved) {
         try {
