@@ -14858,20 +14858,19 @@ function renderBookPagesGrid(bookKey, config) {
         reader.readAsDataURL(file);
     });
 }
-        function toggleCastleStory() {
-    const content = document.getElementById('castleStoryContent');
-    const arrow = document.getElementById('castleStoryArrow');
-    if (!content) return;
-    if (content.style.display === 'block') {
-        content.style.display = 'none';
-        if (arrow) arrow.style.transform = 'rotate(0deg)';
-    } else {
-        content.style.display = 'block';
-        if (arrow) arrow.style.transform = 'rotate(180deg)';
-        // Проверяем, есть ли сохранённый прогресс
-        if (loadCastleProgress() && currentCastleCard) {
+       function toggleCastleStory() {
+    const container = document.getElementById('castleStoryContainer');
+    if (!container) return;
+    
+    if (container.style.display === 'none' || !container.style.display) {
+        container.style.display = 'block';
+        if (!currentCastleCard) {
+            startCastleStory();
+        } else {
             renderCastleCard(currentCastleCard);
         }
+    } else {
+        container.style.display = 'none';
     }
 }
  function uploadPageArtwork(bookKey, page) {
@@ -16746,6 +16745,136 @@ function selectCastleCharacter(charId) {
     saveCastleProgress();
 }
 
+function renderCastleCard(cardId) {
+    const card = CASTLE_STORY.cards[cardId];
+    if (!card) { alert('Карточка не найдена: ' + cardId); return; }
+    
+    currentCastleCard = cardId;
+    saveCastleProgress();
+    
+    const container = document.getElementById('castleStoryContainer');
+    if (!container) return;
+    
+    const statsHtml = `
+        <div style="display: flex; gap: 15px; justify-content: center; margin-bottom: 15px; font-size: 13px;">
+            <span>💪 ${userCastleStats.strength || 0}</span>
+            <span>🏃 ${userCastleStats.agility || 0}</span>
+            <span>🧠 ${userCastleStats.intelligence || 0}</span>
+            <span style="color: var(--accent);">🎫 ${userSkips} скипов</span>
+        </div>
+    `;
+    
+    if (card.isEnding) {
+        container.innerHTML = `
+            <div class="castle-card">
+                <div style="text-align: center; font-size: 36px; margin-bottom: 15px;">${card.isSecret ? '🔮' : '🏆'}</div>
+                <div style="font-weight: 700; font-size: 18px; margin-bottom: 10px; color: var(--accent); text-align: center;">Концовка</div>
+                <p>${card.text}</p>
+                ${card.reward ? `<div style="text-align: center; margin: 15px 0; padding: 10px; background: rgba(255,215,0,0.1); border-radius: 12px;"><strong>🎁 Награда:</strong> ${card.reward.achetiki} ашетиков + статус «${card.reward.status}»</div>` : ''}
+                <button class="task-submit-btn" onclick="claimCastleEnding('${cardId}')" style="width: 100%;">🎉 Завершить историю</button>
+            </div>
+        `;
+        return;
+    }
+    
+    if (card.isChoice) {
+        let choicesHtml = '';
+        
+        card.choices.forEach((choice, idx) => {
+            const statNames = { strength: '💪', agility: '🏃', intelligence: '🧠' };
+            const reqStat = choice.requireStat;
+            const hasSkip = choice.skipCost && choice.isPremium;
+            
+            const choiceKey = cardId + '_choice_' + idx;
+            const isCompleted = castleCompletedChoices && castleCompletedChoices[choiceKey];
+            
+            if (isCompleted) {
+                const isApproved = castleApprovedChoices && castleApprovedChoices[choiceKey];
+                if (isApproved) {
+                    choicesHtml += `
+                        <div class="castle-choice-wrapper" style="margin-bottom: 10px;">
+                            <button class="task-submit-btn" style="width: 100%; text-align: left; padding: 12px; background: var(--status-green); color: white;" 
+                                    onclick="proceedAfterApproval('${cardId}', ${idx})">
+                                ✅ ${choice.text} — ОДОБРЕНО. Нажмите чтобы перейти
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    choicesHtml += `
+                        <div class="castle-choice-wrapper" style="margin-bottom: 10px;">
+                            <button class="task-submit-btn" style="width: 100%; text-align: left; padding: 12px; opacity: 0.7;" disabled>
+                                ⏳ ${choice.text} — Отправлено, ждите одобрения
+                            </button>
+                        </div>
+                    `;
+                }
+                return;
+            }
+            
+            let meetsReq = true;
+            if (reqStat) {
+                meetsReq = (userCastleStats[reqStat.stat] || 0) >= reqStat.min;
+            }
+            if (choice.requireOrSkip && !meetsReq) {
+                meetsReq = userSkips >= choice.requireOrSkip;
+            }
+            if (choice.requireSkipOr === 'metEliza') {
+                meetsReq = metEliza || (userSkips >= (choice.skipCost || 99));
+            }
+            
+            const canSkip = !hasSkip || userSkips >= (choice.skipCost || 0);
+            const isDisabled = (!meetsReq) || (hasSkip && !canSkip);
+            
+            let btnLabel = choice.text;
+            let badge = '';
+            if (hasSkip) badge += ` 🎫${choice.skipCost}`;
+            if (reqStat && !meetsReq) badge += ` (${statNames[reqStat.stat]}${reqStat.min})`;
+            if (!meetsReq) badge += ' 🔒';
+            
+            choicesHtml += `
+                <div class="castle-choice-wrapper" style="margin-bottom: 10px;">
+                    <button class="task-submit-btn castle-choice-btn" 
+                            style="width: 100%; text-align: left; padding: 12px; ${isDisabled ? 'opacity: 0.5;' : ''}"
+                            ${isDisabled ? 'disabled' : ''}
+                            onclick="submitCastleChoice('${cardId}', ${idx})">
+                        ${btnLabel}${badge}
+                    </button>
+                    ${choice.task ? `
+                        <div style="font-size: 11px; color: var(--text-gray); margin-top: 4px; margin-left: 5px;">
+                            📸 ${choice.task}
+                        </div>
+                    ` : choice.isPremium ? `
+                        <div style="font-size: 11px; color: var(--accent); margin-top: 4px; margin-left: 5px;">
+                            🎫 Без задания — мгновенный переход
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        });
+        
+        container.innerHTML = `
+            <div class="castle-card">
+                ${card.chapter ? `<div style="font-weight: 700; font-size: 16px; color: var(--accent); margin-bottom: 10px;">${card.chapter}</div>` : ''}
+                ${card.text ? `<p>${card.text}</p>` : ''}
+                ${statsHtml}
+                <div class="castle-choices">${choicesHtml}</div>
+            </div>
+        `;
+        return;
+    }
+    
+    container.innerHTML = `
+        <div class="castle-card">
+            ${card.chapter ? `<div style="font-weight: 700; font-size: 16px; color: var(--accent); margin-bottom: 10px;">${card.chapter}</div>` : ''}
+            <p>${card.text}</p>
+            ${statsHtml}
+            <button class="task-submit-btn" onclick="renderCastleCard('${card.nextCard}')" style="width: 100%;">
+                Далее ▶
+            </button>
+        </div>
+    `;
+}
+
 function submitCastleChoice(cardId, choiceIdx) {
     const card = CASTLE_STORY.cards[cardId];
     const choice = card.choices[choiceIdx];
@@ -16773,104 +16902,6 @@ function submitCastleChoice(cardId, choiceIdx) {
     
     if (!castleCompletedChoices) castleCompletedChoices = {};
     const choiceKey = cardId + '_choice_' + choiceIdx;
-    castleCompletedChoices[choiceKey] = true;
-    saveCastleProgress();
-    
-    const fileInput = document.createElement('input');
-    fileInput.type = 'file';
-    fileInput.accept = 'image/*';
-    fileInput.multiple = true;
-    
-    fileInput.onchange = async function(event) {
-        const files = Array.from(event.target.files);
-        if (files.length === 0) return;
-        
-        const container = document.getElementById('castleStoryContainer');
-        if (container) {
-            container.innerHTML = '<div style="text-align: center; padding: 20px;"><div class="loading"><i class="fas fa-spinner fa-spin"></i> Отправка фото...</div></div>';
-        }
-        
-        const formData = new FormData();
-        formData.append('user', userId.toString());
-        formData.append('branchKey', 'castle_mystery');
-        formData.append('levelIndex', cardId);
-        formData.append('subtaskIndex', choiceIdx.toString());
-        formData.append('subtaskName', choice.text);
-        formData.append('castle_choice_key', choiceKey);
-        formData.append('castle_next_card', choice.nextCard);
-        formData.append('castle_reward', JSON.stringify(choice.reward || {}));
-        formData.append('type', 'castle_story');
-        
-        for (let i = 0; i < files.length; i++) {
-            formData.append('photos', files[i]);
-        }
-        
-        try {
-            const response = await fetch(`${SERVER_URL}/api/check_castle_task`, {
-                method: 'POST',
-                body: formData
-            });
-            const result = await response.json();
-            
-            if (result && result.status === 'ok') {
-                if (tg) tg.showAlert('✅ Фото отправлено на проверку! Ожидайте одобрения.');
-                renderCastleCard(cardId);
-            } else {
-                throw new Error(result?.message || 'Ошибка');
-            }
-        } catch (error) {
-            if (tg) tg.showAlert('❌ Ошибка: ' + error.message);
-            delete castleCompletedChoices[choiceKey];
-            saveCastleProgress();
-            renderCastleCard(cardId);
-        }
-    };
-    
-    fileInput.click();
-}
-
-function proceedAfterApproval(cardId, choiceIdx) {
-    const card = CASTLE_STORY.cards[cardId];
-    const choice = card.choices[choiceIdx];
-    if (!choice) return;
-    
-    // Отмечаем встречу с Элизой
-    if (cardId.includes('4M_4') || cardId.includes('5M_4') || cardId.includes('7M_3') ||
-        cardId.includes('4V_4') || cardId.includes('5V_4') || cardId.includes('7V_3') ||
-        cardId.includes('4A_4') || cardId.includes('5A_4') || cardId.includes('7A_3')) {
-        metEliza = true;
-    }
-    
-    applyCastleReward(choice);
-    proceedToCard(choice.nextCard);
-}
-
-function submitCastleChoice(cardId, choiceIdx) {
-    const card = CASTLE_STORY.cards[cardId];
-    const choice = card.choices[choiceIdx];
-    if (!choice) return;
-    
-    if (choice.isPremium && choice.skipCost) {
-        if (userSkips < choice.skipCost) {
-            alert('Недостаточно скипов!');
-            return;
-        }
-        userSkips -= choice.skipCost;
-        localStorage.setItem(`user_skips_${userId}`, userSkips);
-        if (typeof updateSkipDisplay === 'function') updateSkipDisplay();
-        
-        applyCastleReward(choice);
-        proceedToCard(choice.nextCard);
-        return;
-    }
-    
-    if (!choice.task) {
-        proceedToCard(choice.nextCard);
-        return;
-    }
-    
-    if (!castleCompletedChoices) castleCompletedChoices = {};
-    const choiceKey = cardId + '_choice_' + idx;
     castleCompletedChoices[choiceKey] = true;
     saveCastleProgress();
     
