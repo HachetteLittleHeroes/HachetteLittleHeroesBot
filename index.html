@@ -6226,7 +6226,7 @@ body:not([data-theme]) .modal-content,
         </div>
     </div>
 </div>
-    <!-- ========== ИСТОРИИ ========== -->
+  <!-- ========== ИСТОРИИ ========== -->
 <div class="tasks-section" style="margin-top: 15px;">
     <button class="tasks-header" onclick="toggleCastleStory()">
         <span>📖 Тайны замка Ашетвиль</span>
@@ -14858,21 +14858,6 @@ function renderBookPagesGrid(bookKey, config) {
         reader.readAsDataURL(file);
     });
 }
-       function toggleCastleStory() {
-    const container = document.getElementById('castleStoryContainer');
-    if (!container) return;
-    
-    if (container.style.display === 'none' || !container.style.display) {
-        container.style.display = 'block';
-        if (!currentCastleCard) {
-            startCastleStory();
-        } else {
-            renderCastleCard(currentCastleCard);
-        }
-    } else {
-        container.style.display = 'none';
-    }
-}
  function uploadPageArtwork(bookKey, page) {
     const input = document.createElement('input');
     input.type = 'file';
@@ -16685,7 +16670,36 @@ let metEliza = false;
 // ФУНКЦИИ ИСТОРИИ
 // ==========================================
 
+function toggleCastleStory() {
+    const content = document.getElementById('castleStoryContent');
+    const arrow = document.getElementById('castleStoryArrow');
+    
+    if (!content || !arrow) return;
+    
+    if (content.style.display === 'none' || content.style.display === '') {
+        content.style.display = 'block';
+        arrow.style.transform = 'rotate(180deg)';
+        
+        // Загружаем прогресс или показываем начальный экран
+        if (loadCastleProgress() && currentCastleCard) {
+            renderCastleCard(currentCastleCard);
+        }
+    } else {
+        content.style.display = 'none';
+        arrow.style.transform = 'rotate(0deg)';
+    }
+}
+
 function startCastleStory() {
+    // Показываем контент если скрыт
+    const content = document.getElementById('castleStoryContent');
+    const arrow = document.getElementById('castleStoryArrow');
+    
+    if (content) {
+        content.style.display = 'block';
+        if (arrow) arrow.style.transform = 'rotate(180deg)';
+    }
+    
     showCharacterSelect();
 }
 
@@ -16737,9 +16751,18 @@ function selectCastleCharacter(charId) {
     const prefix = prefixMap[charId] || charId.charAt(0).toUpperCase();
     currentCastleCard = '1' + prefix + '_1';
     
+    // Закрываем модальное окно
     document.querySelectorAll('.modal-overlay').forEach(m => {
         if (m.innerHTML.includes('Выберите персонажа')) m.remove();
     });
+    
+    // Убеждаемся, что родительский контейнер видим
+    const content = document.getElementById('castleStoryContent');
+    if (content) {
+        content.style.display = 'block';
+        const arrow = document.getElementById('castleStoryArrow');
+        if (arrow) arrow.style.transform = 'rotate(180deg)';
+    }
     
     renderCastleCard(currentCastleCard);
     saveCastleProgress();
@@ -16752,6 +16775,12 @@ function renderCastleCard(cardId) {
     currentCastleCard = cardId;
     saveCastleProgress();
     
+    // Убеждаемся, что контент видим
+    const content = document.getElementById('castleStoryContent');
+    if (content && content.style.display === 'none') {
+        content.style.display = 'block';
+    }
+    
     const container = document.getElementById('castleStoryContainer');
     if (!container) return;
     
@@ -16760,7 +16789,7 @@ function renderCastleCard(cardId) {
             <span>💪 ${userCastleStats.strength || 0}</span>
             <span>🏃 ${userCastleStats.agility || 0}</span>
             <span>🧠 ${userCastleStats.intelligence || 0}</span>
-            <span style="color: var(--accent);">🎫 ${userSkips} скипов</span>
+            <span style="color: var(--accent);">🎫 ${userSkips || 0} скипов</span>
         </div>
     `;
     
@@ -16816,13 +16845,13 @@ function renderCastleCard(cardId) {
                 meetsReq = (userCastleStats[reqStat.stat] || 0) >= reqStat.min;
             }
             if (choice.requireOrSkip && !meetsReq) {
-                meetsReq = userSkips >= choice.requireOrSkip;
+                meetsReq = (userSkips || 0) >= choice.requireOrSkip;
             }
             if (choice.requireSkipOr === 'metEliza') {
-                meetsReq = metEliza || (userSkips >= (choice.skipCost || 99));
+                meetsReq = metEliza || ((userSkips || 0) >= (choice.skipCost || 99));
             }
             
-            const canSkip = !hasSkip || userSkips >= (choice.skipCost || 0);
+            const canSkip = !hasSkip || (userSkips || 0) >= (choice.skipCost || 0);
             const isDisabled = (!meetsReq) || (hasSkip && !canSkip);
             
             let btnLabel = choice.text;
@@ -16881,7 +16910,7 @@ function submitCastleChoice(cardId, choiceIdx) {
     if (!choice) return;
     
     if (choice.isPremium && choice.skipCost) {
-        if (userSkips < choice.skipCost) {
+        if ((userSkips || 0) < choice.skipCost) {
             alert('Недостаточно скипов!');
             return;
         }
@@ -16942,13 +16971,13 @@ function submitCastleChoice(cardId, choiceIdx) {
             const result = await response.json();
             
             if (result && result.status === 'ok') {
-                if (tg) tg.showAlert('✅ Фото отправлено на проверку! Ожидайте одобрения.');
+                if (typeof tg !== 'undefined' && tg) tg.showAlert('✅ Фото отправлено на проверку! Ожидайте одобрения.');
                 renderCastleCard(cardId);
             } else {
                 throw new Error(result?.message || 'Ошибка');
             }
         } catch (error) {
-            if (tg) tg.showAlert('❌ Ошибка: ' + error.message);
+            if (typeof tg !== 'undefined' && tg) tg.showAlert('❌ Ошибка: ' + error.message);
             delete castleCompletedChoices[choiceKey];
             saveCastleProgress();
             renderCastleCard(cardId);
