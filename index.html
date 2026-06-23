@@ -16680,10 +16680,19 @@ function toggleCastleStory() {
         content.style.display = 'block';
         arrow.style.transform = 'rotate(180deg)';
         
-        // Загружаем прогресс или показываем начальный экран
-        if (loadCastleProgress() && currentCastleCard) {
-            renderCastleCard(currentCastleCard);
+        // Показываем загрузку
+        const container = document.getElementById('castleStoryContainer');
+        if (container) {
+            container.innerHTML = '<div style="text-align: center; padding: 20px;"><i class="fas fa-spinner fa-spin"></i> Загрузка...</div>';
         }
+        
+        // Загружаем прогресс асинхронно
+        loadCastleProgress().then(loaded => {
+            if (loaded && currentCastleCard) {
+                renderCastleCard(currentCastleCard);
+            }
+            // Если не загрузилось — показываем начальный экран (он уже есть в HTML)
+        });
     } else {
         content.style.display = 'none';
         arrow.style.transform = 'rotate(0deg)';
@@ -17109,11 +17118,13 @@ async function loadCastleProgress() {
             metEliza = data.metEliza || false;
             castleCompletedChoices = data.completedChoices || {};
             castleApprovedChoices = data.approvedChoices || {};
-            // Сохраняем локально
             localStorage.setItem(`castle_progress_${userId}`, JSON.stringify(data));
+            console.log('✅ Прогресс загружен с сервера:', currentCastleCard);
             return true;
         }
-    } catch(e) {}
+    } catch(e) {
+        console.log('⚠️ Сервер недоступен, пробуем localStorage');
+    }
     
     // Если сервер недоступен — загружаем локально
     const saved = localStorage.getItem(`castle_progress_${userId}`);
@@ -17127,9 +17138,13 @@ async function loadCastleProgress() {
             metEliza = data.metEliza || false;
             castleCompletedChoices = data.completedChoices || {};
             castleApprovedChoices = data.approvedChoices || {};
+            console.log('✅ Прогресс загружен из localStorage:', currentCastleCard);
             return true;
-        } catch(e) {}
+        } catch(e) {
+            console.error('❌ Ошибка загрузки из localStorage:', e);
+        }
     }
+    console.log('ℹ️ Прогресс не найден');
     return false;
 }
 
