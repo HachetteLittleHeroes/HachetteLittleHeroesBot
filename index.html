@@ -16861,24 +16861,21 @@ function claimCastleEnding(cardId) {
     const card = CASTLE_STORY.cards[cardId];
     if (!card || !card.isEnding) return;
     
-    // Проверяем, не получена ли уже эта концовка
-    if (castleCompletedEndings.includes(card.endingId)) {
-        alert('Эта концовка уже получена!');
+    const reward = ENDING_REWARDS[card.endingId];
+    const alreadyGot = castleCompletedEndings[card.endingId];
+    const statusAlreadyUnlocked = alreadyGot && alreadyGot.status_unlocked;
+    
+    // Если статус уже получен за эту концовку — просто показываем экран
+    if (statusAlreadyUnlocked) {
+        alert('🏆 Эта концовка уже пройдена.\nСтатус «' + alreadyGot.status_name + '» уже получен!');
+        showEndingScreen();
         return;
     }
     
-    castleCompletedEndings.push(card.endingId);
-    const reward = ENDING_REWARDS[card.endingId];
-    
-    // Сохраняем концовку на сервере
-    fetch(`${SERVER_URL}/api/castle/save_ending`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: userId, ending_id: card.endingId })
-    }).catch(e => {});
-    
     let statusUnlocked = false;
-    if (reward && reward.status && reward.statusChance) {
+    
+    // Если концовка ещё не проходилась ИЛИ проходилась но статус не выпал — кидаем кубик
+    if (!statusAlreadyUnlocked && reward && reward.status && reward.statusChance) {
         const chance = STATUS_DROP_CHANCE[reward.statusChance] || 0.25;
         const roll = Math.random();
         
@@ -16896,6 +16893,23 @@ function claimCastleEnding(cardId) {
         }
     }
     
+    // Сохраняем результат
+    castleCompletedEndings[card.endingId] = {
+        status_unlocked: statusUnlocked,
+        status_name: reward ? reward.status : ''
+    };
+    
+    fetch(`${SERVER_URL}/api/castle/save_ending`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            user_id: userId,
+            ending_id: card.endingId,
+            status_unlocked: statusUnlocked,
+            status_name: reward ? reward.status : ''
+        })
+    }).catch(e => {});
+    
     saveCastleProgress();
     
     const chancePercent = reward ? STATUS_DROP_CHANCE[reward.statusChance] * 100 : 0;
@@ -16904,24 +16918,11 @@ function claimCastleEnding(cardId) {
     if (statusUnlocked) {
         message += `✨ Выпал статус «${reward.status}»! (шанс ${chancePercent}%)\n`;
     } else if (reward && reward.status) {
-        message += `🎲 Статус «${reward.status}» не выпал (шанс ${chancePercent}%)\nПопробуйте другую концовку!\n`;
+        message += `🎲 Статус «${reward.status}» не выпал (шанс ${chancePercent}%)\nПройтите ещё раз — шанс есть!\n`;
     }
     
     alert(message);
-    
-    const container = document.getElementById('castleStoryContainer');
-    if (container) {
-        container.innerHTML = `
-            <div style="text-align: center; padding: 20px;">
-                <div style="font-size: 48px;">🏰</div>
-                <h3>Тайны замка Ашетвиль</h3>
-                <p style="color: var(--text-gray);">Концовок: ${castleCompletedEndings.length}/9</p>
-                <p style="color: var(--text-gray); font-size: 12px;">Шанс статуса: обычные 25% | секретные 60%</p>
-                <button class="task-submit-btn" onclick="startCastleStory()" style="margin-top: 15px;">🔄 Пройти заново</button>
-                <button class="task-submit-btn" onclick="resetCastleProgress()" style="margin-top: 10px; background: #666;">🗑️ Сбросить</button>
-            </div>
-        `;
-    }
+    showEndingScreen();
 }
 
 function saveCastleProgress() {
@@ -16950,9 +16951,9 @@ async function loadCastleProgress() {
         const endingsResp = await fetch(`${SERVER_URL}/api/castle/get_endings?user_id=${userId}`);
         const endingsData = await endingsResp.json();
         if (endingsData && endingsData.status === 'ok') {
-            castleCompletedEndings = endingsData.endings || [];
+            castleCompletedEndings = endingsData.endings || {};
         }
-    } catch(e) {}
+    } catch(e) { castleCompletedEndings = {}; }
     
     // Загружаем прогресс
     try {
