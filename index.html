@@ -16742,11 +16742,32 @@ function showCharacterSelect() {
     modal.className = 'modal-overlay';
     modal.style.display = 'flex';
     modal.style.zIndex = '100001';
+    
     let charsHtml = '';
     for (const [id, char] of Object.entries(CASTLE_CHARACTERS)) {
-        charsHtml += `<div class="castle-character-card" onclick="selectCastleCharacter('${id}')" style="cursor:pointer; background: var(--card-bg); border: 2px solid var(--border-color); border-radius: 16px; padding: 15px; text-align: center; margin-bottom: 10px;"><div style="font-size: 32px; margin-bottom: 8px;">${id==='mystic'?'⚔️':id==='thief'?'🗡️':'🔮'}</div><div style="font-weight: 700; font-size: 16px;">${char.name}</div><div style="font-size: 12px; color: var(--text-gray); margin: 5px 0;">${char.desc}</div><div style="font-size: 11px; color: var(--accent);">💪${char.stats.strength} 🏃${char.stats.agility} 🧠${char.stats.intelligence}</div><div style="font-size: 11px; color: var(--text-gray); margin-top: 4px;">${char.bonus}</div></div>`;
+        const charImageUrl = `https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/ashetvil/${id}.jpg`;
+        charsHtml += `
+            <div class="castle-character-card" onclick="selectCastleCharacter('${id}')" style="cursor:pointer; background: var(--card-bg); border: 2px solid var(--border-color); border-radius: 16px; padding: 15px; text-align: center; margin-bottom: 15px;">
+                <img src="${charImageUrl}" alt="${char.name}" style="width: 100%; max-width: 200px; height: auto; border-radius: 12px; margin-bottom: 10px;" onerror="this.style.display='none'">
+                <div style="font-size: 24px; margin-bottom: 5px;">${id === 'mystic' ? '⚔️' : id === 'thief' ? '🗡️' : '🔮'}</div>
+                <div style="font-weight: 700; font-size: 18px; margin-bottom: 8px;">${char.name}</div>
+                <div style="font-size: 13px; color: var(--text-gray); margin-bottom: 8px; line-height: 1.4;">${char.desc}</div>
+                <div style="font-size: 12px; color: var(--accent); margin-bottom: 5px;">
+                    💪${char.stats.strength} 🏃${char.stats.agility} 🧠${char.stats.intelligence}
+                </div>
+                <div style="font-size: 11px; color: var(--text-gray);">${char.bonus}</div>
+            </div>
+        `;
     }
-    modal.innerHTML = `<div class="modal-content" style="max-width: 400px;"><h3>Выберите персонажа</h3><p style="font-size: 12px; color: var(--text-gray); margin-bottom: 15px;">Каждый персонаж — уникальная история</p>${charsHtml}<button class="modal-close-btn" onclick="this.closest('.modal-overlay').remove()">Отмена</button></div>`;
+    
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width: 450px; max-height: 90vh; overflow-y: auto;">
+            <h3 style="text-align: center;">Выберите персонажа</h3>
+            <p style="font-size: 12px; color: var(--text-gray); margin-bottom: 15px; text-align: center;">Каждый персонаж — уникальная история</p>
+            ${charsHtml}
+            <button class="modal-close-btn" onclick="this.closest('.modal-overlay').remove()" style="display: block; margin: 0 auto;">Отмена</button>
+        </div>
+    `;
     modal.onclick = function(e) { if (e.target === modal) modal.remove(); };
     document.body.appendChild(modal);
 }
@@ -16825,9 +16846,15 @@ function renderCastleCard(cardId) {
                 </div>
             </div>`;
         });
+        
+        const cardImageUrl = `https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/ashetvil/${cardId}.jpg`;
+        
         container.innerHTML = `<div class="castle-card">
             ${card.chapter ? `<div style="font-weight: 700; font-size: 16px; color: var(--accent); margin-bottom: 10px;">📖 ${card.chapter}</div>` : ''}
             ${card.text ? `<p style="margin-bottom: 15px; line-height: 1.5;">${card.text}</p>` : ''}
+            <div style="text-align: center; margin-bottom: 15px;">
+                <img src="${cardImageUrl}" alt="Образец" style="max-width: 100%; max-height: 300px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.15);" onerror="this.style.display='none'">
+            </div>
             ${statsHtml}
             <div class="castle-choices">${choicesHtml}</div>
         </div>`;
