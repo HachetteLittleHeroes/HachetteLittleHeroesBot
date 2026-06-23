@@ -16697,18 +16697,18 @@ function toggleCastleStory() {
         content.style.display = 'block';
         arrow.style.transform = 'rotate(180deg)';
         loadCastleProgress().then(loaded => {
-            if (loaded && currentCastleCard) renderCastleCard(currentCastleCard);
+            if (loaded && currentCastleCard) {
+                const card = CASTLE_STORY.cards[currentCastleCard];
+                if (card && card.isEnding && currentEndingClaimed) {
+                    showEndingScreen('');
+                } else {
+                    renderCastleCard(currentCastleCard);
+                }
+            }
         });
-        if (!window._castleApprovalInterval) {
-            window._castleApprovalInterval = setInterval(checkCastleApprovals, 5000);
-        }
     } else {
         content.style.display = 'none';
         arrow.style.transform = 'rotate(0deg)';
-        if (window._castleApprovalInterval) {
-            clearInterval(window._castleApprovalInterval);
-            window._castleApprovalInterval = null;
-        }
     }
 }
 
@@ -16956,7 +16956,8 @@ function saveCastleProgress() {
         character: selectedCastleCharacter,
         metEliza: metEliza,
         completedChoices: castleCompletedChoices,
-        approvedChoices: castleApprovedChoices
+        approvedChoices: castleApprovedChoices,
+        endingClaimed: currentEndingClaimed  // ← ВОТ ЭТО
     };
     
     localStorage.setItem(`castle_progress_${userId}`, JSON.stringify(progress));
@@ -16970,7 +16971,7 @@ function saveCastleProgress() {
 async function loadCastleProgress() {
     if (!userId) return false;
     
-    // Загружаем полученные концовки с сервера
+    // Загружаем концовки с сервера
     try {
         const endingsResp = await fetch(`${SERVER_URL}/api/castle/get_endings?user_id=${userId}`);
         const endingsData = await endingsResp.json();
@@ -16994,6 +16995,7 @@ async function loadCastleProgress() {
             metEliza = data.metEliza || false;
             castleCompletedChoices = data.completedChoices || {};
             castleApprovedChoices = data.approvedChoices || {};
+            currentEndingClaimed = data.endingClaimed || false;  // ← ВОТ ЭТО
             localStorage.setItem(`castle_progress_${userId}`, JSON.stringify(data));
             return true;
         }
@@ -17010,6 +17012,7 @@ async function loadCastleProgress() {
                 metEliza = data.metEliza || false;
                 castleCompletedChoices = data.completedChoices || {};
                 castleApprovedChoices = data.approvedChoices || {};
+                currentEndingClaimed = data.endingClaimed || false;  // ← ВОТ ЭТО
                 return true;
             }
         } catch(e) {}
