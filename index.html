@@ -16917,11 +16917,23 @@ function claimCastleEnding(cardId) {
 }
 
 function saveCastleProgress() {
-    const progress = { currentCard: currentCastleCard, stats: userCastleStats, character: selectedCastleCharacter, completedEndings: castleCompletedEndings, metEliza: metEliza, completedChoices: castleCompletedChoices, approvedChoices: castleApprovedChoices };
+    const progress = {
+        currentCard: currentCastleCard,
+        stats: userCastleStats,
+        character: selectedCastleCharacter,
+        metEliza: metEliza,
+        completedChoices: castleCompletedChoices,
+        approvedChoices: castleApprovedChoices
+    };
+    
     localStorage.setItem(`castle_progress_${userId}`, JSON.stringify(progress));
-    fetch(`${SERVER_URL}/api/castle/save_progress`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user_id: userId, progress: progress }) }).catch(e=>{});
+    
+    fetch(`${SERVER_URL}/api/castle/save_progress`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: userId, progress: progress })
+    }).catch(e => {});
 }
-
 async function loadCastleProgress() {
     if (!userId) return false;
     try {
@@ -16932,13 +16944,33 @@ async function loadCastleProgress() {
         const result = await response.json();
         if (result && result.status === 'ok' && result.progress && result.progress.currentCard) {
             const data = result.progress;
-            currentCastleCard = data.currentCard; userCastleStats = data.stats||{strength:0,agility:0,intelligence:0}; selectedCastleCharacter = data.character; castleCompletedEndings = data.completedEndings||[]; metEliza = data.metEliza||false; castleCompletedChoices = data.completedChoices||{}; castleApprovedChoices = data.approvedChoices||{};
+            currentCastleCard = data.currentCard;
+            userCastleStats = data.stats || { strength: 0, agility: 0, intelligence: 0 };
+            selectedCastleCharacter = data.character;
+            castleCompletedEndings = [];
+            metEliza = data.metEliza || false;
+            castleCompletedChoices = data.completedChoices || {};
+            castleApprovedChoices = data.approvedChoices || {};
             localStorage.setItem(`castle_progress_${userId}`, JSON.stringify(data));
             return true;
         }
     } catch(e) {}
     const saved = localStorage.getItem(`castle_progress_${userId}`);
-    if (saved) { try { const data = JSON.parse(saved); if (data.currentCard) { currentCastleCard=data.currentCard; userCastleStats=data.stats||{strength:0,agility:0,intelligence:0}; selectedCastleCharacter=data.character; castleCompletedEndings=data.completedEndings||[]; metEliza=data.metEliza||false; castleCompletedChoices=data.completedChoices||{}; castleApprovedChoices=data.approvedChoices||{}; return true; } } catch(e) {} }
+    if (saved) {
+        try {
+            const data = JSON.parse(saved);
+            if (data.currentCard) {
+                currentCastleCard = data.currentCard;
+                userCastleStats = data.stats || { strength: 0, agility: 0, intelligence: 0 };
+                selectedCastleCharacter = data.character;
+                castleCompletedEndings = [];
+                metEliza = data.metEliza || false;
+                castleCompletedChoices = data.completedChoices || {};
+                castleApprovedChoices = data.approvedChoices || {};
+                return true;
+            }
+        } catch(e) {}
+    }
     return false;
 }
 
