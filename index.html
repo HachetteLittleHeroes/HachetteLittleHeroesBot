@@ -15907,7 +15907,7 @@ const CASTLE_CHARACTERS = {
     thief: {
         id: 'thief',
         name: 'Воровка',
-        desc: 'Выросла в трущобах у подножия Акриловых гор. Лучшая воровка во всей части ЗАпадного Ашетвиля. Намеревается найти, спрятанное от глаз, сокровище лорда Таируса. Верит только в свои руки и чутье. Замок для нее - просто большой дом с плохой охраной.',
+        desc: 'Выросла в трущобах у подножия Акриловых гор. Лучшая воровка во всей части Западного Ашетвиля. Намеревается найти, спрятанное от глаз, сокровище лорда Таируса. Верит только в свои руки и чутье. Замок для нее - просто большой дом с плохой охраной.',
         stats: { strength: 5, agility: 13, intelligence: 2 },
         bonus: 'Находит тайники и скрытые проходы.'
     },
@@ -15919,260 +15919,258 @@ const CASTLE_CHARACTERS = {
         bonus: 'Читает древние языки и руны. Чувствует магию.'
     }
 };
-        // История Ашетвиля
-    const CASTLE_STORY = {
-    id: 'castle_mystery',
-    name: '📖 Тайны замка Ашетвиль',
-    desc: 'Интерактивная история. Раскрашивай страницы, отправляй фото и проходи сюжет!',
-    
-    cards: {
-       // ==========================================
+        // ==========================================
 // МИСТИК (M) — 💪14 🏃4 🧠2
 // ==========================================
-'1M_1': { stage: 1, character: 'mystic', chapter: 'Дорога к замку', text: 'Лес вокруг замка Ашетвиль умирает. Голые ветки царапают серое небо — здесь всегда осень.', nextCard: '1M_2' },
-'1M_2': { stage: 1, character: 'mystic', text: 'Тропа приводит к обрыву. Чёрная река. Каменный мост. На мосту — призрак в ржавых доспехах.', nextCard: '1M_3' },
-'1M_3': { stage: 1, character: 'mystic', isChoice: true, text: 'Призрак изучает вас. Вы можете сразиться, обмануть, заговорить или призвать духов.',
+'1M_1': { stage: 1, character: 'mystic', chapter: 'Таверна у подножия', text: 'Таверна «Усталый путник» в деревне у подножия Акриловых гор. За столом — таинственный незнакомец с картой замка Ашетвиль. Он предлагает контракт: добыть древнее сокровище лорда Таируса.', nextCard: '1M_2' },
+'1M_2': { stage: 1, character: 'mystic', text: 'Вы берете карту. Подъем к замку занимает несколько часов. Узкая тропа петляет между скал. На полпути — пост стражи.', nextCard: '1M_3' },
+'1M_3': { stage: 1, character: 'mystic', isChoice: true, text: 'Стражники проверяют всех, кто поднимается к замку. У вас нет пропуска.',
     choices: [
-        { id: 1, text: 'Сразиться с призраком', reward: { strength: 2, agility: 1 }, nextCard: '2M_A_1', task: 'Раскрась страницу с рыцарем или битвой (ДО/ПОСЛЕ)' },
-        { id: 2, text: 'Обмануть призрака', reward: { agility: 2, intelligence: 1 }, nextCard: '2M_B_1', task: 'Раскрась страницу с тенями (ДО/ПОСЛЕ)' },
-        { id: 3, text: 'Заговорить на языке полукровок', reward: { intelligence: 2, strength: 1 }, nextCard: '2M_A_1', task: 'Раскрась страницу с духом (ДО/ПОСЛЕ)' },
-        { id: 4, text: 'Призвать духов леса', skipCost: 2, isPremium: true, reward: { all: 1 }, nextCard: '2M_V_1', task: null }
+        { id: 1, text: 'Пробиться силой', reward: { strength: 2, agility: 1 }, nextCard: '2M_A_1', task: 'Раскрась страницу с битвой (ДО/ПОСЛЕ)' },
+        { id: 2, text: 'Обойти пост по скалам', reward: { agility: 2, intelligence: 1 }, nextCard: '2M_B_1', task: 'Раскрась страницу со скалами (ДО/ПОСЛЕ)' },
+        { id: 3, text: 'Подкупить стражников', reward: { intelligence: 2, strength: 1 }, nextCard: '2M_A_1', task: 'Раскрась страницу со стражей (ДО/ПОСЛЕ)' },
+        { id: 4, text: 'Найти тайную тропу', skipCost: 2, isPremium: true, reward: { all: 1 }, nextCard: '2M_V_1', task: null }
     ]
 },
-'2M_A_1': { stage: 2, character: 'mystic', chapter: 'Парадный вход', text: 'Мост позади. Главные врата открываются. На стенах — щиты с гербами.', nextCard: '2M_A_2' },
-'2M_A_2': { stage: 2, character: 'mystic', text: 'Видение: отец, прикованный цепями, куёт меч. «Найди меч. В нём моя кровь».', nextCard: '2M_A_3' },
-'2M_A_3': { stage: 2, character: 'mystic', isChoice: true, text: 'В конце коридора — Зал Стражей. Боковая лестница — в кузницу.',
+'2M_A_1': { stage: 2, character: 'mystic', chapter: 'Врата замка', text: 'Вы у главных ворот. Тяжелые створки приоткрыты. Внутри — темнота и тишина.', nextCard: '2M_A_2' },
+'2M_A_2': { stage: 2, character: 'mystic', text: 'Внутренний двор. Пустой фонтан. В углу — фигура в плаще. Советник лорда.', nextCard: '2M_A_3' },
+'2M_A_3': { stage: 2, character: 'mystic', isChoice: true, text: 'Советник: «Ты пришел за сокровищем. Я знаю, где оно. Но тебе придется пройти испытания».',
     choices: [
-        { id: 1, text: 'Войти в Зал Стражей', reward: { strength: 1, agility: 1 }, nextCard: '3M_1_1', task: 'Раскрась страницу с доспехами (ДО/ПОСЛЕ)' },
-        { id: 2, text: 'Спуститься в кузницу', reward: { intelligence: 1, agility: 1 }, nextCard: '3M_2_1', task: 'Раскрась страницу с кузницей (ДО/ПОСЛЕ)' },
-        { id: 3, text: 'Снять герб отца', skipCost: 1, isPremium: true, reward: { all: 1 }, nextCard: '3M_3_1', task: null }
+        { id: 1, text: 'Расспросить советника', reward: { strength: 1, agility: 1 }, nextCard: '3M_1_1', task: 'Раскрась страницу с советником (ДО/ПОСЛЕ)' },
+        { id: 2, text: 'Обойти двор стороной', reward: { agility: 1, intelligence: 1 }, nextCard: '3M_2_1', task: 'Раскрась страницу с двором (ДО/ПОСЛЕ)' },
+        { id: 3, text: 'Дать советнику взятку', skipCost: 1, isPremium: true, reward: { all: 1 }, nextCard: '3M_3_1', task: null }
     ]
 },
-'2M_B_1': { stage: 2, character: 'mystic', chapter: 'Тайный вход', text: 'Боковая дверца для слуг. Узкий коридор, запах плесени.', nextCard: '2M_B_2' },
-'2M_B_2': { stage: 2, character: 'mystic', text: 'Тень шепчет: «Твой отец был здесь. Спустись в кузницу. Найди его меч».', nextCard: '2M_B_3' },
+'2M_B_1': { stage: 2, character: 'mystic', chapter: 'Скальная тропа', text: 'Вы карабкаетесь по скалам. Сверху виден весь замок — башни, стены, внутренний двор.', nextCard: '2M_B_2' },
+'2M_B_2': { stage: 2, character: 'mystic', text: 'Вы замечаете боковой вход для слуг. Он не охраняется.', nextCard: '2M_B_3' },
 '2M_B_3': { stage: 2, character: 'mystic', isChoice: true,
     choices: [
-        { id: 1, text: 'Спуститься в кузницу', reward: { strength: 1, agility: 1 }, nextCard: '3M_2_1', task: 'Раскрась страницу с кузницей (ДО/ПОСЛЕ)' },
-        { id: 2, text: 'Подняться во двор', reward: { agility: 2 }, nextCard: '3M_3_1', task: 'Раскрась страницу с двором (ДО/ПОСЛЕ)' },
-        { id: 3, text: 'Попросить теней провести', skipCost: 1, isPremium: true, reward: { agility: 1, intelligence: 1 }, nextCard: '3M_1_1', task: null }
+        { id: 1, text: 'Войти через служебный вход', reward: { strength: 1, agility: 1 }, nextCard: '3M_2_1', task: 'Раскрась страницу с дверью (ДО/ПОСЛЕ)' },
+        { id: 2, text: 'Пробраться через конюшни', reward: { agility: 2 }, nextCard: '3M_3_1', task: 'Раскрась страницу с конюшней (ДО/ПОСЛЕ)' },
+        { id: 3, text: 'Взломать окно в башню', skipCost: 1, isPremium: true, reward: { agility: 1, intelligence: 1 }, nextCard: '3M_1_1', task: null }
     ]
 },
-'2M_V_1': { stage: 2, character: 'mystic', chapter: 'Лодочник', text: 'Вы бросаете монету в чёрную реку. Со дна поднимается лодка с духом-стариком.', nextCard: '2M_V_2' },
-'2M_V_2': { stage: 2, character: 'mystic', text: 'Лодочник: «Твой отец нашёл древний храм под замком. Там лежит звезда».', nextCard: '2M_V_3' },
+'2M_V_1': { stage: 2, character: 'mystic', chapter: 'Тайная тропа', text: 'Тропа приводит к старому колодцу. Веревка уходит вниз — это ход в подземелье.', nextCard: '2M_V_2' },
+'2M_V_2': { stage: 2, character: 'mystic', text: 'Вы спускаетесь. Подземный ход ведет прямо в сердце замка.', nextCard: '2M_V_3' },
 '2M_V_3': { stage: 2, character: 'mystic', isChoice: true,
     choices: [
-        { id: 1, text: 'Спуститься в пещеры', reward: { agility: 1, intelligence: 1 }, nextCard: '3M_4_1', task: 'Раскрась страницу с пещерами (ДО/ПОСЛЕ)' },
-        { id: 2, text: 'Подняться к кузнице', reward: { strength: 2 }, nextCard: '3M_2_1', task: 'Раскрась страницу с кузницей (ДО/ПОСЛЕ)' },
-        { id: 3, text: 'Отправиться прямо к храму', skipCost: 2, isPremium: true, reward: { all: 2 }, nextCard: '3M_5_1', task: null }
+        { id: 1, text: 'Идти на звук воды', reward: { agility: 1, intelligence: 1 }, nextCard: '3M_4_1', task: 'Раскрась страницу с подземельем (ДО/ПОСЛЕ)' },
+        { id: 2, text: 'Подняться в сокровищницу', reward: { strength: 2 }, nextCard: '3M_2_1', task: 'Раскрась страницу с лестницей (ДО/ПОСЛЕ)' },
+        { id: 3, text: 'Идти в винный погреб', skipCost: 1, isPremium: true, reward: { agility: 1 }, nextCard: '3M_3_1', task: null }
     ]
 },
-'3M_1_1': { stage: 3, character: 'mystic', chapter: 'Зал Стражей', text: 'Восемь рыцарских доспехов. При вашем появлении загораются красные огни.', nextCard: '3M_1_2' },
-'3M_1_2': { stage: 3, character: 'mystic', text: 'Восьмой доспех пустой — обманка. Можно прорваться силой, обойти или расшифровать руны.', nextCard: '3M_1_3' },
+'3M_1_1': { stage: 3, character: 'mystic', chapter: 'Зал аудиенций', text: 'Советник приводит вас в зал. «Лорд Таирус проклят. Триста лет он прикован к трону. Сними проклятие — и сокровище твое».', nextCard: '3M_1_2' },
+'3M_1_2': { stage: 3, character: 'mystic', text: 'На стене — картина, изображающая лорда в день коронации. И корону с огромным рубином.', nextCard: '3M_1_3' },
 '3M_1_3': { stage: 3, character: 'mystic', isChoice: true,
     choices: [
-        { id: 1, text: 'Прорваться силой (💪8)', requireStat: { stat: 'strength', min: 8 }, reward: { strength: 3, agility: 1 }, nextCard: '4M_1_1', task: 'Раскрась страницу с битвой (ДО/ПОСЛЕ)' },
-        { id: 2, text: 'Обойти строй (🏃6)', requireStat: { stat: 'agility', min: 6 }, reward: { agility: 3, intelligence: 1 }, nextCard: '4M_2_1', task: 'Раскрась страницу с ловкостью (ДО/ПОСЛЕ)' },
-        { id: 3, text: 'Расшифровать руны (🧠5)', requireStat: { stat: 'intelligence', min: 5 }, reward: { intelligence: 3, strength: 1 }, nextCard: '4M_3_1', task: 'Раскрась страницу с рунами (ДО/ПОСЛЕ)' },
-        { id: 4, text: 'Использовать кровь полукровки (🎫2)', skipCost: 2, isPremium: true, reward: { all: 2 }, nextCard: '4M_3_1', task: null }
+        { id: 1, text: 'Принять предложение', reward: { strength: 3, agility: 1 }, nextCard: '4M_1_1', task: 'Раскрась страницу с короной (ДО/ПОСЛЕ)' },
+        { id: 2, text: 'Потребовать ключ от сокровищницы', reward: { agility: 3, intelligence: 1 }, nextCard: '4M_2_1', task: 'Раскрась страницу с ключом (ДО/ПОСЛЕ)' },
+        { id: 3, text: 'Расспросить о проклятии', reward: { intelligence: 3, strength: 1 }, nextCard: '4M_3_1', task: 'Раскрась страницу с книгами (ДО/ПОСЛЕ)' },
+        { id: 4, text: 'Потребовать плату вперед', skipCost: 1, isPremium: true, reward: { all: 1 }, nextCard: '4M_3_1', task: null }
     ]
 },
-'3M_2_1': { stage: 3, character: 'mystic', chapter: 'Кузня', text: 'Огромная кузница. Горн горит. Вокруг Огненный Элементаль.', nextCard: '3M_2_2' },
-'3M_2_2': { stage: 3, character: 'mystic', text: 'На наковальне — Меч Ашетвиля. «Возьми его — и освободи меня», — рычит Элементаль.', nextCard: '3M_2_3' },
+'3M_2_1': { stage: 3, character: 'mystic', chapter: 'Сокровищница', text: 'Золото, самоцветы, древние монеты. В центре — сундук с магической печатью.', nextCard: '3M_2_2' },
+'3M_2_2': { stage: 3, character: 'mystic', text: 'Печать светится. На ней руны: «Только тот, кто снимет проклятие, откроет сундук».', nextCard: '3M_2_3' },
 '3M_2_3': { stage: 3, character: 'mystic', isChoice: true,
     choices: [
-        { id: 1, text: 'Взять меч отца (💪8)', requireStat: { stat: 'strength', min: 8 }, reward: { strength: 4, agility: 1 }, nextCard: '4M_1_1', task: 'Раскрась страницу с мечом (ДО/ПОСЛЕ)' },
-        { id: 2, text: 'Уклониться от элементаля (🏃6)', requireStat: { stat: 'agility', min: 6 }, reward: { agility: 4, intelligence: 1 }, nextCard: '4M_2_1', task: 'Раскрась страницу с уклонением (ДО/ПОСЛЕ)' },
-        { id: 3, text: 'Освободить элементаля (🧠5)', requireStat: { stat: 'intelligence', min: 5 }, reward: { all: 3 }, nextCard: '4M_2_1', task: 'Раскрась страницу с элементалем (ДО/ПОСЛЕ)' },
-        { id: 4, text: 'Выковать новый меч (🎫2)', skipCost: 2, isPremium: true, reward: { strength: 3, agility: 1 }, nextCard: '4M_3_1', task: null }
+        { id: 1, text: 'Попробовать взломать печать силой', reward: { strength: 4, agility: 1 }, nextCard: '4M_1_1', task: 'Раскрась страницу с печатью (ДО/ПОСЛЕ)' },
+        { id: 2, text: 'Обойти ловушку', reward: { agility: 4, intelligence: 1 }, nextCard: '4M_2_1', task: 'Раскрась страницу с ловушкой (ДО/ПОСЛЕ)' },
+        { id: 3, text: 'Расшифровать руны', reward: { all: 3 }, nextCard: '4M_2_1', task: 'Раскрась страницу с рунами (ДО/ПОСЛЕ)' },
+        { id: 4, text: 'Вернуться к советнику', skipCost: 1, isPremium: true, reward: { strength: 1, agility: 1 }, nextCard: '4M_3_1', task: null }
     ]
 },
-'3M_3_1': { stage: 3, character: 'mystic', chapter: 'Двор. Колодец и Горгулья', text: 'Внутренний двор. Лунный свет над колодцем. В углу — горгулья.', nextCard: '3M_3_2' },
-'3M_3_2': { stage: 3, character: 'mystic', text: 'Горгулья открывает жёлтые глаза. «Твой отец пил из этого колодца».', nextCard: '3M_3_3' },
+'3M_3_1': { stage: 3, character: 'mystic', chapter: 'Конюшни', text: 'Пустые стойла. Только один конь — белый, с серебряной гривой. Он смотрит на вас.', nextCard: '3M_3_2' },
+'3M_3_2': { stage: 3, character: 'mystic', text: 'На седле — записка от советника: «Это Снежный — конь первого лорда. Он доверяет только достойным. Если примешь его — он станет твоим союзником».', nextCard: '3M_3_3' },
 '3M_3_3': { stage: 3, character: 'mystic', isChoice: true,
     choices: [
-        { id: 1, text: 'Сразиться с горгульей (💪8)', requireStat: { stat: 'strength', min: 8 }, reward: { strength: 4, intelligence: 1 }, nextCard: '4M_1_1', task: 'Раскрась страницу с горгульей (ДО/ПОСЛЕ)' },
-        { id: 2, text: 'Взобраться на стену (🏃6)', requireStat: { stat: 'agility', min: 6 }, reward: { agility: 4, strength: 1 }, nextCard: '4M_2_1', task: 'Раскрась страницу с лазанием (ДО/ПОСЛЕ)' },
-        { id: 3, text: 'Расшифровать надписи (🧠5)', requireStat: { stat: 'intelligence', min: 5 }, reward: { intelligence: 4, agility: 1 }, nextCard: '4M_3_1', task: 'Раскрась страницу с надписями (ДО/ПОСЛЕ)' },
-        { id: 4, text: 'Дать горгулье кровь (🎫2)', skipCost: 2, isPremium: true, reward: { all: 2 }, nextCard: '4M_3_1', task: null }
+        { id: 1, text: 'Оседлать коня силой', reward: { strength: 4, intelligence: 1 }, nextCard: '4M_1_1', task: 'Раскрась страницу с конем (ДО/ПОСЛЕ)' },
+        { id: 2, text: 'Успокоить коня', reward: { agility: 4, strength: 1 }, nextCard: '4M_2_1', task: 'Раскрась страницу с уходом (ДО/ПОСЛЕ)' },
+        { id: 3, text: 'Прочесть руны на седле', reward: { intelligence: 4, agility: 1 }, nextCard: '4M_3_1', task: 'Раскрась страницу с седлом (ДО/ПОСЛЕ)' },
+        { id: 4, text: 'Дать коню яблоко', skipCost: 1, isPremium: true, reward: { all: 1 }, nextCard: '4M_3_1', task: null }
     ]
 },
-'3M_4_1': { stage: 3, character: 'mystic', chapter: 'Пещеры под замком', text: 'Холод. Сырость. Стены покрыты светящимся мхом. Подземное озеро.', nextCard: '3M_4_2' },
-'3M_4_2': { stage: 3, character: 'mystic', text: 'На берегу — остатки лагеря отца. Нож, обрывок карты.', nextCard: '3M_4_3' },
+'3M_4_1': { stage: 3, character: 'mystic', chapter: 'Подземное озеро', text: 'Под замком — огромное озеро. На том берегу виднеется дверь.', nextCard: '3M_4_2' },
+'3M_4_2': { stage: 3, character: 'mystic', text: 'У воды — старая лодка и весло. Вода темная, но спокойная.', nextCard: '3M_4_3' },
 '3M_4_3': { stage: 3, character: 'mystic', isChoice: true,
     choices: [
-        { id: 1, text: 'Разбить завал (💪8)', requireStat: { stat: 'strength', min: 8 }, reward: { strength: 3, agility: 1 }, nextCard: '4M_4_1', task: 'Раскрась страницу с силой (ДО/ПОСЛЕ)' },
-        { id: 2, text: 'Пролезть через лаз (🏃6)', requireStat: { stat: 'agility', min: 6 }, reward: { agility: 3, intelligence: 1 }, nextCard: '4M_2_1', task: 'Раскрась страницу с лазанием (ДО/ПОСЛЕ)' },
-        { id: 3, text: 'Прочесть руны (🧠5)', requireStat: { stat: 'intelligence', min: 5 }, reward: { intelligence: 3, strength: 1 }, nextCard: '4M_5_1', task: 'Раскрась страницу с рунами (ДО/ПОСЛЕ)' },
-        { id: 4, text: 'Нырнуть в озеро (🎫2)', skipCost: 2, isPremium: true, reward: { all: 2 }, nextCard: '4M_5_1', task: null }
+        { id: 1, text: 'Переплыть на лодке', reward: { strength: 3, agility: 1 }, nextCard: '4M_4_1', task: 'Раскрась страницу с лодкой (ДО/ПОСЛЕ)' },
+        { id: 2, text: 'Обойти по берегу', reward: { agility: 3, intelligence: 1 }, nextCard: '4M_2_1', task: 'Раскрась страницу с берегом (ДО/ПОСЛЕ)' },
+        { id: 3, text: 'Нырнуть и переплыть', reward: { strength: 3, agility: 1 }, nextCard: '4M_5_1', task: 'Раскрась страницу с водой (ДО/ПОСЛЕ)' },
+        { id: 4, text: 'Позвать паромщика', skipCost: 1, isPremium: true, reward: { all: 2 }, nextCard: '4M_5_1', task: null }
     ]
 },
-'3M_5_1': { stage: 3, character: 'mystic', chapter: 'Древний храм', text: 'Храм под фундаментом. В центре — упавшая звезда. Живая.', nextCard: '3M_5_2' },
-'3M_5_2': { stage: 3, character: 'mystic', text: 'Звезда говорит образами. Первый лорд нашёл её. Попросил силу. Отказался платить.', nextCard: '3M_5_3' },
+'3M_5_1': { stage: 3, character: 'mystic', chapter: 'Старая усыпальница', text: 'Дверь ведет в древнюю усыпальницу. Саркофаги с гербами дома Таирусов.', nextCard: '3M_5_2' },
+'3M_5_2': { stage: 3, character: 'mystic', text: 'На центральном саркофаге — надпись: «Проклятие падет, когда наследник докажет силу».', nextCard: '3M_5_3' },
 '3M_5_3': { stage: 3, character: 'mystic', isChoice: true,
     choices: [
-        { id: 1, text: 'Потребовать ответа (💪8)', requireStat: { stat: 'strength', min: 8 }, reward: { strength: 3, intelligence: 1 }, nextCard: '4M_5_1', task: 'Раскрась страницу с требованием (ДО/ПОСЛЕ)' },
-        { id: 2, text: 'Коснуться звезды (🏃6)', requireStat: { stat: 'agility', min: 6 }, reward: { agility: 3, strength: 1 }, nextCard: '4M_4_1', task: 'Раскрась страницу с видением (ДО/ПОСЛЕ)' },
-        { id: 3, text: 'Поговорить со звездой (🧠5)', requireStat: { stat: 'intelligence', min: 5 }, reward: { intelligence: 4, agility: 1 }, nextCard: '4M_5_1', task: 'Раскрась страницу со звездой (ДО/ПОСЛЕ)' },
-        { id: 4, text: 'Взять осколок звезды (🎫2)', skipCost: 2, isPremium: true, reward: { all: 3 }, nextCard: '4M_3_1', task: null }
+        { id: 1, text: 'Сдвинуть крышку саркофага', reward: { strength: 3, intelligence: 1 }, nextCard: '4M_5_1', task: 'Раскрась страницу с саркофагом (ДО/ПОСЛЕ)' },
+        { id: 2, text: 'Обойти ловушки', reward: { agility: 3, strength: 1 }, nextCard: '4M_4_1', task: 'Раскрась страницу с ловушками (ДО/ПОСЛЕ)' },
+        { id: 3, text: 'Прочесть надписи', reward: { intelligence: 4, agility: 1 }, nextCard: '4M_5_1', task: 'Раскрась страницу с надписями (ДО/ПОСЛЕ)' },
+        { id: 4, text: 'Разбить саркофаг', skipCost: 2, isPremium: true, reward: { all: 3 }, nextCard: '4M_3_1', task: null }
     ]
 },
-'4M_1_1': { stage: 4, character: 'mystic', chapter: 'Встреча с тенью отца', text: 'В коридоре — знакомая фигура. Ваш отец. Его дух привязан к замку.', nextCard: '4M_1_2' },
-'4M_1_2': { stage: 4, character: 'mystic', text: '«Сын. Ты выбрал путь воина. Возьми меч. Освободи лорда. Или займи трон».', nextCard: '4M_1_3' },
+'4M_1_1': { stage: 4, character: 'mystic', chapter: 'Покои лорда', text: 'Снежный проводил вас через потайные ходы. Лорд Таирус на троне, скованный цепями. «Наемник. Сними проклятие — получишь сокровище».', nextCard: '4M_1_2' },
+'4M_1_2': { stage: 4, character: 'mystic', text: 'На столе — древний свиток с описанием ритуала снятия проклятия.', nextCard: '4M_1_3' },
 '4M_1_3': { stage: 4, character: 'mystic', isChoice: true,
     choices: [
-        { id: 1, text: 'Поклясться освободить лорда (💪10)', requireStat: { stat: 'strength', min: 10 }, reward: { strength: 4, agility: 1 }, nextCard: '5M_1_1', task: 'Раскрась страницу с клятвой (ДО/ПОСЛЕ)' },
-        { id: 2, text: 'Решить занять трон', reward: { all: 2 }, nextCard: '5M_2_1', task: 'Раскрась страницу с троном (ДО/ПОСЛЕ)' },
-        { id: 3, text: 'Отдать отцу свою кровь (🎫2)', skipCost: 2, isPremium: true, reward: { all: 3 }, nextCard: '5M_3_1', task: null }
+        { id: 1, text: 'Согласиться помочь лорду', reward: { all: 1 }, nextCard: '5M_1_1', task: 'Раскрась страницу с лордом (ДО/ПОСЛЕ)' },
+        { id: 2, text: 'Изучить свиток', reward: { intelligence: 4, strength: 1 }, nextCard: '5M_2_1', task: 'Раскрась страницу со свитком (ДО/ПОСЛЕ)' },
+        { id: 3, text: 'Попробовать разорвать цепи', reward: { strength: 3, intelligence: 1 }, nextCard: '5M_3_1', task: 'Раскрась страницу с цепями (ДО/ПОСЛЕ)' },
+        { id: 4, text: 'Потребовать ключ от сокровищницы', skipCost: 2, isPremium: true, reward: { strength: 2 }, nextCard: '5M_3_1', task: null }
     ]
 },
-'4M_2_1': { stage: 4, character: 'mystic', chapter: 'Оружейная', text: 'Старая оружейная. Арбалет с серебряным болтом. Запертый шкаф.', nextCard: '4M_2_2' },
-'4M_2_2': { stage: 4, character: 'mystic', text: 'Дневник оружейника: «Серебряные болты против того, кто не умирает от стали».', nextCard: '4M_2_3' },
+'4M_2_1': { stage: 4, character: 'mystic', chapter: 'Оружейная', text: 'Стены увешаны мечами, щитами, доспехами. В углу — запертый шкаф с гербом дома Таирусов.', nextCard: '4M_2_2' },
+'4M_2_2': { stage: 4, character: 'mystic', text: 'Внутри шкафа что-то светится. Снежный тихо ржет — он чувствует магию.', nextCard: '4M_2_3' },
 '4M_2_3': { stage: 4, character: 'mystic', isChoice: true,
     choices: [
-        { id: 1, text: 'Взять серебряный болт', reward: { all: 1 }, nextCard: '5M_2_1', task: 'Раскрась страницу с оружием (ДО/ПОСЛЕ)' },
-        { id: 2, text: 'Взломать замок шкафа (🏃8)', requireStat: { stat: 'agility', min: 8 }, reward: { agility: 4, intelligence: 1 }, nextCard: '5M_3_1', task: 'Раскрась страницу со взломом (ДО/ПОСЛЕ)' },
-        { id: 3, text: 'Открыть шкаф монетой (🎫2)', skipCost: 2, isPremium: true, reward: { agility: 3, strength: 1 }, nextCard: '5M_1_1', task: null }
+        { id: 1, text: 'Взломать шкаф', reward: { all: 1 }, nextCard: '5M_2_1', task: 'Раскрась страницу со шкафом (ДО/ПОСЛЕ)' },
+        { id: 2, text: 'Взять меч со стены', reward: { strength: 4, agility: 1 }, nextCard: '5M_3_1', task: 'Раскрась страницу с мечом (ДО/ПОСЛЕ)' },
+        { id: 3, text: 'Изучить герб', reward: { intelligence: 3, strength: 1 }, nextCard: '5M_1_1', task: 'Раскрась страницу с гербом (ДО/ПОСЛЕ)' },
+        { id: 4, text: 'Взять всё оружие', skipCost: 2, isPremium: true, reward: { strength: 4, agility: 2 }, nextCard: '5M_1_1', task: null }
     ]
 },
-'4M_3_1': { stage: 4, character: 'mystic', chapter: 'Башня Теней', text: 'Узкая лестница. По стенам движутся живые тени.', nextCard: '4M_3_2' },
-'4M_3_2': { stage: 4, character: 'mystic', text: 'Наверху — зеркало. В отражении — ваш отец с Советником.', nextCard: '4M_3_3' },
+'4M_3_1': { stage: 4, character: 'mystic', chapter: 'Кабинет советника', text: 'Карты, письма, бухгалтерские книги. Советник годами управлял замком.', nextCard: '4M_3_2' },
+'4M_3_2': { stage: 4, character: 'mystic', text: 'В ящике стола — дневник. «Лорд проклят. Я ищу способ снять проклятие. Пока — правлю я».', nextCard: '4M_3_3' },
 '4M_3_3': { stage: 4, character: 'mystic', isChoice: true,
     choices: [
-        { id: 1, text: 'Разбить зеркало (💪8)', requireStat: { stat: 'strength', min: 8 }, reward: { strength: 2, intelligence: 1 }, nextCard: '5M_3_1', task: 'Раскрась страницу с зеркалом (ДО/ПОСЛЕ)' },
-        { id: 2, text: 'Спросить у теней (🧠8)', requireStat: { stat: 'intelligence', min: 8 }, reward: { intelligence: 4, agility: 1 }, nextCard: '5M_1_1', task: 'Раскрась страницу с тенями (ДО/ПОСЛЕ)' },
-        { id: 3, text: 'Войти в зеркало (🎫2)', skipCost: 2, isPremium: true, reward: { all: 3 }, nextCard: '5M_2_1', task: null }
+        { id: 1, text: 'Прочесть дневник', reward: { intelligence: 3, agility: 1 }, nextCard: '5M_3_1', task: 'Раскрась страницу с дневником (ДО/ПОСЛЕ)' },
+        { id: 2, text: 'Обыскать кабинет', reward: { strength: 2, intelligence: 1 }, nextCard: '5M_1_1', task: 'Раскрась страницу с поиском (ДО/ПОСЛЕ)' },
+        { id: 3, text: 'Найти тайник', reward: { agility: 4, intelligence: 1 }, nextCard: '5M_2_1', task: 'Раскрась страницу с тайником (ДО/ПОСЛЕ)' },
+        { id: 4, text: 'Украсть ценные бумаги', skipCost: 2, isPremium: true, reward: { agility: 2, intelligence: 1 }, nextCard: '5M_2_1', task: null }
     ]
 },
-'4M_4_1': { stage: 4, character: 'mystic', chapter: 'Затопленный зал', text: 'Вода по колено. В центре — алтарь с разорванной цепью.', nextCard: '4M_4_2' },
-'4M_4_2': { stage: 4, character: 'mystic', text: 'Видение: отец разорвал эту цепь. Освободил Элизу. Она спряталась в саду.', nextCard: '4M_4_3' },
+'4M_4_1': { stage: 4, character: 'mystic', chapter: 'Тюремный зал', text: 'Подземная тюрьма. В одной из камер — иссохшая фигура в рваном плаще.', nextCard: '4M_4_2' },
+'4M_4_2': { stage: 4, character: 'mystic', text: '«Я — бывший капитан стражи. Советник предал меня. Освободи — расскажу тайну».', nextCard: '4M_4_3' },
 '4M_4_3': { stage: 4, character: 'mystic', isChoice: true,
     choices: [
-        { id: 1, text: 'Идти по следу Элизы в сад', nextCard: '5M_4_1', task: 'Раскрась страницу с садом (ДО/ПОСЛЕ)' },
-        { id: 2, text: 'Взять обрывок цепи', reward: { all: 1 }, nextCard: '5M_2_1', task: 'Раскрась страницу с цепью (ДО/ПОСЛЕ)' },
-        { id: 3, text: 'Восстановить видение (🎫2)', skipCost: 2, isPremium: true, reward: { intelligence: 2, agility: 1 }, nextCard: '5M_1_1', task: null }
+        { id: 1, text: 'Освободить капитана', reward: { all: 1 }, nextCard: '5M_4_1', task: 'Раскрась страницу с ключом (ДО/ПОСЛЕ)' },
+        { id: 2, text: 'Взять его медальон', reward: { agility: 1 }, nextCard: '5M_2_1', task: 'Раскрась страницу с медальоном (ДО/ПОСЛЕ)' },
+        { id: 3, text: 'Расспросить и уйти', reward: { intelligence: 2, agility: 1 }, nextCard: '5M_1_1', task: 'Раскрась страницу с беседой (ДО/ПОСЛЕ)' },
+        { id: 4, text: 'Взломать замок', skipCost: 1, isPremium: true, reward: { strength: 1, agility: 1 }, nextCard: '5M_3_1', task: null }
     ]
 },
-'4M_5_1': { stage: 4, character: 'mystic', chapter: 'Святилище Звезды', text: 'Звезда пульсирует. Ждёт. Она не злая — просто голодна.', nextCard: '4M_5_2' },
-'4M_5_2': { stage: 4, character: 'mystic', text: 'Звезда показывает: отец предложил память в обмен на свободу Элизы.', nextCard: '4M_5_3' },
+'4M_5_1': { stage: 4, character: 'mystic', chapter: 'Тронный зал', text: 'Огромный зал. На троне — лорд Таирус. Вокруг — призраки слуг. Снежный склоняет голову перед лордом.', nextCard: '4M_5_2' },
+'4M_5_2': { stage: 4, character: 'mystic', text: 'Призрак мажордома: «Проклятие связано с короной. Надень корону — снимешь проклятие».', nextCard: '4M_5_3' },
 '4M_5_3': { stage: 4, character: 'mystic', isChoice: true,
     choices: [
-        { id: 1, text: 'Предложить звезде память (🧠8)', requireStat: { stat: 'intelligence', min: 8 }, reward: { intelligence: 3, agility: 1 }, nextCard: '5M_5_1', task: 'Раскрась страницу с жертвой (ДО/ПОСЛЕ)' },
-        { id: 2, text: 'Потребовать вернуть память отца (💪8)', requireStat: { stat: 'strength', min: 8 }, reward: { strength: 3, intelligence: 1 }, nextCard: '5M_3_1', task: 'Раскрась страницу с требованием (ДО/ПОСЛЕ)' },
-        { id: 3, text: 'Договориться со звездой (🎫2)', skipCost: 2, isPremium: true, reward: { all: 2 }, nextCard: '5M_4_1', task: null }
+        { id: 1, text: 'Взять корону', reward: { strength: 3, agility: 1 }, nextCard: '5M_5_1', task: 'Раскрась страницу с короной (ДО/ПОСЛЕ)' },
+        { id: 2, text: 'Расспросить призраков', reward: { intelligence: 3, strength: 1 }, nextCard: '5M_3_1', task: 'Раскрась страницу с призраками (ДО/ПОСЛЕ)' },
+        { id: 3, text: 'Поговорить с лордом', reward: { all: 2 }, nextCard: '5M_4_1', task: 'Раскрась страницу с лордом (ДО/ПОСЛЕ)' },
+        { id: 4, text: 'Взять корону силой', skipCost: 2, isPremium: true, reward: { strength: 3, agility: 1 }, nextCard: '5M_5_1', task: null }
     ]
 },
-'5M_1_1': { stage: 5, character: 'mystic', chapter: 'Покои Лорда', text: 'На столе — письмо: «Моя дорогая Элиза. Произнеси моё имя. Эдвард».', nextCard: '5M_1_2' },
-'5M_1_2': { stage: 5, character: 'mystic', text: 'Рядом — медальон с портретом Элизы. Проклятие — трагедия любви.', nextCard: '5M_1_3' },
+'5M_1_1': { stage: 5, character: 'mystic', chapter: 'Подготовка к ритуалу', text: 'У вас есть все части пазла. Снежный рядом. Осталось провести ритуал.', nextCard: '5M_1_2' },
+'5M_1_2': { stage: 5, character: 'mystic', text: 'Советник: «Ты близок к цели, наемник. Не дай лорду обмануть тебя».', nextCard: '5M_1_3' },
 '5M_1_3': { stage: 5, character: 'mystic', isChoice: true,
     choices: [
-        { id: 1, text: 'Взять письмо и медальон', reward: { intelligence: 1 }, nextCard: '6M_1_1', task: 'Раскрась страницу с письмом (ДО/ПОСЛЕ)' },
-        { id: 2, text: 'Искать следы Элизы (🏃6)', requireStat: { stat: 'agility', min: 6 }, reward: { agility: 2 }, nextCard: '6M_2_1', task: 'Раскрась страницу с поиском (ДО/ПОСЛЕ)' },
-        { id: 3, text: 'Прочесть письмо вслух (🎫2)', skipCost: 2, isPremium: true, reward: { all: 2 }, nextCard: '6M_3_1', task: null }
+        { id: 1, text: 'Пойти к лорду', reward: { intelligence: 1 }, nextCard: '6M_1_1', task: 'Раскрась страницу с советником (ДО/ПОСЛЕ)' },
+        { id: 2, text: 'Пойти к капитану стражи', reward: { agility: 2 }, nextCard: '6M_2_1', task: 'Раскрась страницу с капитаном (ДО/ПОСЛЕ)' },
+        { id: 3, text: 'Провести ритуал самому', skipCost: 2, isPremium: true, reward: { all: 2 }, nextCard: '6M_3_1', task: null }
     ]
 },
-'5M_2_1': { stage: 5, character: 'mystic', chapter: 'Коридор Духов', text: 'Тёмный коридор. Факелы гаснут. Духи наблюдают.', nextCard: '5M_2_2' },
-'5M_2_2': { stage: 5, character: 'mystic', text: 'Тень: «Я знал твоего отца. Он жалел, что не увидит, как ты вырастешь».', nextCard: '5M_2_3' },
+'5M_2_1': { stage: 5, character: 'mystic', chapter: 'Библиотека', text: 'Тысячи книг. В центре — стол с раскрытым фолиантом.', nextCard: '5M_2_2' },
+'5M_2_2': { stage: 5, character: 'mystic', text: 'Фолиант открыт на странице: «Проклятие дома Таирусов — история и способы снятия». Снежный фыркает — он узнал знакомый герб на обложке.', nextCard: '5M_2_3' },
 '5M_2_3': { stage: 5, character: 'mystic', isChoice: true,
     choices: [
-        { id: 1, text: 'Спросить о матери', reward: { intelligence: 1 }, nextCard: '6M_2_1', task: 'Раскрась страницу с духом (ДО/ПОСЛЕ)' },
-        { id: 2, text: 'Попросить провести к лорду', reward: { agility: 1 }, nextCard: '6M_1_1', task: 'Раскрась страницу с проводником (ДО/ПОСЛЕ)' },
-        { id: 3, text: 'Попросить духов о помощи (🎫2)', skipCost: 2, isPremium: true, reward: { all: 2 }, nextCard: '6M_3_1', task: null }
+        { id: 1, text: 'Прочесть фолиант', reward: { intelligence: 2 }, nextCard: '6M_2_1', task: 'Раскрась страницу с книгой (ДО/ПОСЛЕ)' },
+        { id: 2, text: 'Искать другой способ', reward: { agility: 1 }, nextCard: '6M_1_1', task: 'Раскрась страницу с поиском (ДО/ПОСЛЕ)' },
+        { id: 3, text: 'Взять фолиант с собой', skipCost: 2, isPremium: true, reward: { intelligence: 2 }, nextCard: '6M_3_1', task: null }
     ]
 },
-'5M_3_1': { stage: 5, character: 'mystic', chapter: 'Лаборатория Советника', text: 'Столы заставлены колбами. В центре — дневник Советника.', nextCard: '5M_3_2' },
-'5M_3_2': { stage: 5, character: 'mystic', text: '«Элиза. Я люблю её. Я найду способ забрать её. Даже если придётся проклясть замок».', nextCard: '5M_3_3' },
+'5M_3_1': { stage: 5, character: 'mystic', chapter: 'Зал совета', text: 'Круглый стол. Десять стульев. На спинке одного — герб советника.', nextCard: '5M_3_2' },
+'5M_3_2': { stage: 5, character: 'mystic', text: 'В ящике стола — протоколы заседаний. Советник предлагал снять проклятие, но лорд отказался.', nextCard: '5M_3_3' },
 '5M_3_3': { stage: 5, character: 'mystic', isChoice: true,
     choices: [
-        { id: 1, text: 'Уничтожить дневник (💪6)', requireStat: { stat: 'strength', min: 6 }, reward: { strength: 2 }, nextCard: '6M_3_1', task: 'Раскрась страницу с уничтожением (ДО/ПОСЛЕ)' },
-        { id: 2, text: 'Изучить записи о звезде (🧠6)', requireStat: { stat: 'intelligence', min: 6 }, reward: { intelligence: 2 }, nextCard: '6M_1_1', task: 'Раскрась страницу с книгой (ДО/ПОСЛЕ)' },
-        { id: 3, text: 'Найти противоядие (🎫2)', skipCost: 2, isPremium: true, reward: { all: 2 }, nextCard: '6M_2_1', task: null }
+        { id: 1, text: 'Прочесть протоколы', reward: { intelligence: 2 }, nextCard: '6M_3_1', task: 'Раскрась страницу с протоколом (ДО/ПОСЛЕ)' },
+        { id: 2, text: 'Идти к лорду', reward: { strength: 2 }, nextCard: '6M_1_1', task: 'Раскрась страницу с лордом (ДО/ПОСЛЕ)' },
+        { id: 3, text: 'Идти к советнику', reward: { agility: 2 }, nextCard: '6M_2_1', task: 'Раскрась страницу с советником (ДО/ПОСЛЕ)' },
+        { id: 4, text: 'Взять протоколы с собой', skipCost: 2, isPremium: true, reward: { all: 2 }, nextCard: '6M_1_1', task: null }
     ]
 },
-'5M_4_1': { stage: 5, character: 'mystic', chapter: 'Сад Замка', text: 'Заброшенный сад. Розы одичали. В беседке кто-то есть.', nextCard: '5M_4_2' },
-'5M_4_2': { stage: 5, character: 'mystic', text: 'Элиза. Полупрозрачная. «Твой отец спас меня. Освободи Эдварда. Пожалуйста».', nextCard: '5M_4_3' },
+'5M_4_1': { stage: 5, character: 'mystic', chapter: 'Внутренний сад', text: 'Снежный привел вас к фонтану. Его вода светится. Капитан стражи ждет вас.', nextCard: '5M_4_2' },
+'5M_4_2': { stage: 5, character: 'mystic', text: 'Капитан: «Вода из этого фонтана ослабляет проклятие. Снежный знал об этом. Набери флягу».', nextCard: '5M_4_3' },
 '5M_4_3': { stage: 5, character: 'mystic', isChoice: true,
     choices: [
-        { id: 1, text: 'Пообещать освободить лорда', reward: { all: 1 }, nextCard: '6M_1_1', task: 'Раскрась страницу с обещанием (ДО/ПОСЛЕ)' },
-        { id: 2, text: 'Спросить о Советнике', reward: { intelligence: 1 }, nextCard: '6M_2_1', task: 'Раскрась страницу с разговором (ДО/ПОСЛЕ)' },
-        { id: 3, text: 'Взять Элизу с собой (🎫2)', skipCost: 2, isPremium: true, reward: { all: 3 }, nextCard: '6M_3_1', task: null }
+        { id: 1, text: 'Набрать воды', reward: { all: 1 }, nextCard: '6M_1_1', task: 'Раскрась страницу с фонтаном (ДО/ПОСЛЕ)' },
+        { id: 2, text: 'Расспросить капитана', reward: { intelligence: 2 }, nextCard: '6M_2_1', task: 'Раскрась страницу с беседой (ДО/ПОСЛЕ)' },
+        { id: 3, text: 'Искупаться в фонтане', skipCost: 2, isPremium: true, reward: { all: 3 }, nextCard: '6M_3_1', task: null }
     ]
 },
-'5M_5_1': { stage: 5, character: 'mystic', chapter: 'Звёздный Зал', text: 'Магические линии сходятся здесь. Три цепи — три аспекта проклятия.', nextCard: '5M_5_2' },
-'5M_5_2': { stage: 5, character: 'mystic', text: 'Если разорвать цепи здесь — лорд освободится без боя.', nextCard: '5M_5_3' },
+'5M_5_1': { stage: 5, character: 'mystic', chapter: 'Тронный зал', text: 'Цепи лорда светятся. Они связаны с короной. Снежный тревожно ржет.', nextCard: '5M_5_2' },
+'5M_5_2': { stage: 5, character: 'mystic', text: 'Если надеть корону на лорда — проклятие спадет. Но корона даст власть и надевшему.', nextCard: '5M_5_3' },
 '5M_5_3': { stage: 5, character: 'mystic', isChoice: true,
     choices: [
-        { id: 1, text: 'Разорвать цепи (💪8)', requireStat: { stat: 'strength', min: 8 }, reward: { strength: 3 }, nextCard: '6M_1_1', task: 'Раскрась страницу с цепями (ДО/ПОСЛЕ)' },
-        { id: 2, text: 'Изучить механизм (🧠6)', requireStat: { stat: 'intelligence', min: 6 }, reward: { intelligence: 2 }, nextCard: '6M_3_1', task: 'Раскрась страницу с механизмом (ДО/ПОСЛЕ)' },
-        { id: 3, text: 'Попросить звезду (🎫2)', skipCost: 2, isPremium: true, reward: { all: 2 }, nextCard: '6M_2_1', task: null }
+        { id: 1, text: 'Надеть корону на лорда', reward: { strength: 3 }, nextCard: '6M_1_1', task: 'Раскрась страницу с коронацией (ДО/ПОСЛЕ)' },
+        { id: 2, text: 'Надеть корону на себя', reward: { intelligence: 2 }, nextCard: '6M_3_1', task: 'Раскрась страницу с короной (ДО/ПОСЛЕ)' },
+        { id: 3, text: 'Разбить корону', skipCost: 2, isPremium: true, reward: { all: 2 }, nextCard: '6M_2_1', task: null }
     ]
 },
-'6M_1_1': { stage: 6, character: 'mystic', chapter: 'Финальная подготовка', text: 'Вы возвращаетесь в покои лорда. Теперь вы знаете достаточно.', nextCard: '6M_1_2' },
-'6M_1_2': { stage: 6, character: 'mystic', text: 'Отец является в последний раз: «Ты готов, сын. Я горжусь тобой».', nextCard: '6M_1_3' },
+'6M_1_1': { stage: 6, character: 'mystic', chapter: 'Решающий момент', text: 'Все готово. Лорд, советник, капитан — все ждут вашего решения. Снежный рядом.', nextCard: '6M_1_2' },
+'6M_1_2': { stage: 6, character: 'mystic', text: 'Советник: «Ты доказал, что достоин. Выбирай — и получишь награду».', nextCard: '6M_1_3' },
 '6M_1_3': { stage: 6, character: 'mystic', isChoice: true,
     choices: [
-        { id: 1, text: 'Идти в тронный зал', nextCard: '7M_1_1', task: 'Раскрась страницу с тронным залом (ДО/ПОСЛЕ)' },
-        { id: 2, text: 'Искать Советника', nextCard: '7M_2_1', task: 'Раскрась страницу с поиском (ДО/ПОСЛЕ)' },
-        { id: 3, text: 'Пойти в сад — найти Элизу (🎫3)', skipCost: 3, isPremium: true, nextCard: '7M_3_1', task: null }
+        { id: 1, text: 'Провести ритуал в тронном зале', nextCard: '7M_1_1', task: 'Раскрась страницу с троном (ДО/ПОСЛЕ)' },
+        { id: 2, text: 'Провести ритуал в саду', nextCard: '7M_2_1', task: 'Раскрась страницу с садом (ДО/ПОСЛЕ)' },
+        { id: 3, text: 'Провести ритуал в усыпальнице', skipCost: 3, isPremium: true, nextCard: '7M_3_1', task: null }
     ]
 },
-'6M_2_1': { stage: 6, character: 'mystic', text: 'Духи собираются вокруг вас. «Лорд не виноват. Советник держит проклятие».', nextCard: '6M_2_2' },
+'6M_2_1': { stage: 6, character: 'mystic', text: 'Капитан стражи: «Я знаю тайный ход в тронный зал. Снежный покажет дорогу. Идем».', nextCard: '6M_2_2' },
 '6M_2_2': { stage: 6, character: 'mystic', isChoice: true,
     choices: [
-        { id: 1, text: 'Идти к лорду', nextCard: '7M_1_1', task: 'Раскрась страницу с освобождением (ДО/ПОСЛЕ)' },
-        { id: 2, text: 'Идти к Советнику', nextCard: '7M_2_1', task: 'Раскрась страницу с изгнанием (ДО/ПОСЛЕ)' },
-        { id: 3, text: 'Попросить тайный ход (🎫3)', skipCost: 3, isPremium: true, nextCard: '7M_3_1', task: null }
+        { id: 1, text: 'Идти с капитаном', nextCard: '7M_1_1', task: 'Раскрась страницу с проходом (ДО/ПОСЛЕ)' },
+        { id: 2, text: 'Пойти один', nextCard: '7M_2_1', task: 'Раскрась страницу с одиночеством (ДО/ПОСЛЕ)' },
+        { id: 3, text: 'Попросить карту тайных ходов', skipCost: 3, isPremium: true, nextCard: '7M_3_1', task: null }
     ]
 },
-'6M_3_1': { stage: 6, character: 'mystic', text: 'В потайном ящике — амулет, которым Советник сковал лорда.', nextCard: '6M_3_2' },
+'6M_3_1': { stage: 6, character: 'mystic', text: 'Вы нашли свой путь. Снежный чувствует — развязка близка. Лорд ждет.', nextCard: '6M_3_2' },
 '6M_3_2': { stage: 6, character: 'mystic', isChoice: true,
     choices: [
-        { id: 1, text: 'Разрушить амулет (💪8)', requireStat: { stat: 'strength', min: 8 }, reward: { strength: 3 }, nextCard: '7M_1_1', task: 'Раскрась страницу с амулетом (ДО/ПОСЛЕ)' },
-        { id: 2, text: 'Надеть амулет', reward: { all: 1 }, nextCard: '7M_2_1', task: 'Раскрась страницу с силой (ДО/ПОСЛЕ)' },
-        { id: 3, text: 'Перековать амулет (🎫3)', skipCost: 3, isPremium: true, reward: { all: 2 }, nextCard: '7M_3_1', task: null }
+        { id: 1, text: 'Идти к лорду', reward: { strength: 3 }, nextCard: '7M_1_1', task: 'Раскрась страницу с лордом (ДО/ПОСЛЕ)' },
+        { id: 2, text: 'Идти к советнику', reward: { intelligence: 3 }, nextCard: '7M_2_1', task: 'Раскрась страницу с советником (ДО/ПОСЛЕ)' },
+        { id: 3, text: 'Провести свой ритуал', skipCost: 3, isPremium: true, reward: { all: 2 }, nextCard: '7M_3_1', task: null }
     ]
 },
-'7M_1_1': { stage: 7, character: 'mystic', chapter: 'Тронный Зал', text: 'Лорд на троне. «Сын кузнеца. Ты вернулся. Говори».', nextCard: '7M_1_2' },
+'7M_1_1': { stage: 7, character: 'mystic', chapter: 'Тронный зал', text: 'Лорд Таирус: «Наемник. Ты готов. Говори, что ты решил».', nextCard: '7M_1_2' },
 '7M_1_2': { stage: 7, character: 'mystic', isChoice: true,
     choices: [
-        { id: 1, text: 'Освободить лорда (💪12)', requireStat: { stat: 'strength', min: 12 }, reward: { strength: 3, agility: 1 }, nextCard: '8M_1', task: 'Раскрась страницу с освобождением (ДО/ПОСЛЕ)' },
+        { id: 1, text: 'Снять проклятие с лорда (💪12)', requireStat: { stat: 'strength', min: 12 }, reward: { strength: 3, agility: 1 }, nextCard: '8M_1', task: 'Раскрась страницу с освобождением (ДО/ПОСЛЕ)' },
         { id: 2, text: 'Потребовать трон (💪14 или 🎫3)', requireStat: { stat: 'strength', min: 14 }, requireOrSkip: 3, nextCard: '8M_1', task: 'Раскрась страницу с троном (ДО/ПОСЛЕ)' },
-        { id: 3, text: 'Произнести имя лорда и Элизы (🎫3)', skipCost: 3, isPremium: true, reward: { all: 2 }, nextCard: '8M_1', task: null }
+        { id: 3, text: 'Предложить лорду сделку (🎫3)', skipCost: 3, isPremium: true, reward: { all: 2 }, nextCard: '8M_1', task: null }
     ]
 },
-'7M_2_1': { stage: 7, character: 'mystic', chapter: 'Ритуальный Зал', text: 'Советник ждёт. «Полукровка. Уходи. Или присоединяйся ко мне».', nextCard: '7M_2_2' },
+'7M_2_1': { stage: 7, character: 'mystic', chapter: 'Кабинет советника', text: 'Советник: «Наемник. Ты у цели. Лорд или я — выбирай».', nextCard: '7M_2_2' },
 '7M_2_2': { stage: 7, character: 'mystic', isChoice: true,
     choices: [
-        { id: 1, text: 'Сразиться с Советником (💪12)', requireStat: { stat: 'strength', min: 12 }, reward: { strength: 3, intelligence: 1 }, nextCard: '8M_1', task: 'Раскрась страницу с битвой (ДО/ПОСЛЕ)' },
-        { id: 2, text: 'Обмануть Советника (🏃10)', requireStat: { stat: 'agility', min: 10 }, reward: { agility: 3, strength: 1 }, nextCard: '8M_1', task: 'Раскрась страницу с обманом (ДО/ПОСЛЕ)' },
-        { id: 3, text: 'Изгнать с помощью духов (🎫3)', skipCost: 3, isPremium: true, reward: { all: 2 }, nextCard: '8M_1', task: null }
+        { id: 1, text: 'Поддержать лорда (💪12)', requireStat: { stat: 'strength', min: 12 }, reward: { strength: 3, intelligence: 1 }, nextCard: '8M_1', task: 'Раскрась страницу с битвой (ДО/ПОСЛЕ)' },
+        { id: 2, text: 'Поддержать советника (🧠10)', requireStat: { stat: 'intelligence', min: 10 }, reward: { intelligence: 3, strength: 1 }, nextCard: '8M_1', task: 'Раскрась страницу с союзом (ДО/ПОСЛЕ)' },
+        { id: 3, text: 'Обмануть обоих (🎫3)', skipCost: 3, isPremium: true, reward: { all: 2 }, nextCard: '8M_1', task: null }
     ]
 },
-'7M_3_1': { stage: 7, character: 'mystic', chapter: 'Сад Душ', text: 'Элиза ждёт. «Ты понял. Замок — не тюрьма. Это дом».', nextCard: '7M_3_2' },
+'7M_3_1': { stage: 7, character: 'mystic', chapter: 'Усыпальница', text: 'Тишина. Саркофаги. Снежный спокойно стоит рядом. Вы нашли свой путь.', nextCard: '7M_3_2' },
 '7M_3_2': { stage: 7, character: 'mystic', isChoice: true,
     choices: [
-        { id: 1, text: 'Отвести Элизу к лорду', reward: { all: 1 }, nextCard: '8M_1', task: 'Раскрась страницу с Элизой (ДО/ПОСЛЕ)' },
-        { id: 2, text: 'Попросить помочь в ритуале (🧠10)', requireStat: { stat: 'intelligence', min: 10 }, reward: { intelligence: 3, agility: 1 }, nextCard: '8M_1', task: 'Раскрась страницу с ритуалом (ДО/ПОСЛЕ)' },
-        { id: 3, text: 'Провести ритуал в саду (🎫3)', skipCost: 3, isPremium: true, reward: { all: 3 }, nextCard: '8M_1', task: null }
+        { id: 1, text: 'Провести ритуал здесь', reward: { all: 1 }, nextCard: '8M_1', task: 'Раскрась страницу с ритуалом (ДО/ПОСЛЕ)' },
+        { id: 2, text: 'Позвать лорда', reward: { intelligence: 3, agility: 1 }, nextCard: '8M_1', task: 'Раскрась страницу с призывом (ДО/ПОСЛЕ)' },
+        { id: 3, text: 'Разрушить алтарь', skipCost: 3, isPremium: true, reward: { all: 3 }, nextCard: '8M_1', task: null }
     ]
 },
-'8M_1': { stage: 8, character: 'mystic', chapter: 'Финальный выбор', text: 'Всё готово. Лорд, Советник, Элиза, отец — все ждут.', nextCard: '8M_2' },
+'8M_1': { stage: 8, character: 'mystic', chapter: 'Финальный выбор', text: 'Снежный рядом. Вы прошли долгий путь. Лорд и советник ждут вашего решения.', nextCard: '8M_2' },
 '8M_2': { stage: 8, character: 'mystic', isChoice: true, isFinalChoice: true,
     choices: [
         { id: 1, text: 'Освободить лорда (💪14)', requireStat: { stat: 'strength', min: 14 }, nextCard: '9M_1_1', task: 'Раскрась страницу с освобождением (ДО/ПОСЛЕ)' },
-        { id: 2, text: 'Воззвать к духам леса (🧠12)', requireStat: { stat: 'intelligence', min: 12 }, nextCard: '9M_3_1', task: 'Раскрась страницу с духами (ДО/ПОСЛЕ)' },
-        { id: 3, text: 'Снять проклятие (🎫4)', skipCost: 4, isPremium: true, nextCard: '9M_3_1', task: null }
+        { id: 2, text: 'Занять трон (🧠12)', requireStat: { stat: 'intelligence', min: 12 }, nextCard: '9M_3_1', task: 'Раскрась страницу с троном (ДО/ПОСЛЕ)' },
+        { id: 3, text: 'Уйти с сокровищем (🎫4)', skipCost: 4, isPremium: true, nextCard: '9M_3_1', task: null }
     ]
 },
-'9M_1_1': { stage: 9, character: 'mystic', text: 'Вы разрываете цепи. Лорд поднимается с трона. Впервые за триста лет.', nextCard: '9M_1_2' },
-'9M_1_2': { stage: 9, character: 'mystic', text: 'Отец улыбается: «Я свободен, сын. Спасибо». Он уходит с миром.', nextCard: '10M_1' },
-'9M_2_1': { stage: 9, character: 'mystic', text: 'Вы садитесь на трон. Цепи переходят к вам. «Уходи, Эдвард».', nextCard: '9M_2_2' },
-'9M_2_2': { stage: 9, character: 'mystic', text: 'Отец остаётся: «Я буду твоим советником, сын». Замок признаёт вас.', nextCard: '10M_2' },
-'9M_3_1': { stage: 9, character: 'mystic', text: 'Вы произносите имя лорда. Имя Элизы. Зовёте звезду. Проклятие спадает.', nextCard: '9M_3_2' },
-'9M_3_2': { stage: 9, character: 'mystic', text: 'Элиза и Эдвард встречаются. Они вспоминают. Звезда улетает в небо.', nextCard: '10M_3' },
-'10M_1': { stage: 10, character: 'mystic', isEnding: true, endingId: 'mystic_liberator', text: 'Замок свободен. Лорд уходит. Отец освобождён. Над замком восходит солнце.'},
-'10M_2': { stage: 10, character: 'mystic', isEnding: true, endingId: 'mystic_lord', text: 'Вы — новый лорд. Отец — дух-советник. Звёзды складываются в ваш герб.'},
-'10M_3': { stage: 10, character: 'mystic', isEnding: true, endingId: 'mystic_true', isSecret: true, text: 'Проклятие снято навсегда. Розы расцветают. Замок оживает.'},
-
+'9M_1_1': { stage: 9, character: 'mystic', text: 'Вы разрываете цепи. Лорд Таирус поднимается с трона. «Ты сдержал слово, наемник».', nextCard: '9M_1_2' },
+'9M_1_2': { stage: 9, character: 'mystic', text: 'Лорд отдает вам ключ от сокровищницы. Советник склоняет голову. Снежный ржет — он чувствует свободу замка.', nextCard: '10M_1' },
+'9M_2_1': { stage: 9, character: 'mystic', text: 'Вы садитесь на трон. Советник становится вашим слугой. Замок ваш.', nextCard: '9M_2_2' },
+'9M_2_2': { stage: 9, character: 'mystic', text: 'Призраки слуг склоняются перед новым лордом. Снежный стоит у трона.', nextCard: '10M_2' },
+'9M_3_1': { stage: 9, character: 'mystic', text: 'Проклятие спадает. Лорд свободен. Советник прощен. Снежный радостно скачет по залу.', nextCard: '9M_3_2' },
+'9M_3_2': { stage: 9, character: 'mystic', text: 'Замок наполняется светом. Впервые за триста лет.', nextCard: '10M_3' },
+'10M_1': { stage: 10, character: 'mystic', isEnding: true, endingId: 'mystic_liberator', text: 'Замок свободен. Вы покидаете Акриловые горы верхом на Снежном. Лорд Таирус сдержал слово.' },
+'10M_2': { stage: 10, character: 'mystic', isEnding: true, endingId: 'mystic_lord', text: 'Вы — новый лорд Ашетвиля. Снежный стоит в конюшне. Теперь это ваш замок.' },
+'10M_3': { stage: 10, character: 'mystic', isEnding: true, endingId: 'mystic_true', isSecret: true, text: 'Проклятие снято навсегда. Вы уходите верхом на Снежном, оставив замок свободным.' },
 // ==========================================
 // ВОРОВКА (V) — 🏃13 💪5 🧠2
 // ==========================================
