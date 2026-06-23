@@ -16791,6 +16791,7 @@ function renderCastleCard(cardId) {
             const hasSkip = choice.skipCost && choice.isPremium;
             const choiceKey = cardId + '_choice_' + idx;
             const isCompleted = castleCompletedChoices && castleCompletedChoices[choiceKey];
+            
             if (isCompleted) {
                 const isApproved = castleApprovedChoices && castleApprovedChoices[choiceKey];
                 choicesHtml += isApproved ? 
@@ -16798,19 +16799,26 @@ function renderCastleCard(cardId) {
                     `<div class="castle-choice-wrapper" style="margin-bottom: 10px;"><button class="task-submit-btn" style="width: 100%; text-align: left; padding: 12px; opacity: 0.7;" disabled>⏳ ${choice.text} — Отправлено</button></div>`;
                 return;
             }
+            
             let meetsReq = reqStat ? (userCastleStats[reqStat.stat]||0) >= reqStat.min : true;
             if (choice.requireOrSkip && !meetsReq) meetsReq = (userSkips||0) >= choice.requireOrSkip;
             if (choice.requireSkipOr === 'metEliza') meetsReq = metEliza || ((userSkips||0) >= (choice.skipCost||99));
             const isDisabled = !meetsReq || (hasSkip && (userSkips||0) < (choice.skipCost||0));
             
-            let reqText = '';
-            if (reqStat && !meetsReq) reqText = ` (${statNames[reqStat.stat]}${reqStat.min}) 🔒`;
-            if (hasSkip) reqText = ` (🎫${choice.skipCost})`;
+            // Формируем строку требований ТОЛЬКО если не выполнены
+            let reqBadge = '';
+            if (!meetsReq) {
+                if (reqStat) {
+                    reqBadge = ` (нужно ${statNames[reqStat.stat]}${reqStat.min})`;
+                } else if (hasSkip) {
+                    reqBadge = ` (нужно 🎫${choice.skipCost})`;
+                }
+            }
             
             choicesHtml += `<div class="castle-choice-wrapper" style="margin-bottom: 10px;">
                 <button class="task-submit-btn castle-choice-btn" style="width: 100%; text-align: left; padding: 12px; ${isDisabled?'opacity: 0.5;':''}" ${isDisabled?'disabled':''} onclick="submitCastleChoice('${cardId}',${idx})">
-                    <div style="font-weight: 500;">${choice.text}${reqText}</div>
-                    ${choice.task ? `<div style="font-size: 11px; color: var(--text-gray); margin-top: 3px;">📸 ${choice.task}</div>` : ''}
+                    <div style="font-weight: 500;">${choice.text}${hasSkip && meetsReq ? ` (🎫${choice.skipCost})` : ''}${reqBadge}${isDisabled && !meetsReq ? ' 🔒' : ''}</div>
+                    ${choice.task ? `<div style="font-size: 11px; opacity: 0.8; margin-top: 4px;">📸 ${choice.task}</div>` : ''}
                 </button>
             </div>`;
         });
