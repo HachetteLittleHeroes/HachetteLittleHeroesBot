@@ -16872,11 +16872,7 @@ function claimCastleEnding(cardId) {
     const card = CASTLE_STORY.cards[cardId];
     if (!card || !card.isEnding) return;
     
-    // Проверяем, не нажата ли уже кнопка в этом прохождении
-    if (currentEndingClaimed) {
-        return; // Просто ничего не делаем
-    }
-    
+    if (currentEndingClaimed) return;
     currentEndingClaimed = true;
     
     const reward = ENDING_REWARDS[card.endingId];
@@ -16886,59 +16882,45 @@ function claimCastleEnding(cardId) {
     let message = '';
     
     if (statusAlreadyUnlocked) {
-        message = '🏆 Эта концовка уже пройдена.\nСтатус «' + alreadyGot.status_name + '» уже получен!';
-        showEndingScreen(message);
-        return;
-    }
-    
-    let statusUnlocked = false;
-    
-    if (!statusAlreadyUnlocked && reward && reward.status && reward.statusChance) {
-        const chance = STATUS_DROP_CHANCE[reward.statusChance] || 0.25;
-        const roll = Math.random();
-        
-        if (roll < chance) {
-            statusUnlocked = true;
-            if (!user.unlockedStatuses.includes(reward.status)) {
-                user.unlockedStatuses.push(reward.status);
-                saveUserData();
-                fetch(`${SERVER_URL}/api/sync_status`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ user_id: userId, status: reward.status, action: 'unlock' })
-                });
+        message = '🏆 Статус «' + alreadyGot.status_name + '» уже получен!';
+    } else {
+        let statusUnlocked = false;
+        if (reward && reward.status && reward.statusChance) {
+            const chance = STATUS_DROP_CHANCE[reward.statusChance] || 0.25;
+            if (Math.random() < chance) {
+                statusUnlocked = true;
+                if (!user.unlockedStatuses.includes(reward.status)) {
+                    user.unlockedStatuses.push(reward.status);
+                    saveUserData();
+                    fetch(`${SERVER_URL}/api/sync_status`, {
+                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ user_id: userId, status: reward.status, action: 'unlock' })
+                    });
+                }
             }
+        }
+        
+        castleCompletedEndings[card.endingId] = {
+            status_unlocked: statusUnlocked,
+            status_name: reward ? reward.status : ''
+        };
+        
+        fetch(`${SERVER_URL}/api/castle/save_ending`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId, ending_id: card.endingId, status_unlocked: statusUnlocked, status_name: reward ? reward.status : '' })
+        }).catch(e => {});
+        
+        const chancePercent = reward ? STATUS_DROP_CHANCE[reward.statusChance] * 100 : 0;
+        if (statusUnlocked) {
+            message = `✨ Выпал статус «${reward.status}»! (шанс ${chancePercent}%)`;
+        } else if (reward && reward.status) {
+            message = `🎲 Статус не выпал (шанс ${chancePercent}%). Попробуйте ещё раз!`;
         }
     }
     
-    castleCompletedEndings[card.endingId] = {
-        status_unlocked: statusUnlocked,
-        status_name: reward ? reward.status : ''
-    };
-    
-    fetch(`${SERVER_URL}/api/castle/save_ending`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            user_id: userId,
-            ending_id: card.endingId,
-            status_unlocked: statusUnlocked,
-            status_name: reward ? reward.status : ''
-        })
-    }).catch(e => {});
-    
+    // Обнуляем currentCastleCard и сохраняем
+    currentCastleCard = null;
     saveCastleProgress();
-    
-    const chancePercent = reward ? STATUS_DROP_CHANCE[reward.statusChance] * 100 : 0;
-    
-    if (statusUnlocked) {
-        message = `✨ Выпал статус «${reward.status}»! (шанс был ${chancePercent}%)`;
-    } else if (reward && reward.status) {
-        message = `🎲 Статус «${reward.status}» не выпал (шанс ${chancePercent}%)\nПройтите ещё раз — шанс есть!`;
-    } else {
-        message = '🏆 Концовка получена!';
-    }
-    
     showEndingScreen(message);
 }
 
