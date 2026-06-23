@@ -16161,8 +16161,8 @@ const CASTLE_CHARACTERS = {
 '8M_2': { stage: 8, character: 'mystic', isChoice: true, isFinalChoice: true,
     choices: [
         { id: 1, text: 'Освободить лорда (💪14)', requireStat: { stat: 'strength', min: 14 }, nextCard: '9M_1_1', task: 'Раскрась страницу с освобождением (ДО/ПОСЛЕ)' },
-        { id: 2, text: 'Занять трон (💪16 или 🎫3)', requireStat: { stat: 'strength', min: 16 }, requireOrSkip: 3, nextCard: '9M_2_1', task: 'Раскрась страницу с троном (ДО/ПОСЛЕ)' },
-        { id: 3, text: 'Снять проклятие (Элиза или 🎫4)', requireSkipOr: 'metEliza', skipCost: 4, isPremium: true, nextCard: '9M_3_1', task: null }
+        { id: 2, text: 'Воззвать к духам леса (🧠12)', requireStat: { stat: 'intelligence', min: 12 }, nextCard: '9M_3_1', task: 'Раскрась страницу с духами (ДО/ПОСЛЕ)' },
+        { id: 3, text: 'Снять проклятие (🎫4)', skipCost: 4, isPremium: true, nextCard: '9M_3_1', task: null }
     ]
 },
 '9M_1_1': { stage: 9, character: 'mystic', text: 'Вы разрываете цепи. Лорд поднимается с трона. Впервые за триста лет.', nextCard: '9M_1_2' },
@@ -16393,7 +16393,7 @@ const CASTLE_CHARACTERS = {
 '8V_1_2': { stage: 8, character: 'thief', isChoice: true,
     choices: [
         { id: 1, text: '«Свобода стоит дороже золота»', nextCard: '9V_1_1', task: 'Раскрась страницу с ответом (ДО/ПОСЛЕ)' },
-        { id: 2, text: '«Ты обещал заплатить»', nextCard: '9V_2_1', task: 'Раскрась страницу со сделкой (ДО/ПОСЛЕ)' },
+        { id: 2, text: 'Взломать трон силой (💪12)', requireStat: { stat: 'strength', min: 12 }, nextCard: '9V_3_1', task: 'Раскрась страницу с троном (ДО/ПОСЛЕ)' },
         { id: 3, text: '«Я хочу этот замок» (🎫4)', skipCost: 4, isPremium: true, nextCard: '9V_3_1', task: null }
     ]
 },
@@ -16645,7 +16645,7 @@ const CASTLE_CHARACTERS = {
 '8A_1_2': { stage: 8, character: 'alchemist', isChoice: true,
     choices: [
         { id: 1, text: 'Освободить лорда (🧠12)', requireStat: { stat: 'intelligence', min: 12 }, nextCard: '9A_1_1', task: 'Раскрась страницу с освобождением (ДО/ПОСЛЕ)' },
-        { id: 2, text: 'Снять проклятие (🧠10 или 🎫3)', requireStat: { stat: 'intelligence', min: 10 }, requireOrSkip: 3, nextCard: '9A_2_1', task: 'Раскрась страницу со снятием (ДО/ПОСЛЕ)' },
+        { id: 2, text: 'Принять бой на мечах (💪12)', requireStat: { stat: 'strength', min: 12 }, nextCard: '9A_3_1', task: 'Раскрась страницу с боем (ДО/ПОСЛЕ)' },
         { id: 3, text: 'Забрать силу замка (🎫4)', skipCost: 4, isPremium: true, nextCard: '9A_3_1', task: null }
     ]
 },
