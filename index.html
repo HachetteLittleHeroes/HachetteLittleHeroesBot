@@ -16656,7 +16656,7 @@ const CASTLE_CHARACTERS = {
         }
     };
 // ==========================================
-// ПЕРЕМЕННЫЕ ДЛЯ ИСТОРИИ
+// ПЕРЕМЕННЫЕ
 // ==========================================
 let selectedCastleCharacter = null;
 let userCastleStats = { strength: 0, agility: 0, intelligence: 0 };
@@ -16667,34 +16667,26 @@ let castleApprovedChoices = {};
 let metEliza = false;
 
 // ==========================================
-// ФУНКЦИИ ИСТОРИИ
+// ФУНКЦИИ
 // ==========================================
 
 function toggleCastleStory() {
     const content = document.getElementById('castleStoryContent');
     const arrow = document.getElementById('castleStoryArrow');
-    
     if (!content || !arrow) return;
     
     if (content.style.display === 'none' || content.style.display === '') {
         content.style.display = 'block';
         arrow.style.transform = 'rotate(180deg)';
-        
         loadCastleProgress().then(loaded => {
-            if (loaded && currentCastleCard) {
-                renderCastleCard(currentCastleCard);
-            }
+            if (loaded && currentCastleCard) renderCastleCard(currentCastleCard);
         });
-        
-        // Запускаем проверку одобрений только когда замок открыт
         if (!window._castleApprovalInterval) {
             window._castleApprovalInterval = setInterval(checkCastleApprovals, 5000);
         }
     } else {
         content.style.display = 'none';
         arrow.style.transform = 'rotate(0deg)';
-        
-        // Останавливаем проверку когда замок закрыт
         if (window._castleApprovalInterval) {
             clearInterval(window._castleApprovalInterval);
             window._castleApprovalInterval = null;
@@ -16703,15 +16695,9 @@ function toggleCastleStory() {
 }
 
 function startCastleStory() {
-    // Показываем контент если скрыт
     const content = document.getElementById('castleStoryContent');
     const arrow = document.getElementById('castleStoryArrow');
-    
-    if (content) {
-        content.style.display = 'block';
-        if (arrow) arrow.style.transform = 'rotate(180deg)';
-    }
-    
+    if (content) { content.style.display = 'block'; if (arrow) arrow.style.transform = 'rotate(180deg)'; }
     showCharacterSelect();
 }
 
@@ -16720,31 +16706,11 @@ function showCharacterSelect() {
     modal.className = 'modal-overlay';
     modal.style.display = 'flex';
     modal.style.zIndex = '100001';
-    
     let charsHtml = '';
     for (const [id, char] of Object.entries(CASTLE_CHARACTERS)) {
-        charsHtml += `
-            <div class="castle-character-card" onclick="selectCastleCharacter('${id}')" style="cursor:pointer; background: var(--card-bg); border: 2px solid var(--border-color); border-radius: 16px; padding: 15px; text-align: center; margin-bottom: 10px;">
-                <div style="font-size: 32px; margin-bottom: 8px;">${id === 'mystic' ? '⚔️' : id === 'thief' ? '🗡️' : '🔮'}</div>
-                <div style="font-weight: 700; font-size: 16px;">${char.name}</div>
-                <div style="font-size: 12px; color: var(--text-gray); margin: 5px 0;">${char.desc}</div>
-                <div style="font-size: 11px; color: var(--accent);">
-                    💪${char.stats.strength} 🏃${char.stats.agility} 🧠${char.stats.intelligence}
-                </div>
-                <div style="font-size: 11px; color: var(--text-gray); margin-top: 4px;">${char.bonus}</div>
-            </div>
-        `;
+        charsHtml += `<div class="castle-character-card" onclick="selectCastleCharacter('${id}')" style="cursor:pointer; background: var(--card-bg); border: 2px solid var(--border-color); border-radius: 16px; padding: 15px; text-align: center; margin-bottom: 10px;"><div style="font-size: 32px; margin-bottom: 8px;">${id==='mystic'?'⚔️':id==='thief'?'🗡️':'🔮'}</div><div style="font-weight: 700; font-size: 16px;">${char.name}</div><div style="font-size: 12px; color: var(--text-gray); margin: 5px 0;">${char.desc}</div><div style="font-size: 11px; color: var(--accent);">💪${char.stats.strength} 🏃${char.stats.agility} 🧠${char.stats.intelligence}</div><div style="font-size: 11px; color: var(--text-gray); margin-top: 4px;">${char.bonus}</div></div>`;
     }
-    
-    modal.innerHTML = `
-        <div class="modal-content" style="max-width: 400px;">
-            <h3>Выберите персонажа</h3>
-            <p style="font-size: 12px; color: var(--text-gray); margin-bottom: 15px;">Каждый персонаж — уникальная история</p>
-            ${charsHtml}
-            <button class="modal-close-btn" onclick="this.closest('.modal-overlay').remove()">Отмена</button>
-        </div>
-    `;
-    
+    modal.innerHTML = `<div class="modal-content" style="max-width: 400px;"><h3>Выберите персонажа</h3><p style="font-size: 12px; color: var(--text-gray); margin-bottom: 15px;">Каждый персонаж — уникальная история</p>${charsHtml}<button class="modal-close-btn" onclick="this.closest('.modal-overlay').remove()">Отмена</button></div>`;
     modal.onclick = function(e) { if (e.target === modal) modal.remove(); };
     document.body.appendChild(modal);
 }
@@ -16752,279 +16718,102 @@ function showCharacterSelect() {
 function selectCastleCharacter(charId) {
     const char = CASTLE_CHARACTERS[charId];
     if (!char) return;
-    
     selectedCastleCharacter = charId;
     userCastleStats = { ...char.stats };
     metEliza = false;
     castleCompletedChoices = {};
     castleApprovedChoices = {};
-    
     const prefixMap = { mystic: 'M', thief: 'V', alchemist: 'A' };
-    const prefix = prefixMap[charId] || charId.charAt(0).toUpperCase();
-    currentCastleCard = '1' + prefix + '_1';
-    
-    console.log('🎮 Выбран персонаж:', charId, 'начальная карта:', currentCastleCard);
-    
-    // Закрываем модальное окно
-    document.querySelectorAll('.modal-overlay').forEach(m => {
-        if (m.innerHTML.includes('Выберите персонажа')) m.remove();
-    });
-    
+    currentCastleCard = '1' + prefixMap[charId] + '_1';
+    document.querySelectorAll('.modal-overlay').forEach(m => { if (m.innerHTML.includes('Выберите персонажа')) m.remove(); });
     const content = document.getElementById('castleStoryContent');
-    if (content) {
-        content.style.display = 'block';
-        const arrow = document.getElementById('castleStoryArrow');
-        if (arrow) arrow.style.transform = 'rotate(180deg)';
-    }
-    
-    // ПРИНУДИТЕЛЬНО СОХРАНЯЕМ НА СЕРВЕР СРАЗУ ПОСЛЕ ВЫБОРА
-    const progress = {
-        currentCard: currentCastleCard,
-        stats: userCastleStats,
-        character: selectedCastleCharacter,
-        completedEndings: castleCompletedEndings,
-        metEliza: metEliza,
-        completedChoices: castleCompletedChoices,
-        approvedChoices: castleApprovedChoices
-    };
-    
-    console.log('💾 ПРИНУДИТЕЛЬНОЕ СОХРАНЕНИЕ:', JSON.stringify(progress));
-    
-    localStorage.setItem(`castle_progress_${userId}`, JSON.stringify(progress));
-    
-    fetch(`${SERVER_URL}/api/castle/save_progress`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: userId, progress: progress })
-    }).then(r => r.json()).then(res => {
-        console.log('✅ Сохранено на сервер:', res);
-        // Проверяем что сохранилось
-        fetch(`${SERVER_URL}/api/castle/get_progress?user_id=${userId}`)
-            .then(r => r.json())
-            .then(check => console.log('🔍 Проверка сервера:', JSON.stringify(check)));
-    }).catch(e => console.log('❌ Ошибка:', e));
-    
-    renderCastleCard(currentCastleCard);
+    if (content) { content.style.display = 'block'; const arrow = document.getElementById('castleStoryArrow'); if (arrow) arrow.style.transform = 'rotate(180deg)'; }
     saveCastleProgress();
+    renderCastleCard(currentCastleCard);
 }
 
 function renderCastleCard(cardId) {
     const card = CASTLE_STORY.cards[cardId];
     if (!card) { alert('Карточка не найдена: ' + cardId); return; }
-    
     currentCastleCard = cardId;
     saveCastleProgress();
-    
-    // Убеждаемся, что контент видим
     const content = document.getElementById('castleStoryContent');
-    if (content && content.style.display === 'none') {
-        content.style.display = 'block';
-    }
-    
+    if (content && content.style.display === 'none') content.style.display = 'block';
     const container = document.getElementById('castleStoryContainer');
     if (!container) return;
-    
-    const statsHtml = `
-        <div style="display: flex; gap: 15px; justify-content: center; margin-bottom: 15px; font-size: 13px;">
-            <span>💪 ${userCastleStats.strength || 0}</span>
-            <span>🏃 ${userCastleStats.agility || 0}</span>
-            <span>🧠 ${userCastleStats.intelligence || 0}</span>
-            <span style="color: var(--accent);">🎫 ${userSkips || 0} скипов</span>
-        </div>
-    `;
+    const statsHtml = `<div style="display: flex; gap: 15px; justify-content: center; margin-bottom: 15px; font-size: 13px;"><span>💪 ${userCastleStats.strength||0}</span><span>🏃 ${userCastleStats.agility||0}</span><span>🧠 ${userCastleStats.intelligence||0}</span><span style="color: var(--accent);">🎫 ${userSkips||0} скипов</span></div>`;
     
     if (card.isEnding) {
-        container.innerHTML = `
-            <div class="castle-card">
-                <div style="text-align: center; font-size: 36px; margin-bottom: 15px;">${card.isSecret ? '🔮' : '🏆'}</div>
-                <div style="font-weight: 700; font-size: 18px; margin-bottom: 10px; color: var(--accent); text-align: center;">Концовка</div>
-                <p>${card.text}</p>
-                ${card.reward ? `<div style="text-align: center; margin: 15px 0; padding: 10px; background: rgba(255,215,0,0.1); border-radius: 12px;"><strong>🎁 Награда:</strong> ${card.reward.achetiki} ашетиков + статус «${card.reward.status}»</div>` : ''}
-                <button class="task-submit-btn" onclick="claimCastleEnding('${cardId}')" style="width: 100%;">🎉 Завершить историю</button>
-            </div>
-        `;
+        container.innerHTML = `<div class="castle-card"><div style="text-align: center; font-size: 36px; margin-bottom: 15px;">${card.isSecret?'🔮':'🏆'}</div><div style="font-weight: 700; font-size: 18px; margin-bottom: 10px; color: var(--accent); text-align: center;">Концовка</div><p>${card.text}</p>${card.reward?`<div style="text-align: center; margin: 15px 0; padding: 10px; background: rgba(255,215,0,0.1); border-radius: 12px;"><strong>🎁 Награда:</strong> ${card.reward.achetiki} ашетиков + статус «${card.reward.status}»</div>`:''}<button class="task-submit-btn" onclick="claimCastleEnding('${cardId}')" style="width: 100%;">🎉 Завершить историю</button></div>`;
         return;
     }
     
     if (card.isChoice) {
         let choicesHtml = '';
-        
         card.choices.forEach((choice, idx) => {
             const statNames = { strength: '💪', agility: '🏃', intelligence: '🧠' };
             const reqStat = choice.requireStat;
             const hasSkip = choice.skipCost && choice.isPremium;
-            
             const choiceKey = cardId + '_choice_' + idx;
             const isCompleted = castleCompletedChoices && castleCompletedChoices[choiceKey];
-            
             if (isCompleted) {
                 const isApproved = castleApprovedChoices && castleApprovedChoices[choiceKey];
-                if (isApproved) {
-                    choicesHtml += `
-                        <div class="castle-choice-wrapper" style="margin-bottom: 10px;">
-                            <button class="task-submit-btn" style="width: 100%; text-align: left; padding: 12px; background: var(--status-green); color: white;" 
-                                    onclick="proceedAfterApproval('${cardId}', ${idx})">
-                                ✅ ${choice.text} — ОДОБРЕНО. Нажмите чтобы перейти
-                            </button>
-                        </div>
-                    `;
-                } else {
-                    choicesHtml += `
-                        <div class="castle-choice-wrapper" style="margin-bottom: 10px;">
-                            <button class="task-submit-btn" style="width: 100%; text-align: left; padding: 12px; opacity: 0.7;" disabled>
-                                ⏳ ${choice.text} — Отправлено, ждите одобрения
-                            </button>
-                        </div>
-                    `;
-                }
+                choicesHtml += isApproved ? `<div class="castle-choice-wrapper" style="margin-bottom: 10px;"><button class="task-submit-btn" style="width: 100%; text-align: left; padding: 12px; background: var(--status-green); color: white;" onclick="proceedAfterApproval('${cardId}',${idx})">✅ ${choice.text} — ОДОБРЕНО</button></div>` : `<div class="castle-choice-wrapper" style="margin-bottom: 10px;"><button class="task-submit-btn" style="width: 100%; text-align: left; padding: 12px; opacity: 0.7;" disabled>⏳ ${choice.text} — Отправлено</button></div>`;
                 return;
             }
-            
-            let meetsReq = true;
-            if (reqStat) {
-                meetsReq = (userCastleStats[reqStat.stat] || 0) >= reqStat.min;
-            }
-            if (choice.requireOrSkip && !meetsReq) {
-                meetsReq = (userSkips || 0) >= choice.requireOrSkip;
-            }
-            if (choice.requireSkipOr === 'metEliza') {
-                meetsReq = metEliza || ((userSkips || 0) >= (choice.skipCost || 99));
-            }
-            
-            const canSkip = !hasSkip || (userSkips || 0) >= (choice.skipCost || 0);
-            const isDisabled = (!meetsReq) || (hasSkip && !canSkip);
-            
-            let btnLabel = choice.text;
+            let meetsReq = reqStat ? (userCastleStats[reqStat.stat]||0) >= reqStat.min : true;
+            if (choice.requireOrSkip && !meetsReq) meetsReq = (userSkips||0) >= choice.requireOrSkip;
+            if (choice.requireSkipOr === 'metEliza') meetsReq = metEliza || ((userSkips||0) >= (choice.skipCost||99));
+            const isDisabled = !meetsReq || (hasSkip && (userSkips||0) < (choice.skipCost||0));
             let badge = '';
             if (hasSkip) badge += ` 🎫${choice.skipCost}`;
-            if (reqStat && !meetsReq) badge += ` (${statNames[reqStat.stat]}${reqStat.min})`;
-            if (!meetsReq) badge += ' 🔒';
-            
-            choicesHtml += `
-                <div class="castle-choice-wrapper" style="margin-bottom: 10px;">
-                    <button class="task-submit-btn castle-choice-btn" 
-                            style="width: 100%; text-align: left; padding: 12px; ${isDisabled ? 'opacity: 0.5;' : ''}"
-                            ${isDisabled ? 'disabled' : ''}
-                            onclick="submitCastleChoice('${cardId}', ${idx})">
-                        ${btnLabel}${badge}
-                    </button>
-                    ${choice.task ? `
-                        <div style="font-size: 11px; color: var(--text-gray); margin-top: 4px; margin-left: 5px;">
-                            📸 ${choice.task}
-                        </div>
-                    ` : choice.isPremium ? `
-                        <div style="font-size: 11px; color: var(--accent); margin-top: 4px; margin-left: 5px;">
-                            🎫 Без задания — мгновенный переход
-                        </div>
-                    ` : ''}
-                </div>
-            `;
+            if (reqStat && !meetsReq) badge += ` (${statNames[reqStat.stat]}${reqStat.min}) 🔒`;
+            choicesHtml += `<div class="castle-choice-wrapper" style="margin-bottom: 10px;"><button class="task-submit-btn castle-choice-btn" style="width: 100%; text-align: left; padding: 12px; ${isDisabled?'opacity: 0.5;':''}" ${isDisabled?'disabled':''} onclick="submitCastleChoice('${cardId}',${idx})">${choice.text}${badge}</button>${choice.task?`<div style="font-size: 11px; color: var(--text-gray); margin-top: 4px; margin-left: 5px;">📸 ${choice.task}</div>`:''}</div>`;
         });
-        
-        container.innerHTML = `
-            <div class="castle-card">
-                ${card.chapter ? `<div style="font-weight: 700; font-size: 16px; color: var(--accent); margin-bottom: 10px;">${card.chapter}</div>` : ''}
-                ${card.text ? `<p>${card.text}</p>` : ''}
-                ${statsHtml}
-                <div class="castle-choices">${choicesHtml}</div>
-            </div>
-        `;
+        container.innerHTML = `<div class="castle-card">${card.chapter?`<div style="font-weight: 700; font-size: 16px; color: var(--accent); margin-bottom: 10px;">${card.chapter}</div>`:''}${card.text?`<p>${card.text}</p>`:''}${statsHtml}<div class="castle-choices">${choicesHtml}</div></div>`;
         return;
     }
-    
-    container.innerHTML = `
-        <div class="castle-card">
-            ${card.chapter ? `<div style="font-weight: 700; font-size: 16px; color: var(--accent); margin-bottom: 10px;">${card.chapter}</div>` : ''}
-            <p>${card.text}</p>
-            ${statsHtml}
-            <button class="task-submit-btn" onclick="renderCastleCard('${card.nextCard}')" style="width: 100%;">
-                Далее ▶
-            </button>
-        </div>
-    `;
+    container.innerHTML = `<div class="castle-card">${card.chapter?`<div style="font-weight: 700; font-size: 16px; color: var(--accent); margin-bottom: 10px;">${card.chapter}</div>`:''}<p>${card.text}</p>${statsHtml}<button class="task-submit-btn" onclick="renderCastleCard('${card.nextCard}')" style="width: 100%;">Далее ▶</button></div>`;
 }
 
 function submitCastleChoice(cardId, choiceIdx) {
     const card = CASTLE_STORY.cards[cardId];
     const choice = card.choices[choiceIdx];
     if (!choice) return;
-    
     if (choice.isPremium && choice.skipCost) {
-        if ((userSkips || 0) < choice.skipCost) {
-            alert('Недостаточно скипов!');
-            return;
-        }
+        if ((userSkips||0) < choice.skipCost) { alert('Недостаточно скипов!'); return; }
         userSkips -= choice.skipCost;
         localStorage.setItem(`user_skips_${userId}`, userSkips);
         if (typeof updateSkipDisplay === 'function') updateSkipDisplay();
-        
         applyCastleReward(choice);
         proceedToCard(choice.nextCard);
         return;
     }
-    
-    if (!choice.task) {
-        applyCastleReward(choice);
-        proceedToCard(choice.nextCard);
-        return;
-    }
-    
+    if (!choice.task) { applyCastleReward(choice); proceedToCard(choice.nextCard); return; }
     if (!castleCompletedChoices) castleCompletedChoices = {};
     const choiceKey = cardId + '_choice_' + choiceIdx;
     castleCompletedChoices[choiceKey] = true;
     saveCastleProgress();
-    
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
     fileInput.accept = 'image/*';
     fileInput.multiple = true;
-    
     fileInput.onchange = async function(event) {
         const files = Array.from(event.target.files);
         if (files.length === 0) return;
-        
         const container = document.getElementById('castleStoryContainer');
-        if (container) {
-            container.innerHTML = '<div style="text-align: center; padding: 20px;"><i class="fas fa-spinner fa-spin"></i> Отправка фото...</div>';
-        }
-        
+        if (container) container.innerHTML = '<div style="text-align: center; padding: 20px;"><i class="fas fa-spinner fa-spin"></i> Отправка фото...</div>';
         const formData = new FormData();
         formData.append('user', userId.toString());
-        formData.append('branchKey', 'castle_mystery');
-        formData.append('levelIndex', cardId);
-        formData.append('subtaskIndex', choiceIdx.toString());
-        formData.append('subtaskName', choice.text || 'Задание');
         formData.append('castle_choice_key', choiceKey);
-        formData.append('castle_next_card', choice.nextCard || '');
-        formData.append('castle_reward', JSON.stringify(choice.reward || {}));
-        formData.append('type', 'castle_story');
-        
-        for (let i = 0; i < files.length; i++) {
-            formData.append('photos', files[i]);
-        }
-        
+        for (let i = 0; i < files.length; i++) formData.append('photos', files[i]);
         try {
-            const response = await fetch(`${SERVER_URL}/api/check_castle_task`, {
-                method: 'POST',
-                body: formData
-            });
+            const response = await fetch(`${SERVER_URL}/api/check_castle_task`, { method: 'POST', body: formData });
             const result = await response.json();
-            
-            if (result && result.status === 'ok') {
-                alert('✅ Фото отправлено на проверку! Ожидайте одобрения.');
-                renderCastleCard(cardId);
-            } else {
-                throw new Error(result?.message || 'Ошибка сервера');
-            }
-        } catch (error) {
-            console.error('Ошибка отправки:', error);
-            alert('❌ Ошибка: ' + error.message);
-            delete castleCompletedChoices[choiceKey];
-            saveCastleProgress();
-            renderCastleCard(cardId);
-        }
+            if (result && result.status === 'ok') { alert('✅ Фото отправлено!'); renderCastleCard(cardId); }
+            else throw new Error(result?.message || 'Ошибка');
+        } catch (error) { alert('❌ Ошибка: ' + error.message); delete castleCompletedChoices[choiceKey]; saveCastleProgress(); renderCastleCard(cardId); }
     };
-    
     fileInput.click();
 }
 
@@ -17032,14 +16821,7 @@ function proceedAfterApproval(cardId, choiceIdx) {
     const card = CASTLE_STORY.cards[cardId];
     const choice = card.choices[choiceIdx];
     if (!choice) return;
-    
-    // Отмечаем встречу с Элизой
-    if (cardId.includes('4M_4') || cardId.includes('5M_4') || cardId.includes('7M_3') ||
-        cardId.includes('4V_4') || cardId.includes('5V_4') || cardId.includes('7V_3') ||
-        cardId.includes('4A_4') || cardId.includes('5A_4') || cardId.includes('7A_3')) {
-        metEliza = true;
-    }
-    
+    if (cardId.includes('4M_4')||cardId.includes('5M_4')||cardId.includes('7M_3')||cardId.includes('4V_4')||cardId.includes('5V_4')||cardId.includes('7V_3')||cardId.includes('4A_4')||cardId.includes('5A_4')||cardId.includes('7A_3')) metEliza = true;
     applyCastleReward(choice);
     proceedToCard(choice.nextCard);
 }
@@ -17047,229 +16829,78 @@ function proceedAfterApproval(cardId, choiceIdx) {
 function applyCastleReward(choice) {
     if (choice.reward) {
         for (const [stat, delta] of Object.entries(choice.reward)) {
-            if (stat === 'all') {
-                userCastleStats.strength = (userCastleStats.strength || 0) + delta;
-                userCastleStats.agility = (userCastleStats.agility || 0) + delta;
-                userCastleStats.intelligence = (userCastleStats.intelligence || 0) + delta;
-            } else {
-                userCastleStats[stat] = (userCastleStats[stat] || 0) + delta;
-            }
+            if (stat === 'all') { userCastleStats.strength=(userCastleStats.strength||0)+delta; userCastleStats.agility=(userCastleStats.agility||0)+delta; userCastleStats.intelligence=(userCastleStats.intelligence||0)+delta; }
+            else userCastleStats[stat] = (userCastleStats[stat]||0) + delta;
         }
     }
     saveCastleProgress();
 }
 
-function proceedToCard(nextCardId) {
-    if (nextCardId) {
-        renderCastleCard(nextCardId);
-    }
-}
+function proceedToCard(nextCardId) { if (nextCardId) renderCastleCard(nextCardId); }
 
 function claimCastleEnding(cardId) {
     const card = CASTLE_STORY.cards[cardId];
     if (!card || !card.isEnding) return;
-    
     if (!castleCompletedEndings.includes(card.endingId)) {
         castleCompletedEndings.push(card.endingId);
-        
         if (card.reward && card.reward.achetiki) {
-            fetch(`${SERVER_URL}/api/add_balance`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ user_id: userId, amount: card.reward.achetiki, reason: 'Концовка истории: ' + card.endingId })
-            }).then(r => r.json()).then(res => {
-                if (res.new_balance) user.balance = res.new_balance;
-                updateUI();
-            });
+            fetch(`${SERVER_URL}/api/add_balance`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user_id: userId, amount: card.reward.achetiki, reason: 'Концовка: ' + card.endingId }) }).then(r=>r.json()).then(res=>{ if(res.new_balance) user.balance=res.new_balance; updateUI(); });
         }
-        
         if (card.reward && card.reward.status) {
-            if (!user.unlockedStatuses.includes(card.reward.status)) {
-                user.unlockedStatuses.push(card.reward.status);
-                saveUserData();
-                fetch(`${SERVER_URL}/api/sync_status`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ user_id: userId, status: card.reward.status, action: 'unlock' })
-                });
-            }
+            if (!user.unlockedStatuses.includes(card.reward.status)) { user.unlockedStatuses.push(card.reward.status); saveUserData(); fetch(`${SERVER_URL}/api/sync_status`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user_id: userId, status: card.reward.status, action: 'unlock' }) }); }
         }
     }
-    
     saveCastleProgress();
-    alert('🏆 Концовка получена! Можете пройти историю заново или выбрать другого персонажа.');
-    
+    alert('🏆 Концовка получена!');
     const container = document.getElementById('castleStoryContainer');
-    if (container) {
-        container.innerHTML = `
-            <div style="text-align: center; padding: 20px;">
-                <div style="font-size: 48px;">🏰</div>
-                <h3>Тайны замка Ашетвиль</h3>
-                <p style="color: var(--text-gray);">Концовок открыто: ${castleCompletedEndings.length}</p>
-                <button class="task-submit-btn" onclick="startCastleStory()" style="margin-top: 15px;">🔄 Пройти заново</button>
-                <button class="task-submit-btn" onclick="resetCastleProgress()" style="margin-top: 10px; background: #666;">🗑️ Сбросить прогресс</button>
-            </div>
-        `;
-    }
+    if (container) container.innerHTML = `<div style="text-align: center; padding: 20px;"><div style="font-size: 48px;">🏰</div><h3>Тайны замка Ашетвиль</h3><p style="color: var(--text-gray);">Концовок: ${castleCompletedEndings.length}</p><button class="task-submit-btn" onclick="startCastleStory()" style="margin-top: 15px;">🔄 Пройти заново</button><button class="task-submit-btn" onclick="resetCastleProgress()" style="margin-top: 10px; background: #666;">🗑️ Сбросить</button></div>`;
 }
 
 function saveCastleProgress() {
-    const progress = {
-        currentCard: currentCastleCard,
-        stats: userCastleStats,
-        character: selectedCastleCharacter,
-        completedEndings: castleCompletedEndings,
-        metEliza: metEliza,
-        completedChoices: castleCompletedChoices,
-        approvedChoices: castleApprovedChoices
-    };
-    
-    console.log('💾 СОХРАНЯЕМ ПРОГРЕСС:', JSON.stringify(progress));
-    
+    const progress = { currentCard: currentCastleCard, stats: userCastleStats, character: selectedCastleCharacter, completedEndings: castleCompletedEndings, metEliza: metEliza, completedChoices: castleCompletedChoices, approvedChoices: castleApprovedChoices };
     localStorage.setItem(`castle_progress_${userId}`, JSON.stringify(progress));
-    
-    fetch(`${SERVER_URL}/api/castle/save_progress`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: userId, progress: progress })
-    }).then(r => r.json()).then(res => {
-        console.log('✅ Прогресс сохранён на сервер:', res);
-    }).catch(e => console.log('❌ Ошибка сохранения:', e));
+    fetch(`${SERVER_URL}/api/castle/save_progress`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user_id: userId, progress: progress }) }).catch(e=>{});
 }
 
 async function loadCastleProgress() {
-    if (!userId) {
-        console.log('⚠️ userId ещё не определён, ждём...');
-        return false;
-    }
-    
-    console.log('🔄 Загружаем прогресс для userId:', userId);
-    
-    // Сначала пробуем сервер
+    if (!userId) return false;
     try {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 3000);
-        
-        const response = await fetch(`${SERVER_URL}/api/castle/get_progress?user_id=${userId}`, {
-            signal: controller.signal
-        });
+        const response = await fetch(`${SERVER_URL}/api/castle/get_progress?user_id=${userId}`, { signal: controller.signal });
         clearTimeout(timeoutId);
-        
         const result = await response.json();
-        console.log('📡 Ответ сервера:', JSON.stringify(result));
-        
         if (result && result.status === 'ok' && result.progress && result.progress.currentCard) {
             const data = result.progress;
-            currentCastleCard = data.currentCard;
-            userCastleStats = data.stats || { strength: 0, agility: 0, intelligence: 0 };
-            selectedCastleCharacter = data.character;
-            castleCompletedEndings = data.completedEndings || [];
-            metEliza = data.metEliza || false;
-            castleCompletedChoices = data.completedChoices || {};
-            castleApprovedChoices = data.approvedChoices || {};
+            currentCastleCard = data.currentCard; userCastleStats = data.stats||{strength:0,agility:0,intelligence:0}; selectedCastleCharacter = data.character; castleCompletedEndings = data.completedEndings||[]; metEliza = data.metEliza||false; castleCompletedChoices = data.completedChoices||{}; castleApprovedChoices = data.approvedChoices||{};
             localStorage.setItem(`castle_progress_${userId}`, JSON.stringify(data));
-            console.log('✅ Прогресс загружен с сервера:', currentCastleCard);
             return true;
-        } else {
-            console.log('⚠️ Сервер вернул пустой прогресс');
         }
-    } catch(e) {
-        console.log('⚠️ Сервер недоступен:', e.message);
-    }
-    
-    // Если сервер не ответил — загружаем из localStorage
+    } catch(e) {}
     const saved = localStorage.getItem(`castle_progress_${userId}`);
-    if (saved) {
-        try {
-            const data = JSON.parse(saved);
-            if (data.currentCard) {
-                currentCastleCard = data.currentCard;
-                userCastleStats = data.stats || { strength: 0, agility: 0, intelligence: 0 };
-                selectedCastleCharacter = data.character;
-                castleCompletedEndings = data.completedEndings || [];
-                metEliza = data.metEliza || false;
-                castleCompletedChoices = data.completedChoices || {};
-                castleApprovedChoices = data.approvedChoices || {};
-                console.log('✅ Прогресс загружен из localStorage');
-                return true;
-            }
-        } catch(e) {}
-    }
-    
-    console.log('ℹ️ Прогресс не найден');
+    if (saved) { try { const data = JSON.parse(saved); if (data.currentCard) { currentCastleCard=data.currentCard; userCastleStats=data.stats||{strength:0,agility:0,intelligence:0}; selectedCastleCharacter=data.character; castleCompletedEndings=data.completedEndings||[]; metEliza=data.metEliza||false; castleCompletedChoices=data.completedChoices||{}; castleApprovedChoices=data.approvedChoices||{}; return true; } } catch(e) {} }
     return false;
 }
 
 function resetCastleProgress() {
-    if (!confirm('Сбросить весь прогресс истории?')) return;
+    if (!confirm('Сбросить прогресс?')) return;
     localStorage.removeItem(`castle_progress_${userId}`);
-    currentCastleCard = null;
-    userCastleStats = { strength: 0, agility: 0, intelligence: 0 };
-    selectedCastleCharacter = null;
-    castleCompletedEndings = [];
-    castleCompletedChoices = {};
-    castleApprovedChoices = {};
-    metEliza = false;
+    currentCastleCard=null; userCastleStats={strength:0,agility:0,intelligence:0}; selectedCastleCharacter=null; castleCompletedEndings=[]; castleCompletedChoices={}; castleApprovedChoices={}; metEliza=false;
     startCastleStory();
 }
 
-// ==========================================
-// ПРОВЕРКА ОДОБРЕНИЙ С СЕРВЕРА
-// ==========================================
 async function checkCastleApprovals() {
     try {
         const response = await fetch(`${SERVER_URL}/api/get_castle_approvals?user_id=${userId}`);
         const result = await response.json();
-        
         if (result && result.status === 'ok' && result.approved) {
             let changed = false;
             for (const [key, value] of Object.entries(result.approved)) {
-                if (value === true && !castleApprovedChoices[key]) {
-                    castleApprovedChoices[key] = true;
-                    changed = true;
-                }
+                if (value === true && !castleApprovedChoices[key]) { castleApprovedChoices[key] = true; changed = true; }
             }
-            
-            if (changed) {
-                saveCastleProgress();
-                if (currentCastleCard) {
-                    renderCastleCard(currentCastleCard);
-                }
-            }
+            if (changed) { saveCastleProgress(); if (currentCastleCard) renderCastleCard(currentCastleCard); }
         }
-    } catch (error) {}
-}
-        // ==========================================
-// ПРОВЕРКА ОДОБРЕНИЙ С СЕРВЕРА
-// ==========================================
-async function checkCastleApprovals() {
-    try {
-        const response = await fetch(`${SERVER_URL}/api/get_castle_approvals?user_id=${userId}`);
-        const result = await response.json();
-        
-        if (result && result.status === 'ok' && result.approved) {
-            let changed = false;
-            for (const [key, value] of Object.entries(result.approved)) {
-                if (value === true && !castleApprovedChoices[key]) {
-                    castleApprovedChoices[key] = true;
-                    changed = true;
-                }
-            }
-            
-            if (changed) {
-                saveCastleProgress();
-                // Если сейчас отображается карточка с выборами, обновляем её
-                if (currentCastleCard) {
-                    const card = CASTLE_STORY.cards[currentCastleCard];
-                    if (card && card.isChoice) {
-                        renderCastleCard(currentCastleCard);
-                    }
-                }
-            }
-        }
-    } catch (error) {
-        // Игнорируем ошибки
-    }
+    } catch(e) {}
 }
 
        // ==========================================
