@@ -16665,7 +16665,24 @@ let castleCompletedEndings = [];
 let castleCompletedChoices = {};
 let castleApprovedChoices = {};
 let metEliza = false;
+// Шансы выпадения статуса
+const STATUS_DROP_CHANCE = {
+    normal: 0.25,
+    secret: 0.60
+};
 
+// Награды за концовки
+const ENDING_REWARDS = {
+    'mystic_liberator': { status: 'Храбрая сердцем', statusChance: 'normal' },
+    'mystic_lord': { status: 'Храбрая сердцем', statusChance: 'normal' },
+    'mystic_true': { status: 'Храбрая сердцем', statusChance: 'secret' },
+    'thief_queen': { status: 'В тени', statusChance: 'normal' },
+    'thief_shadow': { status: 'В тени', statusChance: 'normal' },
+    'thief_free': { status: 'В тени', statusChance: 'secret' },
+    'alchemist_archmage': { status: 'Заклинательница', statusChance: 'normal' },
+    'alchemist_keeper': { status: 'Заклинательница', statusChance: 'normal' },
+    'alchemist_true': { status: 'Заклинательница', statusChance: 'secret' }
+};
 // ==========================================
 // ФУНКЦИИ
 // ==========================================
@@ -16841,19 +16858,60 @@ function proceedToCard(nextCardId) { if (nextCardId) renderCastleCard(nextCardId
 function claimCastleEnding(cardId) {
     const card = CASTLE_STORY.cards[cardId];
     if (!card || !card.isEnding) return;
-    if (!castleCompletedEndings.includes(card.endingId)) {
-        castleCompletedEndings.push(card.endingId);
-        if (card.reward && card.reward.achetiki) {
-            fetch(`${SERVER_URL}/api/add_balance`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user_id: userId, amount: card.reward.achetiki, reason: 'Концовка: ' + card.endingId }) }).then(r=>r.json()).then(res=>{ if(res.new_balance) user.balance=res.new_balance; updateUI(); });
-        }
-        if (card.reward && card.reward.status) {
-            if (!user.unlockedStatuses.includes(card.reward.status)) { user.unlockedStatuses.push(card.reward.status); saveUserData(); fetch(`${SERVER_URL}/api/sync_status`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user_id: userId, status: card.reward.status, action: 'unlock' }) }); }
+    
+    if (castleCompletedEndings.includes(card.endingId)) {
+        alert('Эта концовка уже получена!');
+        return;
+    }
+    
+    castleCompletedEndings.push(card.endingId);
+    const reward = ENDING_REWARDS[card.endingId];
+    
+    let statusUnlocked = false;
+    if (reward && reward.status && reward.statusChance) {
+        const chance = STATUS_DROP_CHANCE[reward.statusChance] || 0.25;
+        const roll = Math.random();
+        
+        if (roll < chance) {
+            statusUnlocked = true;
+            if (!user.unlockedStatuses.includes(reward.status)) {
+                user.unlockedStatuses.push(reward.status);
+                saveUserData();
+                fetch(`${SERVER_URL}/api/sync_status`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id: userId, status: reward.status, action: 'unlock' })
+                });
+            }
         }
     }
+    
     saveCastleProgress();
-    alert('🏆 Концовка получена!');
+    
+    const chancePercent = reward ? STATUS_DROP_CHANCE[reward.statusChance] * 100 : 0;
+    let message = `🏆 Концовка получена!\n\n`;
+    
+    if (statusUnlocked) {
+        message += `✨ Выпал статус «${reward.status}»! (шанс ${chancePercent}%)\n`;
+    } else if (reward && reward.status) {
+        message += `🎲 Статус «${reward.status}» не выпал (шанс ${chancePercent}%)\nПопробуйте другую концовку!\n`;
+    }
+    
+    alert(message);
+    
     const container = document.getElementById('castleStoryContainer');
-    if (container) container.innerHTML = `<div style="text-align: center; padding: 20px;"><div style="font-size: 48px;">🏰</div><h3>Тайны замка Ашетвиль</h3><p style="color: var(--text-gray);">Концовок: ${castleCompletedEndings.length}</p><button class="task-submit-btn" onclick="startCastleStory()" style="margin-top: 15px;">🔄 Пройти заново</button><button class="task-submit-btn" onclick="resetCastleProgress()" style="margin-top: 10px; background: #666;">🗑️ Сбросить</button></div>`;
+    if (container) {
+        container.innerHTML = `
+            <div style="text-align: center; padding: 20px;">
+                <div style="font-size: 48px;">🏰</div>
+                <h3>Тайны замка Ашетвиль</h3>
+                <p style="color: var(--text-gray);">Концовок: ${castleCompletedEndings.length}/9</p>
+                <p style="color: var(--text-gray); font-size: 12px;">Шанс статуса: обычные 25% | секретные 60%</p>
+                <button class="task-submit-btn" onclick="startCastleStory()" style="margin-top: 15px;">🔄 Пройти заново</button>
+                <button class="task-submit-btn" onclick="resetCastleProgress()" style="margin-top: 10px; background: #666;">🗑️ Сбросить</button>
+            </div>
+        `;
+    }
 }
 
 function saveCastleProgress() {
