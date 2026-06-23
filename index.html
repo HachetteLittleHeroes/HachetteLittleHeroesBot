@@ -16680,18 +16680,11 @@ function toggleCastleStory() {
         content.style.display = 'block';
         arrow.style.transform = 'rotate(180deg)';
         
-        // Показываем загрузку
-        const container = document.getElementById('castleStoryContainer');
-        if (container) {
-            container.innerHTML = '<div style="text-align: center; padding: 20px;"><i class="fas fa-spinner fa-spin"></i> Загрузка...</div>';
-        }
-        
-        // Загружаем прогресс асинхронно
         loadCastleProgress().then(loaded => {
             if (loaded && currentCastleCard) {
                 renderCastleCard(currentCastleCard);
             }
-            // Если не загрузилось — показываем начальный экран (он уже есть в HTML)
+            // Если не загрузилось — начальный экран уже отображается из HTML
         });
     } else {
         content.style.display = 'none';
@@ -17105,28 +17098,7 @@ function saveCastleProgress() {
 }
 
 async function loadCastleProgress() {
-    // Сначала пробуем загрузить с сервера
-    try {
-        const response = await fetch(`${SERVER_URL}/api/castle/get_progress?user_id=${userId}`);
-        const result = await response.json();
-        if (result && result.status === 'ok' && result.progress) {
-            const data = result.progress;
-            currentCastleCard = data.currentCard;
-            userCastleStats = data.stats || { strength: 0, agility: 0, intelligence: 0 };
-            selectedCastleCharacter = data.character;
-            castleCompletedEndings = data.completedEndings || [];
-            metEliza = data.metEliza || false;
-            castleCompletedChoices = data.completedChoices || {};
-            castleApprovedChoices = data.approvedChoices || {};
-            localStorage.setItem(`castle_progress_${userId}`, JSON.stringify(data));
-            console.log('✅ Прогресс загружен с сервера:', currentCastleCard);
-            return true;
-        }
-    } catch(e) {
-        console.log('⚠️ Сервер недоступен, пробуем localStorage');
-    }
-    
-    // Если сервер недоступен — загружаем локально
+    // Сначала пробуем localStorage (быстро)
     const saved = localStorage.getItem(`castle_progress_${userId}`);
     if (saved) {
         try {
@@ -17138,13 +17110,39 @@ async function loadCastleProgress() {
             metEliza = data.metEliza || false;
             castleCompletedChoices = data.completedChoices || {};
             castleApprovedChoices = data.approvedChoices || {};
-            console.log('✅ Прогресс загружен из localStorage:', currentCastleCard);
+            console.log('✅ Прогресс загружен из localStorage');
             return true;
-        } catch(e) {
-            console.error('❌ Ошибка загрузки из localStorage:', e);
-        }
+        } catch(e) {}
     }
-    console.log('ℹ️ Прогресс не найден');
+    
+    // Потом пробуем сервер с таймаутом
+    try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3000);
+        
+        const response = await fetch(`${SERVER_URL}/api/castle/get_progress?user_id=${userId}`, {
+            signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+        
+        const result = await response.json();
+        if (result && result.status === 'ok' && result.progress) {
+            const data = result.progress;
+            currentCastleCard = data.currentCard;
+            userCastleStats = data.stats || { strength: 0, agility: 0, intelligence: 0 };
+            selectedCastleCharacter = data.character;
+            castleCompletedEndings = data.completedEndings || [];
+            metEliza = data.metEliza || false;
+            castleCompletedChoices = data.completedChoices || {};
+            castleApprovedChoices = data.approvedChoices || {};
+            localStorage.setItem(`castle_progress_${userId}`, JSON.stringify(data));
+            console.log('✅ Прогресс загружен с сервера');
+            return true;
+        }
+    } catch(e) {
+        console.log('⚠️ Сервер недоступен');
+    }
+    
     return false;
 }
 
