@@ -9801,7 +9801,7 @@ async function saveAvatarToServer(avatarUrl) {
         // ВЫБОР СТАТУСА
         // ==========================================
         
-       function openStatusInfo() {
+     function openStatusInfo() {
     console.log('openStatusInfo called');
     
     const list = document.getElementById('availableStatusesList');
@@ -9812,16 +9812,18 @@ async function saveAvatarToServer(avatarUrl) {
     
     list.innerHTML = '';
     
-    // Собираем все статусы из BRANCH_REWARDS
     const branchStatuses = Object.values(BRANCH_REWARDS);
-    
-    // Добавляем статусы из магазина
     const shopStatuses = STATUS_SHOP.map(s => s.name);
     
+    // Статусы из замка
+    const castleStatuses = ['Храбрая сердцем', 'В тени', 'Заклинательница'];
+    
     // Объединяем все статусы
-    const allStatuses = ['Без статуса', ...branchStatuses, 'Феечка', ...shopStatuses];
+    const allStatuses = ['Без статуса', ...branchStatuses, 'Феечка', ...shopStatuses, ...castleStatuses];
     
     console.log('allStatuses:', allStatuses);
+    
+    // ... остальной код без изменений
     
     allStatuses.forEach(status => {
         const isUnlocked = user.unlockedStatuses.includes(status);
