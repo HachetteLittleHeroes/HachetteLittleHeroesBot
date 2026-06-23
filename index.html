@@ -16786,6 +16786,7 @@ function selectCastleCharacter(charId) {
     document.querySelectorAll('.modal-overlay').forEach(m => { if (m.innerHTML.includes('Выберите персонажа')) m.remove(); });
     const content = document.getElementById('castleStoryContent');
     if (content) { content.style.display = 'block'; const arrow = document.getElementById('castleStoryArrow'); if (arrow) arrow.style.transform = 'rotate(180deg)'; }
+    loadCastleLoot();
     saveCastleProgress();
     renderCastleCard(currentCastleCard);
 }
@@ -16794,6 +16795,18 @@ function renderCastleCard(cardId) {
     const card = CASTLE_STORY.cards[cardId];
     if (!card) { alert('Карточка не найдена: ' + cardId); return; }
     currentCastleCard = cardId;
+    
+    // Проверяем скрытую награду
+    if (HIDDEN_REWARDS[cardId] && !card.isEnding && !card.isChoice) {
+        const reward = HIDDEN_REWARDS[cardId];
+        const result = giveRandomReward(reward.type, reward.lootKey);
+        if (result) {
+            setTimeout(() => {
+                alert(`🎁 ${reward.text}\n\nПолучено: ${result.name} (${result.type})`);
+            }, 500);
+        }
+    }
+    
     saveCastleProgress();
     const content = document.getElementById('castleStoryContent');
     if (content && content.style.display === 'none') content.style.display = 'block';
@@ -17122,7 +17135,90 @@ async function checkCastleApprovals() {
         }
     } catch(e) {}
 }
+// Скрытые награды по этапам
+const HIDDEN_REWARDS = {
+    // Мистик
+    '3M_1_1': { type: 'random_border', lootKey: 'border', text: 'Вы нашли старый сундук! Внутри — обводка для профиля.' },
+    '5M_3_1': { type: 'random_status_bg', lootKey: 'status_bg', text: 'В лаборатории вы обнаружили красивый фон для статуса.' },
+    '6M_1_3': { type: 'achetiki', lootKey: 'achetiki', text: 'Вы нашли кошелёк!' },
+    // Воровка
+    '2V_A_1': { type: 'random_status_bg', lootKey: 'status_bg', text: 'В тёмном коридоре вы наткнулись на фон для статуса.' },
+    '4V_4_1': { type: 'achetiki', lootKey: 'achetiki', text: 'В тайнике Советника вы нашли ашетики!' },
+    '6V_1_1': { type: 'random_border', lootKey: 'border', text: 'В покоях Элизы вы обнаружили обводку для профиля.' },
+    // Алхимик
+    '3A_4_1': { type: 'random_border', lootKey: 'border', text: 'В склепе вы нашли древнюю обводку для профиля.' },
+    '4A_5_1': { type: 'achetiki', lootKey: 'achetiki', text: 'Звезда поделилась с вами ашетиками.' },
+    '6A_3_1': { type: 'random_status_bg', lootKey: 'status_bg', text: 'В лаборатории вы создали красивый фон для статуса.' }
+};
 
+let castleLootCache = {};
+
+async function loadCastleLoot() {
+    if (!selectedCastleCharacter || !userId) return;
+    try {
+        const resp = await fetch(`${SERVER_URL}/api/castle/get_loot?user_id=${userId}&character=${selectedCastleCharacter}`);
+        const data = await resp.json();
+        if (data && data.status === 'ok') {
+            castleLootCache = data.loot || {};
+        }
+    } catch(e) { castleLootCache = {}; }
+}
+
+function giveRandomReward(type, lootKey) {
+    if (!selectedCastleCharacter) return null;
+    
+    // Проверяем, не получена ли уже эта награда для этого персонажа
+    if (castleLootCache[lootKey]) return null;
+    
+    let result = null;
+    
+    if (type === 'random_border') {
+        const borders = AVATAR_BORDER_SHOP.filter(b => !user.ownedBorders || !user.ownedBorders.includes(b.id));
+        if (borders.length === 0) return null;
+        const randomBorder = borders[Math.floor(Math.random() * borders.length)];
+        if (!user.ownedBorders) user.ownedBorders = [];
+        user.ownedBorders.push(randomBorder.id);
+        saveUserData();
+        fetch(`${SERVER_URL}/api/save_avatar_border`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId, border: randomBorder.css, border_id: randomBorder.id })
+        });
+        result = { name: randomBorder.name, type: 'обводка профиля' };
+    } else if (type === 'random_status_bg') {
+        const bgs = STATUS_BG_SHOP.filter(b => !user.ownedStatusBackgrounds || !user.ownedStatusBackgrounds.includes(b.id));
+        if (bgs.length === 0) return null;
+        const randomBg = bgs[Math.floor(Math.random() * bgs.length)];
+        if (!user.ownedStatusBackgrounds) user.ownedStatusBackgrounds = [];
+        user.ownedStatusBackgrounds.push(randomBg.id);
+        saveUserData();
+        fetch(`${SERVER_URL}/api/save_status_background`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId, background: randomBg.css, background_id: randomBg.id })
+        });
+        result = { name: randomBg.name, type: 'фон статуса' };
+    } else if (type === 'achetiki') {
+        const amount = Math.floor(Math.random() * 201) + 50;
+        fetch(`${SERVER_URL}/api/add_balance`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId, amount: amount, reason: 'Награда в замке' })
+        }).then(r => r.json()).then(res => {
+            if (res.new_balance) user.balance = res.new_balance;
+            updateUI();
+        });
+        result = { name: `${amount} ашетиков`, type: 'ашетики' };
+    }
+    
+    // Сохраняем на сервере, что награда получена
+    if (result && lootKey) {
+        castleLootCache[lootKey] = true;
+        fetch(`${SERVER_URL}/api/castle/save_loot`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId, character: selectedCastleCharacter, loot_type: lootKey })
+        }).catch(e => {});
+    }
+    
+    return result;
+}
        // ==========================================
 // МАГАЗИН
 // ==========================================
