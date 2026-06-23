@@ -16775,7 +16775,9 @@ function selectCastleCharacter(charId) {
     selectedCastleCharacter = charId;
     userCastleStats = { ...char.stats };
     metEliza = false;
-    currentCastleCard = '1' + charId.charAt(0).toUpperCase() + '_1'; // 1M_1, 1V_1, 1A_1
+   const prefixMap = { mystic: 'M', thief: 'V', alchemist: 'A' };
+const prefix = prefixMap[charId] || charId.charAt(0).toUpperCase();
+currentCastleCard = '1' + prefix + '_1';
     
     // Закрываем модалку выбора
     document.querySelectorAll('.modal-overlay').forEach(m => {
