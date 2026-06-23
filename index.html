@@ -16806,22 +16806,13 @@ function renderCastleCard(cardId) {
             const isDisabled = !meetsReq || (hasSkip && (userSkips||0) < (choice.skipCost||0));
             
             let reqText = '';
-            if (hasSkip) {
-                reqText = `🎫${choice.skipCost}`;
-            }
-            if (reqStat) {
-                reqText = `${statNames[reqStat.stat]}${reqStat.min}`;
-            }
-            if (!meetsReq && reqText) {
-                reqText = ` (нужно ${reqText}) 🔒`;
-            } else if (meetsReq && reqText) {
-                reqText = ` (${reqText})`;
-            }
+            if (hasSkip) { reqText = ` (🎫${choice.skipCost})`; }
+            if (reqStat) { reqText = ` (${statNames[reqStat.stat]}${reqStat.min})`; }
+            if (!meetsReq && reqText) { reqText += ' 🔒'; }
             
             choicesHtml += `<div class="castle-choice-wrapper" style="margin-bottom: 10px;">
                 <button class="task-submit-btn castle-choice-btn" style="width: 100%; text-align: left; padding: 12px; ${isDisabled?'opacity: 0.5;':''}" ${isDisabled?'disabled':''} onclick="submitCastleChoice('${cardId}',${idx})">
-                    <div style="font-weight: 500;">${choice.text}${reqText}</div>
-                    ${choice.task ? `<div style="font-size: 11px; opacity: 0.8; margin-top: 4px; display: block;">📸 ${choice.task}</div>` : ''}
+                    ${choice.text}${reqText}${choice.task ? '<br><span style="font-size: 11px; opacity: 0.8;">📸 ' + choice.task + '</span>' : ''}
                 </button>
             </div>`;
         });
