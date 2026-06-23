@@ -16798,14 +16798,13 @@ function renderCastleCard(cardId) {
             let badge = '';
             if (hasSkip) badge += ` 🎫${choice.skipCost}`;
             if (reqStat && !meetsReq) badge += ` (${statNames[reqStat.stat]}${reqStat.min}) 🔒`;
-            choicesHtml += `<div class="castle-choice-wrapper" style="margin-bottom: 10px;"><button class="task-submit-btn castle-choice-btn" style="width: 100%; text-align: left; padding: 12px; ${isDisabled?'opacity: 0.5;':''}" ${isDisabled?'disabled':''} onclick="submitCastleChoice('${cardId}',${idx})">${choice.text}${badge}</button>${choice.task?`<div style="font-size: 11px; color: var(--text-gray); margin-top: 4px; margin-left: 5px;">📸 ${choice.task}</div>`:''}</div>`;
+            choicesHtml += `<div class="castle-choice-wrapper" style="margin-bottom: 10px;"><button class="task-submit-btn castle-choice-btn" style="width: 100%; text-align: left; padding: 12px; ${isDisabled?'opacity: 0.5;':''}" ${isDisabled?'disabled':''} onclick="submitCastleChoice('${cardId}',${idx})">${choice.text}${badge}${choice.task?`<br><span style="font-size: 11px; color: var(--text-gray);">📸 ${choice.task}</span>`:''}</button></div>`;
         });
         container.innerHTML = `<div class="castle-card">${card.chapter?`<div style="font-weight: 700; font-size: 16px; color: var(--accent); margin-bottom: 10px;">${card.chapter}</div>`:''}${card.text?`<p>${card.text}</p>`:''}${statsHtml}<div class="castle-choices">${choicesHtml}</div></div>`;
         return;
     }
     container.innerHTML = `<div class="castle-card">${card.chapter?`<div style="font-weight: 700; font-size: 16px; color: var(--accent); margin-bottom: 10px;">${card.chapter}</div>`:''}<p>${card.text}</p>${statsHtml}<button class="task-submit-btn" onclick="renderCastleCard('${card.nextCard}')" style="width: 100%;">Далее ▶</button></div>`;
 }
-
 function submitCastleChoice(cardId, choiceIdx) {
     const card = CASTLE_STORY.cards[cardId];
     const choice = card.choices[choiceIdx];
