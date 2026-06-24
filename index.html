@@ -10188,6 +10188,8 @@ function renderCastleCardInGame(cardId) {
     if (!container) return;
     
     console.log('🎮 Рендер карточки:', cardId);
+    console.log('📋 castleCompletedChoices:', JSON.stringify(castleCompletedChoices));
+    console.log('✅ castleApprovedChoices:', JSON.stringify(castleApprovedChoices));
     
     const card = CASTLE_STORY.cards[cardId];
     if (!card) {
@@ -10259,9 +10261,13 @@ function renderCastleCardInGame(cardId) {
         card.choices.forEach((choice, idx) => {
             const choiceKey = cardId + '_choice_' + idx;
             const isApproved = castleApprovedChoices && castleApprovedChoices[choiceKey];
+            const isCompleted = castleCompletedChoices && castleCompletedChoices[choiceKey];
             
-            // ✅ ОДОБРЕНО — можно продолжить
+            console.log(`🔍 Выбор #${idx}: key=${choiceKey}, completed=${isCompleted}, approved=${isApproved}, isPremium=${choice.isPremium}`);
+            
+            // ✅ ОДОБРЕНО — зелёная кнопка для продолжения
             if (isApproved) {
+                console.log('  → ЗЕЛЁНАЯ кнопка (одобрено)');
                 choicesHtml += `
                     <button class="story-choice-btn approved" onclick="proceedAfterApprovalInGame('${cardId}',${idx})">
                         ✅ ${choice.text || 'Выбор ' + (idx+1)}
@@ -10270,7 +10276,20 @@ function renderCastleCardInGame(cardId) {
                 return;
             }
             
-            // 🔲 ВСЕГДА АКТИВНАЯ КНОПКА — можно отправить/переотправить фото
+            // 📸 ОТПРАВЛЕНО (обычное фото) — можно переотправить
+            if (isCompleted && !choice.isPremium) {
+                console.log('  → ОТПРАВЛЕНО (можно переотправить)');
+                choicesHtml += `
+                    <button class="story-choice-btn" onclick="submitCastleChoiceInGame('${cardId}',${idx})">
+                        📸 ${choice.text || 'Выбор ' + (idx+1)}
+                        <div class="story-choice-task">Нажмите чтобы отправить фото заново</div>
+                    </button>
+                `;
+                return;
+            }
+            
+            // 🔲 НОВЫЙ ВЫБОР
+            console.log('  → НОВАЯ кнопка');
             const hasSkip = choice.skipCost && choice.isPremium;
             const reqStat = choice.requireStat;
             let meetsReq = true;
@@ -10349,6 +10368,9 @@ function submitCastleChoiceInGame(cardId, choiceIdx) {
     const choice = card.choices[choiceIdx];
     if (!choice) return;
     
+    // Сохраняем idx в локальную переменную для использования в колбэке
+    const idx = choiceIdx;
+    
     // Премиум-выбор со скипом — без фото, СРАЗУ ОДОБРЯЕМ
     if (choice.isPremium && choice.skipCost) {
         if (!userSkips || userSkips < choice.skipCost) { 
@@ -10380,13 +10402,15 @@ function submitCastleChoiceInGame(cardId, choiceIdx) {
         castleCompletedChoices[choiceKey] = true;
         castleApprovedChoices[choiceKey] = true;
         
+        console.log('✅ Платный выбор одобрен:', choiceKey, castleApprovedChoices);
+        
         // Применяем награду
         applyCastleReward(choice);
         
         // Сохраняем прогресс
         saveCastleProgress();
         
-        // ✅ Перерисовываем карточку
+        // Перерисовываем карточку
         renderCastleCardInGame(cardId);
         
         return;
@@ -10411,7 +10435,7 @@ function submitCastleChoiceInGame(cardId, choiceIdx) {
         
         // Помечаем как отправленное только после выбора файлов
         if (!castleCompletedChoices) castleCompletedChoices = {};
-        const choiceKey = cardId + '_choice_' + idx;
+        const choiceKey = cardId + '_choice_' + idx;  // ✅ используем сохранённый idx
         castleCompletedChoices[choiceKey] = true;
         saveCastleProgress();
         
@@ -10449,7 +10473,6 @@ function submitCastleChoiceInGame(cardId, choiceIdx) {
             }
         } catch (error) {
             console.error('❌ Ошибка отправки:', error);
-            // При ошибке даём возможность переотправить
             delete castleCompletedChoices[choiceKey];
             saveCastleProgress();
             
