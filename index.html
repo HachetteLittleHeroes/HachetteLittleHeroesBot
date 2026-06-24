@@ -15978,14 +15978,13 @@ const CASTLE_CHARACTERS = {
         { id: 3, text: 'Пойдешь искать ключ', skipCost: 1, isPremium: true, reward: { strength: 1, agility: 1 }, nextCard: '4M_3_1', task: null }
     ]
 },
-'3M_3_1': { stage: 3, character: 'mystic', chapter: 'Конюшни', text: 'Ты попадаешь в конюшню и видишь заброшенные пустые стойла, но из последнего доносится фырканье. Ты подходишь к стойлу и видишь белого коня с серебряной гривой. На стене висит седло, ты решил его осмотреть. При осмотре седла ты находишь подпись: "Седло Снежного, принадлежит лорду Таирусу".', nextCard: '3M_3_2' },
-'3M_3_2': { stage: 3, character: 'mystic', text: 'На седле — записка от советника: «Это Снежный — конь первого лорда. Он доверяет только достойным. Если примешь его — он станет твоим союзником».', nextCard: '3M_3_3' },
-'3M_3_3': { stage: 3, character: 'mystic', isChoice: true,
+'3M_3_1': { stage: 3, character: 'mystic', chapter: 'Конюшни', text: 'Ты попадаешь в конюшню и видишь заброшенные пустые стойла, но из последнего доносится фырканье. Ты подходишь к стойлу и видишь белого коня с серебряной гривой. На стене висит седло, ты решил его осмотреть. При осмотре седла ты находишь подпись: "Седло Снежного, принадлежит лорду Таирусу" и руны, но в этот момент конь начал нервничать. Ты...', nextCard: '3M_3_2' },
+'3M_3_2': { stage: 3, character: 'mystic', isChoice: true,
     choices: [
-        { id: 1, text: 'Оседлать коня силой', reward: { strength: 4, intelligence: 1 }, nextCard: '4M_1_1', task: 'Раскрась страницу с конем (ДО/ПОСЛЕ)' },
-        { id: 2, text: 'Успокоить коня', reward: { agility: 4, strength: 1 }, nextCard: '4M_2_1', task: 'Раскрась страницу с уходом (ДО/ПОСЛЕ)' },
-        { id: 3, text: 'Прочесть руны на седле', reward: { intelligence: 4, agility: 1 }, nextCard: '4M_3_1', task: 'Раскрась страницу с седлом (ДО/ПОСЛЕ)' },
-        { id: 4, text: 'Дать коню яблоко', skipCost: 1, isPremium: true, reward: { all: 1 }, nextCard: '4M_3_1', task: null }
+        { id: 1, text: 'Оседлаешь коня силой', reward: { strength: 4, intelligence: 1 }, nextCard: '4M_1_1', task: 'Раскрась картинку со львом(ДО/ПОСЛЕ)' },
+        { id: 2, text: 'Успокоишь коня', reward: { agility: 4, strength: 1 }, nextCard: '4M_2_1', task: 'Раскрась картинку с Белоснежкой (ДО/ПОСЛЕ)' },
+        { id: 3, text: 'Прочитаешь руны на седле', reward: { intelligence: 4, agility: 1 }, nextCard: '4M_3_1', task: 'Раскрась картинку с филином или совой (ДО/ПОСЛЕ)' },
+        { id: 4, text: 'Дашь коню яблоко', skipCost: 1, isPremium: true, reward: { all: 1 }, nextCard: '4M_3_1', task: null }
     ]
 },
 '3M_4_1': { stage: 3, character: 'mystic', chapter: 'Подземное озеро', text: 'Под замком — огромное озеро. На том берегу виднеется дверь.', nextCard: '3M_4_2' },
@@ -16996,7 +16995,14 @@ function submitCastleChoice(cardId, choiceIdx) {
         formData.append('user', userId.toString());
         formData.append('castle_choice_key', choiceKey);
         formData.append('subtaskName', choice.text || 'Задание');
-        for (let i = 0; i < files.length; i++) formData.append('photos', files[i]);
+        formData.append('cardId', cardId);
+        formData.append('chapter', card.chapter || '');
+        formData.append('task', choice.task || '');
+        
+        // Добавляем КАЖДЫЙ файл отдельно
+        for (let i = 0; i < files.length; i++) {
+            formData.append('photos', files[i]);
+        }
         
         try {
             const response = await fetch(`${SERVER_URL}/api/check_castle_task`, { method: 'POST', body: formData });
@@ -17008,7 +17014,7 @@ function submitCastleChoice(cardId, choiceIdx) {
                 alert('✅ Фото отправлено на проверку! Ожидайте одобрения.');
                 renderCastleCard(cardId);
             } else {
-                throw new Error(result?.message || 'Ошибка сервера: ' + JSON.stringify(result));
+                throw new Error(result?.message || 'Ошибка сервера');
             }
         } catch (error) {
             console.error('❌ Ошибка отправки:', error);
