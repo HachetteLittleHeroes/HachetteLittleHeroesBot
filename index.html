@@ -10350,7 +10350,7 @@ function submitCastleChoiceInGame(cardId, choiceIdx) {
     const choice = card.choices[choiceIdx];
     if (!choice) return;
     
-    // Премиум-выбор со скипом — без фото
+    // Премиум-выбор со скипом — без фото, СРАЗУ ОДОБРЯЕМ
     if (choice.isPremium && choice.skipCost) {
         if (!userSkips || userSkips < choice.skipCost) { 
             if (tg) tg.showAlert('Недостаточно скипов! Нужно: ' + choice.skipCost + ', у вас: ' + (userSkips || 0));
@@ -10373,17 +10373,21 @@ function submitCastleChoiceInGame(cardId, choiceIdx) {
             })
         }).catch(e => console.error('Skip sync error:', e));
         
+        // ✅ СРАЗУ ОДОБРЯЕМ ВЫБОР (без отправки админу)
+        const choiceKey = cardId + '_choice_' + idx;
+        if (!castleCompletedChoices) castleCompletedChoices = {};
+        castleCompletedChoices[choiceKey] = true;
+        if (!castleApprovedChoices) castleApprovedChoices = {};
+        castleApprovedChoices[choiceKey] = true;
+        
         // Применяем награду
         applyCastleReward(choice);
         
-        // Показываем уведомление
-        if (tg) tg.showAlert('✅ Скипы использованы! Переходим дальше...');
-        else alert('✅ Скипы использованы!');
+        // Сохраняем прогресс
+        saveCastleProgress();
         
-        // ✅ Переходим к следующей карточке с задержкой
-        setTimeout(function() {
-            proceedToCard(choice.nextCard);
-        }, 200);
+        // Перерисовываем карточку — кнопка станет зелёной
+        renderCastleCardInGame(cardId);
         
         return;
     }
