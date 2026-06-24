@@ -17234,22 +17234,22 @@ const CASTLE_CHARACTERS = {
     stage: 10, character: 'alchemist', isEnding: true, endingId: 'alchemist_true', isSecret: true, 
     text: 'Проклятие снято навсегда. Вы покидаете замок с филином и слезой горного духа. Ни власти, ни богатства — только знание и свобода. Лорд Таирус, Советник и капитан стражи смотрят вам вслед. Мудрость — не в том, чтобы взять, а в том, чтобы отдать. И вы отдали замку свободу. А впереди — бескрайние горы и легенды, которые будут слагать о вас веками.' 
 }
-    };
-        // Скрытые награды по этапам
-const HIDDEN_REWARDS = {
-    // Мистик
-    '3M_1_1': { type: 'random_border', lootKey: 'border', text: 'Советник дает тебе ценную вещицу! Это обводка для профиля.' },
-    '5M_3_1': { type: 'random_status_bg', lootKey: 'status_bg', text: 'Вы обнаружили красивый фон для статуса.' },
-    '6M_1_3': { type: 'achetiki', lootKey: 'achetiki', text: 'Вы нашли кошелёк!' },
-    // Воровка
-    '2V_A_1': { type: 'random_status_bg', lootKey: 'status_bg', text: 'Вы наткнулись на фон для статуса.' },
-    '4V_4_1': { type: 'achetiki', lootKey: 'achetiki', text: 'В тайнике вы нашли ашетики!' },
-    '6V_1_1': { type: 'random_border', lootKey: 'border', text: 'Вы обнаружили обводку для профиля.' },
-    // Алхимик
-    '3A_4_1': { type: 'random_border', lootKey: 'border', text: 'Вы нашли обводку для профиля.' },
-    '4A_5_1': { type: 'achetiki', lootKey: 'achetiki', text: 'Вы нашли ашетики.' },
-    '6A_3_1': { type: 'random_status_bg', lootKey: 'status_bg', text: 'Вы нашли красивый фон для статуса.' }
-        }
+    },  
+    
+    hiddenRewards: { 
+        // Мистик
+        '3M_1_1': { type: 'random_border', lootKey: 'border', text: 'Советник дает тебе ценную вещицу! Это обводка для профиля.' },
+        '5M_3_1': { type: 'random_status_bg', lootKey: 'status_bg', text: 'Вы обнаружили красивый фон для статуса.' },
+        '6M_1_3': { type: 'achetiki', lootKey: 'achetiki', text: 'Вы нашли кошелёк!' },
+        // Воровка
+        '2V_A_1': { type: 'random_status_bg', lootKey: 'status_bg', text: 'Вы наткнулись на фон для статуса.' },
+        '4V_4_1': { type: 'achetiki', lootKey: 'achetiki', text: 'В тайнике вы нашли ашетики!' },
+        '6V_1_1': { type: 'random_border', lootKey: 'border', text: 'Вы обнаружили обводку для профиля.' },
+        // Алхимик
+        '3A_4_1': { type: 'random_border', lootKey: 'border', text: 'Вы нашли обводку для профиля.' },
+        '4A_5_1': { type: 'achetiki', lootKey: 'achetiki', text: 'Вы нашли ашетики.' },
+        '6A_3_1': { type: 'random_status_bg', lootKey: 'status_bg', text: 'Вы нашли красивый фон для статуса.' }
+    }
 };
 
 let castleLootCache = {};
