@@ -9969,14 +9969,14 @@ function continueStoryFromPreview() {
 
 function resetAndStartStory() {
     if (confirm('Сбросить прогресс и начать заново?')) {
-        // Полностью сбрасываем прогресс
+        // Полностью сбрасываем ВСЁ
         localStorage.removeItem(`castle_progress_${userId}`);
         currentCastleCard = null;
         userCastleStats = { strength: 0, agility: 0, intelligence: 0 };
         selectedCastleCharacter = null;
         castleCompletedEndings = {};
-        castleCompletedChoices = {};
-        castleApprovedChoices = {};
+        castleCompletedChoices = {};  // ✅ Сбрасываем
+        castleApprovedChoices = {};   // ✅ Сбрасываем
         metEliza = false;
         currentEndingClaimed = false;
         
@@ -10047,14 +10047,13 @@ function backToStoryPreview() {
 }
 function resetStoryFromGame() {
     if (confirm('Сбросить прогресс и начать заново?')) {
-        // Полностью сбрасываем прогресс
         localStorage.removeItem(`castle_progress_${userId}`);
         currentCastleCard = null;
         userCastleStats = { strength: 0, agility: 0, intelligence: 0 };
         selectedCastleCharacter = null;
         castleCompletedEndings = {};
-        castleCompletedChoices = {};
-        castleApprovedChoices = {};
+        castleCompletedChoices = {};  // ✅ Сбрасываем
+        castleApprovedChoices = {};   // ✅ Сбрасываем
         metEliza = false;
         currentEndingClaimed = false;
         
@@ -10373,11 +10372,12 @@ function submitCastleChoiceInGame(cardId, choiceIdx) {
             })
         }).catch(e => console.error('Skip sync error:', e));
         
-        // ✅ СРАЗУ ОДОБРЯЕМ ВЫБОР (без отправки админу)
+        // ✅ СРАЗУ ОДОБРЯЕМ ВЫБОР
         const choiceKey = cardId + '_choice_' + idx;
         if (!castleCompletedChoices) castleCompletedChoices = {};
-        castleCompletedChoices[choiceKey] = true;
         if (!castleApprovedChoices) castleApprovedChoices = {};
+        
+        castleCompletedChoices[choiceKey] = true;
         castleApprovedChoices[choiceKey] = true;
         
         // Применяем награду
@@ -10386,7 +10386,7 @@ function submitCastleChoiceInGame(cardId, choiceIdx) {
         // Сохраняем прогресс
         saveCastleProgress();
         
-        // Перерисовываем карточку — кнопка станет зелёной
+        // ✅ Перерисовываем карточку
         renderCastleCardInGame(cardId);
         
         return;
@@ -10461,7 +10461,6 @@ function submitCastleChoiceInGame(cardId, choiceIdx) {
     
     fileInput.click();
 }
-
 function proceedAfterApprovalInGame(cardId, choiceIdx) {
     proceedAfterApproval(cardId, choiceIdx);
     
