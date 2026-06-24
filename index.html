@@ -10082,9 +10082,22 @@ function renderCastleCardInGame(cardId) {
     const container = document.getElementById('storyGameContainer');
     if (!container) return;
     
+    console.log('🎮 Рендер карточки:', cardId);
+    
     const card = CASTLE_STORY.cards[cardId];
     if (!card) {
-        container.innerHTML = '<p style="text-align:center;padding:20px;color:var(--text-gray);">❌ Карточка не найдена</p>';
+        console.error('❌ Карточка не найдена:', cardId);
+        container.innerHTML = `
+            <div class="story-card-large">
+                <div class="story-card-image">
+                    <span class="image-placeholder">❓</span>
+                </div>
+                <div class="story-card-body">
+                    <p style="text-align:center;color:var(--text-gray);">Карточка #${cardId} не найдена</p>
+                    <button class="story-card-next-btn" onclick="backToStoryPreview()">← Назад</button>
+                </div>
+            </div>
+        `;
         return;
     }
     
@@ -10096,8 +10109,9 @@ function renderCastleCardInGame(cardId) {
         const result = giveRandomReward(reward.type, reward.lootKey);
         if (result) {
             setTimeout(() => {
-                alert(`🎁 ${reward.text}\n\nПолучено: ${result.name} (${result.type})`);
-            }, 500);
+                if (tg) tg.showAlert(`🎁 ${reward.text}\n\nПолучено: ${result.name} (${result.type})`);
+                else alert(`🎁 ${reward.text}\n\nПолучено: ${result.name} (${result.type})`);
+            }, 300);
         }
     }
     
@@ -10121,7 +10135,7 @@ function renderCastleCardInGame(cardId) {
                 </div>
                 <div class="story-card-body">
                     <div class="story-card-chapter">${card.chapter || 'Концовка'}</div>
-                    <p class="story-card-text">${card.text}</p>
+                    <p class="story-card-text">${card.text || ''}</p>
                     ${statsHtml}
                     <button class="story-card-next-btn" onclick="claimCastleEndingInGame('${cardId}')" style="background: #ffd700; color: #333;">
                         🎉 Завершить историю
@@ -10146,18 +10160,26 @@ function renderCastleCardInGame(cardId) {
                 choicesHtml += `
                     <button class="story-choice-btn ${isApproved ? 'approved' : 'pending'}" 
                             ${isApproved ? `onclick="proceedAfterApprovalInGame('${cardId}',${idx})"` : 'disabled'}>
-                        ${isApproved ? '✅' : '⏳'} ${choice.text}
-                        ${isApproved ? '' : '<div class="story-choice-task">Отправлено на проверку...</div>'}
+                        ${isApproved ? '✅' : '⏳'} ${choice.text || 'Выбор ' + (idx+1)}
+                        ${isApproved ? '' : '<div class="story-choice-task">Ожидает одобрения...</div>'}
                     </button>
                 `;
                 return;
             }
             
+            // Проверяем требования
             const hasSkip = choice.skipCost && choice.isPremium;
             const reqStat = choice.requireStat;
-            let meetsReq = reqStat ? (userCastleStats[reqStat.stat]||0) >= reqStat.min : true;
-            if (choice.requireOrSkip && !meetsReq) meetsReq = (userSkips||0) >= choice.requireOrSkip;
-            const isDisabled = !meetsReq || (hasSkip && (userSkips||0) < (choice.skipCost||0));
+            let meetsReq = true;
+            
+            if (reqStat) {
+                meetsReq = (userCastleStats[reqStat.stat] || 0) >= reqStat.min;
+            }
+            if (choice.requireOrSkip && !meetsReq) {
+                meetsReq = (userSkips || 0) >= choice.requireOrSkip;
+            }
+            
+            const isDisabled = !meetsReq || (hasSkip && (userSkips || 0) < (choice.skipCost || 0));
             
             let costBadge = '';
             if (hasSkip && !choice.text.includes('🎫')) {
@@ -10167,8 +10189,9 @@ function renderCastleCardInGame(cardId) {
             choicesHtml += `
                 <button class="story-choice-btn" 
                         ${isDisabled ? 'disabled' : `onclick="submitCastleChoiceInGame('${cardId}',${idx})"`}>
-                    ${choice.text}${costBadge}
+                    ${choice.text || 'Выбор ' + (idx+1)}${costBadge}
                     ${choice.task ? `<div class="story-choice-task">📸 ${choice.task}</div>` : ''}
+                    ${!meetsReq && !isDisabled ? '' : ''}
                 </button>
             `;
         });
@@ -10176,7 +10199,9 @@ function renderCastleCardInGame(cardId) {
         container.innerHTML = `
             <div class="story-card-large">
                 <div class="story-card-image">
-                    <img src="${cardImageUrl}" alt="Сцена" onerror="this.parentElement.innerHTML='<span class=\\'image-placeholder\\'>📖</span>'">
+                    <img src="${cardImageUrl}" alt="Сцена" 
+                         onerror="this.style.display='none'; this.parentElement.innerHTML='<span class=\\'image-placeholder\\'>📖</span>';">
+                    <span class="image-placeholder" style="display:none;">📖</span>
                 </div>
                 <div class="story-card-body">
                     ${card.chapter ? `<div class="story-card-chapter">📖 ${card.chapter}</div>` : ''}
@@ -10189,24 +10214,33 @@ function renderCastleCardInGame(cardId) {
         return;
     }
     
-    // ОБЫЧНАЯ КАРТОЧКА
+    // ОБЫЧНАЯ КАРТОЧКА (с кнопкой Далее)
     const cardImageUrl = `https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/ashetvil/${cardId}.jpg`;
     
     container.innerHTML = `
         <div class="story-card-large">
             <div class="story-card-image">
-                <img src="${cardImageUrl}" alt="Сцена" onerror="this.parentElement.innerHTML='<span class=\\'image-placeholder\\'>📖</span>'">
+                <img src="${cardImageUrl}" alt="Сцена" 
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <span class="image-placeholder" style="display:${cardImageUrl ? 'none' : 'flex'}; align-items:center; justify-content:center; width:100%; height:100%;">📖</span>
             </div>
             <div class="story-card-body">
                 ${card.chapter ? `<div class="story-card-chapter">📖 ${card.chapter}</div>` : ''}
-                <p class="story-card-text">${card.text}</p>
+                ${card.text ? `<p class="story-card-text">${card.text}</p>` : ''}
                 ${statsHtml}
-                <button class="story-card-next-btn" onclick="renderCastleCardInGame('${card.nextCard}')">
-                    Далее ▶
-                </button>
+                ${card.nextCard ? `
+                    <button class="story-card-next-btn" onclick="renderCastleCardInGame('${card.nextCard}')">
+                        Далее ▶
+                    </button>
+                ` : `
+                    <p style="text-align:center;color:var(--text-gray);">Нет следующей карточки</p>
+                    <button class="story-card-next-btn" onclick="backToStoryPreview()">← Назад</button>
+                `}
             </div>
         </div>
     `;
+    
+    console.log('✅ Карточка отрендерена:', cardId);
 }
 
 function submitCastleChoiceInGame(cardId, choiceIdx) {
