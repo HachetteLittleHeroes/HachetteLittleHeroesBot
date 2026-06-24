@@ -6991,13 +6991,17 @@ body:not([data-theme]) .modal-content,
             
             <!-- Тайны замка Ашетвиль -->
             <div class="story-card" onclick="openStoryPreview('castle')">
-                <div class="story-cover" style="background: linear-gradient(135deg, #1a1a2e 0%, #2d1b69 50%, #4a2c8a 100%); position: relative; overflow: hidden;">
-                    <div style="position: absolute; top: 10px; left: 10px; right: 10px; text-align: center; font-size: 40px;">🏰</div>
-                    <div style="position: absolute; bottom: 15px; left: 10px; right: 10px; text-align: center;">
+                <div class="story-cover" style="position: relative; overflow: hidden; background: #1a1a2e;">
+                    <img src="https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/ashetvil/castle_cover.jpg" 
+                         alt="Тайны замка Ашетвиль"
+                         style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0;"
+                         onerror="this.style.display='none'; this.parentElement.style.background='linear-gradient(135deg, #1a1a2e 0%, #2d1b69 50%, #4a2c8a 100%)'; this.nextElementSibling.style.display='flex';">
+                    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: none; align-items: center; justify-content: center; font-size: 48px;">🏰</div>
+                    <div style="position: absolute; bottom: 15px; left: 10px; right: 10px; text-align: center; z-index: 2;">
                         <div style="font-size: 10px; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 4px;">Интерактивная история</div>
                         <div style="font-size: 14px; color: white; font-weight: 700; line-height: 1.2;">Тайны замка<br>Ашетвиль</div>
                     </div>
-                    <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 40%; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);"></div>
+                    <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 50%; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); z-index: 1;"></div>
                 </div>
             </div>
             
@@ -7018,16 +7022,22 @@ body:not([data-theme]) .modal-content,
     <div id="storyPreviewScreen" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg); z-index: 10000; overflow-y: auto;">
         <div style="position: relative;">
             <!-- Обложка-шапка -->
-            <div style="background: linear-gradient(135deg, #1a1a2e 0%, #2d1b69 50%, #4a2c8a 100%); padding: 40px 20px 30px; text-align: center; position: relative;">
-                <button onclick="closeStoryPreview()" style="position: absolute; top: 15px; left: 15px; background: rgba(255,255,255,0.2); border: none; color: white; width: 36px; height: 36px; border-radius: 50%; font-size: 18px; cursor: pointer;">
-                    <i class="fas fa-arrow-left"></i>
-                </button>
-                <div style="font-size: 56px; margin-bottom: 10px;">🏰</div>
-                <h2 style="color: white; font-size: 22px; margin: 0 0 8px 0;">Тайны замка Ашетвиль</h2>
-                <div style="display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;">
-                    <span style="background: rgba(255,255,255,0.2); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px;">⚔️ Мистий</span>
-                    <span style="background: rgba(255,255,255,0.2); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px;">🗡️ Воровка</span>
-                    <span style="background: rgba(255,255,255,0.2); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px;">🔮 Алхимик</span>
+            <div style="background: #1a1a2e; padding: 40px 20px 30px; text-align: center; position: relative; overflow: hidden;">
+                <img src="https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/ashetvil/castle_cover.jpg" 
+                     alt="Тайны замка Ашетвиль"
+                     style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.4;"
+                     onerror="this.style.display='none'">
+                <div style="position: relative; z-index: 1;">
+                    <button onclick="closeStoryPreview()" style="position: absolute; top: -30px; left: -10px; background: rgba(255,255,255,0.2); border: none; color: white; width: 36px; height: 36px; border-radius: 50%; font-size: 18px; cursor: pointer;">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <div style="font-size: 56px; margin-bottom: 10px;">🏰</div>
+                    <h2 style="color: white; font-size: 22px; margin: 0 0 8px 0;">Тайны замка Ашетвиль</h2>
+                    <div style="display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;">
+                        <span style="background: rgba(255,255,255,0.2); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px;">⚔️ Мистий</span>
+                        <span style="background: rgba(255,255,255,0.2); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px;">🗡️ Воровка</span>
+                        <span style="background: rgba(255,255,255,0.2); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px;">🔮 Алхимик</span>
+                    </div>
                 </div>
             </div>
             
@@ -7120,7 +7130,6 @@ body:not([data-theme]) .modal-content,
         </div>
     </div>
 </div>
-
 <!-- ========== КОРЗИНА ========== -->
 <div id="cart" class="page">
     <div class="header">Корзина</div>
