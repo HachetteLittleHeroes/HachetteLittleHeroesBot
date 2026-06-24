@@ -10394,7 +10394,7 @@ function submitCastleChoiceInGame(cardId, choiceIdx) {
             })
         }).catch(e => console.error('Skip sync error:', e));
         
-        // ✅ СРАЗУ ОДОБРЯЕМ ВЫБОР
+        // СРАЗУ ОДОБРЯЕМ ВЫБОР
         const choiceKey = cardId + '_choice_' + idx;
         if (!castleCompletedChoices) castleCompletedChoices = {};
         if (!castleApprovedChoices) castleApprovedChoices = {};
@@ -10433,9 +10433,12 @@ function submitCastleChoiceInGame(cardId, choiceIdx) {
         const files = Array.from(event.target.files);
         if (files.length === 0) return;
         
+        // Показываем что фото выбрано
+        if (tg) tg.showAlert('📸 Фото выбрано! Отправляем...');
+        
         // Помечаем как отправленное только после выбора файлов
         if (!castleCompletedChoices) castleCompletedChoices = {};
-        const choiceKey = cardId + '_choice_' + idx;  // ✅ используем сохранённый idx
+        const choiceKey = cardId + '_choice_' + idx;
         castleCompletedChoices[choiceKey] = true;
         saveCastleProgress();
         
@@ -10473,6 +10476,7 @@ function submitCastleChoiceInGame(cardId, choiceIdx) {
             }
         } catch (error) {
             console.error('❌ Ошибка отправки:', error);
+            // При ошибке даём возможность переотправить
             delete castleCompletedChoices[choiceKey];
             saveCastleProgress();
             
