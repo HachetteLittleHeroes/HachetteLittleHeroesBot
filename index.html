@@ -9969,18 +9969,24 @@ function continueStoryFromPreview() {
 
 function resetAndStartStory() {
     if (confirm('Сбросить прогресс и начать заново?')) {
-        // Полностью сбрасываем ВСЁ
+        // Сбрасываем локально
         localStorage.removeItem(`castle_progress_${userId}`);
         currentCastleCard = null;
         userCastleStats = { strength: 0, agility: 0, intelligence: 0 };
         selectedCastleCharacter = null;
         castleCompletedEndings = {};
-        castleCompletedChoices = {};  // ✅ Сбрасываем
-        castleApprovedChoices = {};   // ✅ Сбрасываем
+        castleCompletedChoices = {};
+        castleApprovedChoices = {};
         metEliza = false;
         currentEndingClaimed = false;
         
-        // Открываем игровой экран с выбором персонажа
+        // ✅ Сбрасываем на сервере
+        fetch(`${SERVER_URL}/api/castle/reset_approvals`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId })
+        }).catch(e => console.error('Reset error:', e));
+        
         const previewScreen = document.getElementById('storyPreviewScreen');
         const gameScreen = document.getElementById('storyGameScreen');
         
@@ -10052,10 +10058,17 @@ function resetStoryFromGame() {
         userCastleStats = { strength: 0, agility: 0, intelligence: 0 };
         selectedCastleCharacter = null;
         castleCompletedEndings = {};
-        castleCompletedChoices = {};  // ✅ Сбрасываем
-        castleApprovedChoices = {};   // ✅ Сбрасываем
+        castleCompletedChoices = {};
+        castleApprovedChoices = {};
         metEliza = false;
         currentEndingClaimed = false;
+        
+        // ✅ Сбрасываем на сервере
+        fetch(`${SERVER_URL}/api/castle/reset_approvals`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId })
+        }).catch(e => console.error('Reset error:', e));
         
         showCharacterSelectInGame();
     }
@@ -10171,13 +10184,22 @@ function confirmCharacterSelection(charId) {
     userCastleStats = { ...char.stats };
     metEliza = false;
     castleCompletedChoices = {};
-    castleApprovedChoices = {};
+    castleApprovedChoices = {};  // ✅ Сбрасываем локально
     currentEndingClaimed = false;
     
     const prefixMap = { mystic: 'M', thief: 'V', alchemist: 'A' };
     currentCastleCard = '1' + prefixMap[charId] + '_1';
     
     console.log('🎮 Выбран персонаж:', charId, '→ карта:', currentCastleCard);
+    
+    // ✅ Сбрасываем castle_approved на сервере
+    fetch(`${SERVER_URL}/api/castle/reset_approvals`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: userId })
+    }).then(() => {
+        console.log('✅ Одобрения на сервере сброшены');
+    }).catch(e => console.error('Reset approvals error:', e));
     
     loadCastleLoot();
     saveCastleProgress();
