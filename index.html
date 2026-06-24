@@ -24363,7 +24363,8 @@ window.onload = async () => {
             // Скипы — берём большее из /api/init и localStorage
             const savedSkipsLocal = parseInt(localStorage.getItem(`user_skips_${userId}`) || '0');
             const apiSkips = initData.skips || 0;
-            userSkips = Math.max(apiSkips, savedSkipsLocal);
+userSkips = apiSkips || 0;
+localStorage.setItem(`user_skips_${userId}`, userSkips);
             localStorage.setItem(`user_skips_${userId}`, userSkips);
             
             // Season Pass
