@@ -5996,6 +5996,59 @@ body:not([data-theme]) .modal-content,
     text-align: center !important;
     font-size: 16px !important;
 }
+        /* ==========================================
+   СТИЛИ ДЛЯ ВКЛАДКИ ИСТОРИИ
+   ========================================== */
+.story-card {
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.story-card:active {
+    transform: scale(0.97);
+}
+
+.story-cover {
+    width: 100%;
+    aspect-ratio: 2/3;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.story-preview-cover {
+    width: 100%;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+}
+
+#storyPreviewScreen,
+#storyGameScreen {
+    animation: fadeIn 0.3s ease-out;
+}
+
+.story-character-card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 15px;
+    text-align: center;
+    border: 2px solid var(--border-color);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.story-character-card:hover,
+.story-character-card:active {
+    border-color: var(--accent);
+    transform: scale(0.98);
+}
+
+.story-character-card.selected {
+    border-color: var(--accent);
+    background: rgba(255,149,0,0.05);
+}
     </style>
 </head>
 <body>
@@ -6233,26 +6286,7 @@ body:not([data-theme]) .modal-content,
         </div>
     </div>
 </div>
-  <!-- ========== ИСТОРИИ ========== -->
-<div class="tasks-section" style="margin-top: 15px;">
-    <button class="tasks-header" onclick="toggleCastleStory()">
-        <span>📖 Тайны замка Ашетвиль</span>
-        <i class="fas fa-chevron-down" id="castleStoryArrow"></i>
-    </button>
-    <div id="castleStoryContent" class="tasks-content" style="display: none;">
-        <div id="castleStoryContainer">
-            <div style="text-align: center; padding: 20px;">
-                <div style="font-size: 48px;">🏰</div>
-                <h3>Тайны замка Ашетвиль</h3>
-                <p style="color: var(--text-gray); margin: 15px 0;">Интерактивная история с выборами. Три персонажа, три пути, девять концовок.</p>
-                <p style="color: var(--text-gray); font-size: 12px; margin-bottom: 15px;">Раскрашивайте страницы, делайте выбор и меняйте сюжет!</p>
-                <button class="task-submit-btn" onclick="startCastleStory()" style="width: 100%;">
-                    🎮 Начать историю
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
+
     <!-- ========== ЗАДАНИЯ НА ВРЕМЯ ========== -->
     <div class="tasks-section time-tasks-section">
         <button class="tasks-header" onclick="toggleTimeTasks()">
@@ -6952,31 +6986,138 @@ body:not([data-theme]) .modal-content,
 <!-- ========== ИСТОРИИ ========== -->
 <div id="stories" class="page">
     <div class="header">Истории</div>
-    <div style="padding: 15px; display: flex; flex-direction: column; gap: 15px;">
-        
-        <!-- Тайны замка Ашетвиль -->
-        <div class="inventory-main-block" style="cursor: pointer;" onclick="openCastleStoryFromStories()">
-            <div style="display: flex; align-items: center; gap: 15px; padding: 15px; background: var(--bg-secondary); border-radius: 20px; border: 1px solid var(--border-color);">
-                <div style="width: 90px; height: 120px; border-radius: 16px; overflow: hidden; flex-shrink: 0; background: linear-gradient(135deg, #1a1a2e, #2d1b69); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
-                    <span style="font-size: 48px;">🏰</span>
+    <div style="padding: 15px;">
+        <div id="storiesGrid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+            
+            <!-- Тайны замка Ашетвиль -->
+            <div class="story-card" onclick="openStoryPreview('castle')">
+                <div class="story-cover" style="background: linear-gradient(135deg, #1a1a2e 0%, #2d1b69 50%, #4a2c8a 100%); position: relative; overflow: hidden;">
+                    <div style="position: absolute; top: 10px; left: 10px; right: 10px; text-align: center; font-size: 40px;">🏰</div>
+                    <div style="position: absolute; bottom: 15px; left: 10px; right: 10px; text-align: center;">
+                        <div style="font-size: 10px; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 4px;">Интерактивная история</div>
+                        <div style="font-size: 14px; color: white; font-weight: 700; line-height: 1.2;">Тайны замка<br>Ашетвиль</div>
+                    </div>
+                    <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 40%; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);"></div>
                 </div>
-                <div style="flex: 1;">
-                    <h3 style="margin: 0 0 8px 0; font-size: 18px; color: var(--text);">Тайны замка Ашетвиль</h3>
-                    <p style="margin: 0; color: var(--text-gray); font-size: 13px; line-height: 1.4;">
-                        Интерактивная история с выборами. Три персонажа, три пути, девять концовок. Раскрашивайте страницы, делайте выбор и меняйте сюжет!
-                    </p>
-                    <div style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;">
-                        <span style="background: var(--accent); color: white; padding: 4px 10px; border-radius: 15px; font-size: 11px;">⚔️ Мистий</span>
-                        <span style="background: var(--accent); color: white; padding: 4px 10px; border-radius: 15px; font-size: 11px;">🗡️ Воровка</span>
-                        <span style="background: var(--accent); color: white; padding: 4px 10px; border-radius: 15px; font-size: 11px;">🔮 Алхимик</span>
+            </div>
+            
+            <!-- Заглушка для будущей истории -->
+            <div class="story-card" style="opacity: 0.4; pointer-events: none;">
+                <div class="story-cover" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); position: relative;">
+                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+                        <div style="font-size: 32px;">🔮</div>
+                        <div style="font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 8px;">Скоро...</div>
                     </div>
                 </div>
-                <i class="fas fa-chevron-right" style="color: var(--text-gray); font-size: 20px;"></i>
+            </div>
+            
+        </div>
+    </div>
+    
+    <!-- Превью истории (описание) -->
+    <div id="storyPreviewScreen" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg); z-index: 10000; overflow-y: auto;">
+        <div style="position: relative;">
+            <!-- Обложка-шапка -->
+            <div style="background: linear-gradient(135deg, #1a1a2e 0%, #2d1b69 50%, #4a2c8a 100%); padding: 40px 20px 30px; text-align: center; position: relative;">
+                <button onclick="closeStoryPreview()" style="position: absolute; top: 15px; left: 15px; background: rgba(255,255,255,0.2); border: none; color: white; width: 36px; height: 36px; border-radius: 50%; font-size: 18px; cursor: pointer;">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <div style="font-size: 56px; margin-bottom: 10px;">🏰</div>
+                <h2 style="color: white; font-size: 22px; margin: 0 0 8px 0;">Тайны замка Ашетвиль</h2>
+                <div style="display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;">
+                    <span style="background: rgba(255,255,255,0.2); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px;">⚔️ Мистий</span>
+                    <span style="background: rgba(255,255,255,0.2); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px;">🗡️ Воровка</span>
+                    <span style="background: rgba(255,255,255,0.2); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px;">🔮 Алхимик</span>
+                </div>
+            </div>
+            
+            <!-- Контент -->
+            <div style="padding: 20px;">
+                <div style="margin-bottom: 20px;">
+                    <h3 style="font-size: 16px; color: var(--accent); margin: 0 0 10px 0;">📖 Об истории</h3>
+                    <p style="color: var(--text-gray); font-size: 14px; line-height: 1.6;">
+                        Три персонажа, три уникальных пути, девять концовок. Вас ждёт захватывающее приключение в стенах древнего замка, полного тайн и магии.
+                    </p>
+                    <p style="color: var(--text-gray); font-size: 14px; line-height: 1.6; margin-top: 10px;">
+                        Раскрашивайте страницы, отправляйте фото, делайте выбор и влияйте на развитие сюжета. Каждое решение приближает вас к одному из девяти финалов.
+                    </p>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <h3 style="font-size: 16px; color: var(--accent); margin: 0 0 10px 0;">🎭 Персонажи</h3>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <div style="background: var(--card-bg); border-radius: 12px; padding: 12px; border: 1px solid var(--border-color);">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+                                <span style="font-size: 28px;">⚔️</span>
+                                <span style="font-weight: 700; color: var(--text);">Мистий</span>
+                                <span style="font-size: 11px; color: var(--text-gray);">💪14 🏃4 🧠2</span>
+                            </div>
+                            <p style="color: var(--text-gray); font-size: 12px; margin: 0;">Охотник на нежить. Путь силы и отваги.</p>
+                        </div>
+                        <div style="background: var(--card-bg); border-radius: 12px; padding: 12px; border: 1px solid var(--border-color);">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+                                <span style="font-size: 28px;">🗡️</span>
+                                <span style="font-weight: 700; color: var(--text);">Воровка</span>
+                                <span style="font-size: 11px; color: var(--text-gray);">💪5 🏃13 🧠2</span>
+                            </div>
+                            <p style="color: var(--text-gray); font-size: 12px; margin: 0;">Мастер скрытности. Путь ловкости и хитрости.</p>
+                        </div>
+                        <div style="background: var(--card-bg); border-radius: 12px; padding: 12px; border: 1px solid var(--border-color);">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+                                <span style="font-size: 28px;">🔮</span>
+                                <span style="font-weight: 700; color: var(--text);">Алхимик</span>
+                                <span style="font-size: 11px; color: var(--text-gray);">💪2 🏃4 🧠14</span>
+                            </div>
+                            <p style="color: var(--text-gray); font-size: 12px; margin: 0;">Искатель знаний. Путь мудрости и магии.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <h3 style="font-size: 16px; color: var(--accent); margin: 0 0 10px 0;">📊 Характеристики</h3>
+                    <div style="display: flex; gap: 15px; text-align: center;">
+                        <div style="flex: 1; background: var(--card-bg); border-radius: 12px; padding: 15px; border: 1px solid var(--border-color);">
+                            <div style="font-size: 28px;">💪</div>
+                            <div style="font-weight: 700; color: var(--text);">Сила</div>
+                            <div style="font-size: 11px; color: var(--text-gray);">Влияет на бой</div>
+                        </div>
+                        <div style="flex: 1; background: var(--card-bg); border-radius: 12px; padding: 15px; border: 1px solid var(--border-color);">
+                            <div style="font-size: 28px;">🏃</div>
+                            <div style="font-weight: 700; color: var(--text);">Ловкость</div>
+                            <div style="font-size: 11px; color: var(--text-gray);">Влияет на скрытность</div>
+                        </div>
+                        <div style="flex: 1; background: var(--card-bg); border-radius: 12px; padding: 15px; border: 1px solid var(--border-color);">
+                            <div style="font-size: 28px;">🧠</div>
+                            <div style="font-weight: 700; color: var(--text);">Интеллект</div>
+                            <div style="font-size: 11px; color: var(--text-gray);">Влияет на магию</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Кнопка действия -->
+                <div id="storyActionButton" style="margin-top: 20px;">
+                    <button class="task-submit-btn" onclick="startStoryFromPreview()" style="width: 100%; padding: 16px; font-size: 16px;">
+                        🎮 Начать историю
+                    </button>
+                </div>
             </div>
         </div>
-        
-        <!-- Здесь можно добавить другие истории в будущем -->
-        
+    </div>
+    
+    <!-- Экран игры (полноэкранный) -->
+    <div id="storyGameScreen" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg); z-index: 10001; overflow-y: auto; padding-bottom: 30px;">
+        <div style="padding: 15px;">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                <button onclick="backToStoryPreview()" style="background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text); width: 40px; height: 40px; border-radius: 50%; font-size: 18px; cursor: pointer;">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <h3 style="margin: 0; color: var(--text);">📖 Тайны замка Ашетвиль</h3>
+                <button onclick="resetStoryFromGame()" style="margin-left: auto; background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-gray); padding: 6px 12px; border-radius: 20px; font-size: 12px; cursor: pointer;">
+                    <i class="fas fa-redo"></i> Заново
+                </button>
+            </div>
+            <div id="storyGameContainer"></div>
+        </div>
     </div>
 </div>
 
@@ -9484,7 +9625,315 @@ function isFriendTaskCompleted(taskIdx) {
     }
     return true;
 }
+// ==========================================
+// ФУНКЦИИ ДЛЯ ВКЛАДКИ ИСТОРИИ
+// ==========================================
 
+// Переменные для экранов
+let storyGameActive = false;
+
+function openStoryPreview(storyId) {
+    if (storyId === 'castle') {
+        const previewScreen = document.getElementById('storyPreviewScreen');
+        const gameScreen = document.getElementById('storyGameScreen');
+        const storiesGrid = document.getElementById('storiesGrid');
+        
+        // Скрываем сетку, показываем превью
+        document.querySelector('#stories .header').style.display = 'none';
+        storiesGrid.style.display = 'none';
+        previewScreen.style.display = 'block';
+        gameScreen.style.display = 'none';
+        
+        // Проверяем, есть ли активный прогресс
+        loadCastleProgress().then(function(hasProgress) {
+            const actionBtn = document.getElementById('storyActionButton');
+            if (hasProgress && currentCastleCard && !currentEndingClaimed) {
+                actionBtn.innerHTML = `
+                    <button class="task-submit-btn" onclick="continueStoryFromPreview()" style="width: 100%; padding: 16px; font-size: 16px; background: var(--status-green);">
+                        ▶ Продолжить историю
+                    </button>
+                    <button class="task-submit-btn" onclick="resetAndStartStory()" style="width: 100%; padding: 12px; font-size: 13px; margin-top: 10px; background: var(--card-bg); color: var(--text); border: 1px solid var(--border-color);">
+                        🔄 Начать заново
+                    </button>
+                `;
+            } else if (hasProgress && currentEndingClaimed) {
+                const endingsCount = Object.keys(castleCompletedEndings).length;
+                actionBtn.innerHTML = `
+                    <div style="text-align: center; padding: 15px; background: var(--card-bg); border-radius: 12px; margin-bottom: 10px;">
+                        <div style="font-size: 14px; color: var(--text);">🏆 Концовок открыто: ${endingsCount}/9</div>
+                    </div>
+                    <button class="task-submit-btn" onclick="resetAndStartStory()" style="width: 100%; padding: 16px; font-size: 16px;">
+                        🔄 Пройти заново
+                    </button>
+                `;
+            } else {
+                actionBtn.innerHTML = `
+                    <button class="task-submit-btn" onclick="startStoryFromPreview()" style="width: 100%; padding: 16px; font-size: 16px;">
+                        🎮 Начать историю
+                    </button>
+                `;
+            }
+        });
+    }
+}
+
+function closeStoryPreview() {
+    const previewScreen = document.getElementById('storyPreviewScreen');
+    const gameScreen = document.getElementById('storyGameScreen');
+    const storiesGrid = document.getElementById('storiesGrid');
+    
+    previewScreen.style.display = 'none';
+    gameScreen.style.display = 'none';
+    document.querySelector('#stories .header').style.display = '';
+    storiesGrid.style.display = 'grid';
+    storyGameActive = false;
+}
+
+function startStoryFromPreview() {
+    const previewScreen = document.getElementById('storyPreviewScreen');
+    const gameScreen = document.getElementById('storyGameScreen');
+    
+    previewScreen.style.display = 'none';
+    gameScreen.style.display = 'block';
+    storyGameActive = true;
+    
+    // Запускаем выбор персонажа
+    showCharacterSelectInGame();
+}
+
+function continueStoryFromPreview() {
+    const previewScreen = document.getElementById('storyPreviewScreen');
+    const gameScreen = document.getElementById('storyGameScreen');
+    
+    previewScreen.style.display = 'none';
+    gameScreen.style.display = 'block';
+    storyGameActive = true;
+    
+    // Продолжаем с сохранённого места
+    const card = CASTLE_STORY.cards[currentCastleCard];
+    if (card && card.isEnding && currentEndingClaimed) {
+        showEndingInGame('');
+    } else {
+        renderCastleCardInGame(currentCastleCard);
+    }
+}
+
+function resetAndStartStory() {
+    if (confirm('Сбросить прогресс и начать заново?')) {
+        resetCastleProgress();
+        startStoryFromPreview();
+    }
+}
+
+function backToStoryPreview() {
+    const previewScreen = document.getElementById('storyPreviewScreen');
+    const gameScreen = document.getElementById('storyGameScreen');
+    
+    gameScreen.style.display = 'none';
+    previewScreen.style.display = 'block';
+    storyGameActive = false;
+}
+
+function resetStoryFromGame() {
+    if (confirm('Сбросить прогресс и начать заново?')) {
+        resetCastleProgress();
+        showCharacterSelectInGame();
+    }
+}
+
+// ==========================================
+// ФУНКЦИИ ДЛЯ ИГРЫ ВНУТРИ ЭКРАНА ИСТОРИЙ
+// ==========================================
+
+function showCharacterSelectInGame() {
+    const container = document.getElementById('storyGameContainer');
+    if (!container) return;
+    
+    currentEndingClaimed = false;
+    
+    let charsHtml = '<h3 style="text-align: center; margin-bottom: 15px;">Выберите персонажа</h3>';
+    
+    for (const [id, char] of Object.entries(CASTLE_CHARACTERS)) {
+        const charImageUrl = `https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/ashetvil/${id}.jpg`;
+        charsHtml += `
+            <div class="story-character-card" onclick="selectCharacterInGame('${id}')" style="margin-bottom: 15px;">
+                <img src="${charImageUrl}" alt="${char.name}" style="width: 100%; max-width: 200px; height: auto; border-radius: 12px; margin-bottom: 10px;" onerror="this.style.display='none'">
+                <div style="font-size: 24px; margin-bottom: 5px;">${id === 'mystic' ? '⚔️' : id === 'thief' ? '🗡️' : '🔮'}</div>
+                <div style="font-weight: 700; font-size: 18px; margin-bottom: 8px;">${char.name}</div>
+                <div style="font-size: 13px; color: var(--text-gray); margin-bottom: 8px; line-height: 1.4;">${char.desc}</div>
+                <div style="font-size: 12px; color: var(--accent); margin-bottom: 5px;">
+                    💪${char.stats.strength} 🏃${char.stats.agility} 🧠${char.stats.intelligence}
+                </div>
+                <div style="font-size: 11px; color: var(--text-gray);">${char.bonus}</div>
+            </div>
+        `;
+    }
+    
+    container.innerHTML = charsHtml;
+}
+
+function selectCharacterInGame(charId) {
+    const char = CASTLE_CHARACTERS[charId];
+    if (!char) return;
+    
+    selectedCastleCharacter = charId;
+    userCastleStats = { ...char.stats };
+    metEliza = false;
+    castleCompletedChoices = {};
+    castleApprovedChoices = {};
+    currentEndingClaimed = false;
+    
+    const prefixMap = { mystic: 'M', thief: 'T', alchemist: 'A' };
+    currentCastleCard = '1' + prefixMap[charId] + '_1';
+    
+    loadCastleLoot();
+    saveCastleProgress();
+    renderCastleCardInGame(currentCastleCard);
+}
+
+function renderCastleCardInGame(cardId) {
+    const container = document.getElementById('storyGameContainer');
+    if (!container) return;
+    
+    const card = CASTLE_STORY.cards[cardId];
+    if (!card) {
+        container.innerHTML = '<p style="text-align:center;padding:20px;">❌ Карточка не найдена</p>';
+        return;
+    }
+    
+    currentCastleCard = cardId;
+    
+    // Проверяем скрытую награду
+    if (HIDDEN_REWARDS[cardId] && !card.isEnding && !card.isChoice) {
+        const reward = HIDDEN_REWARDS[cardId];
+        const result = giveRandomReward(reward.type, reward.lootKey);
+        if (result) {
+            setTimeout(() => {
+                alert(`🎁 ${reward.text}\n\nПолучено: ${result.name} (${result.type})`);
+            }, 500);
+        }
+    }
+    
+    saveCastleProgress();
+    
+    const statsHtml = `<div style="display: flex; gap: 15px; justify-content: center; margin-bottom: 15px; font-size: 13px;"><span>💪 ${userCastleStats.strength||0}</span><span>🏃 ${userCastleStats.agility||0}</span><span>🧠 ${userCastleStats.intelligence||0}</span><span style="color: var(--accent);">🎫 ${userSkips||0} скипов</span></div>`;
+    
+    if (card.isEnding) {
+        container.innerHTML = `
+            <div style="text-align: center; font-size: 36px; margin-bottom: 15px;">${card.isSecret ? '🔮' : '🏆'}</div>
+            <div style="font-weight: 700; font-size: 18px; margin-bottom: 10px; color: var(--accent); text-align: center;">${card.chapter || 'Концовка'}</div>
+            <p style="line-height: 1.5;">${card.text}</p>
+            <button class="task-submit-btn" onclick="claimCastleEndingInGame('${cardId}')" style="width: 100%; margin-top: 15px;">🎉 Завершить историю</button>
+        `;
+        return;
+    }
+    
+    if (card.isChoice) {
+        let choicesHtml = '';
+        card.choices.forEach((choice, idx) => {
+            const choiceKey = cardId + '_choice_' + idx;
+            const isCompleted = castleCompletedChoices && castleCompletedChoices[choiceKey];
+            
+            if (isCompleted) {
+                const isApproved = castleApprovedChoices && castleApprovedChoices[choiceKey];
+                choicesHtml += isApproved ?
+                    `<div style="margin-bottom: 10px;"><button class="task-submit-btn" style="width: 100%; text-align: left; padding: 12px; background: var(--status-green); color: white;" onclick="proceedAfterApprovalInGame('${cardId}',${idx})">✅ ${choice.text} — ОДОБРЕНО</button></div>` :
+                    `<div style="margin-bottom: 10px;"><button class="task-submit-btn" style="width: 100%; text-align: left; padding: 12px; opacity: 0.7;" disabled>⏳ ${choice.text} — Отправлено</button></div>`;
+                return;
+            }
+            
+            const hasSkip = choice.skipCost && choice.isPremium;
+            const reqStat = choice.requireStat;
+            let meetsReq = reqStat ? (userCastleStats[reqStat.stat]||0) >= reqStat.min : true;
+            if (choice.requireOrSkip && !meetsReq) meetsReq = (userSkips||0) >= choice.requireOrSkip;
+            const isDisabled = !meetsReq || (hasSkip && (userSkips||0) < (choice.skipCost||0));
+            
+            let costBadge = '';
+            if (hasSkip && !choice.text.includes('🎫')) {
+                costBadge = ` (🎫${choice.skipCost})`;
+            }
+            
+            const hasTask = choice.task && choice.task !== 'null';
+            
+            choicesHtml += `<div style="margin-bottom: 10px; cursor: pointer;" onclick="${isDisabled ? '' : "submitCastleChoiceInGame('" + cardId + "'," + idx + ")"}">
+                <div class="task-submit-btn castle-choice-btn" style="width: 100%; text-align: left; padding: 12px; ${isDisabled?'opacity: 0.5; pointer-events: none;':''}">
+                    <div style="font-weight: 500;">${choice.text}${costBadge}</div>
+                    ${hasTask ? '<div style="font-size: 11px; opacity: 0.8; margin-top: 4px;">📸 ' + choice.task + '</div>' : ''}
+                </div>
+            </div>`;
+        });
+        
+        const cardImageUrl = `https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/ashetvil/${cardId}.jpg`;
+        
+        container.innerHTML = `
+            ${card.chapter ? `<div style="font-weight: 700; font-size: 16px; color: var(--accent); margin-bottom: 10px;">📖 ${card.chapter}</div>` : ''}
+            ${card.text ? `<p style="margin-bottom: 15px; line-height: 1.5;">${card.text}</p>` : ''}
+            <div style="text-align: center; margin-bottom: 15px;">
+                <img src="${cardImageUrl}" alt="Образец" style="max-width: 100%; max-height: 300px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.15);" onerror="this.style.display='none'">
+            </div>
+            ${statsHtml}
+            <div>${choicesHtml}</div>
+        `;
+        return;
+    }
+    
+    // Обычная карточка
+    container.innerHTML = `
+        ${card.chapter ? `<div style="font-weight: 700; font-size: 16px; color: var(--accent); margin-bottom: 10px;">📖 ${card.chapter}</div>` : ''}
+        <p style="line-height: 1.5;">${card.text}</p>
+        ${statsHtml}
+        <button class="task-submit-btn" onclick="renderCastleCardInGame('${card.nextCard}')" style="width: 100%;">Далее ▶</button>
+    `;
+}
+
+function submitCastleChoiceInGame(cardId, choiceIdx) {
+    // Используем те же функции, что и в профиле
+    submitCastleChoice(cardId, choiceIdx);
+    
+    // После отправки обновляем экран
+    setTimeout(() => {
+        renderCastleCardInGame(cardId);
+    }, 300);
+}
+
+function proceedAfterApprovalInGame(cardId, choiceIdx) {
+    proceedAfterApproval(cardId, choiceIdx);
+    
+    // После одобрения обновляем экран
+    setTimeout(() => {
+        if (currentCastleCard) {
+            renderCastleCardInGame(currentCastleCard);
+        }
+    }, 300);
+}
+
+function claimCastleEndingInGame(cardId) {
+    claimCastleEnding(cardId);
+    
+    // Показываем результат
+    setTimeout(() => {
+        showEndingInGame('');
+    }, 300);
+}
+
+function showEndingInGame(message) {
+    const container = document.getElementById('storyGameContainer');
+    if (!container) return;
+    
+    const endingsCount = Object.keys(castleCompletedEndings).length;
+    
+    container.innerHTML = `
+        <div style="text-align: center; padding: 20px;">
+            <div style="font-size: 48px;">🏰</div>
+            <h3>Тайны замка Ашетвиль</h3>
+            <p style="color: var(--text-gray); margin: 15px 0;">${message || ''}</p>
+            <p style="color: var(--text-gray);">Концовок открыто: ${endingsCount}/9</p>
+            <p style="color: var(--text-gray); font-size: 12px;">Шанс статуса: обычные 25% | секретные 60%</p>
+            <button class="task-submit-btn" onclick="resetAndStartStory()" style="margin-top: 15px;">🔄 Пройти заново</button>
+            <button class="task-submit-btn" onclick="backToStoryPreview()" style="margin-top: 10px; background: var(--card-bg); color: var(--text); border: 1px solid var(--border-color);">← К описанию</button>
+        </div>
+    `;
+}
 function getCurrentFriendLevelIndex(taskIdx) {
     const task = FRIEND_TASKS[taskIdx];
     for (let i = 0; i < task.levels.length; i++) {
