@@ -10352,12 +10352,13 @@ function submitCastleChoiceInGame(cardId, choiceIdx) {
     
     // Премиум-выбор со скипом — без фото
     if (choice.isPremium && choice.skipCost) {
-        if ((userSkips||0) < choice.skipCost) { 
-            if (tg) tg.showAlert('Недостаточно скипов!'); 
-            else alert('Недостаточно скипов!');
+        const currentSkips = parseInt(localStorage.getItem(`user_skips_${userId}`) || '0');
+        if (currentSkips < choice.skipCost) { 
+            if (tg) tg.showAlert('Недостаточно скипов! Нужно: ' + choice.skipCost + ', у вас: ' + currentSkips);
+            else alert('Недостаточно скипов! Нужно: ' + choice.skipCost + ', у вас: ' + currentSkips);
             return; 
         }
-        userSkips -= choice.skipCost;
+        userSkips = currentSkips - choice.skipCost;
         localStorage.setItem(`user_skips_${userId}`, userSkips);
         if (typeof updateSkipDisplay === 'function') updateSkipDisplay();
         applyCastleReward(choice);
@@ -10382,9 +10383,9 @@ function submitCastleChoiceInGame(cardId, choiceIdx) {
         const files = Array.from(event.target.files);
         if (files.length === 0) return;
         
-        // ✅ ТОЛЬКО ПОСЛЕ ВЫБОРА ФАЙЛОВ помечаем как отправленное
+        // Помечаем как отправленное только после выбора файлов
         if (!castleCompletedChoices) castleCompletedChoices = {};
-        const choiceKey = cardId + '_choice_' + choiceIdx;
+        const choiceKey = cardId + '_choice_' + idx;
         castleCompletedChoices[choiceKey] = true;
         saveCastleProgress();
         
@@ -10422,7 +10423,7 @@ function submitCastleChoiceInGame(cardId, choiceIdx) {
             }
         } catch (error) {
             console.error('❌ Ошибка отправки:', error);
-            // ✅ При ошибке даём возможность переотправить
+            // При ошибке даём возможность переотправить
             delete castleCompletedChoices[choiceKey];
             saveCastleProgress();
             
