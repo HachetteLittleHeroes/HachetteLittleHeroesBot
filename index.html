@@ -10352,13 +10352,13 @@ function submitCastleChoiceInGame(cardId, choiceIdx) {
     
     // Премиум-выбор со скипом — без фото
     if (choice.isPremium && choice.skipCost) {
-        const currentSkips = parseInt(localStorage.getItem(`user_skips_${userId}`) || '0');
-        if (currentSkips < choice.skipCost) { 
-            if (tg) tg.showAlert('Недостаточно скипов! Нужно: ' + choice.skipCost + ', у вас: ' + currentSkips);
-            else alert('Недостаточно скипов! Нужно: ' + choice.skipCost + ', у вас: ' + currentSkips);
+        // Проверяем скипы через ту же переменную, что и везде
+        if (!userSkips || userSkips < choice.skipCost) { 
+            if (tg) tg.showAlert('Недостаточно скипов! Нужно: ' + choice.skipCost + ', у вас: ' + (userSkips || 0));
+            else alert('Недостаточно скипов! Нужно: ' + choice.skipCost + ', у вас: ' + (userSkips || 0));
             return; 
         }
-        userSkips = currentSkips - choice.skipCost;
+        userSkips -= choice.skipCost;
         localStorage.setItem(`user_skips_${userId}`, userSkips);
         if (typeof updateSkipDisplay === 'function') updateSkipDisplay();
         applyCastleReward(choice);
