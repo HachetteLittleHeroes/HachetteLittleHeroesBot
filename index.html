@@ -10259,21 +10259,19 @@ function renderCastleCardInGame(cardId) {
         let choicesHtml = '';
         card.choices.forEach((choice, idx) => {
             const choiceKey = cardId + '_choice_' + idx;
-            const isCompleted = castleCompletedChoices && castleCompletedChoices[choiceKey];
+            const isApproved = castleApprovedChoices && castleApprovedChoices[choiceKey];
             
-            if (isCompleted) {
-                const isApproved = castleApprovedChoices && castleApprovedChoices[choiceKey];
+            // ✅ ОДОБРЕНО — можно продолжить
+            if (isApproved) {
                 choicesHtml += `
-                    <button class="story-choice-btn ${isApproved ? 'approved' : 'pending'}" 
-                            ${isApproved ? `onclick="proceedAfterApprovalInGame('${cardId}',${idx})"` : 'disabled'}>
-                        ${isApproved ? '✅' : '⏳'} ${choice.text || 'Выбор ' + (idx+1)}
-                        ${isApproved ? '' : '<div class="story-choice-task">Ожидает одобрения...</div>'}
+                    <button class="story-choice-btn approved" onclick="proceedAfterApprovalInGame('${cardId}',${idx})">
+                        ✅ ${choice.text || 'Выбор ' + (idx+1)}
                     </button>
                 `;
                 return;
             }
             
-            // Проверяем требования
+            // 🔲 ВСЕГДА АКТИВНАЯ КНОПКА — можно отправить/переотправить фото
             const hasSkip = choice.skipCost && choice.isPremium;
             const reqStat = choice.requireStat;
             let meetsReq = true;
@@ -10297,7 +10295,6 @@ function renderCastleCardInGame(cardId) {
                         ${isDisabled ? 'disabled' : `onclick="submitCastleChoiceInGame('${cardId}',${idx})"`}>
                     ${choice.text || 'Выбор ' + (idx+1)}${costBadge}
                     ${choice.task ? `<div class="story-choice-task">📸 ${choice.task}</div>` : ''}
-                    ${!meetsReq && !isDisabled ? '' : ''}
                 </button>
             `;
         });
@@ -10348,15 +10345,94 @@ function renderCastleCardInGame(cardId) {
     
     console.log('✅ Карточка отрендерена:', cardId);
 }
-
 function submitCastleChoiceInGame(cardId, choiceIdx) {
-    submitCastleChoice(cardId, choiceIdx);
+    const card = CASTLE_STORY.cards[cardId];
+    const choice = card.choices[choiceIdx];
+    if (!choice) return;
     
-    setTimeout(() => {
-        if (storyGameActive) {
+    // Премиум-выбор со скипом — без фото
+    if (choice.isPremium && choice.skipCost) {
+        if ((userSkips||0) < choice.skipCost) { 
+            if (tg) tg.showAlert('Недостаточно скипов!'); 
+            else alert('Недостаточно скипов!');
+            return; 
+        }
+        userSkips -= choice.skipCost;
+        localStorage.setItem(`user_skips_${userId}`, userSkips);
+        if (typeof updateSkipDisplay === 'function') updateSkipDisplay();
+        applyCastleReward(choice);
+        proceedToCard(choice.nextCard);
+        return;
+    }
+    
+    // Если нет задания — просто применяем награду
+    if (!choice.task) { 
+        applyCastleReward(choice); 
+        proceedToCard(choice.nextCard); 
+        return; 
+    }
+    
+    // Есть задание — открываем выбор фото
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/*';
+    fileInput.multiple = true;
+    
+    fileInput.onchange = async function(event) {
+        const files = Array.from(event.target.files);
+        if (files.length === 0) return;
+        
+        // ✅ ТОЛЬКО ПОСЛЕ ВЫБОРА ФАЙЛОВ помечаем как отправленное
+        if (!castleCompletedChoices) castleCompletedChoices = {};
+        const choiceKey = cardId + '_choice_' + choiceIdx;
+        castleCompletedChoices[choiceKey] = true;
+        saveCastleProgress();
+        
+        // Показываем что отправляется
+        const container = document.getElementById('storyGameContainer');
+        if (container) {
+            container.innerHTML = '<div style="text-align:center;padding:40px;"><i class="fas fa-spinner fa-spin"></i><p style="margin-top:15px;">Отправка фото...</p></div>';
+        }
+        
+        const formData = new FormData();
+        formData.append('user', userId.toString());
+        formData.append('castle_choice_key', choiceKey);
+        formData.append('subtaskName', choice.text || 'Задание');
+        formData.append('cardId', cardId);
+        formData.append('chapter', card.chapter || '');
+        formData.append('task', choice.task || '');
+        
+        for (let i = 0; i < files.length; i++) {
+            formData.append('photos', files[i]);
+        }
+        
+        try {
+            const response = await fetch(`${SERVER_URL}/api/check_castle_task`, { 
+                method: 'POST', 
+                body: formData 
+            });
+            const result = await response.json();
+            
+            if (result && result.status === 'ok') {
+                if (tg) tg.showAlert('✅ Фото отправлено на проверку!');
+                else alert('✅ Фото отправлено на проверку!');
+                renderCastleCardInGame(cardId);
+            } else {
+                throw new Error(result?.message || 'Ошибка сервера');
+            }
+        } catch (error) {
+            console.error('❌ Ошибка отправки:', error);
+            // ✅ При ошибке даём возможность переотправить
+            delete castleCompletedChoices[choiceKey];
+            saveCastleProgress();
+            
+            if (tg) tg.showAlert('❌ Ошибка: ' + error.message);
+            else alert('❌ Ошибка: ' + error.message);
             renderCastleCardInGame(cardId);
         }
-    }, 300);
+    };
+    
+    fileInput.click();
 }
 
 function proceedAfterApprovalInGame(cardId, choiceIdx) {
