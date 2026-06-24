@@ -6049,6 +6049,223 @@ body:not([data-theme]) .modal-content,
     border-color: var(--accent);
     background: rgba(255,149,0,0.05);
 }
+        /* ==========================================
+   БОЛЬШИЕ КАРТОЧКИ В ИСТОРИИ
+   ========================================== */
+
+.story-card-large {
+    background: var(--bg-secondary);
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    margin-bottom: 15px;
+    animation: fadeIn 0.3s ease;
+}
+
+.story-card-image {
+    width: 100%;
+    aspect-ratio: 4/5;
+    overflow: hidden;
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.story-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.story-card-image .image-placeholder {
+    font-size: 64px;
+    opacity: 0.3;
+}
+
+.story-card-body {
+    padding: 16px;
+}
+
+.story-card-chapter {
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--accent);
+    margin-bottom: 8px;
+}
+
+.story-card-text {
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 12px;
+}
+
+.story-card-stats {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    padding: 10px;
+    background: var(--bg);
+    border-radius: 12px;
+    margin-bottom: 12px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.story-card-choices {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.story-choice-btn {
+    width: 100%;
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 14px 16px;
+    border-radius: 16px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: left;
+    line-height: 1.4;
+    transition: all 0.15s;
+}
+
+.story-choice-btn:active {
+    transform: scale(0.97);
+    opacity: 0.9;
+}
+
+.story-choice-btn:disabled {
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+.story-choice-btn.approved {
+    background: var(--status-green);
+}
+
+.story-choice-btn.pending {
+    opacity: 0.6;
+}
+
+.story-choice-task {
+    font-size: 11px;
+    opacity: 0.8;
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.story-card-ending {
+    text-align: center;
+    padding: 20px;
+}
+
+.story-card-ending-icon {
+    font-size: 56px;
+    margin-bottom: 10px;
+}
+
+.story-card-ending-title {
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--accent);
+    margin-bottom: 12px;
+}
+
+.story-card-ending-text {
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 15px;
+}
+
+.story-card-next-btn {
+    width: 100%;
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 16px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.story-card-next-btn:active {
+    transform: scale(0.97);
+}
+
+.story-character-select-card {
+    background: var(--bg-secondary);
+    border-radius: 20px;
+    overflow: hidden;
+    border: 2px solid var(--border-color);
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 15px;
+}
+
+.story-character-select-card:active {
+    border-color: var(--accent);
+    transform: scale(0.98);
+}
+
+.story-character-select-card .char-image {
+    width: 100%;
+    aspect-ratio: 1/1;
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.story-character-select-card .char-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.story-character-select-card .char-icon {
+    font-size: 48px;
+}
+
+.story-character-select-card .char-info {
+    padding: 14px;
+    text-align: center;
+}
+
+.story-character-select-card .char-name {
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--text);
+    margin-bottom: 4px;
+}
+
+.story-character-select-card .char-stats {
+    font-size: 12px;
+    color: var(--accent);
+    margin-bottom: 6px;
+}
+
+.story-character-select-card .char-desc {
+    font-size: 12px;
+    color: var(--text-gray);
+    line-height: 1.4;
+    margin-bottom: 6px;
+}
+
+.story-character-select-card .char-bonus {
+    font-size: 11px;
+    color: var(--text-gray);
+    font-style: italic;
+}
     </style>
 </head>
 <body>
@@ -9694,8 +9911,14 @@ function closeStoryPreview() {
     previewScreen.style.display = 'none';
     gameScreen.style.display = 'none';
     document.querySelector('#stories .header').style.display = '';
-    storiesGrid.style.display = 'grid';
+    if (storiesGrid) storiesGrid.style.display = 'grid';
     storyGameActive = false;
+    
+    // Останавливаем проверку одобрений если была активна
+    if (window._castleApprovalInterval) {
+        clearInterval(window._castleApprovalInterval);
+        window._castleApprovalInterval = null;
+    }
 }
 
 function startStoryFromPreview() {
@@ -9706,7 +9929,12 @@ function startStoryFromPreview() {
     gameScreen.style.display = 'block';
     storyGameActive = true;
     
-    // Запускаем выбор персонажа
+    // Запускаем периодическую проверку одобрений
+    checkCastleApprovals();
+    if (!window._castleApprovalInterval) {
+        window._castleApprovalInterval = setInterval(checkCastleApprovals, 3000);
+    }
+    
     showCharacterSelectInGame();
 }
 
@@ -9718,7 +9946,12 @@ function continueStoryFromPreview() {
     gameScreen.style.display = 'block';
     storyGameActive = true;
     
-    // Продолжаем с сохранённого места
+    // Запускаем периодическую проверку одобрений
+    checkCastleApprovals();
+    if (!window._castleApprovalInterval) {
+        window._castleApprovalInterval = setInterval(checkCastleApprovals, 3000);
+    }
+    
     const card = CASTLE_STORY.cards[currentCastleCard];
     if (card && card.isEnding && currentEndingClaimed) {
         showEndingInGame('');
@@ -9741,6 +9974,45 @@ function backToStoryPreview() {
     gameScreen.style.display = 'none';
     previewScreen.style.display = 'block';
     storyGameActive = false;
+    
+    // Останавливаем проверку одобрений
+    if (window._castleApprovalInterval) {
+        clearInterval(window._castleApprovalInterval);
+        window._castleApprovalInterval = null;
+    }
+    
+    // Обновляем кнопку действия
+    loadCastleProgress().then(function(hasProgress) {
+        const actionBtn = document.getElementById('storyActionButton');
+        if (!actionBtn) return;
+        
+        if (hasProgress && currentCastleCard && !currentEndingClaimed) {
+            actionBtn.innerHTML = `
+                <button class="task-submit-btn" onclick="continueStoryFromPreview()" style="width: 100%; padding: 16px; font-size: 16px; background: var(--status-green);">
+                    ▶ Продолжить историю
+                </button>
+                <button class="task-submit-btn" onclick="resetAndStartStory()" style="width: 100%; padding: 12px; font-size: 13px; margin-top: 10px; background: var(--card-bg); color: var(--text); border: 1px solid var(--border-color);">
+                    🔄 Начать заново
+                </button>
+            `;
+        } else if (hasProgress && currentEndingClaimed) {
+            const endingsCount = Object.keys(castleCompletedEndings).length;
+            actionBtn.innerHTML = `
+                <div style="text-align: center; padding: 15px; background: var(--card-bg); border-radius: 12px; margin-bottom: 10px;">
+                    <div style="font-size: 14px; color: var(--text);">🏆 Концовок открыто: ${endingsCount}/9</div>
+                </div>
+                <button class="task-submit-btn" onclick="resetAndStartStory()" style="width: 100%; padding: 16px; font-size: 16px;">
+                    🔄 Пройти заново
+                </button>
+            `;
+        } else {
+            actionBtn.innerHTML = `
+                <button class="task-submit-btn" onclick="startStoryFromPreview()" style="width: 100%; padding: 16px; font-size: 16px;">
+                    🎮 Начать историю
+                </button>
+            `;
+        }
+    });
 }
 
 function resetStoryFromGame() {
@@ -9754,26 +10026,32 @@ function resetStoryFromGame() {
 // ФУНКЦИИ ДЛЯ ИГРЫ ВНУТРИ ЭКРАНА ИСТОРИЙ
 // ==========================================
 
+// Обновляем выбор персонажа — тоже с большими карточками
 function showCharacterSelectInGame() {
     const container = document.getElementById('storyGameContainer');
     if (!container) return;
     
     currentEndingClaimed = false;
     
-    let charsHtml = '<h3 style="text-align: center; margin-bottom: 15px;">Выберите персонажа</h3>';
+    let charsHtml = '<h3 style="text-align: center; margin-bottom: 15px; color: var(--text);">🎭 Выберите персонажа</h3>';
+    charsHtml += '<p style="text-align: center; color: var(--text-gray); font-size: 13px; margin-bottom: 20px;">Каждый персонаж — уникальная история с разными концовками</p>';
     
     for (const [id, char] of Object.entries(CASTLE_CHARACTERS)) {
         const charImageUrl = `https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/ashetvil/${id}.jpg`;
+        const icon = id === 'mystic' ? '⚔️' : id === 'thief' ? '🗡️' : '🔮';
+        
         charsHtml += `
-            <div class="story-character-card" onclick="selectCharacterInGame('${id}')" style="margin-bottom: 15px;">
-                <img src="${charImageUrl}" alt="${char.name}" style="width: 100%; max-width: 200px; height: auto; border-radius: 12px; margin-bottom: 10px;" onerror="this.style.display='none'">
-                <div style="font-size: 24px; margin-bottom: 5px;">${id === 'mystic' ? '⚔️' : id === 'thief' ? '🗡️' : '🔮'}</div>
-                <div style="font-weight: 700; font-size: 18px; margin-bottom: 8px;">${char.name}</div>
-                <div style="font-size: 13px; color: var(--text-gray); margin-bottom: 8px; line-height: 1.4;">${char.desc}</div>
-                <div style="font-size: 12px; color: var(--accent); margin-bottom: 5px;">
-                    💪${char.stats.strength} 🏃${char.stats.agility} 🧠${char.stats.intelligence}
+            <div class="story-character-select-card" onclick="selectCharacterInGame('${id}')">
+                <div class="char-image">
+                    <img src="${charImageUrl}" alt="${char.name}" onerror="this.style.display='none'; this.parentElement.querySelector('.char-icon').style.display='block';">
+                    <span class="char-icon" style="display: ${charImageUrl ? 'none' : 'block'};">${icon}</span>
                 </div>
-                <div style="font-size: 11px; color: var(--text-gray);">${char.bonus}</div>
+                <div class="char-info">
+                    <div class="char-name">${icon} ${char.name}</div>
+                    <div class="char-stats">💪${char.stats.strength} 🏃${char.stats.agility} 🧠${char.stats.intelligence}</div>
+                    <div class="char-desc">${char.desc}</div>
+                    <div class="char-bonus">✨ ${char.bonus}</div>
+                </div>
             </div>
         `;
     }
@@ -9806,7 +10084,7 @@ function renderCastleCardInGame(cardId) {
     
     const card = CASTLE_STORY.cards[cardId];
     if (!card) {
-        container.innerHTML = '<p style="text-align:center;padding:20px;">❌ Карточка не найдена</p>';
+        container.innerHTML = '<p style="text-align:center;padding:20px;color:var(--text-gray);">❌ Карточка не найдена</p>';
         return;
     }
     
@@ -9825,19 +10103,39 @@ function renderCastleCardInGame(cardId) {
     
     saveCastleProgress();
     
-    const statsHtml = `<div style="display: flex; gap: 15px; justify-content: center; margin-bottom: 15px; font-size: 13px;"><span>💪 ${userCastleStats.strength||0}</span><span>🏃 ${userCastleStats.agility||0}</span><span>🧠 ${userCastleStats.intelligence||0}</span><span style="color: var(--accent);">🎫 ${userSkips||0} скипов</span></div>`;
+    const statsHtml = `
+        <div style="display: flex; gap: 12px; justify-content: center; padding: 10px; background: var(--bg); border-radius: 12px; margin-bottom: 12px; font-size: 13px; font-weight: 600;">
+            <span>💪 ${userCastleStats.strength||0}</span>
+            <span>🏃 ${userCastleStats.agility||0}</span>
+            <span>🧠 ${userCastleStats.intelligence||0}</span>
+            <span style="color: var(--accent);">🎫 ${userSkips||0}</span>
+        </div>
+    `;
     
+    // КОНЦОВКА
     if (card.isEnding) {
         container.innerHTML = `
-            <div style="text-align: center; font-size: 36px; margin-bottom: 15px;">${card.isSecret ? '🔮' : '🏆'}</div>
-            <div style="font-weight: 700; font-size: 18px; margin-bottom: 10px; color: var(--accent); text-align: center;">${card.chapter || 'Концовка'}</div>
-            <p style="line-height: 1.5;">${card.text}</p>
-            <button class="task-submit-btn" onclick="claimCastleEndingInGame('${cardId}')" style="width: 100%; margin-top: 15px;">🎉 Завершить историю</button>
+            <div class="story-card-large">
+                <div class="story-card-image">
+                    <span class="image-placeholder">${card.isSecret ? '🔮' : '🏆'}</span>
+                </div>
+                <div class="story-card-body">
+                    <div class="story-card-chapter">${card.chapter || 'Концовка'}</div>
+                    <p class="story-card-text">${card.text}</p>
+                    ${statsHtml}
+                    <button class="story-card-next-btn" onclick="claimCastleEndingInGame('${cardId}')" style="background: #ffd700; color: #333;">
+                        🎉 Завершить историю
+                    </button>
+                </div>
+            </div>
         `;
         return;
     }
     
+    // ВЫБОР
     if (card.isChoice) {
+        const cardImageUrl = `https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/ashetvil/${cardId}.jpg`;
+        
         let choicesHtml = '';
         card.choices.forEach((choice, idx) => {
             const choiceKey = cardId + '_choice_' + idx;
@@ -9845,9 +10143,13 @@ function renderCastleCardInGame(cardId) {
             
             if (isCompleted) {
                 const isApproved = castleApprovedChoices && castleApprovedChoices[choiceKey];
-                choicesHtml += isApproved ?
-                    `<div style="margin-bottom: 10px;"><button class="task-submit-btn" style="width: 100%; text-align: left; padding: 12px; background: var(--status-green); color: white;" onclick="proceedAfterApprovalInGame('${cardId}',${idx})">✅ ${choice.text} — ОДОБРЕНО</button></div>` :
-                    `<div style="margin-bottom: 10px;"><button class="task-submit-btn" style="width: 100%; text-align: left; padding: 12px; opacity: 0.7;" disabled>⏳ ${choice.text} — Отправлено</button></div>`;
+                choicesHtml += `
+                    <button class="story-choice-btn ${isApproved ? 'approved' : 'pending'}" 
+                            ${isApproved ? `onclick="proceedAfterApprovalInGame('${cardId}',${idx})"` : 'disabled'}>
+                        ${isApproved ? '✅' : '⏳'} ${choice.text}
+                        ${isApproved ? '' : '<div class="story-choice-task">Отправлено на проверку...</div>'}
+                    </button>
+                `;
                 return;
             }
             
@@ -9862,55 +10164,66 @@ function renderCastleCardInGame(cardId) {
                 costBadge = ` (🎫${choice.skipCost})`;
             }
             
-            const hasTask = choice.task && choice.task !== 'null';
-            
-            choicesHtml += `<div style="margin-bottom: 10px; cursor: pointer;" onclick="${isDisabled ? '' : "submitCastleChoiceInGame('" + cardId + "'," + idx + ")"}">
-                <div class="task-submit-btn castle-choice-btn" style="width: 100%; text-align: left; padding: 12px; ${isDisabled?'opacity: 0.5; pointer-events: none;':''}">
-                    <div style="font-weight: 500;">${choice.text}${costBadge}</div>
-                    ${hasTask ? '<div style="font-size: 11px; opacity: 0.8; margin-top: 4px;">📸 ' + choice.task + '</div>' : ''}
-                </div>
-            </div>`;
+            choicesHtml += `
+                <button class="story-choice-btn" 
+                        ${isDisabled ? 'disabled' : `onclick="submitCastleChoiceInGame('${cardId}',${idx})"`}>
+                    ${choice.text}${costBadge}
+                    ${choice.task ? `<div class="story-choice-task">📸 ${choice.task}</div>` : ''}
+                </button>
+            `;
         });
         
-        const cardImageUrl = `https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/ashetvil/${cardId}.jpg`;
-        
         container.innerHTML = `
-            ${card.chapter ? `<div style="font-weight: 700; font-size: 16px; color: var(--accent); margin-bottom: 10px;">📖 ${card.chapter}</div>` : ''}
-            ${card.text ? `<p style="margin-bottom: 15px; line-height: 1.5;">${card.text}</p>` : ''}
-            <div style="text-align: center; margin-bottom: 15px;">
-                <img src="${cardImageUrl}" alt="Образец" style="max-width: 100%; max-height: 300px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.15);" onerror="this.style.display='none'">
+            <div class="story-card-large">
+                <div class="story-card-image">
+                    <img src="${cardImageUrl}" alt="Сцена" onerror="this.parentElement.innerHTML='<span class=\\'image-placeholder\\'>📖</span>'">
+                </div>
+                <div class="story-card-body">
+                    ${card.chapter ? `<div class="story-card-chapter">📖 ${card.chapter}</div>` : ''}
+                    ${card.text ? `<p class="story-card-text">${card.text}</p>` : ''}
+                    ${statsHtml}
+                    <div class="story-card-choices">${choicesHtml}</div>
+                </div>
             </div>
-            ${statsHtml}
-            <div>${choicesHtml}</div>
         `;
         return;
     }
     
-    // Обычная карточка
+    // ОБЫЧНАЯ КАРТОЧКА
+    const cardImageUrl = `https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/ashetvil/${cardId}.jpg`;
+    
     container.innerHTML = `
-        ${card.chapter ? `<div style="font-weight: 700; font-size: 16px; color: var(--accent); margin-bottom: 10px;">📖 ${card.chapter}</div>` : ''}
-        <p style="line-height: 1.5;">${card.text}</p>
-        ${statsHtml}
-        <button class="task-submit-btn" onclick="renderCastleCardInGame('${card.nextCard}')" style="width: 100%;">Далее ▶</button>
+        <div class="story-card-large">
+            <div class="story-card-image">
+                <img src="${cardImageUrl}" alt="Сцена" onerror="this.parentElement.innerHTML='<span class=\\'image-placeholder\\'>📖</span>'">
+            </div>
+            <div class="story-card-body">
+                ${card.chapter ? `<div class="story-card-chapter">📖 ${card.chapter}</div>` : ''}
+                <p class="story-card-text">${card.text}</p>
+                ${statsHtml}
+                <button class="story-card-next-btn" onclick="renderCastleCardInGame('${card.nextCard}')">
+                    Далее ▶
+                </button>
+            </div>
+        </div>
     `;
 }
 
 function submitCastleChoiceInGame(cardId, choiceIdx) {
-    // Используем те же функции, что и в профиле
     submitCastleChoice(cardId, choiceIdx);
     
-    // После отправки обновляем экран
     setTimeout(() => {
-        renderCastleCardInGame(cardId);
+        if (storyGameActive) {
+            renderCastleCardInGame(cardId);
+        }
     }, 300);
 }
 
 function proceedAfterApprovalInGame(cardId, choiceIdx) {
     proceedAfterApproval(cardId, choiceIdx);
     
-    // После одобрения обновляем экран
     setTimeout(() => {
-        if (currentCastleCard) {
+        if (storyGameActive && currentCastleCard) {
             renderCastleCardInGame(currentCastleCard);
         }
     }, 300);
@@ -9919,12 +10232,13 @@ function proceedAfterApprovalInGame(cardId, choiceIdx) {
 function claimCastleEndingInGame(cardId) {
     claimCastleEnding(cardId);
     
-    // Показываем результат
     setTimeout(() => {
-        showEndingInGame('');
+        if (storyGameActive) {
+            showEndingInGame('');
+        }
     }, 300);
 }
-
+// Обновляем экран концовки
 function showEndingInGame(message) {
     const container = document.getElementById('storyGameContainer');
     if (!container) return;
@@ -9932,14 +10246,22 @@ function showEndingInGame(message) {
     const endingsCount = Object.keys(castleCompletedEndings).length;
     
     container.innerHTML = `
-        <div style="text-align: center; padding: 20px;">
-            <div style="font-size: 48px;">🏰</div>
-            <h3>Тайны замка Ашетвиль</h3>
-            <p style="color: var(--text-gray); margin: 15px 0;">${message || ''}</p>
-            <p style="color: var(--text-gray);">Концовок открыто: ${endingsCount}/9</p>
-            <p style="color: var(--text-gray); font-size: 12px;">Шанс статуса: обычные 25% | секретные 60%</p>
-            <button class="task-submit-btn" onclick="resetAndStartStory()" style="margin-top: 15px;">🔄 Пройти заново</button>
-            <button class="task-submit-btn" onclick="backToStoryPreview()" style="margin-top: 10px; background: var(--card-bg); color: var(--text); border: 1px solid var(--border-color);">← К описанию</button>
+        <div class="story-card-large">
+            <div class="story-card-image">
+                <span class="image-placeholder">🏰</span>
+            </div>
+            <div class="story-card-body">
+                <div class="story-card-chapter">Тайны замка Ашетвиль</div>
+                ${message ? `<p class="story-card-text" style="color: var(--accent); font-weight: 600;">${message}</p>` : ''}
+                <p class="story-card-text">Концовок открыто: <strong>${endingsCount}/9</strong></p>
+                <p class="story-card-text" style="font-size: 12px; color: var(--text-gray);">Шанс статуса: обычные 25% | секретные 60%</p>
+                <button class="story-card-next-btn" onclick="resetAndStartStory()" style="margin-bottom: 8px;">
+                    🔄 Пройти заново
+                </button>
+                <button class="story-card-next-btn" onclick="backToStoryPreview()" style="background: var(--card-bg); color: var(--text); border: 1px solid var(--border-color);">
+                    ← К описанию
+                </button>
+            </div>
         </div>
     `;
 }
