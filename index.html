@@ -10352,17 +10352,18 @@ function submitCastleChoiceInGame(cardId, choiceIdx) {
     
     // Премиум-выбор со скипом — без фото
     if (choice.isPremium && choice.skipCost) {
-        // Проверяем скипы через ту же переменную, что и везде
         if (!userSkips || userSkips < choice.skipCost) { 
             if (tg) tg.showAlert('Недостаточно скипов! Нужно: ' + choice.skipCost + ', у вас: ' + (userSkips || 0));
             else alert('Недостаточно скипов! Нужно: ' + choice.skipCost + ', у вас: ' + (userSkips || 0));
             return; 
         }
+        
+        // Списываем скипы
         userSkips -= choice.skipCost;
         localStorage.setItem(`user_skips_${userId}`, userSkips);
         if (typeof updateSkipDisplay === 'function') updateSkipDisplay();
         
-        // ✅ Отправляем на бекенд что скип использован
+        // Отправляем на бекенд что скип использован
         fetch(`${SERVER_URL}/api/use_skip`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -10372,8 +10373,18 @@ function submitCastleChoiceInGame(cardId, choiceIdx) {
             })
         }).catch(e => console.error('Skip sync error:', e));
         
+        // Применяем награду
         applyCastleReward(choice);
-        proceedToCard(choice.nextCard);
+        
+        // Показываем уведомление
+        if (tg) tg.showAlert('✅ Скипы использованы! Переходим дальше...');
+        else alert('✅ Скипы использованы!');
+        
+        // ✅ Переходим к следующей карточке с задержкой
+        setTimeout(function() {
+            proceedToCard(choice.nextCard);
+        }, 200);
+        
         return;
     }
     
