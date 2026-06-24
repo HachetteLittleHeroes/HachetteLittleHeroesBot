@@ -10361,6 +10361,17 @@ function submitCastleChoiceInGame(cardId, choiceIdx) {
         userSkips -= choice.skipCost;
         localStorage.setItem(`user_skips_${userId}`, userSkips);
         if (typeof updateSkipDisplay === 'function') updateSkipDisplay();
+        
+        // ✅ Отправляем на бекенд что скип использован
+        fetch(`${SERVER_URL}/api/use_skip`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                user_id: userId, 
+                amount: choice.skipCost
+            })
+        }).catch(e => console.error('Skip sync error:', e));
+        
         applyCastleReward(choice);
         proceedToCard(choice.nextCard);
         return;
