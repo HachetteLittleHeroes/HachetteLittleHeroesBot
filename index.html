@@ -10385,6 +10385,12 @@ function renderCastleCardInGame(cardId) {
     
     console.log('✅ Карточка отрендерена:', cardId);
 }
+// Вспомогательная функция для показа уведомлений (в начало файла)
+function safeShowAlert(message) {
+    // Пробуем alert (работает везде)
+    alert(message);
+}
+
 function submitCastleChoiceInGame(cardId, choiceIdx) {
     const card = CASTLE_STORY.cards[cardId];
     const choice = card.choices[choiceIdx];
@@ -10396,8 +10402,7 @@ function submitCastleChoiceInGame(cardId, choiceIdx) {
     // Премиум-выбор со скипом — без фото, СРАЗУ ОДОБРЯЕМ
     if (choice.isPremium && choice.skipCost) {
         if (!userSkips || userSkips < choice.skipCost) { 
-            if (tg) tg.showAlert('Недостаточно скипов! Нужно: ' + choice.skipCost + ', у вас: ' + (userSkips || 0));
-            else alert('Недостаточно скипов! Нужно: ' + choice.skipCost + ', у вас: ' + (userSkips || 0));
+            safeShowAlert('Недостаточно скипов! Нужно: ' + choice.skipCost + ', у вас: ' + (userSkips || 0));
             return; 
         }
         
@@ -10456,7 +10461,7 @@ function submitCastleChoiceInGame(cardId, choiceIdx) {
         if (files.length === 0) return;
         
         // Показываем что фото выбрано
-        if (tg) tg.showAlert('📸 Фото выбрано! Отправляем...');
+        safeShowAlert('📸 Фото выбрано! Отправляем...');
         
         // Помечаем как отправленное только после выбора файлов
         if (!castleCompletedChoices) castleCompletedChoices = {};
@@ -10490,8 +10495,7 @@ function submitCastleChoiceInGame(cardId, choiceIdx) {
             const result = await response.json();
             
             if (result && result.status === 'ok') {
-                if (tg) tg.showAlert('✅ Фото отправлено на проверку!');
-                else alert('✅ Фото отправлено на проверку!');
+                safeShowAlert('✅ Фото отправлено на проверку!');
                 renderCastleCardInGame(cardId);
             } else {
                 throw new Error(result?.message || 'Ошибка сервера');
@@ -10502,8 +10506,7 @@ function submitCastleChoiceInGame(cardId, choiceIdx) {
             delete castleCompletedChoices[choiceKey];
             saveCastleProgress();
             
-            if (tg) tg.showAlert('❌ Ошибка: ' + error.message);
-            else alert('❌ Ошибка: ' + error.message);
+            safeShowAlert('❌ Ошибка: ' + error.message);
             renderCastleCardInGame(cardId);
         }
     };
