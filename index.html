@@ -10077,7 +10077,60 @@ function resetStoryFromGame() {
 // ==========================================
 // ФУНКЦИИ ДЛЯ ИГРЫ ВНУТРИ ЭКРАНА ИСТОРИЙ
 // ==========================================
-
+function selectCharacterInGame(charId) {
+    const char = CASTLE_CHARACTERS[charId];
+    if (!char) return;
+    
+    // Определяем иконку и цвета для персонажа
+    const charIcons = {
+        mystic: { icon: '⚔️', color: '#ff4444', gradient: 'linear-gradient(135deg, #2d1b1b, #4a2020)' },
+        thief: { icon: '🗡️', color: '#9b59b6', gradient: 'linear-gradient(135deg, #1b1b2d, #2d1b4a)' },
+        alchemist: { icon: '🔮', color: '#3498db', gradient: 'linear-gradient(135deg, #1a2d1b, #1b4a2d)' }
+    };
+    
+    const charInfo = charIcons[charId] || { icon: '❓', color: '#888', gradient: 'linear-gradient(135deg, #1a1a2e, #2d2d2d)' };
+    
+    // Создаём модальное окно подтверждения
+    const confirmModal = document.createElement('div');
+    confirmModal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:10002;display:flex;align-items:center;justify-content:center;padding:20px;';
+    
+    confirmModal.innerHTML = `
+        <div style="background:var(--bg-secondary);border-radius:24px;padding:25px;max-width:350px;width:100%;text-align:center;border:1px solid var(--border-color);">
+            <div style="width:80px;height:80px;border-radius:50%;${charInfo.gradient};display:flex;align-items:center;justify-content:center;margin:0 auto 15px;font-size:36px;border:3px solid ${charInfo.color};">
+                ${charInfo.icon}
+            </div>
+            <h3 style="margin:0 0 5px 0;color:var(--text);font-size:20px;">${char.name}</h3>
+            <p style="color:var(--text-gray);font-size:13px;margin:0 0 15px 0;">${char.desc}</p>
+            <div style="display:flex;gap:10px;justify-content:center;margin-bottom:15px;font-size:14px;font-weight:600;">
+                <span style="color:#ff6b6b;">💪 ${char.stats.strength}</span>
+                <span style="color:#a29bfe;">🏃 ${char.stats.agility}</span>
+                <span style="color:#74b9ff;">🧠 ${char.stats.intelligence}</span>
+            </div>
+            <p style="color:var(--accent);font-size:12px;margin:0 0 20px 0;font-style:italic;">✨ ${char.bonus}</p>
+            <p style="color:var(--text-gray);font-size:13px;margin:0 0 15px 0;">
+                ${charId === 'mystic' ? 'Вы уверены, что хотите выбрать Мистия? Путь охотника на нежить полон опасностей и битв.' : 
+                  charId === 'thief' ? 'Вы уверены, что хотите выбрать Воровку? Путь скрытности и ловкости ждёт вас.' : 
+                  'Вы уверены, что хотите выбрать Алхимика? Путь знаний и магии откроет тайны замка.'}
+            </p>
+            <div style="display:flex;gap:10px;">
+                <button onclick="this.closest('div[style*=\\'fixed\\']').remove()" 
+                        style="flex:1;background:var(--card-bg);color:var(--text);border:1px solid var(--border-color);padding:14px;border-radius:16px;font-size:15px;font-weight:600;cursor:pointer;">
+                    ← Назад
+                </button>
+                <button onclick="confirmCharacterSelection('${charId}'); this.closest('div[style*=\\'fixed\\']').remove();" 
+                        style="flex:2;background:${charInfo.color};color:white;border:none;padding:14px;border-radius:16px;font-size:15px;font-weight:600;cursor:pointer;">
+                    ${charInfo.icon} Выбрать
+                </button>
+            </div>
+        </div>
+    `;
+    
+    confirmModal.onclick = function(e) {
+        if (e.target === confirmModal) confirmModal.remove();
+    };
+    
+    document.body.appendChild(confirmModal);
+}
 // Обновляем выбор персонажа — тоже с большими карточками
 function showCharacterSelectInGame() {
     const container = document.getElementById('storyGameContainer');
