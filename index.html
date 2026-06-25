@@ -10128,7 +10128,6 @@ function confirmCharacterSelection(charId) {
     currentCastleCard = '1' + prefixMap[charId] + '_1';
     
     console.log('🎮 Выбран персонаж:', charId, '→ карта:', currentCastleCard);
-    console.log('🎁 Сохранённый лут:', castleLootCache);
     
     // ✅ Сбрасываем castle_approved на сервере (но НЕ loot)
     fetch(`${SERVER_URL}/api/castle/reset_approvals`, {
@@ -10139,42 +10138,11 @@ function confirmCharacterSelection(charId) {
         console.log('✅ Одобрения на сервере сброшены');
     }).catch(e => console.error('Reset approvals error:', e));
     
-    // ✅ Загружаем лут с сервера (восстанавливаем если был сброшен)
+    // ✅ Загружаем лут с сервера
     loadCastleLoot().then(() => {
-        console.log('🎁 Лут после загрузки:', castleLootCache);
+        console.log('🎁 Лут после загрузки:', JSON.stringify(castleLootCache));
     });
     
-    saveCastleProgress();
-    renderCastleCardInGame(currentCastleCard);
-}
-
-// Новая функция для подтверждения выбора
-function confirmCharacterSelection(charId) {
-    const char = CASTLE_CHARACTERS[charId];
-    if (!char) return;
-    
-    selectedCastleCharacter = charId;
-    userCastleStats = { ...char.stats };
-    metEliza = false;
-    castleCompletedChoices = {};
-    castleApprovedChoices = {};  // ✅ Сбрасываем локально
-    currentEndingClaimed = false;
-    
-    const prefixMap = { mystic: 'M', thief: 'V', alchemist: 'A' };
-    currentCastleCard = '1' + prefixMap[charId] + '_1';
-    
-    console.log('🎮 Выбран персонаж:', charId, '→ карта:', currentCastleCard);
-    
-    // ✅ Сбрасываем castle_approved на сервере
-    fetch(`${SERVER_URL}/api/castle/reset_approvals`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: userId })
-    }).then(() => {
-        console.log('✅ Одобрения на сервере сброшены');
-    }).catch(e => console.error('Reset approvals error:', e));
-    
-    loadCastleLoot();
     saveCastleProgress();
     renderCastleCardInGame(currentCastleCard);
 }
