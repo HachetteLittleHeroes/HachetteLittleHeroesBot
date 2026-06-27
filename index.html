@@ -9293,7 +9293,7 @@ function renderBranchTasks() {
     }
 }
 // ==========================================
-// ВРЕМЕННЫЕ ЗАДАНИЯ (СИНХРОНИЗИРОВАННЫЕ, МСК)
+// ВРЕМЕННЫЕ ЗАДАНИЯ (ИСПРАВЛЕНО — СМЕНА ПО ВОСКРЕСЕНЬЯМ)
 // ==========================================
 
 function getMoscowTime() {
@@ -9304,23 +9304,19 @@ function getMoscowTime() {
 
 function getWeeklyTask() {
     const moscowNow = getMoscowTime();
-    const weekNumber = Math.floor(moscowNow.getTime() / (7 * 24 * 60 * 60 * 1000));
     
-    // Фиксированное задание с сержантом Тибсом (17.06.2026 — 21.06.2026)
-    if (moscowNow >= new Date('2026-06-17T00:00:00+03:00') && moscowNow < new Date('2026-06-21T00:00:00+03:00')) {
-        return {
-            id: 'weekly_task',
-            title: 'Персонаж недели: Сержант Тибс',
-            description: 'Раскрась картинку с сержантом Тибсом из м/ф «101 далматинец»',
-            reward: 10,
-            deadline: '21.06.2026',
-            type: 'weekly',
-            character: { name: 'Сержант Тибс', film: '101 далматинец' },
-            totalAppearances: 1
-        };
-    }
+    // Получаем ВОСКРЕСЕНЬЕ как начало недели
+    const dayOfWeek = moscowNow.getDay(); // 0=вс, 1=пн...6=сб
+    const sunday = new Date(moscowNow);
+    sunday.setDate(moscowNow.getDate() - dayOfWeek);
+    sunday.setHours(0, 0, 0, 0);
     
-    const charIndex = weekNumber % BESTIARY.length;
+    // Ключ недели = дата воскресенья
+    const weekKey = `${sunday.getFullYear()}-${sunday.getMonth()+1}-${sunday.getDate()}`;
+    
+    // Выбор персонажа
+    const seed = Math.floor(sunday.getTime() / (7 * 24 * 60 * 60 * 1000));
+    const charIndex = seed % BESTIARY.length;
     const char = BESTIARY[charIndex];
     
     let totalAppearances = 0;
@@ -9330,8 +9326,9 @@ function getWeeklyTask() {
     if (totalAppearances === 2 || totalAppearances === 3) reward = 10;
     if (totalAppearances === 1) reward = 15;
     
-    const daysUntilSunday = (7 - moscowNow.getDay()) % 7 || 7;
-    const deadline = new Date(moscowNow.getFullYear(), moscowNow.getMonth(), moscowNow.getDate() + daysUntilSunday);
+    // Дедлайн — следующее воскресенье
+    const deadline = new Date(sunday);
+    deadline.setDate(sunday.getDate() + 7);
     const deadlineStr = `${String(deadline.getDate()).padStart(2, '0')}.${String(deadline.getMonth() + 1).padStart(2, '0')}.${deadline.getFullYear()}`;
     
     return {
@@ -9342,9 +9339,11 @@ function getWeeklyTask() {
         deadline: deadlineStr,
         type: 'weekly',
         character: char,
-        totalAppearances: totalAppearances
+        totalAppearances: totalAppearances,
+        weekKey: weekKey
     };
 }
+
 function getMonthlyTask() {
     const moscowNow = getMoscowTime();
     const monthIndex = moscowNow.getFullYear() * 12 + moscowNow.getMonth();
@@ -9365,7 +9364,6 @@ function getMonthlyTask() {
         chars.push(BESTIARY[idx]);
     }
     
-    // Дедлайн — последний день месяца 00:00 МСК
     const lastDay = new Date(moscowNow.getFullYear(), moscowNow.getMonth() + 1, 0);
     const deadlineStr = `${String(lastDay.getDate()).padStart(2, '0')}.${String(lastDay.getMonth() + 1).padStart(2, '0')}.${lastDay.getFullYear()}`;
     
@@ -9401,41 +9399,31 @@ function getMonthlyTask() {
 
 function checkTimeTasksReset() {
     const moscowNow = getMoscowTime();
-    const weekNumber = Math.floor(moscowNow.getTime() / (7 * 24 * 60 * 60 * 1000));
+    
+    // Получаем ВОСКРЕСЕНЬЕ
+    const dayOfWeek = moscowNow.getDay();
+    const sunday = new Date(moscowNow);
+    sunday.setDate(moscowNow.getDate() - dayOfWeek);
+    sunday.setHours(0, 0, 0, 0);
+    const weekKey = `${sunday.getFullYear()}-${sunday.getMonth()+1}-${sunday.getDate()}`;
+    
     const monthIndex = moscowNow.getFullYear() * 12 + moscowNow.getMonth();
     
     const savedWeek = localStorage.getItem('time_tasks_week');
     const savedMonth = localStorage.getItem('time_tasks_month');
     
-    if (savedWeek != weekNumber || savedMonth != monthIndex) {
-        // Полный сброс статуса
+    // Сброс если: старый формат (число), или неделя не совпала, или месяц не совпал
+    if (savedWeek !== weekKey || savedMonth != monthIndex || (savedWeek && !isNaN(parseInt(savedWeek)))) {
+        console.log('🔄 Сброс заданий! Старая:', savedWeek, 'Новая:', weekKey);
         localStorage.setItem('time_tasks_status', '{}');
-        localStorage.setItem('time_tasks_week', weekNumber);
+        localStorage.setItem('time_tasks_week', weekKey);
         localStorage.setItem('time_tasks_month', monthIndex);
         
-        // Сбрасываем серверный прогресс
         fetch(`${SERVER_URL}/api/reset_time_tasks`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ user_id: userId })
         }).catch(e => console.error('Ошибка сброса:', e));
-    } else {
-        // ✅ Даже если неделя та же — проверяем, не завис ли weekly_task
-        const timeTasksStatus = JSON.parse(localStorage.getItem('time_tasks_status') || '{}');
-        const weeklyTask = getWeeklyTask();
-        if (timeTasksStatus[weeklyTask.id] && weeklyTask.id === 'weekly_task') {
-            // Проверяем, совпадает ли персонаж
-            const savedTitle = timeTasksStatus['_weekly_title'] || '';
-            if (savedTitle !== weeklyTask.title) {
-                // Персонаж сменился — сбрасываем weekly_task
-                delete timeTasksStatus['weekly_task'];
-                timeTasksStatus['_weekly_title'] = weeklyTask.title;
-                localStorage.setItem('time_tasks_status', JSON.stringify(timeTasksStatus));
-            }
-        } else {
-            timeTasksStatus['_weekly_title'] = weeklyTask.title;
-            localStorage.setItem('time_tasks_status', JSON.stringify(timeTasksStatus));
-        }
     }
 }
 function openCastleStoryFromStories() {
