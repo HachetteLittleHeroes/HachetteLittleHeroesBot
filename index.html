@@ -35805,7 +35805,6 @@ async function loadCompletedPages() {
         }
         // ✅ Загружаем даты с сервера
         if (stats && stats.completed_pages_dates) {
-            // Объединяем серверные даты с локальными (локальные не затираем)
             for (var key in stats.completed_pages_dates) {
                 if (!window.completedPagesDates[key]) {
                     window.completedPagesDates[key] = stats.completed_pages_dates[key];
@@ -35831,6 +35830,32 @@ async function loadCompletedPages() {
         }
     } catch (error) {
         console.error('Ошибка загрузки дат из API:', error);
+    }
+    
+    // ✅ Синхронизация: добавляем в completedPages все страницы, для которых есть фото в artworks
+    if (userArtworks && typeof userArtworks === 'object') {
+        let synced = false;
+        for (const bookKey in userArtworks) {
+            if (!userCompletedPages[bookKey]) userCompletedPages[bookKey] = {};
+            for (const page in userArtworks[bookKey]) {
+                if (!userCompletedPages[bookKey][page]) {
+                    userCompletedPages[bookKey][page] = true;
+                    synced = true;
+                }
+            }
+        }
+        if (synced) {
+            localStorage.setItem(`completed_pages_${userId}`, JSON.stringify(userCompletedPages));
+            fetch(`${SERVER_URL}/api/save_completed_pages`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    user_id: userId,
+                    completed_pages: userCompletedPages
+                })
+            }).catch(e => console.error('Ошибка сохранения синхронизации:', e));
+            console.log('✅ Синхронизированы artworks → completedPages');
+        }
     }
     
     updateAllCategoriesProgress();
