@@ -10193,7 +10193,7 @@ function renderCastleCardInGame(cardId) {
     const card = CASTLE_STORY.cards[cardId];
     if (!card) {
         container.innerHTML = `
-            <div class="story-card-fullscreen" style="background: #1a1a2e; width: 100vw; height: 100vh; position: fixed; top: 0; left: 0; z-index: 9999;">
+            <div style="width: 100vw; height: 100vh; position: fixed; top: 0; left: 0; z-index: 9999; background: #1a1a2e;">
                 <button onclick="backToStoryPreview()" style="position: absolute; top: 20px; left: 20px; z-index: 10; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; font-size: 18px;">←</button>
                 <p style="text-align:center;color:white;padding-top:80px;">Карточка #${cardId} не найдена</p>
             </div>`;
@@ -10221,7 +10221,7 @@ function renderCastleCardInGame(cardId) {
                     <div style="font-size: 64px;">${card.isSecret?'🔮':'🏆'}</div>
                     <div style="color: #d4af37; font-size: 20px; margin: 15px 0;">${card.chapter || 'Концовка'}</div>
                     <p style="color: white; font-size: 16px; padding: 20px;">${card.text}</p>
-                    <button class="story-card-next-btn" onclick="claimCastleEndingInGame('${cardId}')" style="background: #d4af37; color: #1a1a2e; width: 80%;">🎉 Завершить историю</button>
+                    <button onclick="claimCastleEndingInGame('${cardId}')" style="background: #d4af37; color: #1a1a2e; border: none; padding: 14px 30px; border-radius: 10px; font-size: 16px; cursor: pointer; width: 80%;">🎉 Завершить историю</button>
                 </div>
             </div>`;
         return;
@@ -10236,12 +10236,12 @@ function renderCastleCardInGame(cardId) {
             const isCompleted = castleCompletedChoices && castleCompletedChoices[choiceKey];
             
             if (isApproved) {
-                choicesHtml += `<button class="story-choice-btn approved" onclick="proceedAfterApprovalInGame('${cardId}',${idx})">✅ ${choice.text}</button>`;
+                choicesHtml += `<button onclick="proceedAfterApprovalInGame('${cardId}',${idx})" style="width: 100%; text-align: left; padding: 14px 18px; background: linear-gradient(135deg, rgba(46,204,113,0.9), rgba(39,174,96,0.9)); color: white; border: 1px solid rgba(255,255,255,0.3); border-radius: 10px; margin-bottom: 8px; font-size: 15px; cursor: pointer;">✅ ${choice.text}</button>`;
                 return;
             }
             
             if (isCompleted && !choice.isPremium) {
-                choicesHtml += `<button class="story-choice-btn" onclick="submitCastleChoiceInGame('${cardId}',${idx})">📸 ${choice.text}<div class="story-choice-task">Нажмите чтобы переотправить</div></button>`;
+                choicesHtml += `<button onclick="submitCastleChoiceInGame('${cardId}',${idx})" style="width: 100%; text-align: left; padding: 14px 18px; background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.9); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; margin-bottom: 8px; font-size: 15px; cursor: pointer;">📸 ${choice.text}<div style="font-size: 11px; opacity: 0.7; margin-top: 4px;">Нажмите чтобы переотправить</div></button>`;
                 return;
             }
             
@@ -10256,9 +10256,15 @@ function renderCastleCardInGame(cardId) {
             if (hasSkip && !choice.text.includes('🎫')) costBadge = ` (🎫${choice.skipCost})`;
             
             choicesHtml += `
-                <button class="story-choice-btn" ${isDisabled?'disabled':''} onclick="submitCastleChoiceInGame('${cardId}',${idx})">
+                <button onclick="submitCastleChoiceInGame('${cardId}',${idx})" 
+                        ${isDisabled ? 'disabled' : ''}
+                        style="width: 100%; text-align: left; padding: 14px 18px; 
+                               background: ${isDisabled ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.08)'}; 
+                               color: ${isDisabled ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.9)'}; 
+                               border: 1px solid ${isDisabled ? 'rgba(255,255,255,0.05)' : 'rgba(212,175,55,0.4)'}; 
+                               border-radius: 10px; margin-bottom: 8px; font-size: 15px; cursor: ${isDisabled ? 'default' : 'pointer'};">
                     ${choice.text}${costBadge}
-                    ${choice.task ? `<div class="story-choice-task">📸 ${choice.task}</div>` : ''}
+                    ${choice.task ? `<div style="font-size: 11px; opacity: 0.7; margin-top: 4px;">📸 ${choice.task}</div>` : ''}
                 </button>`;
         });
         
@@ -10270,7 +10276,7 @@ function renderCastleCardInGame(cardId) {
                     <img src="${cardImageUrl}" alt="Сцена" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.opacity='0.3'">
                     <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 80px; background: linear-gradient(to top, #1a1a2e, transparent);"></div>
                     
-                    ${card.chapter ? `<div style="position: absolute; top: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(212,175,55,0.3);"><span style="color: white; font-size: 13px;">📖 ${card.chapter}</span></div>` : ''}
+                    ${card.chapter ? `<div style="position: absolute; top: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(212,175,55,0.3);"><span style="color: white; font-size: 13px; white-space: nowrap;">📖 ${card.chapter}</span></div>` : ''}
                     
                     <div style="position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.15); display: flex; gap: 10px;">
                         <span style="color: white; font-size: 12px;">💪${userCastleStats.strength||0}</span>
@@ -10280,9 +10286,9 @@ function renderCastleCardInGame(cardId) {
                     </div>
                 </div>
                 
-                <div style="padding: 15px 20px 25px; flex-shrink: 0; background: #1a1a2e;">
+                <div style="padding: 15px 20px 25px; flex-shrink: 0; background: #1a1a2e; overflow-y: auto;">
                     ${card.text ? `<p style="color: rgba(255,255,255,0.9); font-size: 16px; line-height: 1.7; margin-bottom: 20px;">${card.text}</p>` : ''}
-                    <div class="story-card-choices">${choicesHtml}</div>
+                    ${choicesHtml}
                 </div>
             </div>`;
         return;
@@ -10297,7 +10303,7 @@ function renderCastleCardInGame(cardId) {
                 <img src="${cardImageUrl}" alt="Сцена" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.opacity='0.3'">
                 <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 80px; background: linear-gradient(to top, #1a1a2e, transparent);"></div>
                 
-                ${card.chapter ? `<div style="position: absolute; top: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(212,175,55,0.3);"><span style="color: white; font-size: 13px;">📖 ${card.chapter}</span></div>` : ''}
+                ${card.chapter ? `<div style="position: absolute; top: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(212,175,55,0.3);"><span style="color: white; font-size: 13px; white-space: nowrap;">📖 ${card.chapter}</span></div>` : ''}
                 
                 <div style="position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.15); display: flex; gap: 10px;">
                     <span style="color: white; font-size: 12px;">💪${userCastleStats.strength||0}</span>
