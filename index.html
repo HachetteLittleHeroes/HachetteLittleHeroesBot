@@ -9546,9 +9546,31 @@ function renderTimeTasks() {
     const weeklyTask = getWeeklyTask();
     const monthlyTask = getMonthlyTask();
     
-    const timeTasksStatus = JSON.parse(localStorage.getItem('time_tasks_status') || '{}');
+    // ✅ ЗАГРУЖАЕМ СТАТУС С СЕРВЕРА ПЕРЕД РЕНДЕРИНГОМ
+    fetch(`${SERVER_URL}/api/time_tasks_status?user_id=${userId}`)
+        .then(r => r.json())
+        .then(serverStatus => {
+            // Объединяем с локальным (сервер главнее)
+            const localStatus = JSON.parse(localStorage.getItem('time_tasks_status') || '{}');
+            const merged = { ...localStatus, ...serverStatus };
+            localStorage.setItem('time_tasks_status', JSON.stringify(merged));
+            
+            // Рендерим с актуальным статусом
+            renderTimeTasksWithStatus(merged, weeklyTask, monthlyTask);
+        })
+        .catch(() => {
+            // Ошибка — используем локальный
+            const local = JSON.parse(localStorage.getItem('time_tasks_status') || '{}');
+            renderTimeTasksWithStatus(local, weeklyTask, monthlyTask);
+        });
+}
+
+// ✅ НОВАЯ ФУНКЦИЯ — рендеринг с переданным статусом
+function renderTimeTasksWithStatus(timeTasksStatus, weeklyTask, monthlyTask) {
+    const container = document.getElementById('timeTasksList');
+    if (!container) return;
     
-    // ✅ Проверяем, не сменился ли персонаж недели
+    // Проверяем, не сменился ли персонаж недели
     const savedWeeklyTitle = timeTasksStatus['_weekly_title'] || '';
     if (savedWeeklyTitle !== weeklyTask.title) {
         // Персонаж сменился — сбрасываем статус
@@ -9557,8 +9579,9 @@ function renderTimeTasks() {
         localStorage.setItem('time_tasks_status', JSON.stringify(timeTasksStatus));
     }
     
-    const weeklyCompleted = timeTasksStatus[weeklyTask.id] || false;
-    const monthlyProgress = timeTasksStatus[monthlyTask.id] || {};
+    // ✅ ИСПРАВЛЕНО: правильные ключи для проверки
+    const weeklyCompleted = timeTasksStatus['weekly_task'] === true;
+    const monthlyProgress = timeTasksStatus['monthly_task'] || {};
     
     let html = '';
     
@@ -9600,7 +9623,8 @@ function renderTimeTasks() {
     
     let allMonthlyDone = true;
     monthlyTask.subtasks.forEach((subtask, idx) => {
-        const progress = monthlyProgress[idx] || 0;
+        // ✅ ИСПРАВЛЕНО: правильный ключ — строка, а не число
+        const progress = monthlyProgress[String(idx)] || 0;
         const done = progress >= subtask.required;
         if (!done) allMonthlyDone = false;
         
@@ -9711,6 +9735,12 @@ async function submitTimeTaskPhoto() {
         return;
     }
     isUploading = true;
+    
+    if (tg && tg.MainButton) {
+        tg.MainButton.setText("⏳ ОТПРАВКА ФОТО...").show();
+        tg.MainButton.showProgress();
+    }
+    
     try {
         const formData = new FormData();
         formData.append('user', userId.toString());
@@ -9732,26 +9762,68 @@ async function submitTimeTaskPhoto() {
             formData.append('photos', tempPhotos[i]);
         }
         
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 60000);
+        
         const response = await fetch(`${SERVER_URL}/api/check_time_task`, {
             method: 'POST',
-            body: formData
+            body: formData,
+            signal: controller.signal
         });
+        
+        clearTimeout(timeoutId);
         
         if (!response.ok) throw new Error(`Ошибка сервера: ${response.status}`);
         
         const result = await response.json();
         
         if (result && result.status === 'ok') {
-            if (tg) tg.showAlert('✅ Фото отправлено на проверку!');
+            if (tg) {
+                tg.showAlert('✅ Фото отправлено на проверку! Ожидайте одобрения.');
+                if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+            }
             closeTaskUploadModal();
+            
+            // ✅ НОВОЕ: Принудительно загружаем статус с сервера через 3 секунды
+            // и ещё раз через 10 секунд (на случай если админ одобрил не сразу)
+            [3000, 10000].forEach(delay => {
+                setTimeout(async () => {
+                    try {
+                        console.log('🔄 Загружаем статус временных заданий с сервера...');
+                        const statusRes = await fetch(`${SERVER_URL}/api/time_tasks_status?user_id=${userId}`);
+                        const serverStatus = await statusRes.json();
+                        
+                        if (serverStatus && Object.keys(serverStatus).length > 0) {
+                            // Сохраняем в localStorage
+                            localStorage.setItem('time_tasks_status', JSON.stringify(serverStatus));
+                            console.log('✅ Статус временных заданий обновлён:', serverStatus);
+                            
+                            // Перерисовываем задания если вкладка открыта
+                            if (typeof renderTimeTasks === 'function') {
+                                renderTimeTasks();
+                            }
+                        }
+                    } catch(e) {
+                        console.error('Ошибка загрузки статуса временных заданий:', e);
+                    }
+                }, delay);
+            });
         } else {
             throw new Error(result?.message || 'Ошибка отправки');
         }
     } catch (error) {
         console.error('❌ Ошибка:', error);
-        if (tg) tg.showAlert(`❌ Ошибка: ${error.message}`);
+        if (error.name === 'AbortError') {
+            if (tg) tg.showAlert('❌ Превышено время ожидания. Попробуйте отправить меньше фото.');
+        } else {
+            if (tg) tg.showAlert(`❌ Ошибка: ${error.message}`);
+        }
     } finally {
         isUploading = false;
+        if (tg && tg.MainButton) {
+            tg.MainButton.hideProgress();
+            tg.MainButton.hide();
+        }
     }
 }
      
