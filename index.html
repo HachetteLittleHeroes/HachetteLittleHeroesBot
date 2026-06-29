@@ -24662,10 +24662,8 @@ window.onload = async () => {
             const savedSkipsLocal = parseInt(localStorage.getItem(`user_skips_${userId}`) || '0');
             
             if (apiSkips > 0) {
-                // Сервер знает — берём с сервера
                 userSkips = apiSkips;
             } else if (savedSkipsLocal > 0) {
-                // Сервер вернул 0, но в localStorage есть — восстанавливаем на сервере
                 console.log('⚠️ Сервер вернул 0 скипов, но локально есть ' + savedSkipsLocal + '. Восстанавливаем...');
                 userSkips = savedSkipsLocal;
                 fetch(`${SERVER_URL}/api/add_skips`, {
@@ -24785,7 +24783,6 @@ window.onload = async () => {
             localStorage.setItem('coloring_user', JSON.stringify(user));
         }
         
-        // Повторно применяем подложки если они есть в stats
         if (stats.sponsor_background && stats.sponsor_background_id) {
             applySponsorBackground(stats.sponsor_background, stats.sponsor_background_id);
         }
@@ -24806,20 +24803,20 @@ window.onload = async () => {
     loadFriendTasksStatus();
     await loadFriendProgressFromServer();
     
-    // Загружаем прогресс временных заданий с сервера и проверяем сброс
-try {
-    const timeStatusRes = await fetch(`${SERVER_URL}/api/time_tasks_status?user_id=${userId}`);
-    const serverStatus = await timeStatusRes.json();
-    if (serverStatus && Object.keys(serverStatus).length > 0) {
-        localStorage.setItem('time_tasks_status', JSON.stringify(serverStatus));
+    // ✅ Загружаем прогресс временных заданий с сервера
+    try {
+        const timeStatusRes = await fetch(`${SERVER_URL}/api/time_tasks_status?user_id=${userId}`);
+        const serverStatus = await timeStatusRes.json();
+        if (serverStatus && Object.keys(serverStatus).length > 0) {
+            localStorage.setItem('time_tasks_status', JSON.stringify(serverStatus));
+        }
+    } catch(e) {
+        console.error('Ошибка загрузки статуса временных заданий:', e);
     }
-} catch(e) {
-    console.error('Ошибка загрузки статуса временных заданий:', e);
-}
 
-// ✅ Вызываем проверку сброса и рендеринг ПОСЛЕ загрузки статуса
-checkTimeTasksReset();
-await renderTimeTasks();
+    // ✅ Вызываем проверку сброса и рендеринг ПОСЛЕ загрузки статуса
+    checkTimeTasksReset();
+    await renderTimeTasks();
     
     renderBranchTasks();
     renderFriendTasks();
@@ -24864,7 +24861,7 @@ await renderTimeTasks();
         }
     }
     
-    // ✅ Скипы — финальная проверка (НЕ ЗАТИРАЕМ если уже есть)
+    // ✅ Скипы — финальная проверка
     if (userSkips === undefined || userSkips === null) {
         userSkips = parseInt(localStorage.getItem(`user_skips_${userId}`) || '0');
     }
