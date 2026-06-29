@@ -9538,7 +9538,7 @@ function toggleTimeTasks() {
     }
 }
 
-function renderTimeTasks() {
+async function renderTimeTasks() {
     const container = document.getElementById('timeTasksList');
     if (!container) return;
     container.innerHTML = '';
@@ -9546,40 +9546,27 @@ function renderTimeTasks() {
     const weeklyTask = getWeeklyTask();
     const monthlyTask = getMonthlyTask();
     
-    // ✅ ЗАГРУЖАЕМ СТАТУС С СЕРВЕРА ПЕРЕД РЕНДЕРИНГОМ
-    fetch(`${SERVER_URL}/api/time_tasks_status?user_id=${userId}`)
-        .then(r => r.json())
-        .then(serverStatus => {
-            // Объединяем с локальным (сервер главнее)
-            const localStatus = JSON.parse(localStorage.getItem('time_tasks_status') || '{}');
-            const merged = { ...localStatus, ...serverStatus };
-            localStorage.setItem('time_tasks_status', JSON.stringify(merged));
-            
-            // Рендерим с актуальным статусом
-            renderTimeTasksWithStatus(merged, weeklyTask, monthlyTask);
-        })
-        .catch(() => {
-            // Ошибка — используем локальный
-            const local = JSON.parse(localStorage.getItem('time_tasks_status') || '{}');
-            renderTimeTasksWithStatus(local, weeklyTask, monthlyTask);
-        });
-}
-
-// ✅ НОВАЯ ФУНКЦИЯ — рендеринг с переданным статусом
-function renderTimeTasksWithStatus(timeTasksStatus, weeklyTask, monthlyTask) {
-    const container = document.getElementById('timeTasksList');
-    if (!container) return;
+    // ✅ СНАЧАЛА ЗАГРУЖАЕМ С СЕРВЕРА, ПОТОМ РЕНДЕРИМ
+    let timeTasksStatus;
+    try {
+        const response = await fetch(`${SERVER_URL}/api/time_tasks_status?user_id=${userId}`);
+        const serverStatus = await response.json();
+        timeTasksStatus = serverStatus || {};
+        // Сохраняем серверный статус в localStorage
+        localStorage.setItem('time_tasks_status', JSON.stringify(timeTasksStatus));
+    } catch (error) {
+        // Ошибка — берём из localStorage
+        timeTasksStatus = JSON.parse(localStorage.getItem('time_tasks_status') || '{}');
+    }
     
     // Проверяем, не сменился ли персонаж недели
     const savedWeeklyTitle = timeTasksStatus['_weekly_title'] || '';
-    if (savedWeeklyTitle !== weeklyTask.title) {
-        // Персонаж сменился — сбрасываем статус
+    if (savedWeeklyTitle && savedWeeklyTitle !== weeklyTask.title) {
         delete timeTasksStatus['weekly_task'];
         timeTasksStatus['_weekly_title'] = weeklyTask.title;
         localStorage.setItem('time_tasks_status', JSON.stringify(timeTasksStatus));
     }
     
-    // ✅ ИСПРАВЛЕНО: правильные ключи для проверки
     const weeklyCompleted = timeTasksStatus['weekly_task'] === true;
     const monthlyProgress = timeTasksStatus['monthly_task'] || {};
     
@@ -9623,7 +9610,6 @@ function renderTimeTasksWithStatus(timeTasksStatus, weeklyTask, monthlyTask) {
     
     let allMonthlyDone = true;
     monthlyTask.subtasks.forEach((subtask, idx) => {
-        // ✅ ИСПРАВЛЕНО: правильный ключ — строка, а не число
         const progress = monthlyProgress[String(idx)] || 0;
         const done = progress >= subtask.required;
         if (!done) allMonthlyDone = false;
