@@ -10193,7 +10193,7 @@ function renderCastleCardInGame(cardId) {
     const card = CASTLE_STORY.cards[cardId];
     if (!card) {
         container.innerHTML = `
-            <div style="width: 100vw; height: 100vh; position: fixed; top: 0; left: 0; z-index: 9999; background: #1a1a2e;">
+            <div style="width: 100vw; height: 100vh; position: fixed; top: 0; left: 0; z-index: 9999; background: #1a1a2e; overflow-y: auto;">
                 <button onclick="backToStoryPreview()" style="position: absolute; top: 20px; left: 20px; z-index: 10; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; font-size: 18px;">←</button>
                 <p style="text-align:center;color:white;padding-top:80px;">Карточка #${cardId} не найдена</p>
             </div>`;
@@ -10215,7 +10215,7 @@ function renderCastleCardInGame(cardId) {
     // КОНЦОВКА
     if (card.isEnding) {
         container.innerHTML = `
-            <div style="width: 100vw; height: 100vh; position: fixed; top: 0; left: 0; z-index: 9999; background: #1a1a2e;">
+            <div style="width: 100vw; height: 100vh; position: fixed; top: 0; left: 0; z-index: 9999; background: #1a1a2e; overflow-y: auto;">
                 <button onclick="backToStoryPreview()" style="position: absolute; top: 20px; left: 20px; z-index: 10; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; font-size: 18px;">←</button>
                 <div style="text-align: center; padding-top: 80px;">
                     <div style="font-size: 64px;">${card.isSecret?'🔮':'🏆'}</div>
@@ -10269,11 +10269,11 @@ function renderCastleCardInGame(cardId) {
         });
         
         container.innerHTML = `
-            <div style="width: 100vw; height: 100vh; position: fixed; top: 0; left: 0; z-index: 9999; background: #000; display: flex; flex-direction: column;">
-                <button onclick="backToStoryPreview()" style="position: absolute; top: 20px; left: 20px; z-index: 10; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; font-size: 18px;">←</button>
+            <div style="width: 100vw; height: 100vh; position: fixed; top: 0; left: 0; z-index: 9999; background: #000; display: flex; flex-direction: column; overflow-y: auto; overflow-x: hidden;">
+                <button onclick="backToStoryPreview()" style="position: fixed; top: 20px; left: 20px; z-index: 10; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; font-size: 18px;">←</button>
                 
-                <div style="position: relative; width: 100%; height: 70vh; overflow: hidden; flex-shrink: 0;">
-                    <img src="${cardImageUrl}" alt="Сцена" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.opacity='0.3'">
+                <div style="position: relative; width: 100%; min-height: 70vh; flex-shrink: 0;">
+                    <img src="${cardImageUrl}" alt="Сцена" style="width: 100%; min-height: 70vh; object-fit: cover;" onerror="this.style.opacity='0.3'">
                     <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 80px; background: linear-gradient(to top, #1a1a2e, transparent);"></div>
                     
                     ${card.chapter ? `<div style="position: absolute; top: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(212,175,55,0.3);"><span style="color: white; font-size: 13px; white-space: nowrap;">📖 ${card.chapter}</span></div>` : ''}
@@ -10286,7 +10286,7 @@ function renderCastleCardInGame(cardId) {
                     </div>
                 </div>
                 
-                <div style="padding: 15px 20px 25px; flex-shrink: 0; background: #1a1a2e; overflow-y: auto;">
+                <div style="padding: 15px 20px 30px; background: #1a1a2e;">
                     ${card.text ? `<p style="color: rgba(255,255,255,0.9); font-size: 16px; line-height: 1.7; margin-bottom: 20px;">${card.text}</p>` : ''}
                     ${choicesHtml}
                 </div>
@@ -10296,11 +10296,11 @@ function renderCastleCardInGame(cardId) {
     
     // ОБЫЧНАЯ КАРТОЧКА
     container.innerHTML = `
-        <div style="width: 100vw; height: 100vh; position: fixed; top: 0; left: 0; z-index: 9999; background: #000; display: flex; flex-direction: column;">
-            <button onclick="backToStoryPreview()" style="position: absolute; top: 20px; left: 20px; z-index: 10; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; font-size: 18px;">←</button>
+        <div style="width: 100vw; height: 100vh; position: fixed; top: 0; left: 0; z-index: 9999; background: #000; display: flex; flex-direction: column; overflow-y: auto; overflow-x: hidden;">
+            <button onclick="backToStoryPreview()" style="position: fixed; top: 20px; left: 20px; z-index: 10; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; font-size: 18px;">←</button>
             
-            <div style="position: relative; width: 100%; height: 70vh; overflow: hidden; flex-shrink: 0;">
-                <img src="${cardImageUrl}" alt="Сцена" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.opacity='0.3'">
+            <div style="position: relative; width: 100%; min-height: 70vh; flex-shrink: 0;">
+                <img src="${cardImageUrl}" alt="Сцена" style="width: 100%; min-height: 70vh; object-fit: cover;" onerror="this.style.opacity='0.3'">
                 <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 80px; background: linear-gradient(to top, #1a1a2e, transparent);"></div>
                 
                 ${card.chapter ? `<div style="position: absolute; top: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(212,175,55,0.3);"><span style="color: white; font-size: 13px; white-space: nowrap;">📖 ${card.chapter}</span></div>` : ''}
@@ -10313,7 +10313,7 @@ function renderCastleCardInGame(cardId) {
                 </div>
             </div>
             
-            <div style="padding: 15px 20px 25px; flex-shrink: 0; background: #1a1a2e;">
+            <div style="padding: 15px 20px 30px; background: #1a1a2e;">
                 ${card.text ? `<p style="color: rgba(255,255,255,0.9); font-size: 16px; line-height: 1.7; margin-bottom: 20px;">${card.text}</p>` : ''}
                 <button onclick="renderCastleCardInGame('${card.nextCard}')" style="width: 100%; padding: 14px; background: rgba(212,175,55,0.2); color: #d4af37; border: 1px solid rgba(212,175,55,0.4); border-radius: 10px; font-size: 16px; cursor: pointer;">Далее ▶</button>
             </div>
