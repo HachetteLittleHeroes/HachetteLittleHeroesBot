@@ -7552,6 +7552,38 @@ body:not([data-theme]) .modal-content,
 </div>
 
     <script>
+        // ==========================================
+// УНИВЕРСАЛЬНЫЙ ИНДИКАТОР ЗАГРУЗКИ
+// ==========================================
+function showLoadingOverlay(containerId, message = 'Отправка фото...') {
+    const container = document.getElementById(containerId);
+    if (container) {
+        container.innerHTML = `
+            <div style="text-align:center;padding:40px;">
+                <i class="fas fa-spinner fa-spin" style="font-size:48px;color:var(--accent);"></i>
+                <p style="margin-top:20px;color:var(--text);font-size:16px;">${message}</p>
+                <p style="margin-top:10px;color:var(--text-gray);font-size:13px;">Пожалуйста, подождите</p>
+            </div>
+        `;
+    }
+}
+
+function showUploadSuccess(message = '✅ Фото отправлено на проверку!') {
+    if (window.Telegram?.WebApp) {
+        tg.showAlert(message);
+        if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+    } else {
+        alert(message);
+    }
+}
+
+function showUploadError(message = '❌ Ошибка отправки') {
+    if (window.Telegram?.WebApp) {
+        tg.showAlert(message);
+    } else {
+        alert(message);
+    }
+}
     let currentDifficultyFilter = 'all';
        
         // ==========================================
@@ -8077,24 +8109,31 @@ function openTaskUpload(branchKey, levelIndex) {
     fileInput.type = 'file';
     fileInput.accept = 'image/*';
     fileInput.multiple = true;
-    
-    // ✅ ПОКАЗЫВАЕМ МОДАЛКУ СРАЗУ (пустую)
-    const modal = document.getElementById('taskUploadModal');
-    if (modal) {
-        modal.style.display = 'flex';
-        document.getElementById('taskPhotoPreviewContainer').innerHTML = '<p style="color: var(--text-gray); text-align: center;">Выберите фото...</p>';
-    }
+    fileInput.style.position = 'absolute';
+    fileInput.style.opacity = '0';
+    fileInput.style.pointerEvents = 'none';
+    document.body.appendChild(fileInput);
     
     fileInput.onchange = function(event) {
         handleTaskFilesSelected(event);
+        document.body.removeChild(fileInput);
     };
     
-    // ✅ На случай если окно выбора закрыли без выбора
-    fileInput.oncancel = function() {
-        if (tempPhotos.length === 0) {
-            closeTaskUploadModal();
+    // ✅ Показываем модалку ДО выбора файла
+    const modal = document.getElementById('taskUploadModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        const previewContainer = document.getElementById('taskPhotoPreviewContainer');
+        if (previewContainer) {
+            previewContainer.innerHTML = `
+                <div style="text-align:center;padding:20px;width:100%;">
+                    <i class="fas fa-cloud-upload-alt" style="font-size:40px;color:var(--text-gray);margin-bottom:10px;"></i>
+                    <p style="color:var(--text);font-size:14px;">Выберите фото для отправки</p>
+                    <p style="color:var(--text-gray);font-size:12px;">Поддерживается множественный выбор</p>
+                </div>
+            `;
         }
-    };
+    }
     
     fileInput.click();
 }
@@ -8195,25 +8234,20 @@ async function submitTaskPhoto(event) {
     console.log('=== SUBMIT TASK PHOTO ===');
     
     if (!tempPhotos || tempPhotos.length === 0) {
-        if (tg) tg.showAlert('❌ Выберите хотя бы одно фото');
+        showUploadError('❌ Выберите хотя бы одно фото');
         return;
     }
     
     if (isUploading) return;
     isUploading = true;
     
-    // ✅ БЛОКИРУЕМ КНОПКУ И ПОКАЗЫВАЕМ ИНДИКАТОР
+    // Блокируем кнопку
     const submitBtn = document.querySelector('#taskUploadModal .modal-action-btn');
     const originalText = submitBtn ? submitBtn.innerText : 'Отправить';
     if (submitBtn) {
         submitBtn.disabled = true;
         submitBtn.innerText = '⏳ Отправка...';
         submitBtn.style.opacity = '0.7';
-    }
-    
-    if (tg && tg.MainButton) {
-        tg.MainButton.setText("⏳ ОТПРАВКА ФОТО...").show();
-        tg.MainButton.showProgress();
     }
     
     try {
@@ -8248,13 +8282,9 @@ async function submitTaskPhoto(event) {
         }
         
         let endpoint;
-        if (currentSubtaskData) {
-            endpoint = '/api/check_subtask';
-        } else if (currentFriendTaskIdx !== null) {
-            endpoint = '/api/check_friend_subtask';
-        } else {
-            endpoint = '/api/check_achievement';
-        }
+        if (currentSubtaskData) endpoint = '/api/check_subtask';
+        else if (currentFriendTaskIdx !== null) endpoint = '/api/check_friend_subtask';
+        else endpoint = '/api/check_achievement';
         
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 60000);
@@ -8267,39 +8297,29 @@ async function submitTaskPhoto(event) {
         
         clearTimeout(timeoutId);
         
-        if (!response.ok) {
-            throw new Error(`Ошибка сервера: ${response.status}`);
-        }
+        if (!response.ok) throw new Error(`Ошибка сервера: ${response.status}`);
         
         const result = await response.json();
         
         if (result && result.status === 'ok') {
-            if (tg) {
-                tg.showAlert('✅ Фото отправлено на проверку!');
-                if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-            }
+            showUploadSuccess('✅ Фото отправлено на проверку!');
             closeTaskUploadModal();
         } else {
-            throw new Error(result?.message || 'Сервер вернул ошибку');
+            throw new Error(result?.message || 'Ошибка отправки');
         }
     } catch (error) {
         console.error('❌ Ошибка:', error);
         if (error.name === 'AbortError') {
-            if (tg) tg.showAlert('❌ Превышено время ожидания. Попробуйте отправить меньше фото.');
+            showUploadError('❌ Превышено время ожидания. Попробуйте отправить меньше фото.');
         } else {
-            if (tg) tg.showAlert(`❌ Ошибка: ${error.message}`);
+            showUploadError(`❌ Ошибка: ${error.message}`);
         }
     } finally {
         isUploading = false;
-        // ✅ ВОЗВРАЩАЕМ КНОПКУ
         if (submitBtn) {
             submitBtn.disabled = false;
             submitBtn.innerText = originalText;
             submitBtn.style.opacity = '1';
-        }
-        if (tg && tg.MainButton) {
-            tg.MainButton.hideProgress();
-            tg.MainButton.hide();
         }
     }
 }
@@ -9734,15 +9754,10 @@ function handleTimeTaskFilesSelected(event) {
 async function submitTimeTaskPhoto() {
     if (isUploading) return;
     if (!tempPhotos || tempPhotos.length === 0) {
-        if (tg) tg.showAlert('❌ Выберите хотя бы одно фото');
+        showUploadError('❌ Выберите хотя бы одно фото');
         return;
     }
     isUploading = true;
-    
-    if (tg && tg.MainButton) {
-        tg.MainButton.setText("⏳ ОТПРАВКА ФОТО...").show();
-        tg.MainButton.showProgress();
-    }
     
     try {
         const formData = new FormData();
@@ -9781,34 +9796,20 @@ async function submitTimeTaskPhoto() {
         const result = await response.json();
         
         if (result && result.status === 'ok') {
-            if (tg) {
-                tg.showAlert('✅ Фото отправлено на проверку! Ожидайте одобрения.');
-                if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-            }
+            showUploadSuccess('✅ Фото отправлено на проверку! Ожидайте одобрения.');
             closeTaskUploadModal();
             
-            // ✅ НОВОЕ: Принудительно загружаем статус с сервера через 3 секунды
-            // и ещё раз через 10 секунд (на случай если админ одобрил не сразу)
+            // Принудительно загружаем статус с сервера
             [3000, 10000].forEach(delay => {
                 setTimeout(async () => {
                     try {
-                        console.log('🔄 Загружаем статус временных заданий с сервера...');
                         const statusRes = await fetch(`${SERVER_URL}/api/time_tasks_status?user_id=${userId}`);
                         const serverStatus = await statusRes.json();
-                        
                         if (serverStatus && Object.keys(serverStatus).length > 0) {
-                            // Сохраняем в localStorage
                             localStorage.setItem('time_tasks_status', JSON.stringify(serverStatus));
-                            console.log('✅ Статус временных заданий обновлён:', serverStatus);
-                            
-                            // Перерисовываем задания если вкладка открыта
-                            if (typeof renderTimeTasks === 'function') {
-                                renderTimeTasks();
-                            }
+                            if (typeof renderTimeTasks === 'function') renderTimeTasks();
                         }
-                    } catch(e) {
-                        console.error('Ошибка загрузки статуса временных заданий:', e);
-                    }
+                    } catch(e) {}
                 }, delay);
             });
         } else {
@@ -9817,16 +9818,12 @@ async function submitTimeTaskPhoto() {
     } catch (error) {
         console.error('❌ Ошибка:', error);
         if (error.name === 'AbortError') {
-            if (tg) tg.showAlert('❌ Превышено время ожидания. Попробуйте отправить меньше фото.');
+            showUploadError('❌ Превышено время ожидания.');
         } else {
-            if (tg) tg.showAlert(`❌ Ошибка: ${error.message}`);
+            showUploadError(`❌ Ошибка: ${error.message}`);
         }
     } finally {
         isUploading = false;
-        if (tg && tg.MainButton) {
-            tg.MainButton.hideProgress();
-            tg.MainButton.hide();
-        }
     }
 }
      
@@ -10404,22 +10401,20 @@ function submitCastleChoiceInGame(cardId, choiceIdx) {
     const choice = card.choices[choiceIdx];
     if (!choice) return;
     
-    // Сохраняем idx в локальную переменную для использования в колбэке
     const idx = choiceIdx;
     
     // Премиум-выбор со скипом — без фото, СРАЗУ ОДОБРЯЕМ
     if (choice.isPremium && choice.skipCost) {
         if (!userSkips || userSkips < choice.skipCost) { 
-            safeShowAlert('Недостаточно скипов! Нужно: ' + choice.skipCost + ', у вас: ' + (userSkips || 0));
+            if (tg) tg.showAlert('Недостаточно скипов! Нужно: ' + choice.skipCost + ', у вас: ' + (userSkips || 0));
+            else alert('Недостаточно скипов! Нужно: ' + choice.skipCost + ', у вас: ' + (userSkips || 0));
             return; 
         }
         
-        // Списываем скипы
         userSkips -= choice.skipCost;
         localStorage.setItem(`user_skips_${userId}`, userSkips);
         if (typeof updateSkipDisplay === 'function') updateSkipDisplay();
         
-        // Отправляем на бекенд что скип использован
         fetch(`${SERVER_URL}/api/use_skip`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -10429,7 +10424,6 @@ function submitCastleChoiceInGame(cardId, choiceIdx) {
             })
         }).catch(e => console.error('Skip sync error:', e));
         
-        // СРАЗУ ОДОБРЯЕМ ВЫБОР
         const choiceKey = cardId + '_choice_' + idx;
         if (!castleCompletedChoices) castleCompletedChoices = {};
         if (!castleApprovedChoices) castleApprovedChoices = {};
@@ -10437,21 +10431,13 @@ function submitCastleChoiceInGame(cardId, choiceIdx) {
         castleCompletedChoices[choiceKey] = true;
         castleApprovedChoices[choiceKey] = true;
         
-        console.log('✅ Платный выбор одобрен:', choiceKey, castleApprovedChoices);
-        
-        // Применяем награду
         applyCastleReward(choice);
-        
-        // Сохраняем прогресс
         saveCastleProgress();
-        
-        // Перерисовываем карточку
         renderCastleCardInGame(cardId);
         
         return;
     }
     
-    // Если нет задания — просто применяем награду
     if (!choice.task) { 
         applyCastleReward(choice); 
         proceedToCard(choice.nextCard); 
@@ -10468,20 +10454,23 @@ function submitCastleChoiceInGame(cardId, choiceIdx) {
         const files = Array.from(event.target.files);
         if (files.length === 0) return;
         
-        // Показываем что фото выбрано
-        safeShowAlert('📸 Фото выбрано! Отправляем...');
+        // ✅ СРАЗУ показываем индикатор загрузки, без alert()
+        const container = document.getElementById('storyGameContainer');
+        if (container) {
+            container.innerHTML = `
+                <div style="text-align:center;padding:40px;">
+                    <i class="fas fa-spinner fa-spin" style="font-size:48px;color:var(--accent);"></i>
+                    <p style="margin-top:20px;color:var(--text);font-size:16px;">📤 Отправка фото...</p>
+                    <p style="margin-top:10px;color:var(--text-gray);font-size:13px;">Пожалуйста, подождите</p>
+                </div>
+            `;
+        }
         
-        // Помечаем как отправленное только после выбора файлов
+        // Помечаем как отправленное
         if (!castleCompletedChoices) castleCompletedChoices = {};
         const choiceKey = cardId + '_choice_' + idx;
         castleCompletedChoices[choiceKey] = true;
         saveCastleProgress();
-        
-        // Показываем что отправляется
-        const container = document.getElementById('storyGameContainer');
-        if (container) {
-            container.innerHTML = '<div style="text-align:center;padding:40px;"><i class="fas fa-spinner fa-spin"></i><p style="margin-top:15px;">Отправка фото...</p></div>';
-        }
         
         const formData = new FormData();
         formData.append('user', userId.toString());
@@ -10503,18 +10492,20 @@ function submitCastleChoiceInGame(cardId, choiceIdx) {
             const result = await response.json();
             
             if (result && result.status === 'ok') {
-                safeShowAlert('✅ Фото отправлено на проверку!');
+                // ✅ Показываем уведомление и продолжаем
+                if (tg) tg.showAlert('✅ Фото отправлено на проверку!');
+                else alert('✅ Фото отправлено на проверку!');
                 renderCastleCardInGame(cardId);
             } else {
                 throw new Error(result?.message || 'Ошибка сервера');
             }
         } catch (error) {
             console.error('❌ Ошибка отправки:', error);
-            // При ошибке даём возможность переотправить
             delete castleCompletedChoices[choiceKey];
             saveCastleProgress();
             
-            safeShowAlert('❌ Ошибка: ' + error.message);
+            if (tg) tg.showAlert('❌ Ошибка: ' + error.message);
+            else alert('❌ Ошибка: ' + error.message);
             renderCastleCardInGame(cardId);
         }
     };
@@ -16813,21 +16804,14 @@ function openCommunityTaskUpload(subtaskIdx) {
 
 async function submitCommunityTaskPhoto() {
     console.log('=== SUBMIT COMMUNITY TASK PHOTO ===');
-    console.log('currentCommunitySubtask:', currentCommunitySubtask);
-    console.log('tempPhotos length:', tempPhotos?.length);
     
     if (!tempPhotos || tempPhotos.length === 0) {
-        if (tg) tg.showAlert('❌ Выберите хотя бы одно фото');
+        showUploadError('❌ Выберите хотя бы одно фото');
         return;
     }
     
     if (isUploading) return;
     isUploading = true;
-    
-    if (tg && tg.MainButton) {
-        tg.MainButton.setText("⏳ ОТПРАВКА ФОТО...").show();
-        tg.MainButton.showProgress();
-    }
     
     try {
         const compressedPhotos = await compressImages(tempPhotos, 1200, 0.7);
@@ -16843,8 +16827,6 @@ async function submitCommunityTaskPhoto() {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 60000);
         
-        console.log('📤 Отправка запроса на /api/check_community_task');
-        
         const response = await fetch(`${SERVER_URL}/api/check_community_task`, {
             method: 'POST',
             body: formData,
@@ -16853,22 +16835,12 @@ async function submitCommunityTaskPhoto() {
         
         clearTimeout(timeoutId);
         
-        console.log(`📥 Статус ответа: ${response.status}`);
-        
-        if (!response.ok) {
-            throw new Error(`Ошибка сервера: ${response.status}`);
-        }
+        if (!response.ok) throw new Error(`Ошибка сервера: ${response.status}`);
         
         const result = await response.json();
-        console.log('📥 Результат:', result);
         
         if (result && result.status === 'ok') {
-            // ✅ XP начисляется ТОЛЬКО при одобрении админом, не здесь!
-            
-            if (tg) {
-                tg.showAlert('✅ Фото отправлено на проверку!');
-                if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-            }
+            showUploadSuccess('✅ Фото отправлено на проверку!');
             closeTaskUploadModal();
         } else {
             throw new Error(result?.message || 'Ошибка отправки');
@@ -16876,17 +16848,13 @@ async function submitCommunityTaskPhoto() {
     } catch (error) {
         console.error('❌ Ошибка:', error);
         if (error.name === 'AbortError') {
-            if (tg) tg.showAlert('❌ Превышено время ожидания. Попробуйте отправить меньше фото.');
+            showUploadError('❌ Превышено время ожидания.');
         } else {
-            if (tg) tg.showAlert(`❌ Ошибка: ${error.message}`);
+            showUploadError(`❌ Ошибка: ${error.message}`);
         }
     } finally {
         isUploading = false;
         tempPhotos = [];
-        if (tg && tg.MainButton) {
-            tg.MainButton.hideProgress();
-            tg.MainButton.hide();
-        }
     }
 }
         function openMyCustomization() {
@@ -19000,8 +18968,17 @@ function submitCastleChoice(cardId, choiceIdx) {
         const files = Array.from(event.target.files);
         if (files.length === 0) return;
         
+        // ✅ СРАЗУ показываем красивый индикатор загрузки
         const container = document.getElementById('castleStoryContainer');
-        if (container) container.innerHTML = '<div style="text-align: center; padding: 20px;"><i class="fas fa-spinner fa-spin"></i> Отправка фото...</div>';
+        if (container) {
+            container.innerHTML = `
+                <div style="text-align:center;padding:40px;">
+                    <i class="fas fa-spinner fa-spin" style="font-size:48px;color:var(--accent);"></i>
+                    <p style="margin-top:20px;color:var(--text);font-size:16px;">📤 Отправка фото...</p>
+                    <p style="margin-top:10px;color:var(--text-gray);font-size:13px;">Пожалуйста, подождите</p>
+                </div>
+            `;
+        }
         
         const formData = new FormData();
         formData.append('user', userId.toString());
@@ -19011,7 +18988,6 @@ function submitCastleChoice(cardId, choiceIdx) {
         formData.append('chapter', card.chapter || '');
         formData.append('task', choice.task || '');
         
-        // Добавляем КАЖДЫЙ файл отдельно
         for (let i = 0; i < files.length; i++) {
             formData.append('photos', files[i]);
         }
@@ -19023,14 +18999,16 @@ function submitCastleChoice(cardId, choiceIdx) {
             console.log('📡 Ответ сервера:', result);
             
             if (result && result.status === 'ok') {
-                alert('✅ Фото отправлено на проверку! Ожидайте одобрения.');
+                if (tg) tg.showAlert('✅ Фото отправлено на проверку!');
+                else alert('✅ Фото отправлено на проверку! Ожидайте одобрения.');
                 renderCastleCard(cardId);
             } else {
                 throw new Error(result?.message || 'Ошибка сервера');
             }
         } catch (error) {
             console.error('❌ Ошибка отправки:', error);
-            alert('❌ Ошибка: ' + error.message);
+            if (tg) tg.showAlert('❌ Ошибка: ' + error.message);
+            else alert('❌ Ошибка: ' + error.message);
             delete castleCompletedChoices[choiceKey];
             saveCastleProgress();
             renderCastleCard(cardId);
@@ -23895,7 +23873,7 @@ function openDndTaskUpload() {
 }
 
 function submitDndTaskPhoto(cardNumber) {
-    if (!window.tempPhotos || window.tempPhotos.length === 0) { alert('❌ Выберите фото'); return; }
+    if (!window.tempPhotos || window.tempPhotos.length === 0) { showUploadError('❌ Выберите фото'); return; }
     if (window.isUploading) return;
     window.isUploading = true;
     
@@ -23908,10 +23886,13 @@ function submitDndTaskPhoto(cardNumber) {
     fetch(SERVER_URL + '/api/dnd/check_task', { method: 'POST', body: formData })
         .then(r => r.json())
         .then(function(result) {
-            if (result && result.status === 'ok') { alert('✅ Фото отправлено на проверку!'); closeTaskUploadModal(); }
-            else { alert('❌ ' + (result?.message || 'Ошибка')); }
+            if (result && result.status === 'ok') {
+                showUploadSuccess('✅ Фото отправлено на проверку!');
+                closeTaskUploadModal();
+            }
+            else { showUploadError('❌ ' + (result?.message || 'Ошибка')); }
         })
-        .catch(function(error) { alert('❌ ' + error.message); })
+        .catch(function(error) { showUploadError('❌ ' + error.message); })
         .finally(function() { window.isUploading = false; window.tempPhotos = []; });
 }
 
