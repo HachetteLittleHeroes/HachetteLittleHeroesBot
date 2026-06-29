@@ -9292,7 +9292,139 @@ function renderBranchTasks() {
         console.error('Error refreshing progress:', error);
     }
 }
-async function submitTimeTaskPhoto
+// ==========================================
+// ВРЕМЕННЫЕ ЗАДАНИЯ (ИСПРАВЛЕНО — СМЕНА ПО ВОСКРЕСЕНЬЯМ)
+// ==========================================
+
+function getMoscowTime() {
+    const now = new Date();
+    const moscowOffset = 3 * 60 * 60 * 1000; // UTC+3
+    return new Date(now.getTime() + moscowOffset);
+}
+
+function getWeeklyTask() {
+    const moscowNow = getMoscowTime();
+    
+    // Получаем ВОСКРЕСЕНЬЕ как начало недели
+    const dayOfWeek = moscowNow.getDay(); // 0=вс, 1=пн...6=сб
+    const sunday = new Date(moscowNow);
+    sunday.setDate(moscowNow.getDate() - dayOfWeek);
+    sunday.setHours(0, 0, 0, 0);
+    
+    // Ключ недели = дата воскресенья
+    const weekKey = `${sunday.getFullYear()}-${sunday.getMonth()+1}-${sunday.getDate()}`;
+    
+    // Выбор персонажа — на основе даты, а не миллисекунд
+    const charIndex = (sunday.getFullYear() * 1000 + sunday.getMonth() * 50 + sunday.getDate() * 7) % BESTIARY.length;
+    const char = BESTIARY[charIndex];
+    
+    let totalAppearances = 0;
+    char.appearances.forEach(a => totalAppearances += a.pages.length);
+    
+    let reward = 5;
+    if (totalAppearances === 2 || totalAppearances === 3) reward = 10;
+    if (totalAppearances === 1) reward = 15;
+    
+    // Дедлайн — следующее воскресенье
+    const deadline = new Date(sunday);
+    deadline.setDate(sunday.getDate() + 7);
+    const deadlineStr = `${String(deadline.getDate()).padStart(2, '0')}.${String(deadline.getMonth() + 1).padStart(2, '0')}.${deadline.getFullYear()}`;
+    
+    return {
+        id: 'weekly_task',
+        title: `Персонаж недели: ${char.name}`,
+        description: `Раскрась картинку с ${char.name} из м/ф «${char.film}»`,
+        reward: reward,
+        deadline: deadlineStr,
+        type: 'weekly',
+        character: char,
+        totalAppearances: totalAppearances,
+        weekKey: weekKey
+    };
+}
+
+function getMonthlyTask() {
+    const moscowNow = getMoscowTime();
+    const monthIndex = moscowNow.getFullYear() * 12 + moscowNow.getMonth();
+    const seed = monthIndex * 12345;
+    
+    const chars = [];
+    const usedFilms = new Set();
+    
+    for (let i = 0; i < 4; i++) {
+        let idx = (seed + i * 7919) % BESTIARY.length;
+        let attempts = 0;
+        
+        while (usedFilms.has(BESTIARY[idx].film) && attempts < 100) {
+            idx = (idx + 1) % BESTIARY.length;
+            attempts++;
+        }
+        usedFilms.add(BESTIARY[idx].film);
+        chars.push(BESTIARY[idx]);
+    }
+    
+    const lastDay = new Date(moscowNow.getFullYear(), moscowNow.getMonth() + 1, 0);
+    const deadlineStr = `${String(lastDay.getDate()).padStart(2, '0')}.${String(lastDay.getMonth() + 1).padStart(2, '0')}.${lastDay.getFullYear()}`;
+    
+    const subtasks = chars.map((char, i) => {
+        let totalAppearances = 0;
+        char.appearances.forEach(a => totalAppearances += a.pages.length);
+        
+        let reward = 5;
+        if (totalAppearances === 2 || totalAppearances === 3) reward = 10;
+        if (totalAppearances === 1) reward = 15;
+        
+        return {
+            name: `Раскрась картинку с ${char.name} из м/ф «${char.film}»`,
+            required: 1,
+            reward: reward,
+            character: char,
+            totalAppearances: totalAppearances
+        };
+    });
+    
+    const totalReward = subtasks.reduce((sum, s) => sum + s.reward, 0);
+    
+    return {
+        id: 'monthly_task',
+        title: 'Задания месяца',
+        description: `Выполни 4 задания до ${deadlineStr}`,
+        reward: totalReward,
+        deadline: deadlineStr,
+        type: 'monthly',
+        subtasks: subtasks
+    };
+}
+
+function checkTimeTasksReset() {
+    const moscowNow = getMoscowTime();
+    
+    // Получаем ВОСКРЕСЕНЬЕ
+    const dayOfWeek = moscowNow.getDay();
+    const sunday = new Date(moscowNow);
+    sunday.setDate(moscowNow.getDate() - dayOfWeek);
+    sunday.setHours(0, 0, 0, 0);
+    const weekKey = `${sunday.getFullYear()}-${sunday.getMonth()+1}-${sunday.getDate()}`;
+    
+    const monthIndex = moscowNow.getFullYear() * 12 + moscowNow.getMonth();
+    
+    const savedWeek = localStorage.getItem('time_tasks_week');
+    const savedMonth = localStorage.getItem('time_tasks_month');
+    
+    // Сброс если: старый формат (число), или неделя не совпала, или месяц не совпал
+    if (savedWeek !== weekKey || savedMonth != monthIndex || (savedWeek && !isNaN(parseInt(savedWeek)))) {
+        console.log('🔄 Сброс заданий! Старая:', savedWeek, 'Новая:', weekKey);
+        localStorage.setItem('time_tasks_status', '{}');
+        localStorage.setItem('time_tasks_week', weekKey);
+        localStorage.setItem('time_tasks_month', monthIndex);
+        
+        fetch(`${SERVER_URL}/api/reset_time_tasks`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId })
+        }).catch(e => console.error('Ошибка сброса:', e));
+    }
+}
 function openCastleStoryFromStories() {
     // Переключаемся на вкладку профиля
     tab('profile');
@@ -9402,10 +9534,7 @@ function toggleTimeTasks() {
     } else {
         content.style.display = 'block';
         if (arrow) arrow.style.transform = 'rotate(180deg)';
-        // ✅ Загружаем актуальный статус с сервера перед отрисовкой
-        loadTimeTasksFromServer().then(() => {
-            renderTimeTasks();
-        });
+        renderTimeTasks();
     }
 }
 
@@ -9515,35 +9644,6 @@ function renderTimeTasks() {
     
     container.innerHTML = html;
 }
-        function checkTimeTasksReset() {
-    const moscowNow = getMoscowTime();
-    
-    // Получаем ВОСКРЕСЕНЬЕ как начало недели
-    const dayOfWeek = moscowNow.getDay();
-    const sunday = new Date(moscowNow);
-    sunday.setDate(moscowNow.getDate() - dayOfWeek);
-    sunday.setHours(0, 0, 0, 0);
-    const weekKey = `${sunday.getFullYear()}-${sunday.getMonth()+1}-${sunday.getDate()}`;
-    
-    const monthIndex = moscowNow.getFullYear() * 12 + moscowNow.getMonth();
-    
-    const savedWeek = localStorage.getItem('time_tasks_week');
-    const savedMonth = localStorage.getItem('time_tasks_month');
-    
-    // Сброс если: старый формат (число), или неделя не совпала, или месяц не совпал
-    if (savedWeek !== weekKey || savedMonth != monthIndex || (savedWeek && !isNaN(parseInt(savedWeek)))) {
-        console.log('🔄 Сброс заданий! Старая:', savedWeek, 'Новая:', weekKey);
-        localStorage.setItem('time_tasks_status', '{}');
-        localStorage.setItem('time_tasks_week', weekKey);
-        localStorage.setItem('time_tasks_month', monthIndex);
-        
-        fetch(`${SERVER_URL}/api/reset_time_tasks`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ user_id: userId })
-        }).catch(e => console.error('Ошибка сброса:', e));
-    }
-}
 let currentTimeTaskId = null;
 let currentTimeTaskReward = null;
 let currentTimeTaskSubtask = 0;
@@ -9580,10 +9680,6 @@ function handleTimeTaskFilesSelected(event) {
     const files = Array.from(event.target.files);
     if (files.length === 0) return;
     tempPhotos = files;
-    
-    // ✅ Загружаем актуальный статус перед показом
-    loadTimeTasksFromServer();
-    
     const previewContainer = document.getElementById('taskPhotoPreviewContainer');
     if (previewContainer) {
         previewContainer.innerHTML = '';
@@ -9607,6 +9703,7 @@ function handleTimeTaskFilesSelected(event) {
         }
     }
 }
+
 async function submitTimeTaskPhoto() {
     if (isUploading) return;
     if (!tempPhotos || tempPhotos.length === 0) {
@@ -24507,8 +24604,10 @@ window.onload = async () => {
             const savedSkipsLocal = parseInt(localStorage.getItem(`user_skips_${userId}`) || '0');
             
             if (apiSkips > 0) {
+                // Сервер знает — берём с сервера
                 userSkips = apiSkips;
             } else if (savedSkipsLocal > 0) {
+                // Сервер вернул 0, но в localStorage есть — восстанавливаем на сервере
                 console.log('⚠️ Сервер вернул 0 скипов, но локально есть ' + savedSkipsLocal + '. Восстанавливаем...');
                 userSkips = savedSkipsLocal;
                 fetch(`${SERVER_URL}/api/add_skips`, {
@@ -24649,8 +24748,18 @@ window.onload = async () => {
     loadFriendTasksStatus();
     await loadFriendProgressFromServer();
     
-    // ✅ Загружаем прогресс временных заданий с сервера
-    await loadTimeTasksFromServer();
+    // Загружаем прогресс временных заданий с сервера
+    try {
+        const timeStatusRes = await fetch(`${SERVER_URL}/api/time_tasks_status?user_id=${userId}`);
+        const serverStatus = await timeStatusRes.json();
+        if (serverStatus && Object.keys(serverStatus).length > 0) {
+            const localStatus = JSON.parse(localStorage.getItem('time_tasks_status') || '{}');
+            const merged = { ...localStatus, ...serverStatus };
+            localStorage.setItem('time_tasks_status', JSON.stringify(merged));
+        }
+    } catch(e) {
+        console.error('Ошибка загрузки статуса временных заданий:', e);
+    }
     
     renderBranchTasks();
     renderTimeTasks();
@@ -24671,8 +24780,6 @@ window.onload = async () => {
     
     setInterval(async () => { await checkCollectionUpdates(); }, 30000);
     setInterval(async () => { await loadFriendProgressFromServer(); }, 30000);
-    // ✅ Автообновление статуса временных заданий
-    setInterval(async () => { await loadTimeTasksFromServer(); }, 30000);
     
     updateUI();
     initSwipeListeners();
@@ -24762,25 +24869,6 @@ window.onload = async () => {
             });
     }, 300);
 };
-
-// ==========================================
-// СИНХРОНИЗАЦИЯ ВРЕМЕННЫХ ЗАДАНИЙ С СЕРВЕРОМ
-// ==========================================
-
-async function loadTimeTasksFromServer() {
-    try {
-        const response = await fetch(`${SERVER_URL}/api/time_tasks_status?user_id=${userId}`);
-        const serverStatus = await response.json();
-        if (serverStatus && Object.keys(serverStatus).length > 0) {
-            const localStatus = JSON.parse(localStorage.getItem('time_tasks_status') || '{}');
-            const merged = { ...localStatus, ...serverStatus };
-            localStorage.setItem('time_tasks_status', JSON.stringify(merged));
-            console.log('✅ Статус временных заданий обновлён с сервера');
-        }
-    } catch(e) {
-        console.error('Ошибка загрузки статуса временных заданий:', e);
-    }
-}
        //БЕСТИАРИЙ
         const BESTIARY = [
     {
