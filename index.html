@@ -10192,7 +10192,12 @@ function renderCastleCardInGame(cardId) {
     
     const card = CASTLE_STORY.cards[cardId];
     if (!card) {
-        container.innerHTML = `<div class="story-card-fullscreen"><p style="text-align:center;color:var(--text-gray);">Карточка #${cardId} не найдена</p><button class="story-card-next-btn" onclick="backToStoryPreview()">← Назад</button></div>`;
+        container.innerHTML = `
+            <div class="story-card-fullscreen" style="background: #1a1a2e;">
+                <button onclick="backToStoryPreview()" style="position: absolute; top: 20px; left: 20px; z-index: 10; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; font-size: 18px;">←</button>
+                <p style="text-align:center;color:var(--text-gray);padding-top:60px;">Карточка #${cardId} не найдена</p>
+                <button class="story-card-next-btn" onclick="backToStoryPreview()">← Назад</button>
+            </div>`;
         return;
     }
     
@@ -10212,11 +10217,22 @@ function renderCastleCardInGame(cardId) {
     
     const cardImageUrl = `https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/ashetvil/${cardId}.jpg`;
     
+    // КОНЦОВКА
     if (card.isEnding) {
-        container.innerHTML = `<div class="story-card-fullscreen" style="background: #1a1a2e;"><div style="text-align: center; padding-top: 40px;"><div style="font-size: 64px;">${card.isSecret?'🔮':'🏆'}</div><div style="color: #d4af37; font-size: 20px; margin: 15px 0;">${card.chapter || 'Концовка'}</div><p style="color: white; font-size: 16px; padding: 20px;">${card.text}</p><button class="story-card-next-btn" onclick="claimCastleEndingInGame('${cardId}')" style="background: #d4af37; color: #1a1a2e; width: 80%;">🎉 Завершить историю</button></div></div>`;
+        container.innerHTML = `
+            <div class="story-card-fullscreen" style="background: #1a1a2e;">
+                <button onclick="backToStoryPreview()" style="position: absolute; top: 20px; left: 20px; z-index: 10; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; font-size: 18px;">←</button>
+                <div style="text-align: center; padding-top: 60px;">
+                    <div style="font-size: 64px;">${card.isSecret ? '🔮' : '🏆'}</div>
+                    <div style="color: #d4af37; font-size: 20px; margin: 15px 0;">${card.chapter || 'Концовка'}</div>
+                    <p style="color: white; font-size: 16px; padding: 20px;">${card.text}</p>
+                    <button class="story-card-next-btn" onclick="claimCastleEndingInGame('${cardId}')" style="background: #d4af37; color: #1a1a2e; width: 80%;">🎉 Завершить историю</button>
+                </div>
+            </div>`;
         return;
     }
     
+    // ВЫБОР
     if (card.isChoice) {
         let choicesHtml = '';
         card.choices.forEach((choice, idx) => {
@@ -10249,10 +10265,11 @@ function renderCastleCardInGame(cardId) {
         
         container.innerHTML = `
             <div class="story-card-fullscreen" style="background: #1a1a2e; display: flex; flex-direction: column;">
+                <button onclick="backToStoryPreview()" style="position: absolute; top: 20px; left: 20px; z-index: 10; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; font-size: 18px;">←</button>
                 <div style="position: relative; width: 100%; height: 70vh; overflow: hidden; flex-shrink: 0;">
                     <img src="${cardImageUrl}" alt="Сцена" style="width: 100%; height: 100%; object-fit: cover; display: block;" onerror="this.style.opacity='0.3'">
                     <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 80px; background: linear-gradient(to top, #1a1a2e, transparent);"></div>
-                    ${card.chapter ? `<div style="position: absolute; top: 20px; left: 20px; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(212,175,55,0.3);"><span style="color: white; font-size: 13px;">📖 ${card.chapter}</span></div>` : ''}
+                    ${card.chapter ? `<div style="position: absolute; top: 20px; left: 70px; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(212,175,55,0.3);"><span style="color: white; font-size: 13px;">📖 ${card.chapter}</span></div>` : ''}
                     <div style="position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.15);">${statsHtml}</div>
                 </div>
                 <div style="padding: 15px 20px 25px; flex-shrink: 0;">
@@ -10263,12 +10280,14 @@ function renderCastleCardInGame(cardId) {
         return;
     }
     
+    // ОБЫЧНАЯ КАРТОЧКА
     container.innerHTML = `
         <div class="story-card-fullscreen" style="background: #1a1a2e; display: flex; flex-direction: column;">
+            <button onclick="backToStoryPreview()" style="position: absolute; top: 20px; left: 20px; z-index: 10; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; font-size: 18px;">←</button>
             <div style="position: relative; width: 100%; height: 70vh; overflow: hidden; flex-shrink: 0;">
                 <img src="${cardImageUrl}" alt="Сцена" style="width: 100%; height: 100%; object-fit: cover; display: block;" onerror="this.style.opacity='0.3'">
                 <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 80px; background: linear-gradient(to top, #1a1a2e, transparent);"></div>
-                ${card.chapter ? `<div style="position: absolute; top: 20px; left: 20px; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(212,175,55,0.3);"><span style="color: white; font-size: 13px;">📖 ${card.chapter}</span></div>` : ''}
+                ${card.chapter ? `<div style="position: absolute; top: 20px; left: 70px; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(212,175,55,0.3);"><span style="color: white; font-size: 13px;">📖 ${card.chapter}</span></div>` : ''}
                 <div style="position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.15);">${statsHtml}</div>
             </div>
             <div style="padding: 15px 20px 25px; flex-shrink: 0;">
