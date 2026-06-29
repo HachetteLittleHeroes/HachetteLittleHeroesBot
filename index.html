@@ -9515,6 +9515,35 @@ function renderTimeTasks() {
     
     container.innerHTML = html;
 }
+        function checkTimeTasksReset() {
+    const moscowNow = getMoscowTime();
+    
+    // Получаем ВОСКРЕСЕНЬЕ как начало недели
+    const dayOfWeek = moscowNow.getDay();
+    const sunday = new Date(moscowNow);
+    sunday.setDate(moscowNow.getDate() - dayOfWeek);
+    sunday.setHours(0, 0, 0, 0);
+    const weekKey = `${sunday.getFullYear()}-${sunday.getMonth()+1}-${sunday.getDate()}`;
+    
+    const monthIndex = moscowNow.getFullYear() * 12 + moscowNow.getMonth();
+    
+    const savedWeek = localStorage.getItem('time_tasks_week');
+    const savedMonth = localStorage.getItem('time_tasks_month');
+    
+    // Сброс если: старый формат (число), или неделя не совпала, или месяц не совпал
+    if (savedWeek !== weekKey || savedMonth != monthIndex || (savedWeek && !isNaN(parseInt(savedWeek)))) {
+        console.log('🔄 Сброс заданий! Старая:', savedWeek, 'Новая:', weekKey);
+        localStorage.setItem('time_tasks_status', '{}');
+        localStorage.setItem('time_tasks_week', weekKey);
+        localStorage.setItem('time_tasks_month', monthIndex);
+        
+        fetch(`${SERVER_URL}/api/reset_time_tasks`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId })
+        }).catch(e => console.error('Ошибка сброса:', e));
+    }
+}
 let currentTimeTaskId = null;
 let currentTimeTaskReward = null;
 let currentTimeTaskSubtask = 0;
