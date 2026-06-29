@@ -9434,33 +9434,7 @@ function getMonthlyTask() {
 }
 
 function checkTimeTasksReset() {
-    const moscowNow = getMoscowTime();
-    
-    // Получаем ВОСКРЕСЕНЬЕ
-    const dayOfWeek = moscowNow.getDay();
-    const sunday = new Date(moscowNow);
-    sunday.setDate(moscowNow.getDate() - dayOfWeek);
-    sunday.setHours(0, 0, 0, 0);
-    const weekKey = `${sunday.getFullYear()}-${sunday.getMonth()+1}-${sunday.getDate()}`;
-    
-    const monthIndex = moscowNow.getFullYear() * 12 + moscowNow.getMonth();
-    
-    const savedWeek = localStorage.getItem('time_tasks_week');
-    const savedMonth = localStorage.getItem('time_tasks_month');
-    
-    // Сброс если: старый формат (число), или неделя не совпала, или месяц не совпал
-    if (savedWeek !== weekKey || savedMonth != monthIndex || (savedWeek && !isNaN(parseInt(savedWeek)))) {
-        console.log('🔄 Сброс заданий! Старая:', savedWeek, 'Новая:', weekKey);
-        localStorage.setItem('time_tasks_status', '{}');
-        localStorage.setItem('time_tasks_week', weekKey);
-        localStorage.setItem('time_tasks_month', monthIndex);
-        
-        fetch(`${SERVER_URL}/api/reset_time_tasks`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ user_id: userId })
-        }).catch(e => console.error('Ошибка сброса:', e));
-    }
+    return;
 }
 function openCastleStoryFromStories() {
     // Переключаемся на вкладку профиля
@@ -24803,19 +24777,18 @@ window.onload = async () => {
     loadFriendTasksStatus();
     await loadFriendProgressFromServer();
     
-    // ✅ Загружаем прогресс временных заданий с сервера
+    // ✅ Загружаем прогресс временных заданий с сервера (ВСЕГДА сохраняем)
     try {
         const timeStatusRes = await fetch(`${SERVER_URL}/api/time_tasks_status?user_id=${userId}`);
         const serverStatus = await timeStatusRes.json();
-        if (serverStatus && Object.keys(serverStatus).length > 0) {
-            localStorage.setItem('time_tasks_status', JSON.stringify(serverStatus));
-        }
+        // Всегда сохраняем серверный статус (даже если пустой)
+        localStorage.setItem('time_tasks_status', JSON.stringify(serverStatus || {}));
+        console.log('📡 Статус временных заданий загружен:', serverStatus);
     } catch(e) {
         console.error('Ошибка загрузки статуса временных заданий:', e);
     }
 
-    // ✅ Вызываем проверку сброса и рендеринг ПОСЛЕ загрузки статуса
-    checkTimeTasksReset();
+    // Рендерим задания (checkTimeTasksReset больше не сбрасывает localStorage)
     await renderTimeTasks();
     
     renderBranchTasks();
