@@ -24622,7 +24622,7 @@ window.onload = async () => {
     }
     
     loadMarkersCollection();
-    checkTimeTasksReset();
+  
     
     // ========== ЕДИНЫЙ ЗАПРОС ИНИЦИАЛИЗАЦИИ ==========
     try {
@@ -24806,21 +24806,22 @@ window.onload = async () => {
     loadFriendTasksStatus();
     await loadFriendProgressFromServer();
     
-    // Загружаем прогресс временных заданий с сервера
-    try {
-        const timeStatusRes = await fetch(`${SERVER_URL}/api/time_tasks_status?user_id=${userId}`);
-        const serverStatus = await timeStatusRes.json();
-        if (serverStatus && Object.keys(serverStatus).length > 0) {
-            const localStatus = JSON.parse(localStorage.getItem('time_tasks_status') || '{}');
-            const merged = { ...localStatus, ...serverStatus };
-            localStorage.setItem('time_tasks_status', JSON.stringify(merged));
-        }
-    } catch(e) {
-        console.error('Ошибка загрузки статуса временных заданий:', e);
+    // Загружаем прогресс временных заданий с сервера и проверяем сброс
+try {
+    const timeStatusRes = await fetch(`${SERVER_URL}/api/time_tasks_status?user_id=${userId}`);
+    const serverStatus = await timeStatusRes.json();
+    if (serverStatus && Object.keys(serverStatus).length > 0) {
+        localStorage.setItem('time_tasks_status', JSON.stringify(serverStatus));
     }
+} catch(e) {
+    console.error('Ошибка загрузки статуса временных заданий:', e);
+}
+
+// ✅ Вызываем проверку сброса и рендеринг ПОСЛЕ загрузки статуса
+checkTimeTasksReset();
+renderTimeTasks();
     
     renderBranchTasks();
-    renderTimeTasks();
     renderFriendTasks();
     renderSeasonPassTasks();
     
