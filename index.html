@@ -8062,10 +8062,9 @@ const TASK_DIFFICULTY = {
         // ОТПРАВКА ФОТО НА ПРОВЕРКУ (ОБЫЧНЫЕ ЗАДАНИЯ)
         // ==========================================
         
-    function openTaskUpload(branchKey, levelIndex) {
+function openTaskUpload(branchKey, levelIndex) {
     console.log('📸 openTaskUpload called:', branchKey, levelIndex);
     
-    // ✅ Сбрасываем ВСЕ переменные
     currentSubtaskData = null;
     currentUploadBranch = branchKey;
     currentUploadLevel = levelIndex;
@@ -8078,14 +8077,23 @@ const TASK_DIFFICULTY = {
     fileInput.type = 'file';
     fileInput.accept = 'image/*';
     fileInput.multiple = true;
-    fileInput.style.position = 'absolute';
-    fileInput.style.opacity = '0';
-    fileInput.style.pointerEvents = 'none';
-    document.body.appendChild(fileInput);
+    
+    // ✅ ПОКАЗЫВАЕМ МОДАЛКУ СРАЗУ (пустую)
+    const modal = document.getElementById('taskUploadModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        document.getElementById('taskPhotoPreviewContainer').innerHTML = '<p style="color: var(--text-gray); text-align: center;">Выберите фото...</p>';
+    }
     
     fileInput.onchange = function(event) {
         handleTaskFilesSelected(event);
-        document.body.removeChild(fileInput);
+    };
+    
+    // ✅ На случай если окно выбора закрыли без выбора
+    fileInput.oncancel = function() {
+        if (tempPhotos.length === 0) {
+            closeTaskUploadModal();
+        }
     };
     
     fileInput.click();
@@ -8194,28 +8202,33 @@ async function submitTaskPhoto(event) {
     if (isUploading) return;
     isUploading = true;
     
+    // ✅ БЛОКИРУЕМ КНОПКУ И ПОКАЗЫВАЕМ ИНДИКАТОР
+    const submitBtn = document.querySelector('#taskUploadModal .modal-action-btn');
+    const originalText = submitBtn ? submitBtn.innerText : 'Отправить';
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerText = '⏳ Отправка...';
+        submitBtn.style.opacity = '0.7';
+    }
+    
     if (tg && tg.MainButton) {
         tg.MainButton.setText("⏳ ОТПРАВКА ФОТО...").show();
         tg.MainButton.showProgress();
     }
     
     try {
-        // Сжимаем фото
         const compressedPhotos = await compressImages(tempPhotos, 1200, 0.7);
         
         const formData = new FormData();
         formData.append('user', userId.toString());
         
-        // Определяем тип отправки
         if (currentSubtaskData) {
-            // Обычное подзадание
             formData.append('branchKey', currentSubtaskData.branchKey);
             formData.append('levelIndex', currentSubtaskData.levelIndex.toString());
             formData.append('subtaskIndex', currentSubtaskData.subtaskIndex.toString());
             formData.append('subtaskName', currentSubtaskData.subtaskName);
             formData.append('type', 'subtask');
         } else if (currentFriendTaskIdx !== null && currentFriendLevelIdx !== null && currentFriendSubtaskIdx !== null) {
-            // Задание от друзей
             const task = FRIEND_TASKS[currentFriendTaskIdx];
             const level = task.levels[currentFriendLevelIdx];
             const subtask = level.subtasks[currentFriendSubtaskIdx];
@@ -8225,7 +8238,6 @@ async function submitTaskPhoto(event) {
             formData.append('subtaskName', subtask.name);
             formData.append('type', 'friend_subtask');
         } else {
-            // Обычное задание
             formData.append('branchKey', currentUploadBranch);
             formData.append('levelIndex', currentUploadLevel.toString());
             formData.append('type', 'regular');
@@ -8235,7 +8247,6 @@ async function submitTaskPhoto(event) {
             formData.append('photos', compressedPhotos[i]);
         }
         
-        // Определяем endpoint
         let endpoint;
         if (currentSubtaskData) {
             endpoint = '/api/check_subtask';
@@ -8280,6 +8291,12 @@ async function submitTaskPhoto(event) {
         }
     } finally {
         isUploading = false;
+        // ✅ ВОЗВРАЩАЕМ КНОПКУ
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerText = originalText;
+            submitBtn.style.opacity = '1';
+        }
         if (tg && tg.MainButton) {
             tg.MainButton.hideProgress();
             tg.MainButton.hide();
