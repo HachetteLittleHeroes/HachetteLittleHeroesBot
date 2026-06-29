@@ -9583,20 +9583,22 @@ async function renderTimeTasks() {
     const weeklyTask = getWeeklyTask();
     const monthlyTask = getMonthlyTask();
     
-    // ✅ СНАЧАЛА ЗАГРУЖАЕМ С СЕРВЕРА, ПОТОМ РЕНДЕРИМ
-    let timeTasksStatus;
+    // ✅ ВСЕГДА загружаем с сервера. Сервер — единственный источник правды
+    let timeTasksStatus = {};
     try {
         const response = await fetch(`${SERVER_URL}/api/time_tasks_status?user_id=${userId}`);
-        const serverStatus = await response.json();
-        timeTasksStatus = serverStatus || {};
-        // Сохраняем серверный статус в localStorage
-        localStorage.setItem('time_tasks_status', JSON.stringify(timeTasksStatus));
+        if (response.ok) {
+            timeTasksStatus = await response.json();
+        }
     } catch (error) {
-        // Ошибка — берём из localStorage
-        timeTasksStatus = JSON.parse(localStorage.getItem('time_tasks_status') || '{}');
+        console.error('Ошибка загрузки статуса:', error);
+        timeTasksStatus = {};
     }
     
-    // Проверяем, не сменился ли персонаж недели
+    // Сохраняем в localStorage только для быстрого доступа (не как основной источник)
+    localStorage.setItem('time_tasks_status', JSON.stringify(timeTasksStatus));
+    
+    // Проверяем сброс недели/месяца
     const savedWeeklyTitle = timeTasksStatus['_weekly_title'] || '';
     if (savedWeeklyTitle && savedWeeklyTitle !== weeklyTask.title) {
         delete timeTasksStatus['weekly_task'];
