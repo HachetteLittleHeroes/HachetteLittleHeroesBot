@@ -10210,7 +10210,7 @@ function renderCastleCardInGame(cardId) {
     
     saveCastleProgress();
     
-    const cardImageUrl = `https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/ashetvil/${cardId}.jpg`;
+   const cardImageUrl = `https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/ashetvil/${cardId}.jpg?t=${Date.now()}`;
     
     // КОНЦОВКА
     if (card.isEnding) {
@@ -18863,7 +18863,7 @@ function renderCastleCard(cardId) {
                 </button>`;
         });
         
-        const cardImageUrl = `https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/ashetvil/${cardId}.jpg`;
+        const cardImageUrl = `https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/ashetvil/${cardId}.jpg?t=${Date.now()}`;
         
         container.innerHTML = `
             <div class="castle-card" style="background: #1a1a2e; border-radius: 16px; overflow: hidden; display: flex; flex-direction: column;">
