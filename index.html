@@ -9319,7 +9319,7 @@ function renderBranchTasks() {
         await checkAndUnlockStatuses();
         
         renderBranchTasks();
-        renderTimeTasks();
+       await renderTimeTasks();
         renderFriendTasks();
         renderSeasonPassTasks();  // ← обязательно
         updateUI();
@@ -9561,7 +9561,7 @@ function searchVolumesInCollection() {
 }
 function loadTimeTasksStatus() {}
 
-function toggleTimeTasks() {
+async function toggleTimeTasks() {
     const content = document.getElementById('timeTasksContent');
     const arrow = document.getElementById('timeTasksArrow');
     if (!content) return;
@@ -9571,7 +9571,7 @@ function toggleTimeTasks() {
     } else {
         content.style.display = 'block';
         if (arrow) arrow.style.transform = 'rotate(180deg)';
-        renderTimeTasks();
+        await renderTimeTasks();
     }
 }
 
@@ -24817,7 +24817,7 @@ try {
 
 // ✅ Вызываем проверку сброса и рендеринг ПОСЛЕ загрузки статуса
 checkTimeTasksReset();
-renderTimeTasks();
+await renderTimeTasks();
     
     renderBranchTasks();
     renderFriendTasks();
