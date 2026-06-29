@@ -18863,7 +18863,7 @@ function renderCastleCard(cardId) {
     if (content && content.style.display === 'none') content.style.display = 'block';
     const container = document.getElementById('castleStoryContainer');
     if (!container) return;
-    const statsHtml = `<div style="display: flex; gap: 15px; justify-content: center; margin-bottom: 15px; font-size: 13px;"><span>💪 ${userCastleStats.strength||0}</span><span>🏃 ${userCastleStats.agility||0}</span><span>🧠 ${userCastleStats.intelligence||0}</span><span style="color: var(--accent);">🎫 ${userSkips||0} скипов</span></div>`;
+    const statsHtml = `<div style="display: flex; gap: 15px; justify-content: center; margin-bottom: 10px; font-size: 12px; z-index: 2; position: relative;"><span style="color: white; text-shadow: 0 1px 3px rgba(0,0,0,0.5);">💪 ${userCastleStats.strength||0}</span><span style="color: white; text-shadow: 0 1px 3px rgba(0,0,0,0.5);">🏃 ${userCastleStats.agility||0}</span><span style="color: white; text-shadow: 0 1px 3px rgba(0,0,0,0.5);">🧠 ${userCastleStats.intelligence||0}</span><span style="color: #ffd700; text-shadow: 0 1px 3px rgba(0,0,0,0.5);">🎫 ${userSkips||0} скипов</span></div>`;
     
     if (card.isEnding) {
         container.innerHTML = `<div class="castle-card">
@@ -18884,8 +18884,8 @@ function renderCastleCard(cardId) {
             if (isCompleted) {
                 const isApproved = castleApprovedChoices && castleApprovedChoices[choiceKey];
                 choicesHtml += isApproved ? 
-                    `<div class="castle-choice-wrapper" style="margin-bottom: 10px;"><button class="task-submit-btn" style="width: 100%; text-align: left; padding: 12px; background: var(--status-green); color: white;" onclick="proceedAfterApproval('${cardId}',${idx})">✅ ${choice.text} — ОДОБРЕНО</button></div>` : 
-                    `<div class="castle-choice-wrapper" style="margin-bottom: 10px;"><button class="task-submit-btn" style="width: 100%; text-align: left; padding: 12px; opacity: 0.7;" disabled>⏳ ${choice.text} — Отправлено</button></div>`;
+                    `<button style="width: 100%; text-align: left; padding: 14px 18px; background: linear-gradient(135deg, rgba(46,204,113,0.9), rgba(39,174,96,0.9)); color: white; border: 1px solid rgba(255,255,255,0.3); border-radius: 12px; margin-bottom: 8px; backdrop-filter: blur(10px); font-size: 15px;" onclick="proceedAfterApproval('${cardId}',${idx})">✅ ${choice.text} — ОДОБРЕНО</button>` : 
+                    `<button style="width: 100%; text-align: left; padding: 14px 18px; background: rgba(0,0,0,0.5); color: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; margin-bottom: 8px; backdrop-filter: blur(10px); font-size: 15px;" disabled>⏳ ${choice.text} — Отправлено</button>`;
                 return;
             }
             
@@ -18903,25 +18903,41 @@ function renderCastleCard(cardId) {
             
             const hasTask = choice.task && choice.task !== 'null';
             
-            choicesHtml += `<div class="castle-choice-wrapper" style="margin-bottom: 10px; cursor: pointer;" onclick="${isDisabled ? '' : "submitCastleChoice('" + cardId + "'," + idx + ")"}">
-                <div class="task-submit-btn castle-choice-btn" style="width: 100%; text-align: left; padding: 12px; ${isDisabled?'opacity: 0.5; pointer-events: none;':''}">
-                    <div style="font-weight: 500;">${choice.text}${costBadge}</div>
-                    ${hasTask ? '<div style="font-size: 11px; opacity: 0.8; margin-top: 4px;">📸 ' + choice.task + '</div>' : ''}
-                </div>
-            </div>`;
+            choicesHtml += `
+                <button style="width: 100%; text-align: left; padding: 14px 18px; 
+                               background: ${isDisabled ? 'rgba(0,0,0,0.5)' : 'rgba(0,0,0,0.7)'}; 
+                               color: ${isDisabled ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.95)'}; 
+                               border: 1px solid ${isDisabled ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.3)'}; 
+                               border-radius: 12px; margin-bottom: 8px; 
+                               backdrop-filter: blur(15px); font-size: 15px;
+                               transition: all 0.3s ease; cursor: ${isDisabled ? 'default' : 'pointer'};"
+                        ${isDisabled ? 'disabled' : ''}
+                        onclick="submitCastleChoice('${cardId}',${idx})">
+                    <div style="font-weight: 500; text-shadow: 0 1px 3px rgba(0,0,0,0.5);">${choice.text}${costBadge}</div>
+                    ${hasTask ? '<div style="font-size: 12px; opacity: 0.8; margin-top: 4px; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">📸 ' + choice.task + '</div>' : ''}
+                </button>`;
         });
         
         const cardImageUrl = `https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/ashetvil/${cardId}.jpg`;
         
-        container.innerHTML = `<div class="castle-card">
-            ${card.chapter ? `<div style="font-weight: 700; font-size: 16px; color: var(--accent); margin-bottom: 10px;">📖 ${card.chapter}</div>` : ''}
-            ${card.text ? `<p style="margin-bottom: 15px; line-height: 1.5;">${card.text}</p>` : ''}
-            <div style="text-align: center; margin-bottom: 15px;">
-                <img src="${cardImageUrl}" alt="Образец" style="max-width: 100%; max-height: 300px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.15);" onerror="this.style.display='none'">
-            </div>
-            ${statsHtml}
-            <div class="castle-choices">${choicesHtml}</div>
-        </div>`;
+        container.innerHTML = `
+            <div class="castle-card" style="position: relative; border-radius: 16px; overflow: hidden; min-height: 450px;">
+                <img src="${cardImageUrl}" alt="Сцена" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;" onerror="this.style.display='none'">
+                <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0.3) 100%); z-index: 1;"></div>
+                
+                <div style="position: relative; z-index: 2; padding: 20px; display: flex; flex-direction: column; min-height: 450px;">
+                    <div style="flex: 1;">
+                        ${card.chapter ? `<div style="font-size: 13px; color: rgba(255,255,255,0.7); margin-bottom: 8px; text-shadow: 0 1px 3px rgba(0,0,0,0.5);">📖 ${card.chapter}</div>` : ''}
+                        ${card.text ? `<p style="color: white; font-size: 15px; line-height: 1.6; margin-bottom: 15px; text-shadow: 0 2px 4px rgba(0,0,0,0.7);">${card.text}</p>` : ''}
+                    </div>
+                    
+                    ${statsHtml}
+                    
+                    <div class="castle-choices" style="margin-top: auto;">
+                        ${choicesHtml}
+                    </div>
+                </div>
+            </div>`;
         return;
     }
     container.innerHTML = `<div class="castle-card">
