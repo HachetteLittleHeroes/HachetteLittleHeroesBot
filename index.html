@@ -10234,7 +10234,7 @@ function confirmCharacterSelection(charId) {
     saveCastleProgress();
     renderCastleCardInGame(currentCastleCard);
 }
-function renderCastleCardInGame(cardId) {
+renderCastleCardInGame(cardId) {
     const container = document.getElementById('storyGameContainer');
     if (!container) return;
     
@@ -10326,13 +10326,12 @@ function renderCastleCardInGame(cardId) {
                 </button>`;
         });
         
-        // ✅ ИСПРАВЛЕНО: картинка в оригинальном качестве
         container.innerHTML = `
             <div style="width: 100%; min-height: 100vh; position: absolute; top: 0; left: 0; z-index: 9999;">
                 <button onclick="backToStoryPreview()" style="position: fixed; top: 20px; left: 20px; z-index: 100; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; font-size: 18px;">←</button>
                 
-                <div style="position: relative; width: 100%;">
-                    <img src="${cardImageUrl}" alt="Сцена" style="width: 100%; height: auto;" onerror="this.style.opacity='0.3'">
+                <div style="position: relative; width: 100%; height: 70vh;">
+                    <img src="${cardImageUrl}" alt="Сцена" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.opacity='0.3'">
                     
                     ${card.chapter ? `<div style="position: absolute; top: 20px; left: 70px; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(212,175,55,0.3);"><span style="color: white; font-size: 13px;">📖 ${card.chapter}</span></div>` : ''}
                     
@@ -10348,13 +10347,13 @@ function renderCastleCardInGame(cardId) {
         return;
     }
     
-    // ✅ ИСПРАВЛЕНО: ОБЫЧНАЯ КАРТОЧКА — картинка в оригинальном качестве
+    // ОБЫЧНАЯ КАРТОЧКА
     container.innerHTML = `
         <div style="width: 100%; min-height: 100vh; position: absolute; top: 0; left: 0; z-index: 9999;">
             <button onclick="backToStoryPreview()" style="position: fixed; top: 20px; left: 20px; z-index: 100; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; font-size: 18px;">←</button>
             
-            <div style="position: relative; width: 100%;">
-                <img src="${cardImageUrl}" alt="Сцена" style="width: 100%; height: auto;" onerror="this.style.opacity='0.3'">
+            <div style="position: relative; width: 100%; height: 70vh;">
+                <img src="${cardImageUrl}" alt="Сцена" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.opacity='0.3'">
                 
                 ${card.chapter ? `<div style="position: absolute; top: 20px; left: 70px; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(212,175,55,0.3);"><span style="color: white; font-size: 13px;">📖 ${card.chapter}</span></div>` : ''}
                 
@@ -18888,11 +18887,10 @@ function renderCastleCard(cardId) {
         
         const cardImageUrl = `https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/ashetvil/${cardId}.jpg?t=${Date.now()}`;
         
-        // ✅ ИСПРАВЛЕНО: картинка в оригинальном качестве, без сжатия
         container.innerHTML = `
             <div class="castle-card" style="background: #1a1a2e; border-radius: 16px; overflow: hidden; display: flex; flex-direction: column;">
-                <div style="position: relative; width: 100%; overflow: hidden; flex-shrink: 0;">
-                    <img src="${cardImageUrl}" alt="Сцена" style="width: 100%; height: auto; display: block;" onerror="this.style.display='none'">
+                <div style="position: relative; width: 100%; height: 70vh; overflow: hidden; flex-shrink: 0;">
+                    <img src="${cardImageUrl}" alt="Сцена" style="width: 100%; height: 100%; object-fit: cover; display: block;" onerror="this.style.display='none'">
                     <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 80px; background: linear-gradient(to top, #1a1a2e, transparent);"></div>
                     ${card.chapter ? `<div style="position: absolute; top: 20px; left: 20px; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(212,175,55,0.3);"><span style="color: white; font-size: 13px;">📖 ${card.chapter}</span></div>` : ''}
                     <div style="position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.15); display: flex; gap: 12px;">
