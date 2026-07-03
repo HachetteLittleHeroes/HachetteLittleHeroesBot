@@ -24605,6 +24605,27 @@ window.onload = async () => {
             // Артворки
             userArtworks = initData.artworks || {};
             
+            // ✅ Completed pages — загружаем и синхронизируем с artworks
+            if (initData.stats?.completed_pages) {
+                userCompletedPages = initData.stats.completed_pages;
+            } else {
+                userCompletedPages = {};
+            }
+            
+            // ✅ Синхронизируем artworks → completed_pages
+            if (userArtworks && typeof userArtworks === 'object') {
+                for (const bookKey in userArtworks) {
+                    if (!userCompletedPages[bookKey]) userCompletedPages[bookKey] = {};
+                    for (const page in userArtworks[bookKey]) {
+                        userCompletedPages[bookKey][page] = true;
+                    }
+                }
+            }
+            
+            // Сохраняем синхронизированные данные
+            localStorage.setItem(`completed_pages_${userId}`, JSON.stringify(userCompletedPages));
+            console.log('📄 completed_pages загружены:', Object.keys(userCompletedPages).length, 'книг');
+            
             // Коллекция фигурок
             userCollection = COLLECTION_FIGURES.map(f => ({
                 id: f.id,
@@ -24639,12 +24660,6 @@ window.onload = async () => {
             }
             if (initData.avatar_border) {
                 applyAvatarBorder(initData.avatar_border);
-            }
-            
-            // Completed pages
-            if (initData.stats?.completed_pages) {
-                userCompletedPages = initData.stats.completed_pages;
-                localStorage.setItem(`completed_pages_${userId}`, JSON.stringify(userCompletedPages));
             }
             
             // Даты
@@ -24723,14 +24738,13 @@ window.onload = async () => {
     try {
         const timeStatusRes = await fetch(`${SERVER_URL}/api/time_tasks_status?user_id=${userId}`);
         const serverStatus = await timeStatusRes.json();
-        // Всегда сохраняем серверный статус (даже если пустой)
         localStorage.setItem('time_tasks_status', JSON.stringify(serverStatus || {}));
         console.log('📡 Статус временных заданий загружен:', serverStatus);
     } catch(e) {
         console.error('Ошибка загрузки статуса временных заданий:', e);
     }
 
-    // Рендерим задания (checkTimeTasksReset больше не сбрасывает localStorage)
+    // Рендерим задания
     await renderTimeTasks();
     
     renderBranchTasks();
@@ -24741,7 +24755,6 @@ window.onload = async () => {
     renderCart();
     renderVolumes();
     loadInventory();
-    loadUserArtworks();
     loadWishlistCount();
     
     loadSeasonPremiumStatus();
