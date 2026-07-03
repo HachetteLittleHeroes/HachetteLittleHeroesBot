@@ -12101,7 +12101,8 @@ const DEFAULT_COLORING_BOOKS = {
         "Trompe L'oeil heros vs mechants",
         "Mangas",
          "Mangas tome 2",
-        "Totaly spies",
+        "Totally Spies",
+        "Winx club",
         "Vaiana",
         "Vaiana new edition",
         "Tres grands classiques",
@@ -12111,6 +12112,7 @@ const DEFAULT_COLORING_BOOKS = {
         "Bisounours",
          "Bisounours tome 2",
         "Boule&Bill",
+        "Star wars",
         "100% Simba",
         "100% Panpan",
         "100% Winnie", 
@@ -12230,6 +12232,7 @@ const DEFAULT_COLORING_BOOKS = {
         "Fall vibes Jade Summer",
         "Cute&sweet Jade Summer",
         "Christmas Jade Summer",
+        "Cozy country Jade Summer",
         "Little friends Southern Lotus",
         "Fuzzy in love Southern Lotus",
         "Little fuzzy Southern Lotus",
@@ -12307,7 +12310,8 @@ const DEFAULT_COLORING_BOOKS = {
          "Mini mondes Hachette",
          "Pause detente Hachette",
          "Winnie l'Ourson Hachette",
-        "Sunny cuties Bogiki"
+        "Sunny cuties Bogiki",
+        "Cozy crime scene Mira Luna and Jojo Weirdo"
     ],
     pencil: [
         "Adorables petites poupees",
@@ -12410,7 +12414,8 @@ const DEFAULT_COVERS = {
         "Trompe L'oeil heros vs mechants": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/trompeheros.jpg",
         "Mangas": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/mangas.jpg",
      "Mangas tome 2": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/mangas2.png",
-        "Totaly spies": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/totaly.jpg",
+        "Totally Spies": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/totaly.jpg",
+         "Winx club": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/winx.jpg",
         "Vaiana": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/vaiana.jpg",
      "Vaiana new edition": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/vaiana2.png",
         "Tres grands classiques": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/tresgrands.jpg",
@@ -12420,6 +12425,7 @@ const DEFAULT_COVERS = {
         "Bisounours": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/bears.jpg",
     "Bisounours tome 2": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/bears2.png",
         "Boule&Bill": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/boule.jpg",
+ "Star wars": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/starwars.jpg",
         "100% Simba": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/100simba.jpg",
         "100% Panpan": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/100panpan.jpg",
         "100% Winnie": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/100winnie.jpg", 
@@ -12538,6 +12544,7 @@ const DEFAULT_COVERS = {
         "Fall vibes Jade Summer": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/j25.jpg",
         "Cute&sweet Jade Summer": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/j26.jpg",
         "Christmas Jade Summer": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/j27.jpg",
+        "Cozy country Jade Summer": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/j28.jpg",
         "Little friends Southern Lotus": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/l1.jpg",
         "Fuzzy in love Southern Lotus": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/l2.jpg",
         "Little fuzzy Southern Lotus": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/l3.jpg",
@@ -12616,6 +12623,8 @@ const DEFAULT_COVERS = {
      "Pause detente Hachette": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/h42.png",
      "Winnie l'Ourson Hachette": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/h43.png",
     "Sunny cuties Bogiki": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/bogiki1.png",
+"Cozy crime scene Mira Luna and Jojo Weirdo": "https://s3.ru1.storage.beget.cloud/218ea43893c4-hachette-artwork/covers/crime1.png",
+
     
     // Раскраски для карандашей (будут добавлены позже)
     
@@ -15702,7 +15711,7 @@ const BOOK_PAGES_CONFIG = {
         "Animaux adorables": { totalPages: 50, spreads: [] },
         "100 coloriages mysteres inedits": { totalPages: 100, spreads: [] },
         "100 nouveaux cercles magiques": { totalPages: 100, spreads: [] },
-        "Animaux du monde special debutants": { totalPages: 50, spreads: [] },
+        "Animaux du monde special debutants": { totalPages: 100, spreads: [] },
         "Bebes animaux mysteres": { totalPages: 50, spreads: [] },
         "Hiver enchanteur": { totalPages: 50, spreads: [] },
         "Animaux extraordinaires": { totalPages: 50, spreads: [] },
