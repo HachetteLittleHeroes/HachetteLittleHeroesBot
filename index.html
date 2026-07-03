@@ -10489,6 +10489,23 @@ function submitCastleChoiceInGame(cardId, choiceIdx) {
     fileInput.click();
 }
 function proceedAfterApprovalInGame(cardId, choiceIdx) {
+    const card = CASTLE_STORY.cards[cardId];
+    const choice = card.choices[choiceIdx];
+    
+    // ✅ ОБРАБОТКА РАНДОМНОГО ВЫБОРА
+    if (choice && choice.isRandom && choice.randomCards) {
+        const randomCard = choice.randomCards[Math.floor(Math.random() * choice.randomCards.length)];
+        applyCastleReward(choice);
+        proceedToCard(randomCard);
+        
+        setTimeout(() => {
+            if (storyGameActive && currentCastleCard) {
+                renderCastleCardInGame(currentCastleCard);
+            }
+        }, 300);
+        return;
+    }
+    
     proceedAfterApproval(cardId, choiceIdx);
     
     setTimeout(() => {
@@ -10497,7 +10514,6 @@ function proceedAfterApprovalInGame(cardId, choiceIdx) {
         }
     }, 300);
 }
-
 function claimCastleEndingInGame(cardId) {
     claimCastleEnding(cardId);
     
@@ -18816,6 +18832,20 @@ function submitCastleChoice(cardId, choiceIdx) {
     const choice = card.choices[choiceIdx];
     if (!choice) return;
     
+    // ✅ ОБРАБОТКА РАНДОМНОГО ПЛАТНОГО ВЫБОРА
+    if (choice.isPremium && choice.skipCost && choice.isRandom && choice.randomCards) {
+        if ((userSkips||0) < choice.skipCost) { alert('Недостаточно скипов!'); return; }
+        userSkips -= choice.skipCost;
+        localStorage.setItem(`user_skips_${userId}`, userSkips);
+        if (typeof updateSkipDisplay === 'function') updateSkipDisplay();
+        
+        const randomCard = choice.randomCards[Math.floor(Math.random() * choice.randomCards.length)];
+        applyCastleReward(choice);
+        proceedToCard(randomCard);
+        return;
+    }
+    
+    // Обычный платный выбор
     if (choice.isPremium && choice.skipCost) {
         if ((userSkips||0) < choice.skipCost) { alert('Недостаточно скипов!'); return; }
         userSkips -= choice.skipCost;
@@ -18890,16 +18920,24 @@ function submitCastleChoice(cardId, choiceIdx) {
     };
     fileInput.click();
 }
-
 function proceedAfterApproval(cardId, choiceIdx) {
     const card = CASTLE_STORY.cards[cardId];
     const choice = card.choices[choiceIdx];
     if (!choice) return;
+    
+    // ✅ ОБРАБОТКА РАНДОМНОГО ВЫБОРА
+    if (choice.isRandom && choice.randomCards) {
+        const randomCard = choice.randomCards[Math.floor(Math.random() * choice.randomCards.length)];
+        if (cardId.includes('4M_4')||cardId.includes('5M_4')||cardId.includes('7M_3')||cardId.includes('4V_4')||cardId.includes('5V_4')||cardId.includes('7V_3')||cardId.includes('4A_4')||cardId.includes('5A_4')||cardId.includes('7A_3')) metEliza = true;
+        applyCastleReward(choice);
+        proceedToCard(randomCard);
+        return;
+    }
+    
     if (cardId.includes('4M_4')||cardId.includes('5M_4')||cardId.includes('7M_3')||cardId.includes('4V_4')||cardId.includes('5V_4')||cardId.includes('7V_3')||cardId.includes('4A_4')||cardId.includes('5A_4')||cardId.includes('7A_3')) metEliza = true;
     applyCastleReward(choice);
     proceedToCard(choice.nextCard);
 }
-
 function applyCastleReward(choice) {
     if (choice.reward) {
         for (const [stat, delta] of Object.entries(choice.reward)) {
@@ -35998,7 +36036,6 @@ const Wishlist = {
         } catch(e) {}
     },
 };
-
 // Функция переключения блока вишлиста
 function toggleWishlistBlock() {
     const content = document.getElementById('wishlistContent');
