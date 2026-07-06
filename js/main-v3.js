@@ -2497,7 +2497,26 @@ function showCharacterSelectInGame() {
         .then(data => {
             const access = data.access || {};
             
-            let charsHtml = '<h3 style="text-align: center; margin-bottom: 15px; color: var(--text);">🎭 Выберите персонажа</h3>';
+            let charsHtml = '';
+            
+            // Блок поддержки — вверху
+            charsHtml += `
+                <div style="background: var(--card-bg); border-radius: 12px; padding: 15px; text-align: center; margin-bottom: 20px; border: 1px solid var(--border-color);">
+                    <p style="color: var(--text); font-size: 13px; margin-bottom: 5px;">🔒 Нет доступа к персонажу?</p>
+                    <p style="color: var(--text-gray); font-size: 12px; margin-bottom: 8px;">
+                        Чтобы получить доступ к персонажу, необходимо поддержать проект.<br>
+                        1 персонаж = 1000 ₽
+                    </p>
+                    <button class="task-submit-btn" onclick="openSupportDialog()" style="width: 100%; padding: 12px; font-size: 14px;">
+                        💰 Поддержать и открыть доступ
+                    </button>
+                    <p style="color: var(--text-gray); font-size: 11px; margin-top: 8px;">
+                        После подтверждения оплаты администратор откроет доступ
+                    </p>
+                </div>
+            `;
+            
+            charsHtml += '<h3 style="text-align: center; margin-bottom: 15px; color: var(--text);">🎭 Выберите персонажа</h3>';
             charsHtml += '<p style="text-align: center; color: var(--text-gray); font-size: 13px; margin-bottom: 20px;">Каждый персонаж — уникальная история с разными концовками</p>';
             
             for (const [id, char] of Object.entries(CASTLE_CHARACTERS)) {
@@ -2506,7 +2525,7 @@ function showCharacterSelectInGame() {
                 const icon = id === 'mystic' ? '⚔️' : id === 'thief' ? '🗡️' : '🔮';
                 
                 charsHtml += `
-                    <div class="story-character-select-card">
+                    <div class="story-character-select-card" ${hasAccess ? `onclick="selectCharacterInGame('${id}')"` : ''} style="${hasAccess ? 'cursor:pointer;' : ''}">
                         <div class="char-image" style="position: relative; overflow: hidden;">
                             <img src="${charImageUrl}" alt="${char.name}" onerror="this.style.display='none'; this.parentElement.querySelector('.char-icon').style.display='block';">
                             <span class="char-icon" style="display: none;">${icon}</span>
@@ -2522,7 +2541,7 @@ function showCharacterSelectInGame() {
                             <div class="char-desc">${char.desc}</div>
                             <div class="char-bonus">✨ ${char.bonus}</div>
                             ${hasAccess ? `
-                                <button class="task-submit-btn" onclick="selectCharacterInGame('${id}')" style="width: 100%; margin-top: 10px; background: var(--status-green);">
+                                <button class="task-submit-btn" onclick="event.stopPropagation(); selectCharacterInGame('${id}')" style="width: 100%; margin-top: 10px; background: var(--status-green);">
                                     ${icon} Выбрать
                                 </button>
                             ` : `
@@ -2535,19 +2554,9 @@ function showCharacterSelectInGame() {
                 `;
             }
             
-            charsHtml += `
-                <div style="background: var(--card-bg); border-radius: 12px; padding: 15px; text-align: center; margin-top: 20px; border: 1px solid var(--border-color);">
-                    <p style="color: var(--text); font-size: 13px; margin-bottom: 5px;">🔒 Нет доступа к персонажу?</p>
-                    <p style="color: var(--text-gray); font-size: 12px; margin-bottom: 8px;">1 персонаж = 1000 ₽</p>
-                    <button class="task-submit-btn" onclick="openSupportDialog()" style="width: 100%; padding: 12px; font-size: 14px;">
-                        💰 Поддержать и открыть доступ
-                    </button>
-                </div>
-            `;
-            
             container.innerHTML = charsHtml;
         });
-} 
+}
 function resetAndStartStory() {
     if (confirm('Сбросить прогресс и начать заново?')) {
         // Сбрасываем локально
