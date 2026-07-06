@@ -6266,7 +6266,34 @@ body:not([data-theme]) .modal-content,
     color: var(--text-gray);
     font-style: italic;
 }
-    
+    /* ==========================================
+   ТЁМНАЯ ТЕМА ДЛЯ ВКЛАДКИ ИСТОРИИ (КАК В ПРИЛОЖЕНИИ)
+   ========================================== */
+#storyPreviewScreen,
+#storyGameScreen {
+    background: #121212 !important;
+}
+
+/* Карточки и блоки — как в тёмной теме */
+#storyPreviewScreen [style*="background: var(--card-bg)"],
+#storyGameScreen [style*="background: var(--card-bg)"] {
+    background: #1e1e1e !important;
+}
+
+/* Кнопка "Начать заново" */
+#storyGameScreen button[onclick*="reset"],
+#storyPreviewScreen button[onclick*="reset"] {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: rgba(255, 255, 255, 0.8) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Кнопка "Назад" в игре */
+#storyGameScreen button[onclick*="backToStoryPreview"] {
+    background: #2c2c2e !important;
+    color: white !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
     </style>
 </head>
 <body>
