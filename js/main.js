@@ -2691,6 +2691,17 @@ function confirmCharacterSelection(charId) {
     localStorage.setItem(`castle_start_time_${userId}`, castleStartTime);
     console.log('⏱ Время старта:', new Date(castleStartTime).toLocaleString());
     
+    // ✅ Отправляем время на сервер
+    fetch(`${SERVER_URL}/api/castle/save_start_time`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+            user_id: userId, 
+            start_time: castleStartTime,
+            character: charId
+        })
+    }).catch(e => console.error('Save start time error:', e));
+    
     // ✅ Сбрасываем castle_approved на сервере (но НЕ loot)
     fetch(`${SERVER_URL}/api/castle/reset_approvals`, {
         method: 'POST',
@@ -2988,14 +2999,39 @@ function proceedAfterApprovalInGame(cardId, choiceIdx) {
         }
     }, 300);
 }
-function claimCastleEndingInGame(cardId) {
-    // ✅ Вычисляем время прохождения ДО вызова claimCastleEnding
-    const elapsed = castleStartTime ? Date.now() - castleStartTime : 0;
+async function claimCastleEndingInGame(cardId) {
+    // ✅ Загружаем время старта с сервера
+    let startTime = castleStartTime;
+    
+    if (!startTime) {
+        try {
+            const response = await fetch(`${SERVER_URL}/api/castle/get_start_time?user_id=${userId}`);
+            const data = await response.json();
+            if (data.start_time) {
+                startTime = data.start_time;
+            }
+        } catch(e) {}
+    }
+    
+    // Если всё ещё нет — берём из localStorage
+    if (!startTime) {
+        const saved = localStorage.getItem(`castle_start_time_${userId}`);
+        if (saved) startTime = parseInt(saved);
+    }
+    
+    const elapsed = startTime ? Date.now() - startTime : 0;
     const timeStr = formatTime(elapsed);
     
-    // Сбрасываем время
+    // Сбрасываем везде
     castleStartTime = null;
     localStorage.removeItem(`castle_start_time_${userId}`);
+    
+    // Сбрасываем на сервере
+    fetch(`${SERVER_URL}/api/castle/save_start_time`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: userId, start_time: 0 })
+    }).catch(e => {});
     
     claimCastleEnding(cardId);
     
