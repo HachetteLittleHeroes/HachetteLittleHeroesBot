@@ -3181,7 +3181,7 @@ async function renderFriendTasks() {
                         <div class="progress-bar-fill" style="width: ${percent}%; height: 100%;"></div>
                     </div>
                     ${!done ? `
-                        <button class="task-submit-btn" onclick="openFriendSubtaskUpload(0, 0, ${idx}, '${subtask.name.replace(/'/g, "\\'")}')" style="width: 100%;">
+                        <button class="task-submit-btn" onclick="openFriendSubtaskUpload(0, 0, ${idx}, '${subtask.name.replace(/'/g, "\\'")}')" style="width: 100% !important; display: block !important; margin: 0 auto;">
                             <i class="fas fa-camera"></i> Отправить фото
                         </button>
                     ` : `
