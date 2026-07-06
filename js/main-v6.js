@@ -2499,10 +2499,10 @@ function showCharacterSelectInGame() {
             // Блок поддержки — вверху
             charsHtml += `
                 <div style="background: var(--card-bg); border-radius: 12px; padding: 15px; text-align: center; margin-bottom: 20px; border: 1px solid var(--border-color);">
-                    <p style="color: var(--text); font-size: 13px; margin-bottom: 5px;">🔒 Нет доступа к персонажу?</p>
+                    <p style="color: var(--text); font-size: 13px; margin-bottom: 5px;">🔒 Нет доступа к персонажу</p>
                     <p style="color: var(--text-gray); font-size: 12px; margin-bottom: 8px;">
-                        Чтобы получить доступ к персонажу, необходимо поддержать проект<br>
-                        1 персонаж = 1000 ₽
+                        Чтобы начать историю героя, необходимо поддержать проект. У каждого персонажа есть несколько концовок. Счастливый финал или нет - зависит от тебя<br>
+                        Открыть доступ за 1000 ₽
                     </p>
                     <button class="task-submit-btn" onclick="openSupportDialog()" style="width: 100%; padding: 12px; font-size: 14px;">
                         💰 Поддержать и открыть доступ
