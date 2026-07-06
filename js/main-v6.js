@@ -2523,8 +2523,8 @@ function showCharacterSelectInGame() {
                 
                 charsHtml += `
                     <div class="story-character-select-card" ${hasAccess ? `onclick="selectCharacterInGame('${id}')"` : ''} style="${hasAccess ? 'cursor:pointer;' : ''}">
-                        <div class="char-image" style="position: relative; overflow: hidden; background: #000;">
-                            <img src="${charImageUrl}" alt="${char.name}" style="${!hasAccess ? 'filter: blur(15px) brightness(0.15); opacity: 0.4;' : ''}" onerror="this.style.display='none'; this.parentElement.querySelector('.char-icon').style.display='block';">
+                        <div class="char-image" style="position: relative; overflow: hidden;">
+                            <img src="${charImageUrl}" alt="${char.name}" style="${!hasAccess ? 'filter: blur(10px); opacity: 0.6;' : ''}" onerror="this.style.display='none'; this.parentElement.querySelector('.char-icon').style.display='block';">
                             <span class="char-icon" style="display: none;">${icon}</span>
                             ${!hasAccess ? `
                                 <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.7); border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
@@ -2785,8 +2785,8 @@ function showCharacterSelect() {
                     <div class="castle-character-card" 
                          ${hasAccess ? `onclick="selectCastleCharacter('${id}')"` : ''} 
                          style="cursor:${hasAccess ? 'pointer' : 'default'}; background: var(--card-bg); border: 2px solid ${hasAccess ? 'var(--status-green)' : 'var(--border-color)'}; border-radius: 16px; padding: 15px; text-align: center; margin-bottom: 15px; position: relative; overflow: hidden;">
-                        <div style="position: relative; display: inline-block; max-width: 200px; width: 100%; background: #000;">
-                            <img src="${charImageUrl}" alt="${char.name}" style="width: 100%; height: auto; border-radius: 12px; margin-bottom: 10px; ${!hasAccess ? 'filter: blur(15px) brightness(0.15); opacity: 0.4;' : ''}" onerror="this.style.display='none'">
+                        <div style="position: relative; display: inline-block; max-width: 200px; width: 100%;">
+                            <img src="${charImageUrl}" alt="${char.name}" style="width: 100%; height: auto; border-radius: 12px; margin-bottom: 10px; ${!hasAccess ? 'filter: blur(10px); opacity: 0.6;' : ''}" onerror="this.style.display='none'">
                             ${!hasAccess ? `
                                 <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.7); border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
                                     <i class="fas fa-lock" style="color: white; font-size: 28px;"></i>
