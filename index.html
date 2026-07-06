@@ -6358,6 +6358,21 @@ body:has(#stories.active) > div:last-of-type a {
 .modal-overlay * {
     color: #ffffff !important;
 }  
+  div[style*="position:fixed"][style*="z-index: 10002"] {
+    background: rgba(0,0,0,0.85) !important;
+}
+div[style*="position:fixed"][style*="z-index: 10002"] > div {
+    background: #1e1e1e !important;
+    color: #ffffff !important;
+    border-color: rgba(255,255,255,0.1) !important;
+}
+div[style*="position:fixed"][style*="z-index: 10002"] button {
+    background: var(--accent) !important;
+    color: #ffffff !important;
+}
+div[style*="position:fixed"][style*="z-index: 10002"] button[style*="background: var(--card-bg)"] {
+    background: #2c2c2e !important;
+}      
     </style>
 </head>
 <body>
