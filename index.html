@@ -6266,8 +6266,8 @@ body:not([data-theme]) .modal-content,
     color: var(--text-gray);
     font-style: italic;
 }
-   /* ==========================================
-   ПРИНУДИТЕЛЬНАЯ ТЁМНАЯ ТЕМА ВКЛАДКИ ИСТОРИИ
+  /* ==========================================
+   ПРИНУДИТЕЛЬНАЯ ТЁМНАЯ ТЕМА ВКЛАДКИ ИСТОРИИ (ФИНАЛ)
    ========================================== */
 
 /* Фон всей вкладки и экранов */
@@ -6278,18 +6278,19 @@ body:not([data-theme]) .modal-content,
     background: #121212 !important;
 }
 
-/* Все блоки с фоном var(--card-bg) или var(--bg) */
+/* Заголовок "Истории" */
+#stories .header {
+    color: #ffffff !important;
+}
+
+/* Все блоки с фоном */
 #storyPreviewScreen div[style*="background"],
-#storyGameScreen div[style*="background"],
-#storyPreviewScreen [style*="var(--card-bg)"],
-#storyGameScreen [style*="var(--card-bg)"],
-#storyPreviewScreen [style*="var(--bg)"],
-#storyGameScreen [style*="var(--bg)"] {
+#storyGameScreen div[style*="background"] {
     background: #1e1e1e !important;
     border-color: rgba(255,255,255,0.1) !important;
 }
 
-/* Весь текст — белый */
+/* Весь текст */
 #storyPreviewScreen,
 #storyGameScreen,
 #storyPreviewScreen p,
@@ -6300,7 +6301,8 @@ body:not([data-theme]) .modal-content,
 #storyPreviewScreen h3,
 #storyGameScreen h3,
 #storyPreviewScreen div,
-#storyGameScreen div {
+#storyGameScreen div,
+#stories .header {
     color: #ffffff !important;
 }
 
@@ -6310,17 +6312,31 @@ body:not([data-theme]) .modal-content,
     color: rgba(255,255,255,0.7) !important;
 }
 
-/* Акцентный цвет */
+/* Акцент */
 #storyPreviewScreen [style*="var(--accent)"],
 #storyGameScreen [style*="var(--accent)"] {
     color: var(--accent) !important;
 }
 
-/* Кнопки */
-#storyPreviewScreen button:not([style*="background"]),
-#storyGameScreen button:not([style*="background"]) {
-    background: var(--accent) !important;
-    color: #fff !important;
+/* Модальные окна — ВСЕ */
+.modal-overlay .modal-content,
+.modal-overlay div[style*="background"] {
+    background: #1e1e1e !important;
+    color: #ffffff !important;
+    border-color: rgba(255,255,255,0.1) !important;
+}
+
+.modal-overlay h3,
+.modal-overlay p,
+.modal-overlay span,
+.modal-overlay div {
+    color: #ffffff !important;
+}
+
+/* Карточки персонажей в модалке */
+.modal-overlay .castle-character-card {
+    background: #2c2c2e !important;
+    border-color: rgba(255,255,255,0.15) !important;
 }
 
 /* Кнопка Назад */
@@ -6337,37 +6353,9 @@ body:not([data-theme]) .modal-content,
     color: rgba(255,255,255,0.8) !important;
 }
 
-/* Модалка выбора персонажа */
-#storyGameScreen .modal-content,
-#storyPreviewScreen .modal-content,
-.modal-overlay .modal-content {
-    background: #1e1e1e !important;
-    color: #ffffff !important;
-    border-color: rgba(255,255,255,0.1) !important;
-}
-
-/* Карточки персонажей */
-#storyGameScreen .castle-character-card,
-#storyGameScreen .story-character-select-card,
-.modal-overlay .castle-character-card {
-    background: #2c2c2e !important;
-    border-color: rgba(255,255,255,0.15) !important;
-}
-
-/* Текст в карточках */
-#storyGameScreen .char-name,
-#storyGameScreen .char-desc,
-#storyGameScreen .char-stats,
-#storyGameScreen .char-bonus,
-.modal-overlay .char-name,
-.modal-overlay .char-desc {
-    color: #ffffff !important;
-}
-
 /* Нижнее меню */
 body:has(#stories.active) .nav {
     background: #121212 !important;
-    border-top-color: rgba(255,255,255,0.1) !important;
 }
 
 body:has(#stories.active) {
