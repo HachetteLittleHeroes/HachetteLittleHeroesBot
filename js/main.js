@@ -2704,8 +2704,14 @@ function showCharacterSelect() {
                 
                 charsHtml += `
                     <div class="castle-character-card" style="cursor:pointer; background: var(--card-bg); border: 2px solid ${hasAccess ? 'var(--status-green)' : 'var(--border-color)'}; border-radius: 16px; padding: 15px; text-align: center; margin-bottom: 15px; position: relative; overflow: hidden;">
-                        ${!hasAccess ? '<div style="position: absolute; top: 10px; right: 10px; z-index: 2; background: rgba(0,0,0,0.6); border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;"><i class="fas fa-lock" style="color: white; font-size: 14px;"></i></div>' : ''}
-                        <img src="${charImageUrl}" alt="${char.name}" style="width: 100%; max-width: 200px; height: auto; border-radius: 12px; margin-bottom: 10px; ${!hasAccess ? 'opacity: 0.7;' : ''}" onerror="this.style.display='none'">
+                        <div style="position: relative; display: inline-block; max-width: 200px; width: 100%;">
+                            <img src="${charImageUrl}" alt="${char.name}" style="width: 100%; height: auto; border-radius: 12px; margin-bottom: 10px; ${!hasAccess ? 'opacity: 0.5;' : ''}" onerror="this.style.display='none'">
+                            ${!hasAccess ? `
+                                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.7); border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; margin-top: -5px;">
+                                    <i class="fas fa-lock" style="color: white; font-size: 28px;"></i>
+                                </div>
+                            ` : ''}
+                        </div>
                         <div style="font-size: 24px; margin-bottom: 5px;">${icon}</div>
                         <div style="font-weight: 700; font-size: 18px; margin-bottom: 8px;">${char.name}</div>
                         <div style="font-size: 13px; color: var(--text-gray); margin-bottom: 8px;">${char.desc}</div>
