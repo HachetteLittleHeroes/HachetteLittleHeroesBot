@@ -6480,6 +6480,31 @@ body:has(#stories.active) #stories > div:last-child {
 #storyPreviewScreen div[style*="border-radius"]:not(.castle-character-card):not(.story-character-select-card) {
     background: transparent !important;
 }
+        /* Убираем квадратную подложку у кнопок в игре */
+#storyGameScreen button[onclick*="backToStoryPreview"],
+#storyGameScreen button[style*="position: fixed"],
+#storyPreviewScreen button[onclick*="closeStoryPreview"] {
+    background: rgba(0, 0, 0, 0.6) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 50% !important;
+    width: 40px !important;
+    height: 40px !important;
+}
+
+/* Убираем подложку у кнопки "Заново" */
+#storyGameScreen button[onclick*="resetStoryFromGame"] {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 20px !important;
+    padding: 6px 12px !important;
+}
+
+/* Убираем подложку у бейджей персонажей в шапке */
+#storyPreviewScreen div[style*="background: rgba(255,255,255,0.2)"] {
+    background: rgba(255, 255, 255, 0.15) !important;
+}
     </style>
 </head>
 <body>
