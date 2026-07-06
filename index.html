@@ -7474,25 +7474,25 @@ body:has(#stories.active) #stories > div:last-child {
         </div>
     </div>
     
-    <!-- Превью истории (описание) -->
-    <div id="storyPreviewScreen" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg); z-index: 10000; overflow-y: auto;">
+   <!-- Превью истории (описание) -->
+    <div id="storyPreviewScreen" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #1a1a2e; z-index: 10000; overflow-y: auto;">
         <div style="position: relative;">
             <!-- Обложка-шапка -->
-            <div style="background: #1a1a2e; padding: 40px 20px 30px; text-align: center; position: relative; overflow: hidden;">
+            <div style="padding: 40px 20px 30px; text-align: center; position: relative; overflow: hidden;">
                 <img src="https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/ashetvil/castle_cover.gif" 
                      alt="Тайны замка Ашетвиль"
                      style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.4;"
                      onerror="this.style.display='none'">
                 <div style="position: relative; z-index: 1;">
-                    <button onclick="closeStoryPreview()" style="position: absolute; top: -30px; left: -10px; background: rgba(255,255,255,0.2); border: none; color: white; width: 36px; height: 36px; border-radius: 50%; font-size: 18px; cursor: pointer;">
+                    <button onclick="closeStoryPreview()" style="position: absolute; top: -30px; left: -10px; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); color: white; width: 36px; height: 36px; border-radius: 50%; font-size: 18px; cursor: pointer;">
                         <i class="fas fa-arrow-left"></i>
                     </button>
                     <div style="font-size: 56px; margin-bottom: 10px;">🏰</div>
                     <h2 style="color: white; font-size: 22px; margin: 0 0 8px 0;">Тайны замка Ашетвиль</h2>
                     <div style="display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;">
-                        <span style="background: rgba(255,255,255,0.2); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px;">⚔️ Мистий</span>
-                        <span style="background: rgba(255,255,255,0.2); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px;">🗡️ Воровка</span>
-                        <span style="background: rgba(255,255,255,0.2); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px;">🔮 Алхимик</span>
+                        <span style="background: rgba(255,255,255,0.1); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px;">⚔️ Мистий</span>
+                        <span style="background: rgba(255,255,255,0.1); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px;">🗡️ Воровка</span>
+                        <span style="background: rgba(255,255,255,0.1); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px;">🔮 Алхимик</span>
                     </div>
                 </div>
             </div>
@@ -7501,10 +7501,10 @@ body:has(#stories.active) #stories > div:last-child {
             <div style="padding: 20px;">
                 <div style="margin-bottom: 20px;">
                     <h3 style="font-size: 16px; color: var(--accent); margin: 0 0 10px 0;">📖 Об истории</h3>
-                    <p style="color: var(--text-gray); font-size: 14px; line-height: 1.6;">
+                    <p style="color: rgba(255,255,255,0.7); font-size: 14px; line-height: 1.6;">
                         Три персонажа, три уникальных пути, девять концовок. Вас ждёт захватывающее приключение в стенах древнего замка, полного тайн и магии.
                     </p>
-                    <p style="color: var(--text-gray); font-size: 14px; line-height: 1.6; margin-top: 10px;">
+                    <p style="color: rgba(255,255,255,0.7); font-size: 14px; line-height: 1.6; margin-top: 10px;">
                         Раскрашивайте страницы, отправляйте фото, делайте выбор и влияйте на развитие сюжета. Каждое решение приближает вас к одному из девяти финалов.
                     </p>
                 </div>
@@ -7512,29 +7512,29 @@ body:has(#stories.active) #stories > div:last-child {
                 <div style="margin-bottom: 20px;">
                     <h3 style="font-size: 16px; color: var(--accent); margin: 0 0 10px 0;">🎭 Персонажи</h3>
                     <div style="display: flex; flex-direction: column; gap: 10px;">
-                        <div style="background: var(--card-bg); border-radius: 12px; padding: 12px; border: 1px solid var(--border-color);">
+                        <div style="background: #16213e; border-radius: 12px; padding: 12px; border: 1px solid rgba(255,255,255,0.1);">
                             <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
                                 <span style="font-size: 28px;">⚔️</span>
-                                <span style="font-weight: 700; color: var(--text);">Мистий</span>
-                                <span style="font-size: 11px; color: var(--text-gray);">💪14 🏃4 🧠2</span>
+                                <span style="font-weight: 700; color: #ffffff;">Мистий</span>
+                                <span style="font-size: 11px; color: rgba(255,255,255,0.7);">💪14 🏃4 🧠2</span>
                             </div>
-                            <p style="color: var(--text-gray); font-size: 12px; margin: 0;">Охотник на нежить. Путь силы и отваги.</p>
+                            <p style="color: rgba(255,255,255,0.7); font-size: 12px; margin: 0;">Охотник на нежить. Путь силы и отваги.</p>
                         </div>
-                        <div style="background: var(--card-bg); border-radius: 12px; padding: 12px; border: 1px solid var(--border-color);">
+                        <div style="background: #16213e; border-radius: 12px; padding: 12px; border: 1px solid rgba(255,255,255,0.1);">
                             <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
                                 <span style="font-size: 28px;">🗡️</span>
-                                <span style="font-weight: 700; color: var(--text);">Воровка</span>
-                                <span style="font-size: 11px; color: var(--text-gray);">💪5 🏃13 🧠2</span>
+                                <span style="font-weight: 700; color: #ffffff;">Воровка</span>
+                                <span style="font-size: 11px; color: rgba(255,255,255,0.7);">💪5 🏃13 🧠2</span>
                             </div>
-                            <p style="color: var(--text-gray); font-size: 12px; margin: 0;">Мастер скрытности. Путь ловкости и хитрости.</p>
+                            <p style="color: rgba(255,255,255,0.7); font-size: 12px; margin: 0;">Мастер скрытности. Путь ловкости и хитрости.</p>
                         </div>
-                        <div style="background: var(--card-bg); border-radius: 12px; padding: 12px; border: 1px solid var(--border-color);">
+                        <div style="background: #16213e; border-radius: 12px; padding: 12px; border: 1px solid rgba(255,255,255,0.1);">
                             <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
                                 <span style="font-size: 28px;">🔮</span>
-                                <span style="font-weight: 700; color: var(--text);">Алхимик</span>
-                                <span style="font-size: 11px; color: var(--text-gray);">💪2 🏃4 🧠14</span>
+                                <span style="font-weight: 700; color: #ffffff;">Алхимик</span>
+                                <span style="font-size: 11px; color: rgba(255,255,255,0.7);">💪2 🏃4 🧠14</span>
                             </div>
-                            <p style="color: var(--text-gray); font-size: 12px; margin: 0;">Искатель знаний. Путь мудрости и магии.</p>
+                            <p style="color: rgba(255,255,255,0.7); font-size: 12px; margin: 0;">Искатель знаний. Путь мудрости и магии.</p>
                         </div>
                     </div>
                 </div>
@@ -7542,27 +7542,27 @@ body:has(#stories.active) #stories > div:last-child {
                 <div style="margin-bottom: 20px;">
                     <h3 style="font-size: 16px; color: var(--accent); margin: 0 0 10px 0;">📊 Характеристики</h3>
                     <div style="display: flex; gap: 15px; text-align: center;">
-                        <div style="flex: 1; background: var(--card-bg); border-radius: 12px; padding: 15px; border: 1px solid var(--border-color);">
+                        <div style="flex: 1; background: #16213e; border-radius: 12px; padding: 15px; border: 1px solid rgba(255,255,255,0.1);">
                             <div style="font-size: 28px;">💪</div>
-                            <div style="font-weight: 700; color: var(--text);">Сила</div>
-                            <div style="font-size: 11px; color: var(--text-gray);">Влияет на бой</div>
+                            <div style="font-weight: 700; color: #ffffff;">Сила</div>
+                            <div style="font-size: 11px; color: rgba(255,255,255,0.7);">Влияет на бой</div>
                         </div>
-                        <div style="flex: 1; background: var(--card-bg); border-radius: 12px; padding: 15px; border: 1px solid var(--border-color);">
+                        <div style="flex: 1; background: #16213e; border-radius: 12px; padding: 15px; border: 1px solid rgba(255,255,255,0.1);">
                             <div style="font-size: 28px;">🏃</div>
-                            <div style="font-weight: 700; color: var(--text);">Ловкость</div>
-                            <div style="font-size: 11px; color: var(--text-gray);">Влияет на скрытность</div>
+                            <div style="font-weight: 700; color: #ffffff;">Ловкость</div>
+                            <div style="font-size: 11px; color: rgba(255,255,255,0.7);">Влияет на скрытность</div>
                         </div>
-                        <div style="flex: 1; background: var(--card-bg); border-radius: 12px; padding: 15px; border: 1px solid var(--border-color);">
+                        <div style="flex: 1; background: #16213e; border-radius: 12px; padding: 15px; border: 1px solid rgba(255,255,255,0.1);">
                             <div style="font-size: 28px;">🧠</div>
-                            <div style="font-weight: 700; color: var(--text);">Интеллект</div>
-                            <div style="font-size: 11px; color: var(--text-gray);">Влияет на магию</div>
+                            <div style="font-weight: 700; color: #ffffff;">Интеллект</div>
+                            <div style="font-size: 11px; color: rgba(255,255,255,0.7);">Влияет на магию</div>
                         </div>
                     </div>
                 </div>
                 
                 <!-- Кнопка действия -->
                 <div id="storyActionButton" style="margin-top: 20px;">
-                    <button class="task-submit-btn" onclick="startStoryFromPreview()" style="width: 100%; padding: 16px; font-size: 16px;">
+                    <button class="task-submit-btn" onclick="startStoryFromPreview()" style="width: 100%; padding: 16px; font-size: 16px; background: var(--accent); color: #fff;">
                         🎮 Начать историю
                     </button>
                 </div>
@@ -7571,14 +7571,14 @@ body:has(#stories.active) #stories > div:last-child {
     </div>
     
     <!-- Экран игры (полноэкранный) -->
-    <div id="storyGameScreen" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg); z-index: 10001; overflow-y: auto; padding-bottom: 30px;">
+    <div id="storyGameScreen" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #1a1a2e; z-index: 10001; overflow-y: auto; padding-bottom: 30px;">
         <div style="padding: 15px;">
             <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
-                <button onclick="backToStoryPreview()" style="background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text); width: 40px; height: 40px; border-radius: 50%; font-size: 18px; cursor: pointer;">
+                <button onclick="backToStoryPreview()" style="background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); color: white; width: 40px; height: 40px; border-radius: 50%; font-size: 18px; cursor: pointer;">
                     <i class="fas fa-arrow-left"></i>
                 </button>
-                <h3 style="margin: 0; color: var(--text);">📖 Тайны замка Ашетвиль</h3>
-                <button onclick="resetStoryFromGame()" style="margin-left: auto; background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-gray); padding: 6px 12px; border-radius: 20px; font-size: 12px; cursor: pointer;">
+                <h3 style="margin: 0; color: #ffffff;">📖 Тайны замка Ашетвиль</h3>
+                <button onclick="resetStoryFromGame()" style="margin-left: auto; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.7); padding: 6px 12px; border-radius: 20px; font-size: 12px; cursor: pointer;">
                     <i class="fas fa-redo"></i> Заново
                 </button>
             </div>
