@@ -6266,33 +6266,112 @@ body:not([data-theme]) .modal-content,
     color: var(--text-gray);
     font-style: italic;
 }
-    /* ==========================================
-   ТЁМНАЯ ТЕМА ДЛЯ ВКЛАДКИ ИСТОРИИ (КАК В ПРИЛОЖЕНИИ)
+   /* ==========================================
+   ПРИНУДИТЕЛЬНАЯ ТЁМНАЯ ТЕМА ВКЛАДКИ ИСТОРИИ
    ========================================== */
+
+/* Фон всей вкладки и экранов */
+#stories,
+#stories .page,
 #storyPreviewScreen,
 #storyGameScreen {
     background: #121212 !important;
 }
 
-/* Карточки и блоки — как в тёмной теме */
-#storyPreviewScreen [style*="background: var(--card-bg)"],
-#storyGameScreen [style*="background: var(--card-bg)"] {
+/* Все блоки с фоном var(--card-bg) или var(--bg) */
+#storyPreviewScreen div[style*="background"],
+#storyGameScreen div[style*="background"],
+#storyPreviewScreen [style*="var(--card-bg)"],
+#storyGameScreen [style*="var(--card-bg)"],
+#storyPreviewScreen [style*="var(--bg)"],
+#storyGameScreen [style*="var(--bg)"] {
     background: #1e1e1e !important;
+    border-color: rgba(255,255,255,0.1) !important;
 }
 
-/* Кнопка "Начать заново" */
+/* Весь текст — белый */
+#storyPreviewScreen,
+#storyGameScreen,
+#storyPreviewScreen p,
+#storyGameScreen p,
+#storyPreviewScreen span,
+#storyGameScreen span,
+#storyPreviewScreen h2,
+#storyPreviewScreen h3,
+#storyGameScreen h3,
+#storyPreviewScreen div,
+#storyGameScreen div {
+    color: #ffffff !important;
+}
+
+/* Серый текст */
+#storyPreviewScreen [style*="var(--text-gray)"],
+#storyGameScreen [style*="var(--text-gray)"] {
+    color: rgba(255,255,255,0.7) !important;
+}
+
+/* Акцентный цвет */
+#storyPreviewScreen [style*="var(--accent)"],
+#storyGameScreen [style*="var(--accent)"] {
+    color: var(--accent) !important;
+}
+
+/* Кнопки */
+#storyPreviewScreen button:not([style*="background"]),
+#storyGameScreen button:not([style*="background"]) {
+    background: var(--accent) !important;
+    color: #fff !important;
+}
+
+/* Кнопка Назад */
+#storyGameScreen button[onclick*="back"],
+#storyPreviewScreen button[onclick*="close"] {
+    background: #2c2c2e !important;
+    color: #fff !important;
+}
+
+/* Кнопка Заново */
 #storyGameScreen button[onclick*="reset"],
 #storyPreviewScreen button[onclick*="reset"] {
-    background: rgba(255, 255, 255, 0.1) !important;
-    color: rgba(255, 255, 255, 0.8) !important;
-    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    background: rgba(255,255,255,0.1) !important;
+    color: rgba(255,255,255,0.8) !important;
 }
 
-/* Кнопка "Назад" в игре */
-#storyGameScreen button[onclick*="backToStoryPreview"] {
+/* Модалка выбора персонажа */
+#storyGameScreen .modal-content,
+#storyPreviewScreen .modal-content,
+.modal-overlay .modal-content {
+    background: #1e1e1e !important;
+    color: #ffffff !important;
+    border-color: rgba(255,255,255,0.1) !important;
+}
+
+/* Карточки персонажей */
+#storyGameScreen .castle-character-card,
+#storyGameScreen .story-character-select-card,
+.modal-overlay .castle-character-card {
     background: #2c2c2e !important;
-    color: white !important;
-    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-color: rgba(255,255,255,0.15) !important;
+}
+
+/* Текст в карточках */
+#storyGameScreen .char-name,
+#storyGameScreen .char-desc,
+#storyGameScreen .char-stats,
+#storyGameScreen .char-bonus,
+.modal-overlay .char-name,
+.modal-overlay .char-desc {
+    color: #ffffff !important;
+}
+
+/* Нижнее меню */
+body:has(#stories.active) .nav {
+    background: #121212 !important;
+    border-top-color: rgba(255,255,255,0.1) !important;
+}
+
+body:has(#stories.active) {
+    background: #121212 !important;
 }
     </style>
 </head>
