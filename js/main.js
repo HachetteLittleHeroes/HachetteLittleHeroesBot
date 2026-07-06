@@ -2275,7 +2275,6 @@ const FRIEND_TASKS = [
         ]
     }
 ];
-const FRIEND_TASKS = [];
 let friendProgress = {};
 
 function loadFriendTasksStatus() {
