@@ -2689,11 +2689,10 @@ function showCharacterSelectInGame() {
                 const hasAccess = access[id] || false;
                 const charImageUrl = `https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/ashetvil/${id}.jpg?t=${Date.now()}`;
                 const icon = id === 'mystic' ? '⚔️' : id === 'thief' ? '🗡️' : '🔮';
-                const statusText = id === 'mystic' ? 'Доступен' : 'В разработке';
                 
                 charsHtml += `
                     <div class="story-character-select-card">
-                        <div class="char-image">
+                        <div class="char-image" style="position: relative; overflow: hidden;">
                             <img src="${charImageUrl}" alt="${char.name}" onerror="this.style.display='none'; this.parentElement.querySelector('.char-icon').style.display='block';">
                             <span class="char-icon" style="display: none;">${icon}</span>
                             ${!hasAccess ? `
@@ -2713,7 +2712,7 @@ function showCharacterSelectInGame() {
                                 </button>
                             ` : `
                                 <button class="task-submit-btn" disabled style="width: 100%; margin-top: 10px; opacity: 0.5; cursor: not-allowed;">
-                                    🔒 Выбрать
+                                    🔒 Нет доступа
                                 </button>
                             `}
                         </div>
@@ -11407,9 +11406,9 @@ function showCharacterSelect() {
                 const icon = id === 'mystic' ? '⚔️' : id === 'thief' ? '🗡️' : '🔮';
                 
                 charsHtml += `
-                    <div class="castle-character-card" style="cursor:pointer; background: var(--card-bg); border: 2px solid ${hasAccess ? 'var(--status-green)' : 'var(--border-color)'}; border-radius: 16px; padding: 15px; text-align: center; margin-bottom: 15px; position: relative;">
-                        ${!hasAccess ? '<div style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.6); border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;"><i class="fas fa-lock" style="color: white; font-size: 14px;"></i></div>' : ''}
-                        <img src="${charImageUrl}" alt="${char.name}" style="width: 100%; max-width: 200px; height: auto; border-radius: 12px; margin-bottom: 10px; ${!hasAccess ? 'opacity: 0.6;' : ''}" onerror="this.style.display='none'">
+                    <div class="castle-character-card" style="cursor:pointer; background: var(--card-bg); border: 2px solid ${hasAccess ? 'var(--status-green)' : 'var(--border-color)'}; border-radius: 16px; padding: 15px; text-align: center; margin-bottom: 15px; position: relative; overflow: hidden;">
+                        ${!hasAccess ? '<div style="position: absolute; top: 10px; right: 10px; z-index: 2; background: rgba(0,0,0,0.6); border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;"><i class="fas fa-lock" style="color: white; font-size: 14px;"></i></div>' : '<div style="position: absolute; top: 10px; right: 10px; z-index: 2; background: var(--status-green); border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;"><i class="fas fa-check" style="color: white; font-size: 14px;"></i></div>'}
+                        <img src="${charImageUrl}" alt="${char.name}" style="width: 100%; max-width: 200px; height: auto; border-radius: 12px; margin-bottom: 10px; ${!hasAccess ? 'opacity: 0.7;' : ''}" onerror="this.style.display='none'">
                         <div style="font-size: 24px; margin-bottom: 5px;">${icon}</div>
                         <div style="font-weight: 700; font-size: 18px; margin-bottom: 8px;">${char.name}</div>
                         <div style="font-size: 13px; color: var(--text-gray); margin-bottom: 8px;">${char.desc}</div>
@@ -11441,7 +11440,6 @@ function showCharacterSelect() {
             content.innerHTML = charsHtml;
         });
 }
-
 function selectCastleCharacter(charId) {
     const char = CASTLE_CHARACTERS[charId];
     if (!char) return;
