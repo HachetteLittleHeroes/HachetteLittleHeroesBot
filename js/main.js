@@ -3019,9 +3019,10 @@ async function loadFriendProgressFromServer() {
             friendProgress = {};
             
             for (const [key, value] of Object.entries(stats)) {
-                // Загружаем все ключи с nadya_, irina_, friend_, status_
+                // Загружаем все ключи с nadya_, irina_, bebes_, friend_, status_
                 if ((key.startsWith('nadya_') || 
                      key.startsWith('irina_') || 
+                     key.startsWith('bebes_') || 
                      key.startsWith('friend_') || 
                      key.startsWith('status_')) && typeof value === 'number') {
                     friendProgress[key] = value;
