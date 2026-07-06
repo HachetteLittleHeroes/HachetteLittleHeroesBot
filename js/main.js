@@ -2422,68 +2422,7 @@ function openStoryPreview(storyId) {
         });
     }
 }
-function showCharacterSelectInGame() {
-    const container = document.getElementById('storyGameContainer');
-    if (!container) return;
-    
-    currentEndingClaimed = false;
-    
-    fetch(`${SERVER_URL}/api/castle/check_all_access?user_id=${userId}`)
-        .then(r => r.json())
-        .then(data => {
-            const access = data.access || {};
-            
-            let charsHtml = '<h3 style="text-align: center; margin-bottom: 15px; color: var(--text);">🎭 Выберите персонажа</h3>';
-            charsHtml += '<p style="text-align: center; color: var(--text-gray); font-size: 13px; margin-bottom: 20px;">Каждый персонаж — уникальная история с разными концовками</p>';
-            
-            for (const [id, char] of Object.entries(CASTLE_CHARACTERS)) {
-                const hasAccess = access[id] || false;
-                const charImageUrl = `https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/ashetvil/${id}.jpg?t=${Date.now()}`;
-                const icon = id === 'mystic' ? '⚔️' : id === 'thief' ? '🗡️' : '🔮';
-                
-                charsHtml += `
-                    <div class="story-character-select-card">
-                        <div class="char-image" style="position: relative; overflow: hidden;">
-                            <img src="${charImageUrl}" alt="${char.name}" onerror="this.style.display='none'; this.parentElement.querySelector('.char-icon').style.display='block';">
-                            <span class="char-icon" style="display: none;">${icon}</span>
-                            ${!hasAccess ? `
-                                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.7); border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
-                                    <i class="fas fa-lock" style="color: white; font-size: 28px;"></i>
-                                </div>
-                            ` : ''}
-                        </div>
-                        <div class="char-info">
-                            <div class="char-name">${icon} ${char.name}</div>
-                            <div class="char-stats">💪${char.stats.strength} 🏃${char.stats.agility} 🧠${char.stats.intelligence}</div>
-                            <div class="char-desc">${char.desc}</div>
-                            <div class="char-bonus">✨ ${char.bonus}</div>
-                            ${hasAccess ? `
-                                <button class="task-submit-btn" onclick="selectCharacterInGame('${id}')" style="width: 100%; margin-top: 10px; background: var(--status-green);">
-                                    ${icon} Выбрать
-                                </button>
-                            ` : `
-                                <button class="task-submit-btn" disabled style="width: 100%; margin-top: 10px; opacity: 0.5; cursor: not-allowed;">
-                                    🔒 Нет доступа
-                                </button>
-                            `}
-                        </div>
-                    </div>
-                `;
-            }
-            
-            charsHtml += `
-                <div style="background: var(--card-bg); border-radius: 12px; padding: 15px; text-align: center; margin-top: 20px; border: 1px solid var(--border-color);">
-                    <p style="color: var(--text); font-size: 13px; margin-bottom: 5px;">🔒 Нет доступа к персонажу?</p>
-                    <p style="color: var(--text-gray); font-size: 12px; margin-bottom: 8px;">1 персонаж = 1000 ₽</p>
-                    <button class="task-submit-btn" onclick="openSupportDialog()" style="width: 100%; padding: 12px; font-size: 14px;">
-                        💰 Поддержать и открыть доступ
-                    </button>
-                </div>
-            `;
-            
-            container.innerHTML = charsHtml;
-        });
-}
+
 function closeStoryPreview() {
     const previewScreen = document.getElementById('storyPreviewScreen');
     const gameScreen = document.getElementById('storyGameScreen');
@@ -2547,7 +2486,68 @@ function continueStoryFromPreview() {
         renderCastleCardInGame(currentCastleCard);
     }
 }
-
+function showCharacterSelectInGame() {
+    const container = document.getElementById('storyGameContainer');
+    if (!container) return;
+    
+    currentEndingClaimed = false;
+    
+    fetch(`${SERVER_URL}/api/castle/check_all_access?user_id=${userId}`)
+        .then(r => r.json())
+        .then(data => {
+            const access = data.access || {};
+            
+            let charsHtml = '<h3 style="text-align: center; margin-bottom: 15px; color: var(--text);">🎭 Выберите персонажа</h3>';
+            charsHtml += '<p style="text-align: center; color: var(--text-gray); font-size: 13px; margin-bottom: 20px;">Каждый персонаж — уникальная история с разными концовками</p>';
+            
+            for (const [id, char] of Object.entries(CASTLE_CHARACTERS)) {
+                const hasAccess = access[id] || false;
+                const charImageUrl = `https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/ashetvil/${id}.jpg?t=${Date.now()}`;
+                const icon = id === 'mystic' ? '⚔️' : id === 'thief' ? '🗡️' : '🔮';
+                
+                charsHtml += `
+                    <div class="story-character-select-card">
+                        <div class="char-image" style="position: relative; overflow: hidden;">
+                            <img src="${charImageUrl}" alt="${char.name}" onerror="this.style.display='none'; this.parentElement.querySelector('.char-icon').style.display='block';">
+                            <span class="char-icon" style="display: none;">${icon}</span>
+                            ${!hasAccess ? `
+                                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.7); border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-lock" style="color: white; font-size: 28px;"></i>
+                                </div>
+                            ` : ''}
+                        </div>
+                        <div class="char-info">
+                            <div class="char-name">${icon} ${char.name}</div>
+                            <div class="char-stats">💪${char.stats.strength} 🏃${char.stats.agility} 🧠${char.stats.intelligence}</div>
+                            <div class="char-desc">${char.desc}</div>
+                            <div class="char-bonus">✨ ${char.bonus}</div>
+                            ${hasAccess ? `
+                                <button class="task-submit-btn" onclick="selectCharacterInGame('${id}')" style="width: 100%; margin-top: 10px; background: var(--status-green);">
+                                    ${icon} Выбрать
+                                </button>
+                            ` : `
+                                <button class="task-submit-btn" disabled style="width: 100%; margin-top: 10px; opacity: 0.5; cursor: not-allowed;">
+                                    🔒 Нет доступа
+                                </button>
+                            `}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            charsHtml += `
+                <div style="background: var(--card-bg); border-radius: 12px; padding: 15px; text-align: center; margin-top: 20px; border: 1px solid var(--border-color);">
+                    <p style="color: var(--text); font-size: 13px; margin-bottom: 5px;">🔒 Нет доступа к персонажу?</p>
+                    <p style="color: var(--text-gray); font-size: 12px; margin-bottom: 8px;">1 персонаж = 1000 ₽</p>
+                    <button class="task-submit-btn" onclick="openSupportDialog()" style="width: 100%; padding: 12px; font-size: 14px;">
+                        💰 Поддержать и открыть доступ
+                    </button>
+                </div>
+            `;
+            
+            container.innerHTML = charsHtml;
+        });
+}
 function resetAndStartStory() {
     if (confirm('Сбросить прогресс и начать заново?')) {
         // Сбрасываем локально
