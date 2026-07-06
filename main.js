@@ -2251,27 +2251,30 @@ async function submitTimeTaskPhoto() {
      
 
 // ==========================================
-// ЗАДАНИЯ ОТ НАШИХ ДРУЗЕЙ (КАК В ЗАДАНИЯХ НА СТАТУСЫ)
+// ЗАДАНИЯ ОТ НАШИХ ДРУЗЕЙ 
 // ==========================================
 
-//const FRIEND_TASKS = [
-   // {
-        //id: 'nadya_task_1',
-       // title: '50 оттенков разворота',
-        //description: 'Наша Надя предлагает тебе испытать 50 эмоций во время раскрашивания разворота, у которого цветовой код состоит из 50 и более цветов. В награду за это ты получишь билет на розыгрыш польского издания Hachette А4!',
-       // reward: 'Билет на розыгрыш польского издания Hachette А4',
-        //tgLink: 'https://www.youtube.com/@%D0%9D%D0%B0%D0%B4%D0%B5%D0%B6%D0%B4%D0%B0_%D0%A5%D0%BE%D0%B1%D0%B1%D0%B8%D1%82%D0%B5%D1%80%D0%B0%D0%BF%D0%B8%D1%8F',
-        //tgUsername: '@Nadia_Dv',
-        //levels: [
-            //{
-                //title: 'Отправь работу (ДО/ПОСЛЕ со стикером и кодовым словом)',
-                //subtasks: [
-                    //{ id: 'nadya_work_1', name: 'Отправить фото на проверку', required: 1 }
-                //]
-            //}
-        //]
-   // }
-//];
+const FRIEND_TASKS = [
+    {
+        id: 'bebes_animaux_task',
+        title: 'Малыши и их мамы',
+        description: 'Раскрась картинки с малышами и их мамами, чтобы получить билет на розыгрыш раскраски Bebes animaux!',
+        reward: 'Билет на розыгрыш раскраски Bebes animaux + статус «Крошка»',
+        tgLink: 'https://t.me/hachettelittleheroes',
+        tgUsername: '@hachettelittleheroes',
+        levels: [
+            {
+                title: 'Выполните 4 задания',
+                subtasks: [
+                    { id: 'bebes_1', name: 'Раскрась разворот с животным-малышом', required: 1 },
+                    { id: 'bebes_2', name: 'Раскрась разворот с ребенком', required: 1 },
+                    { id: 'bebes_3', name: 'Раскрась картинку с мамой и ребенком', required: 1 },
+                    { id: 'bebes_4', name: 'Раскрась картинку с малышом-животным и его мамой', required: 1 }
+                ]
+            }
+        ]
+    }
+];
 const FRIEND_TASKS = [];
 let friendProgress = {};
 
@@ -2292,19 +2295,20 @@ function saveFriendProgress() {
 
 function getFriendSubtaskProgress(taskIdx, levelIdx, subtaskIdx) {
     const task = FRIEND_TASKS[taskIdx];
-    let key;
+    if (!task) return 0;
     
-    if (task && task.id === 'nadya_task_1') {
+    let key;
+    if (task.id === 'bebes_animaux_task') {
+        key = 'bebes_level_' + levelIdx + '_subtask_' + subtaskIdx;
+    } else if (task.id === 'nadya_task_1') {
         key = 'nadya_level_' + levelIdx + '_subtask_' + subtaskIdx;
-    } else if (task && task.id === 'irina_task_1') {
+    } else if (task.id === 'irina_task_1') {
         key = 'irina_level_' + levelIdx + '_subtask_' + subtaskIdx;
     } else {
         key = 'friend_level_' + levelIdx + '_subtask_' + subtaskIdx;
     }
     
-    const value = friendProgress[key] || 0;
-    console.log('getFriendSubtaskProgress:', key, '=', value);
-    return value;
+    return friendProgress[key] || 0;
 }
 
 function isFriendLevelCompleted(taskIdx, levelIdx) {
@@ -3082,16 +3086,121 @@ async function forceSyncFriendProgress() {
     return false;
 }
 async function renderFriendTasks() {
+    console.log('=== RENDER FRIEND TASKS ===');
     const container = document.getElementById('friendTasksList');
     if (!container) return;
     
-    container.innerHTML = `
-        <div style="text-align: center; padding: 20px; color: var(--text-gray);">
-            <i class="fas fa-handshake" style="font-size: 40px; opacity: 0.5; margin-bottom: 16px;"></i>
-            <p>Пока что заданий нет</p>
-            <p style="font-size: 13px; margin-top: 8px;">Новые задания от наших друзей скоро появятся!</p>
+    // Проверяем, есть ли задания
+    if (!FRIEND_TASKS || FRIEND_TASKS.length === 0) {
+        container.innerHTML = `
+            <div style="text-align: center; padding: 20px; color: var(--text-gray);">
+                <i class="fas fa-handshake" style="font-size: 40px; opacity: 0.5; margin-bottom: 16px;"></i>
+                <p>Пока что заданий нет</p>
+                <p style="font-size: 13px; margin-top: 8px;">Новые задания от наших друзей скоро появятся!</p>
+            </div>
+        `;
+        return;
+    }
+    
+    const task = FRIEND_TASKS[0];
+    if (!task) return;
+    
+    // ✅ ПРИНУДИТЕЛЬНАЯ СИНХРОНИЗАЦИЯ ПРОГРЕССА С СЕРВЕРОМ
+    try {
+        const response = await fetch(`${SERVER_URL}/api/sync_friend_progress?user_id=${userId}`);
+        const data = await response.json();
+        
+        if (data.status === 'ok' && data.progress) {
+            for (const [key, value] of Object.entries(data.progress)) {
+                friendProgress[key] = value;
+            }
+            saveFriendProgress();
+            console.log('✅ Синхронизировано:', friendProgress);
+        }
+    } catch (error) {
+        console.error('❌ Ошибка синхронизации:', error);
+    }
+    
+    // Проверяем, все ли подзадания выполнены
+    let allCompleted = true;
+    let totalCompleted = 0;
+    let totalRequired = 0;
+    
+    if (task.levels && task.levels[0] && task.levels[0].subtasks) {
+        task.levels[0].subtasks.forEach((subtask, idx) => {
+            const progress = getFriendSubtaskProgress(0, 0, idx);
+            totalCompleted += Math.min(progress, subtask.required);
+            totalRequired += subtask.required;
+            if (progress < subtask.required) {
+                allCompleted = false;
+            }
+        });
+    }
+    
+    if (allCompleted && totalRequired > 0) {
+        container.innerHTML = `
+            <div class="friend-task-card completed">
+                <div class="friend-header">
+                    <h3>${task.title}</h3>
+                    <p>${task.description}</p>
+                    <div class="friend-reward">🎁 ${task.reward}</div>
+                </div>
+                <div class="level-card">
+                    <div style="text-align: center; padding: 12px; color: var(--status-green);">
+                        <i class="fas fa-check-circle"></i> Задание выполнено! Билет и статус «Крошка» получены.
+                    </div>
+                </div>
+            </div>
+        `;
+        return;
+    }
+    
+    // Рендерим активное задание с подзаданиями
+    let html = `
+        <div class="friend-task-card">
+            <div class="friend-header">
+                <h3>${task.title}</h3>
+                <p>${task.description}</p>
+                <div class="friend-reward">🎁 ${task.reward}</div>
+            </div>
+            <div class="level-card">
+    `;
+    
+    if (task.levels && task.levels[0] && task.levels[0].subtasks) {
+        task.levels[0].subtasks.forEach((subtask, idx) => {
+            const progress = getFriendSubtaskProgress(0, 0, idx);
+            const done = progress >= subtask.required;
+            const percent = Math.min(100, (progress / subtask.required) * 100);
+            
+            html += `
+                <div class="subtask-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <span style="font-weight: 600; font-size: 14px;">${subtask.name}</span>
+                        <span style="font-size: 12px; color: var(--accent);">${progress}/${subtask.required}</span>
+                    </div>
+                    <div class="progress-bar-container" style="height: 6px; margin: 0 0 12px 0;">
+                        <div class="progress-bar-fill" style="width: ${percent}%; height: 100%;"></div>
+                    </div>
+                    ${!done ? `
+                        <button class="task-submit-btn" onclick="openFriendSubtaskUpload(0, 0, ${idx}, '${subtask.name.replace(/'/g, "\\'")}')">
+                            <i class="fas fa-camera"></i> Отправить фото
+                        </button>
+                    ` : `
+                        <div style="text-align: center; color: var(--status-green); font-size: 12px;">
+                            <i class="fas fa-check-circle"></i> Выполнено!
+                        </div>
+                    `}
+                </div>
+            `;
+        });
+    }
+    
+    html += `
+            </div>
         </div>
     `;
+    
+    container.innerHTML = html;
 }
 
 let currentFriendTaskIdx = null;
@@ -6146,7 +6255,8 @@ function openFigureModal(figure, isUnlocked) {
     sirena: "Сирена",
     rapuncelprincesses: "Златовласка",
     'agraba': 'Принцесса Аграбы',
-    lubitelfentesi: "Любитель фэнтези"
+    lubitelfentesi: "Любитель фэнтези",
+    'bebes_animaux': "Крошка",
 };
         
         const TASK_BRANCHES = {
