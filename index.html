@@ -6386,6 +6386,27 @@ body:has(#stories.active) #stories > div:last-child {
     margin-top: auto !important;
     padding-bottom: 10px !important;
 }
+        /* Убираем ВСЕ подложки в историях — принудительно */
+#storyPreviewScreen div[style*="background"],
+#storyGameScreen div[style*="background"] {
+    background: #1a1a2e !important;
+}
+
+/* Но оставляем фон для карточек и блока поддержки */
+#storyPreviewScreen div[style*="background: var(--card-bg)"],
+#storyGameScreen div[style*="background: var(--card-bg)"],
+#storyPreviewScreen .castle-character-card,
+#storyGameScreen .castle-character-card,
+#storyPreviewScreen .story-character-select-card,
+#storyGameScreen .story-character-select-card {
+    background: #16213e !important;
+}
+
+/* Оставляем фон для кнопок */
+#storyPreviewScreen button,
+#storyGameScreen button {
+    background: var(--accent) !important;
+}
     </style>
 </head>
 <body>
