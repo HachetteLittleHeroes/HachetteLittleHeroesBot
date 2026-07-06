@@ -6278,6 +6278,18 @@ body:not([data-theme]) .modal-content,
 .modal-overlay [style*="var(--text-gray)"]{color:rgba(255,255,255,.7)!important}
 #storyGameScreen button[onclick*="back"],#storyPreviewScreen button[onclick*="close"]{background:#2c2c2e!important;color:#fff!important}
 #storyGameScreen button[onclick*="reset"],#storyPreviewScreen button[onclick*="reset"]{background:rgba(255,255,255,.1)!important;color:rgba(255,255,255,.8)!important}
+        #stories, #stories .page { background: #121212 !important; }
+#stories .header { color: #fff !important; }
+body:has(#stories.active) { background: #121212 !important; }
+body:has(#stories.active) .nav { background: #121212 !important; }
+        #stories {
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: calc(100vh - 85px) !important;
+}
+#stories > div:last-of-type {
+    margin-top: auto !important;
+}
     </style>
 </head>
 <body>
