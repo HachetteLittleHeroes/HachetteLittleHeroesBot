@@ -6445,6 +6445,41 @@ body:has(#stories.active) #stories > div:last-child {
 #storyGameScreen .story-character-select-card {
     background: #16213e !important;
 }
+        /* Убираем фон у кнопки "Назад" */
+#storyPreviewScreen button[onclick*="backToStoryPreview"],
+#storyGameScreen button[onclick*="backToStoryPreview"],
+#storyPreviewScreen button[style*="position: fixed"],
+#storyGameScreen button[style*="position: fixed"] {
+    background: rgba(0, 0, 0, 0.6) !important;
+    backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Убираем фон у кнопки "Заново" */
+#storyPreviewScreen button[onclick*="resetStoryFromGame"],
+#storyGameScreen button[onclick*="resetStoryFromGame"] {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: rgba(255, 255, 255, 0.7) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Убираем подложку у обложки в превью */
+#storyPreviewScreen .story-cover,
+#storyPreviewScreen .story-cover div,
+#storyPreviewScreen [style*="background: #1a1a2e"] {
+    background: transparent !important;
+}
+
+/* Убираем подложки у всех span с фоном */
+#storyPreviewScreen span[style*="background"],
+#storyGameScreen span[style*="background"] {
+    background: transparent !important;
+}
+
+/* Убираем подложки у div с border-radius */
+#storyPreviewScreen div[style*="border-radius"]:not(.castle-character-card):not(.story-character-select-card) {
+    background: transparent !important;
+}
     </style>
 </head>
 <body>
