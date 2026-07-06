@@ -2368,51 +2368,49 @@ function openStoryPreview(storyId) {
                     
                     if (hasProgress && currentCastleCard && !currentEndingClaimed) {
                         actionBtn.innerHTML = `
-                            <button class="task-submit-btn" onclick="continueStoryFromPreview()" style="width: 100%; padding: 16px; font-size: 16px; background: var(--status-green);">
+                            <button class="task-submit-btn" onclick="continueStoryFromPreview()" style="width: 100%; padding: 16px; font-size: 16px; background: #34c759;">
                                 ▶ Продолжить историю
                             </button>
-                            <button class="task-submit-btn" onclick="resetAndStartStory()" style="width: 100%; padding: 12px; font-size: 13px; margin-top: 10px; background: var(--card-bg); color: var(--text); border: 1px solid var(--border-color);">
+                            <button class="task-submit-btn" onclick="resetAndStartStory()" style="width: 100%; padding: 12px; font-size: 13px; margin-top: 10px; background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.2);">
                                 🔄 Начать заново
                             </button>
                         `;
                     } else if (hasProgress && currentEndingClaimed) {
                         const endingsCount = Object.keys(castleCompletedEndings).length;
                         actionBtn.innerHTML = `
-                            <div style="text-align: center; padding: 15px; background: var(--card-bg); border-radius: 12px; margin-bottom: 10px;">
-                                <div style="font-size: 14px; color: var(--text);">🏆 Концовок открыто: ${endingsCount}/15</div>
+                            <div style="text-align: center; padding: 15px; background: transparent; border-radius: 12px; margin-bottom: 10px;">
+                                <div style="font-size: 14px; color: #ffffff;">🏆 Концовок открыто: ${endingsCount}/15</div>
                             </div>
-                            <button class="task-submit-btn" onclick="resetAndStartStory()" style="width: 100%; padding: 16px; font-size: 16px;">
+                            <button class="task-submit-btn" onclick="resetAndStartStory()" style="width: 100%; padding: 16px; font-size: 16px; background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.2);">
                                 🔄 Пройти заново
                             </button>
                         `;
                     } else if (hasAnyAccess) {
-                        // Есть доступ — можно начать
                         let availableChars = [];
                         if (access.mystic) availableChars.push('⚔️ Мистий');
                         if (access.thief) availableChars.push('🗡️ Воровка');
                         if (access.alchemist) availableChars.push('🔮 Алхимик');
                         
                         actionBtn.innerHTML = `
-                            <button class="task-submit-btn" onclick="startStoryFromPreview()" style="width: 100%; padding: 16px; font-size: 16px;">
+                            <button class="task-submit-btn" onclick="startStoryFromPreview()" style="width: 100%; padding: 16px; font-size: 16px; background: var(--accent); color: #fff;">
                                 🎮 Начать историю
                             </button>
-                            <p style="text-align: center; color: var(--text-gray); font-size: 12px; margin-top: 8px;">
+                            <p style="text-align: center; color: rgba(255,255,255,0.7); font-size: 12px; margin-top: 8px;">
                                 Доступные персонажи: ${availableChars.join(', ')}
                             </p>
                         `;
                     } else {
-                        // Нет доступа — кнопка поддержки
                         actionBtn.innerHTML = `
-                            <div style="background: var(--card-bg); border-radius: 12px; padding: 15px; text-align: center; margin-bottom: 10px; border: 1px solid var(--border-color);">
-                                <p style="color: var(--text); font-size: 14px; margin-bottom: 5px;">🔒 Доступ закрыт</p>
-                                <p style="color: var(--text-gray); font-size: 12px; margin-bottom: 10px;">
+                            <div style="background: #16213e; border-radius: 12px; padding: 15px; text-align: center; margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.1);">
+                                <p style="color: #ffffff; font-size: 14px; margin-bottom: 5px;">🔒 Доступ закрыт</p>
+                                <p style="color: rgba(255,255,255,0.7); font-size: 12px; margin-bottom: 10px;">
                                     Доступен персонаж ⚔️ Мистий<br>
                                     Остальные истории в разработке
                                 </p>
                                 <p style="color: var(--accent); font-size: 14px; font-weight: 600; margin-bottom: 10px;">
                                     1 персонаж = 1000 ₽
                                 </p>
-                                <button class="task-submit-btn" onclick="openSupportDialog()" style="width: 100%; padding: 14px; font-size: 15px;">
+                                <button class="task-submit-btn" onclick="openSupportDialog()" style="width: 100%; padding: 14px; font-size: 15px; background: var(--accent); color: #fff;">
                                     💰 Поддержать
                                 </button>
                             </div>
@@ -2422,7 +2420,6 @@ function openStoryPreview(storyId) {
         });
     }
 }
-
 function closeStoryPreview() {
     const previewScreen = document.getElementById('storyPreviewScreen');
     const gameScreen = document.getElementById('storyGameScreen');
