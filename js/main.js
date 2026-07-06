@@ -2257,14 +2257,14 @@ async function submitTimeTaskPhoto() {
 const FRIEND_TASKS = [
     {
         id: 'bebes_animaux_task',
-        title: 'Малыши и их мамы',
-        description: 'Раскрась картинки с малышами и их мамами, чтобы получить билет на розыгрыш раскраски Bebes animaux!',
+        title: 'Крошка',
+        description: 'Выполни все задания, чтобы получить билет на розыгрыш раскраски Bebes animaux!',
         reward: 'Билет на розыгрыш раскраски Bebes animaux + статус «Крошка»',
         tgLink: 'https://t.me/hachettelittleheroes',
         tgUsername: '@hachettelittleheroes',
         levels: [
             {
-                title: 'Выполните 4 задания',
+                title: 'Выполни все задания',
                 subtasks: [
                     { id: 'bebes_1', name: 'Раскрась разворот с животным-малышом', required: 1 },
                     { id: 'bebes_2', name: 'Раскрась разворот с ребенком', required: 1 },
