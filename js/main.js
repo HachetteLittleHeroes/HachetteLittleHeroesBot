@@ -1,5 +1,5 @@
  // ==========================================
-// УНИВЕРСАЛЬНЫЙ ИНДИКАТОР  ЗАГРУЗКИ 
+// УНИВЕРСАЛЬНЫЙ  ИНДИКАТОР  ЗАГРУЗКИ 
 // ==========================================
 function showLoadingOverlay(containerId, message = 'Отправка фото...') {
     const container = document.getElementById(containerId);
