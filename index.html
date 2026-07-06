@@ -6294,6 +6294,16 @@ body:has(#stories.active) .nav { background: #121212 !important; }
 #storyPreviewScreen [style*="flex: 1"] div[style*="font-weight:700"] {
     color: #ffffff !important;
 }
+        #stories {
+    display: flex !important;
+    flex-direction: column !important;
+    height: calc(100vh - 85px) !important;
+    overflow-y: auto !important;
+}
+#stories > div:last-of-type {
+    margin-top: auto !important;
+    flex-shrink: 0 !important;
+}
     </style>
 </head>
 <body>
