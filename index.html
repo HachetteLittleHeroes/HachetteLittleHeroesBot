@@ -6267,77 +6267,17 @@ body:not([data-theme]) .modal-content,
     font-style: italic;
 }
 /* ==========================================
-   ТЁМНАЯ ТЕМА ИСТОРИЙ — ТОЛЬКО НУЖНОЕ
+   ТЁМНАЯ ТЕМА ИСТОРИЙ
    ========================================== */
-
-/* Фон экранов */
-#storyPreviewScreen,
-#storyGameScreen {
-    background: #121212 !important;
-}
-
-/* Заголовок "Истории" */
-#stories .header {
-    color: #ffffff !important;
-}
-
-/* Блоки с var(--card-bg) — только в превью и игре */
-#storyPreviewScreen [style*="var(--card-bg)"],
-#storyGameScreen [style*="var(--card-bg)"] {
-    background: #2c2c2e !important;
-    border-color: rgba(255,255,255,0.15) !important;
-}
-
-/* Текст в превью и игре */
-#storyPreviewScreen,
-#storyGameScreen,
-#storyPreviewScreen p,
-#storyGameScreen p,
-#storyPreviewScreen h2,
-#storyPreviewScreen h3,
-#storyGameScreen h3 {
-    color: #ffffff !important;
-}
-
-/* Серый текст */
-#storyPreviewScreen [style*="var(--text-gray)"],
-#storyGameScreen [style*="var(--text-gray)"] {
-    color: rgba(255,255,255,0.7) !important;
-}
-
-/* Карточки персонажей при выборе */
-#storyGameScreen [class*="character-select"],
-#storyGameScreen [class*="character-card"],
-#storyGameScreen [class*="castle-character"] {
-    background: #2c2c2e !important;
-    border-color: rgba(255,255,255,0.15) !important;
-}
-
-/* Модалка */
-.modal-overlay .modal-content {
-    background: #1e1e1e !important;
-}
-
-.modal-overlay .modal-content * {
-    color: #ffffff !important;
-}
-
-.modal-overlay [style*="var(--card-bg)"] {
-    background: #2c2c2e !important;
-}
-
-/* Кнопки */
-#storyGameScreen button[onclick*="back"],
-#storyPreviewScreen button[onclick*="close"] {
-    background: #2c2c2e !important;
-    color: #fff !important;
-}
-
-#storyGameScreen button[onclick*="reset"],
-#storyPreviewScreen button[onclick*="reset"] {
-    background: rgba(255,255,255,0.1) !important;
-    color: rgba(255,255,255,0.8) !important;
-}
+#stories,#stories .page,#storyPreviewScreen,#storyGameScreen{background:#121212!important}
+#stories .header{color:#fff!important}
+#storyPreviewScreen,#storyGameScreen,#storyPreviewScreen p,#storyGameScreen p,#storyPreviewScreen h2,#storyPreviewScreen h3,#storyGameScreen h3,#storyPreviewScreen span,#storyGameScreen span{color:#fff!important}
+#storyPreviewScreen [style*="var(--text-gray)"],#storyGameScreen [style*="var(--text-gray)"]{color:rgba(255,255,255,.7)!important}
+#storyPreviewScreen [style*="var(--card-bg)"],#storyGameScreen [style*="var(--card-bg)"],.modal-overlay .modal-content,.modal-overlay [style*="var(--card-bg)"]{background:#2c2c2e!important;border-color:rgba(255,255,255,.15)!important}
+.modal-overlay,.modal-overlay .modal-content,.modal-overlay *{color:#fff!important;background:#1e1e1e!important}
+.modal-overlay [style*="var(--text-gray)"]{color:rgba(255,255,255,.7)!important}
+#storyGameScreen button[onclick*="back"],#storyPreviewScreen button[onclick*="close"]{background:#2c2c2e!important;color:#fff!important}
+#storyGameScreen button[onclick*="reset"],#storyPreviewScreen button[onclick*="reset"]{background:rgba(255,255,255,.1)!important;color:rgba(255,255,255,.8)!important}
     </style>
 </head>
 <body>
