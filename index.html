@@ -6361,6 +6361,29 @@ body:has(#stories.active) .nav {
 body:has(#stories.active) {
     background: #121212 !important;
 }
+        /* Копирайт приклеен к низу во вкладке Истории */
+#stories {
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: calc(100vh - 85px) !important;
+}
+
+#stories > div:last-of-type {
+    margin-top: auto !important;
+    padding: 10px !important;
+    text-align: center !important;
+    font-size: 11px !important;
+    color: var(--text-gray) !important;
+}
+
+/* Скрываем основной футер когда открыты истории */
+body:has(#stories.active) > div[style*="text-align: center; padding: 10px; font-size: 11px"] {
+    position: fixed !important;
+    bottom: 85px !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 10 !important;
+}
     </style>
 </head>
 <body>
