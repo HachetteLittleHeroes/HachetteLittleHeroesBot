@@ -1,4 +1,5 @@
- // ==========================================
+let castleStartTime = null;
+// ==========================================
 // УНИВЕРСАЛЬНЫЙ  ИНДИКАТОР  ЗАГРУЗКИ  
 // ==========================================
 function showLoadingOverlay(containerId, message = 'Отправка фото...') {
@@ -2464,6 +2465,10 @@ function resetAndStartStory() {
         metEliza = false;
         currentEndingClaimed = false;
         
+        // ✅ Сбрасываем таймер прохождения
+        castleStartTime = null;
+        localStorage.removeItem(`castle_start_time_${userId}`);
+        
         // ✅ Сбрасываем на сервере
         fetch(`${SERVER_URL}/api/castle/reset_approvals`, {
             method: 'POST',
@@ -2481,7 +2486,22 @@ function resetAndStartStory() {
         showCharacterSelectInGame();
     }
 }
-
+function formatTime(ms) {
+    const seconds = Math.floor(ms / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+    
+    if (days > 0) {
+        return `${days} дн ${hours % 24} ч ${minutes % 60} мин`;
+    } else if (hours > 0) {
+        return `${hours} ч ${minutes % 60} мин`;
+    } else if (minutes > 0) {
+        return `${minutes} мин ${seconds % 60} сек`;
+    } else {
+        return `${seconds} сек`;
+    }
+}
 function backToStoryPreview() {
     const previewScreen = document.getElementById('storyPreviewScreen');
     const gameScreen = document.getElementById('storyGameScreen');
@@ -2665,6 +2685,11 @@ function confirmCharacterSelection(charId) {
     currentCastleCard = '1' + prefixMap[charId] + '_1';
     
     console.log('🎮 Выбран персонаж:', charId, '→ карта:', currentCastleCard);
+    
+    // ✅ Запоминаем время начала прохождения
+    castleStartTime = Date.now();
+    localStorage.setItem(`castle_start_time_${userId}`, castleStartTime);
+    console.log('⏱ Время старта:', new Date(castleStartTime).toLocaleString());
     
     // ✅ Сбрасываем castle_approved на сервере (но НЕ loot)
     fetch(`${SERVER_URL}/api/castle/reset_approvals`, {
@@ -2964,11 +2989,19 @@ function proceedAfterApprovalInGame(cardId, choiceIdx) {
     }, 300);
 }
 function claimCastleEndingInGame(cardId) {
+    // ✅ Вычисляем время прохождения ДО вызова claimCastleEnding
+    const elapsed = castleStartTime ? Date.now() - castleStartTime : 0;
+    const timeStr = formatTime(elapsed);
+    
+    // Сбрасываем время
+    castleStartTime = null;
+    localStorage.removeItem(`castle_start_time_${userId}`);
+    
     claimCastleEnding(cardId);
     
     setTimeout(() => {
         if (storyGameActive) {
-            showEndingInGame('');
+            showEndingInGame(`⏱ Пройдено за: ${timeStr}`);
         }
     }, 300);
 }
