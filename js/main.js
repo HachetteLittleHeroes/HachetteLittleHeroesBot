@@ -3182,7 +3182,7 @@ async function renderFriendTasks() {
                         <div class="progress-bar-fill" style="width: ${percent}%; height: 100%;"></div>
                     </div>
                     ${!done ? `
-                        <button class="task-submit-btn" onclick="openFriendSubtaskUpload(0, 0, ${idx}, '${subtask.name.replace(/'/g, "\\'")}')" style="width: 100% !important; display: block !important; margin: 0 auto;">
+                        <button class="task-submit-btn" onclick="openFriendSubtaskUpload(0, 0, ${idx}, '${subtask.name.replace(/'/g, "\\'")}')" style="width: 100% !important; display: flex !important; justify-content: center !important; margin: 8px 0 0 0 !important;">
                             <i class="fas fa-camera"></i> Отправить фото
                         </button>
                     ` : `
@@ -3202,7 +3202,6 @@ async function renderFriendTasks() {
     
     container.innerHTML = html;
 }
-
 let currentFriendTaskIdx = null;
 let currentFriendLevelIdx = null;
 let currentFriendSubtaskIdx = null;
