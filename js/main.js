@@ -2547,7 +2547,7 @@ function showCharacterSelectInGame() {
             
             container.innerHTML = charsHtml;
         });
-}
+} 
 function resetAndStartStory() {
     if (confirm('Сбросить прогресс и начать заново?')) {
         // Сбрасываем локально
