@@ -2358,36 +2358,70 @@ function openStoryPreview(storyId) {
         // Проверяем, есть ли активный прогресс
         loadCastleProgress().then(function(hasProgress) {
             const actionBtn = document.getElementById('storyActionButton');
-            if (hasProgress && currentCastleCard && !currentEndingClaimed) {
-                actionBtn.innerHTML = `
-                    <button class="task-submit-btn" onclick="continueStoryFromPreview()" style="width: 100%; padding: 16px; font-size: 16px; background: var(--status-green);">
-                        ▶ Продолжить историю
-                    </button>
-                    <button class="task-submit-btn" onclick="resetAndStartStory()" style="width: 100%; padding: 12px; font-size: 13px; margin-top: 10px; background: var(--card-bg); color: var(--text); border: 1px solid var(--border-color);">
-                        🔄 Начать заново
-                    </button>
-                `;
-            } else if (hasProgress && currentEndingClaimed) {
-                const endingsCount = Object.keys(castleCompletedEndings).length;
-                actionBtn.innerHTML = `
-                    <div style="text-align: center; padding: 15px; background: var(--card-bg); border-radius: 12px; margin-bottom: 10px;">
-                        <div style="font-size: 14px; color: var(--text);">🏆 Концовок открыто: ${endingsCount}/9</div>
-                    </div>
-                    <button class="task-submit-btn" onclick="resetAndStartStory()" style="width: 100%; padding: 16px; font-size: 16px;">
-                        🔄 Пройти заново
-                    </button>
-                `;
-            } else {
-                actionBtn.innerHTML = `
-                    <button class="task-submit-btn" onclick="startStoryFromPreview()" style="width: 100%; padding: 16px; font-size: 16px;">
-                        🎮 Начать историю
-                    </button>
-                `;
-            }
+            
+            // Проверяем доступ
+            fetch(`${SERVER_URL}/api/castle/check_all_access?user_id=${userId}`)
+                .then(r => r.json())
+                .then(data => {
+                    const access = data.access || {};
+                    const hasAnyAccess = access.mystic || access.thief || access.alchemist;
+                    
+                    if (hasProgress && currentCastleCard && !currentEndingClaimed) {
+                        actionBtn.innerHTML = `
+                            <button class="task-submit-btn" onclick="continueStoryFromPreview()" style="width: 100%; padding: 16px; font-size: 16px; background: var(--status-green);">
+                                ▶ Продолжить историю
+                            </button>
+                            <button class="task-submit-btn" onclick="resetAndStartStory()" style="width: 100%; padding: 12px; font-size: 13px; margin-top: 10px; background: var(--card-bg); color: var(--text); border: 1px solid var(--border-color);">
+                                🔄 Начать заново
+                            </button>
+                        `;
+                    } else if (hasProgress && currentEndingClaimed) {
+                        const endingsCount = Object.keys(castleCompletedEndings).length;
+                        actionBtn.innerHTML = `
+                            <div style="text-align: center; padding: 15px; background: var(--card-bg); border-radius: 12px; margin-bottom: 10px;">
+                                <div style="font-size: 14px; color: var(--text);">🏆 Концовок открыто: ${endingsCount}/15</div>
+                            </div>
+                            <button class="task-submit-btn" onclick="resetAndStartStory()" style="width: 100%; padding: 16px; font-size: 16px;">
+                                🔄 Пройти заново
+                            </button>
+                        `;
+                    } else if (hasAnyAccess) {
+                        // Есть доступ — можно начать
+                        let availableChars = [];
+                        if (access.mystic) availableChars.push('⚔️ Мистий');
+                        if (access.thief) availableChars.push('🗡️ Воровка');
+                        if (access.alchemist) availableChars.push('🔮 Алхимик');
+                        
+                        actionBtn.innerHTML = `
+                            <button class="task-submit-btn" onclick="startStoryFromPreview()" style="width: 100%; padding: 16px; font-size: 16px;">
+                                🎮 Начать историю
+                            </button>
+                            <p style="text-align: center; color: var(--text-gray); font-size: 12px; margin-top: 8px;">
+                                Доступные персонажи: ${availableChars.join(', ')}
+                            </p>
+                        `;
+                    } else {
+                        // Нет доступа — кнопка поддержки
+                        actionBtn.innerHTML = `
+                            <div style="background: var(--card-bg); border-radius: 12px; padding: 15px; text-align: center; margin-bottom: 10px; border: 1px solid var(--border-color);">
+                                <p style="color: var(--text); font-size: 14px; margin-bottom: 5px;">🔒 Доступ закрыт</p>
+                                <p style="color: var(--text-gray); font-size: 12px; margin-bottom: 10px;">
+                                    Доступен персонаж ⚔️ Мистий<br>
+                                    Остальные истории в разработке
+                                </p>
+                                <p style="color: var(--accent); font-size: 14px; font-weight: 600; margin-bottom: 10px;">
+                                    1 персонаж = 1000 ₽
+                                </p>
+                                <button class="task-submit-btn" onclick="openSupportDialog()" style="width: 100%; padding: 14px; font-size: 15px;">
+                                    💰 Поддержать
+                                </button>
+                            </div>
+                        `;
+                    }
+                });
         });
     }
 }
-
 function closeStoryPreview() {
     const previewScreen = document.getElementById('storyPreviewScreen');
     const gameScreen = document.getElementById('storyGameScreen');
@@ -2642,30 +2676,51 @@ function showCharacterSelectInGame() {
     
     currentEndingClaimed = false;
     
-    let charsHtml = '<h3 style="text-align: center; margin-bottom: 15px; color: var(--text);">🎭 Выберите персонажа</h3>';
-    charsHtml += '<p style="text-align: center; color: var(--text-gray); font-size: 13px; margin-bottom: 20px;">Каждый персонаж — уникальная история с разными концовками</p>';
-    
-    for (const [id, char] of Object.entries(CASTLE_CHARACTERS)) {
-     const charImageUrl = `https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/ashetvil/${id}.jpg?t=${Date.now()}`;
-        const icon = id === 'mystic' ? '⚔️' : id === 'thief' ? '🗡️' : '🔮';
-        
-        charsHtml += `
-            <div class="story-character-select-card" onclick="selectCharacterInGame('${id}')">
-                <div class="char-image">
-                    <img src="${charImageUrl}" alt="${char.name}" onerror="this.style.display='none'; this.parentElement.querySelector('.char-icon').style.display='block';">
-                    <span class="char-icon" style="display: ${charImageUrl ? 'none' : 'block'};">${icon}</span>
-                </div>
-                <div class="char-info">
-                    <div class="char-name">${icon} ${char.name}</div>
-                    <div class="char-stats">💪${char.stats.strength} 🏃${char.stats.agility} 🧠${char.stats.intelligence}</div>
-                    <div class="char-desc">${char.desc}</div>
-                    <div class="char-bonus">✨ ${char.bonus}</div>
-                </div>
-            </div>
-        `;
-    }
-    
-    container.innerHTML = charsHtml;
+    // Проверяем доступ
+    fetch(`${SERVER_URL}/api/castle/check_all_access?user_id=${userId}`)
+        .then(r => r.json())
+        .then(data => {
+            const access = data.access || {};
+            
+            let charsHtml = '<h3 style="text-align: center; margin-bottom: 15px; color: var(--text);">🎭 Выберите персонажа</h3>';
+            
+            let hasAnyAccess = false;
+            
+            for (const [id, char] of Object.entries(CASTLE_CHARACTERS)) {
+                const hasAccess = access[id] || false;
+                if (!hasAccess) continue;
+                
+                hasAnyAccess = true;
+                const charImageUrl = `https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/ashetvil/${id}.jpg?t=${Date.now()}`;
+                const icon = id === 'mystic' ? '⚔️' : id === 'thief' ? '🗡️' : '🔮';
+                
+                charsHtml += `
+                    <div class="story-character-select-card" onclick="selectCharacterInGame('${id}')">
+                        <div class="char-image">
+                            <img src="${charImageUrl}" alt="${char.name}" onerror="this.style.display='none'; this.parentElement.querySelector('.char-icon').style.display='block';">
+                            <span class="char-icon" style="display: none;">${icon}</span>
+                        </div>
+                        <div class="char-info">
+                            <div class="char-name">${icon} ${char.name}</div>
+                            <div class="char-stats">💪${char.stats.strength} 🏃${char.stats.agility} 🧠${char.stats.intelligence}</div>
+                            <div class="char-desc">${char.desc}</div>
+                            <div class="char-bonus">✨ ${char.bonus}</div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            if (!hasAnyAccess) {
+                charsHtml += `
+                    <div style="text-align: center; padding: 20px;">
+                        <p style="color: var(--text-gray);">🔒 Нет доступа ни к одному персонажу</p>
+                        <button class="task-submit-btn" onclick="openSupportDialog()" style="margin-top: 15px;">💰 Поддержать (1000 ₽)</button>
+                    </div>
+                `;
+            }
+            
+            container.innerHTML = charsHtml;
+        });
 }
 
 // Новая функция для подтверждения выбора
@@ -11306,33 +11361,56 @@ function showCharacterSelect() {
     modal.style.display = 'flex';
     modal.style.zIndex = '100001';
     
-    let charsHtml = '';
-    for (const [id, char] of Object.entries(CASTLE_CHARACTERS)) {
-      const charImageUrl = `https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/ashetvil/${id}.jpg?t=${Date.now()}`;
-        charsHtml += `
-            <div class="castle-character-card" onclick="selectCastleCharacter('${id}')" style="cursor:pointer; background: var(--card-bg); border: 2px solid var(--border-color); border-radius: 16px; padding: 15px; text-align: center; margin-bottom: 15px;">
-                <img src="${charImageUrl}" alt="${char.name}" style="width: 100%; max-width: 200px; height: auto; border-radius: 12px; margin-bottom: 10px;" onerror="this.style.display='none'">
-                <div style="font-size: 24px; margin-bottom: 5px;">${id === 'mystic' ? '⚔️' : id === 'thief' ? '🗡️' : '🔮'}</div>
-                <div style="font-weight: 700; font-size: 18px; margin-bottom: 8px;">${char.name}</div>
-                <div style="font-size: 13px; color: var(--text-gray); margin-bottom: 8px; line-height: 1.4;">${char.desc}</div>
-                <div style="font-size: 12px; color: var(--accent); margin-bottom: 5px;">
-                    💪${char.stats.strength} 🏃${char.stats.agility} 🧠${char.stats.intelligence}
-                </div>
-                <div style="font-size: 11px; color: var(--text-gray);">${char.bonus}</div>
-            </div>
-        `;
-    }
-    
     modal.innerHTML = `
         <div class="modal-content" style="max-width: 450px; max-height: 90vh; overflow-y: auto;">
             <h3 style="text-align: center;">Выберите персонажа</h3>
-            <p style="font-size: 12px; color: var(--text-gray); margin-bottom: 15px; text-align: center;">Каждый персонаж — уникальная история</p>
-            ${charsHtml}
+            <div id="characterSelectContent" style="text-align: center; padding: 20px;">
+                <i class="fas fa-spinner fa-spin"></i> Загрузка...
+            </div>
             <button class="modal-close-btn" onclick="this.closest('.modal-overlay').remove()" style="display: block; margin: 0 auto;">Отмена</button>
         </div>
     `;
     modal.onclick = function(e) { if (e.target === modal) modal.remove(); };
     document.body.appendChild(modal);
+    
+    // Загружаем доступных персонажей
+    fetch(`${SERVER_URL}/api/castle/check_all_access?user_id=${userId}`)
+        .then(r => r.json())
+        .then(data => {
+            const content = document.getElementById('characterSelectContent');
+            const access = data.access || {};
+            
+            let charsHtml = '';
+            let hasAnyAccess = false;
+            
+            for (const [id, char] of Object.entries(CASTLE_CHARACTERS)) {
+                const hasAccess = access[id] || false;
+                if (!hasAccess) continue;
+                
+                hasAnyAccess = true;
+                const charImageUrl = `https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/ashetvil/${id}.jpg?t=${Date.now()}`;
+                
+                charsHtml += `
+                    <div class="castle-character-card" onclick="selectCastleCharacter('${id}')" style="cursor:pointer; background: var(--card-bg); border: 2px solid var(--border-color); border-radius: 16px; padding: 15px; text-align: center; margin-bottom: 15px;">
+                        <img src="${charImageUrl}" alt="${char.name}" style="width: 100%; max-width: 200px; height: auto; border-radius: 12px; margin-bottom: 10px;" onerror="this.style.display='none'">
+                        <div style="font-size: 24px; margin-bottom: 5px;">${id === 'mystic' ? '⚔️' : id === 'thief' ? '🗡️' : '🔮'}</div>
+                        <div style="font-weight: 700; font-size: 18px; margin-bottom: 8px;">${char.name}</div>
+                        <div style="font-size: 13px; color: var(--text-gray); margin-bottom: 8px;">${char.desc}</div>
+                        <div style="font-size: 12px; color: var(--accent);">💪${char.stats.strength} 🏃${char.stats.agility} 🧠${char.stats.intelligence}</div>
+                    </div>
+                `;
+            }
+            
+            if (!hasAnyAccess) {
+                charsHtml = `
+                    <p style="color: var(--text-gray);">🔒 Нет доступа ни к одному персонажу</p>
+                    <p style="color: var(--accent); font-size: 14px; font-weight: 600; margin: 10px 0;">1 персонаж = 1000 ₽</p>
+                    <button class="task-submit-btn" onclick="openSupportDialog()" style="width: 100%;">💰 Поддержать</button>
+                `;
+            }
+            
+            content.innerHTML = charsHtml;
+        });
 }
 
 function selectCastleCharacter(charId) {
