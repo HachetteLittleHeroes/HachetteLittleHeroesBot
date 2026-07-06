@@ -6266,6 +6266,75 @@ body:not([data-theme]) .modal-content,
     color: var(--text-gray);
     font-style: italic;
 }
+        /* ==========================================
+   ТЁМНАЯ ТЕМА ДЛЯ ВКЛАДКИ ИСТОРИИ
+   ========================================== */
+#stories,
+#stories .header,
+#storyPreviewScreen,
+#storyGameScreen {
+    background: #1a1a2e !important;
+    color: #ffffff !important;
+}
+
+#stories .header {
+    color: #ffffff !important;
+}
+
+#stories .story-card-text,
+#storyPreviewScreen p,
+#storyGameScreen p {
+    color: rgba(255, 255, 255, 0.9) !important;
+}
+
+#stories .story-card-chapter {
+    color: var(--accent) !important;
+}
+
+#storyPreviewScreen h2,
+#storyPreviewScreen h3,
+#storyGameScreen h3 {
+    color: #ffffff !important;
+}
+
+#storyPreviewScreen .story-card-text,
+#storyGameScreen .story-card-text {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+/* Кнопки в историях */
+#storyPreviewScreen .task-submit-btn,
+#storyGameScreen .task-submit-btn {
+    background: var(--accent) !important;
+    color: white !important;
+}
+
+/* Карточки в историях */
+#storyPreviewScreen .story-character-select-card,
+#storyGameScreen .story-character-select-card {
+    background: #16213e !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Текст в карточках */
+#storyPreviewScreen .char-name,
+#storyGameScreen .char-name,
+#storyPreviewScreen .char-stats,
+#storyGameScreen .char-stats {
+    color: #ffffff !important;
+}
+
+#storyPreviewScreen .char-desc,
+#storyGameScreen .char-desc {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+/* Блок поддержки */
+#storyPreviewScreen [style*="background: var(--card-bg)"],
+#storyGameScreen [style*="background: var(--card-bg)"] {
+    background: #16213e !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
     </style>
 </head>
 <body>
