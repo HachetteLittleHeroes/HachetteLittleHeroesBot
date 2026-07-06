@@ -6283,9 +6283,9 @@ body:not([data-theme]) .modal-content,
     color: #ffffff !important;
 }
 
-/* Все блоки с фоном */
-#storyPreviewScreen div[style*="background"],
-#storyGameScreen div[style*="background"] {
+/* Все блоки с фоном, кроме карточек */
+#storyPreviewScreen div[style*="background"]:not([class*="card"]):not([class*="char"]):not([onclick*="select"]),
+#storyGameScreen div[style*="background"]:not([class*="card"]):not([class*="char"]):not([onclick*="select"]) {
     background: #1e1e1e !important;
     border-color: rgba(255,255,255,0.1) !important;
 }
