@@ -3242,9 +3242,33 @@ function handleFriendSubtaskFilesSelected(event) {
 
 async function submitFriendSubtaskPhoto() {
     // Используем ту же функцию, что и для статусов
-    return submitTaskPhoto();
+    const result = await submitTaskPhoto();
+    
+    // ✅ Принудительно загружаем прогресс с сервера после отправки
+    if (result !== false) {
+        [3000, 10000].forEach(delay => {
+            setTimeout(async () => {
+                try {
+                    const response = await fetch(`${SERVER_URL}/api/sync_friend_progress?user_id=${userId}`);
+                    const data = await response.json();
+                    
+                    if (data.status === 'ok' && data.progress) {
+                        for (const [key, value] of Object.entries(data.progress)) {
+                            friendProgress[key] = value;
+                        }
+                        saveFriendProgress();
+                        renderFriendTasks();
+                        console.log('🔄 Прогресс друзей обновлён после отправки');
+                    }
+                } catch(e) {
+                    console.error('Ошибка загрузки прогресса:', e);
+                }
+            }, delay);
+        });
+    }
 }
-        async function forceSyncFriendProgress() {
+
+async function forceSyncFriendProgress() {
     console.log('🔄 Принудительная синхронизация прогресса...');
     
     try {
@@ -3256,6 +3280,10 @@ async function submitFriendSubtaskPhoto() {
                 friendProgress[key] = value;
             }
             saveFriendProgress();
+            
+            // ✅ Перерисовываем задания
+            renderFriendTasks();
+            
             console.log('✅ Синхронизировано:', friendProgress);
             return true;
         }
