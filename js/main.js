@@ -2670,20 +2670,32 @@ function selectCharacterInGame(charId) {
     document.body.appendChild(confirmModal);
 }
 // Обновляем выбор персонажа — тоже с большими карточками
-function showCharacterSelectInGame() {
-    const container = document.getElementById('storyGameContainer');
-    if (!container) return;
+function showCharacterSelect() {
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.style.display = 'flex';
+    modal.style.zIndex = '100001';
     
-    currentEndingClaimed = false;
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width: 450px; max-height: 90vh; overflow-y: auto;">
+            <h3 style="text-align: center;">Выберите персонажа</h3>
+            <p style="font-size: 12px; color: var(--text-gray); margin-bottom: 15px; text-align: center;">Каждый персонаж — уникальная история</p>
+            <div id="characterSelectContent" style="text-align: center; padding: 10px;">
+                <i class="fas fa-spinner fa-spin"></i> Загрузка...
+            </div>
+            <button class="modal-close-btn" onclick="this.closest('.modal-overlay').remove()" style="display: block; margin: 10px auto 0;">Отмена</button>
+        </div>
+    `;
+    modal.onclick = function(e) { if (e.target === modal) modal.remove(); };
+    document.body.appendChild(modal);
     
-    // Проверяем доступ
     fetch(`${SERVER_URL}/api/castle/check_all_access?user_id=${userId}`)
         .then(r => r.json())
         .then(data => {
+            const content = document.getElementById('characterSelectContent');
             const access = data.access || {};
             
-            let charsHtml = '<h3 style="text-align: center; margin-bottom: 15px; color: var(--text);">🎭 Выберите персонажа</h3>';
-            charsHtml += '<p style="text-align: center; color: var(--text-gray); font-size: 13px; margin-bottom: 20px;">Каждый персонаж — уникальная история с разными концовками</p>';
+            let charsHtml = '';
             
             for (const [id, char] of Object.entries(CASTLE_CHARACTERS)) {
                 const hasAccess = access[id] || false;
@@ -2691,53 +2703,37 @@ function showCharacterSelectInGame() {
                 const icon = id === 'mystic' ? '⚔️' : id === 'thief' ? '🗡️' : '🔮';
                 
                 charsHtml += `
-                    <div class="story-character-select-card">
-                        <div class="char-image" style="position: relative; overflow: hidden;">
-                            <img src="${charImageUrl}" alt="${char.name}" onerror="this.style.display='none'; this.parentElement.querySelector('.char-icon').style.display='block';">
-                            <span class="char-icon" style="display: none;">${icon}</span>
-                            ${!hasAccess ? `
-                                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.7); border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">
-                                    <i class="fas fa-lock" style="color: white; font-size: 24px;"></i>
-                                </div>
-                            ` : ''}
-                        </div>
-                        <div class="char-info">
-                            <div class="char-name">${icon} ${char.name}</div>
-                            <div class="char-stats">💪${char.stats.strength} 🏃${char.stats.agility} 🧠${char.stats.intelligence}</div>
-                            <div class="char-desc">${char.desc}</div>
-                            <div class="char-bonus">✨ ${char.bonus}</div>
-                            ${hasAccess ? `
-                                <button class="task-submit-btn" onclick="selectCharacterInGame('${id}')" style="width: 100%; margin-top: 10px; background: var(--status-green);">
-                                    ${icon} Выбрать
-                                </button>
-                            ` : `
-                                <button class="task-submit-btn" disabled style="width: 100%; margin-top: 10px; opacity: 0.5; cursor: not-allowed;">
-                                    🔒 Нет доступа
-                                </button>
-                            `}
-                        </div>
+                    <div class="castle-character-card" style="cursor:pointer; background: var(--card-bg); border: 2px solid ${hasAccess ? 'var(--status-green)' : 'var(--border-color)'}; border-radius: 16px; padding: 15px; text-align: center; margin-bottom: 15px; position: relative; overflow: hidden;">
+                        ${!hasAccess ? '<div style="position: absolute; top: 10px; right: 10px; z-index: 2; background: rgba(0,0,0,0.6); border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;"><i class="fas fa-lock" style="color: white; font-size: 14px;"></i></div>' : ''}
+                        <img src="${charImageUrl}" alt="${char.name}" style="width: 100%; max-width: 200px; height: auto; border-radius: 12px; margin-bottom: 10px; ${!hasAccess ? 'opacity: 0.7;' : ''}" onerror="this.style.display='none'">
+                        <div style="font-size: 24px; margin-bottom: 5px;">${icon}</div>
+                        <div style="font-weight: 700; font-size: 18px; margin-bottom: 8px;">${char.name}</div>
+                        <div style="font-size: 13px; color: var(--text-gray); margin-bottom: 8px;">${char.desc}</div>
+                        <div style="font-size: 12px; color: var(--accent); margin-bottom: 10px;">💪${char.stats.strength} 🏃${char.stats.agility} 🧠${char.stats.intelligence}</div>
+                        ${hasAccess ? `
+                            <button class="task-submit-btn" onclick="selectCastleCharacter('${id}')" style="width: 100%; background: var(--status-green);">
+                                ${icon} Выбрать
+                            </button>
+                        ` : `
+                            <button class="task-submit-btn" disabled style="width: 100%; opacity: 0.5; cursor: not-allowed;">
+                                🔒 Нет доступа
+                            </button>
+                        `}
                     </div>
                 `;
             }
             
-            // Кнопка поддержки внизу
             charsHtml += `
-                <div style="background: var(--card-bg); border-radius: 12px; padding: 15px; text-align: center; margin-top: 20px; border: 1px solid var(--border-color);">
+                <div style="background: var(--card-bg); border-radius: 12px; padding: 15px; text-align: center; margin-top: 10px; border: 1px solid var(--border-color);">
                     <p style="color: var(--text); font-size: 13px; margin-bottom: 5px;">🔒 Нет доступа к персонажу?</p>
-                    <p style="color: var(--text-gray); font-size: 12px; margin-bottom: 8px;">
-                        Чтобы получить доступ к персонажу, необходимо поддержать проект.<br>
-                        1 персонаж = 1000 ₽
-                    </p>
+                    <p style="color: var(--text-gray); font-size: 12px; margin-bottom: 8px;">1 персонаж = 1000 ₽</p>
                     <button class="task-submit-btn" onclick="openSupportDialog()" style="width: 100%; padding: 12px; font-size: 14px;">
                         💰 Поддержать и открыть доступ
                     </button>
-                    <p style="color: var(--text-gray); font-size: 11px; margin-top: 8px;">
-                        После подтверждения оплаты администратор откроет доступ
-                    </p>
                 </div>
             `;
             
-            container.innerHTML = charsHtml;
+            content.innerHTML = charsHtml;
         });
 }
 // Новая функция для подтверждения выбора
