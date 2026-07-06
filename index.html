@@ -6269,9 +6269,18 @@ body:not([data-theme]) .modal-content,
 #stories {
     background: #121212 !important;
     min-height: 100vh !important;
+    display: flex !important;
+    flex-direction: column !important;
 }
 #stories .header {
     color: #ffffff !important;
+}
+body:has(#stories.active) > div:last-of-type {
+    background: #121212 !important;
+    color: rgba(255,255,255,0.7) !important;
+}
+body:has(#stories.active) > div:last-of-type a {
+    color: rgba(255,255,255,0.7) !important;
 }
     </style>
 </head>
