@@ -6407,6 +6407,44 @@ body:has(#stories.active) #stories > div:last-child {
 #storyGameScreen button {
     background: var(--accent) !important;
 }
+        /* Убираем фон у блоков с информацией в историях */
+#storyPreviewScreen .inventory-main-block,
+#storyGameScreen .inventory-main-block,
+#storyPreviewScreen .inventory-header,
+#storyGameScreen .inventory-header,
+#storyPreviewScreen .inventory-content,
+#storyGameScreen .inventory-content,
+#storyPreviewScreen .inventory-subblock,
+#storyGameScreen .inventory-subblock,
+#storyPreviewScreen .subblock-header,
+#storyGameScreen .subblock-header,
+#storyPreviewScreen .subblock-content,
+#storyGameScreen .subblock-content {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* Убираем фон у всех div с inline-стилями содержащими rgb или var(--bg */
+#storyPreviewScreen div[style*="var(--bg)"],
+#storyGameScreen div[style*="var(--bg)"],
+#storyPreviewScreen div[style*="var(--bg-secondary)"],
+#storyGameScreen div[style*="var(--bg-secondary)"],
+#storyPreviewScreen div[style*="var(--bg-header)"],
+#storyGameScreen div[style*="var(--bg-header)"],
+#storyPreviewScreen div[style*="var(--card-bg)"],
+#storyGameScreen div[style*="var(--card-bg)"] {
+    background: transparent !important;
+    border-color: rgba(255,255,255,0.1) !important;
+}
+
+/* Но оставляем фон для карточек персонажей */
+#storyPreviewScreen .castle-character-card,
+#storyGameScreen .castle-character-card,
+#storyPreviewScreen .story-character-select-card,
+#storyGameScreen .story-character-select-card {
+    background: #16213e !important;
+}
     </style>
 </head>
 <body>
