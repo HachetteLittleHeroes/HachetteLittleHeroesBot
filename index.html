@@ -6280,6 +6280,35 @@ body:has(#stories.active) > div:last-of-type {
 body:has(#stories.active) > div:last-of-type a {
     color: rgba(255,255,255,0.7) !important;
 }
+        body:has(#stories.active) {
+    background: #121212 !important;
+}
+body:has(#stories.active) .nav {
+    background: #121212 !important;
+    border-top-color: rgba(255,255,255,0.1) !important;
+}
+body:has(#stories.active) > div:last-of-type {
+    background: #121212 !important;
+    color: rgba(255,255,255,0.7) !important;
+}
+body:has(#stories.active) > div:last-of-type a {
+    color: rgba(255,255,255,0.7) !important;
+}
+#stories .header {
+    color: #ffffff !important;
+}
+#storyPreviewScreen, #storyGameScreen {
+    background: #121212 !important;
+}
+#storyPreviewScreen *, #storyGameScreen * {
+    color: #ffffff !important;
+}
+#storyPreviewScreen [style*="var(--accent)"], #storyGameScreen [style*="var(--accent)"] {
+    color: var(--accent) !important;
+}
+#storyPreviewScreen [style*="var(--text-gray)"], #storyGameScreen [style*="var(--text-gray)"] {
+    color: rgba(255,255,255,0.7) !important;
+}
     </style>
 </head>
 <body>
