@@ -11352,7 +11352,7 @@ const CASTLE_CHARACTERS = {
 // Скрытые награды по этапам — ОТДЕЛЬНАЯ константа
 const HIDDEN_REWARDS = {
     // Мистик
-    '2M_А_1': { type: 'random_border', lootKey: 'border', text: 'В награду путник отдал тебе все, что у него было' },
+    '2M_A_1': { type: 'random_border', lootKey: 'border', text: 'В награду путник отдал тебе все, что у него было' },
     '3M_2_2': { type: 'random_status_bg', lootKey: 'status_bg', text: 'Вы обнаружили красивый фон для статуса.' },
     '6M_1_3': { type: 'achetiki', lootKey: 'achetiki', text: 'Вы нашли кошелёк!' },
     // Воровка
