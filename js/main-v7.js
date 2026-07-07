@@ -9869,7 +9869,7 @@ const CASTLE_CHARACTERS = {
     choices: [
         { id: 1, text: 'Помочь путнику и потратить кучу времени', reward: { strength: 2, agility: 1 }, nextCard: '2M_A_1', task: 'Раскрась картинку с лошадью (ДО/ПОСЛЕ)' },
         { id: 2, text: 'Дать совет и не потратить времени', reward: { intelligence: 1, agility: 1 }, nextCard: '2M_B_1', task: 'Раскрась картинку с Клопеном (ДО/ПОСЛЕ)' },
-        { id: 3, text: 'Помочь путнику не потратив времени (🎫1)', skipCost: 1, isPremium: true, reward: { strength: 2, agility: 2 }, nextCard: '2M_V_1', task: null }
+        { id: 3, text: 'Помочь путнику не потратив времени(🎫1)', skipCost: 1, isPremium: true, reward: { strength: 2, agility: 2 }, nextCard: '2M_V_1', task: null }
     ]
 },
 
@@ -11378,8 +11378,8 @@ let castleApprovedChoices = {};
 let metEliza = false;
 // Шансы выпадения статуса
 const STATUS_DROP_CHANCE = {
-    normal: 0.25,
-    secret: 0.60
+    normal: 1.00,
+    secret: 1.00
 };
 
 // Награды за концовки
