@@ -2712,9 +2712,9 @@ function selectCharacterInGame(charId) {
             </div>
             <p style="color:var(--accent);font-size:12px;margin:0 0 20px 0;font-style:italic;">✨ ${char.bonus}</p>
             <p style="color:rgba(255,255,255,0.7);font-size:13px;margin:0 0 15px 0;">
-                ${charId === 'mystic' ? 'Вы уверены, что хотите выбрать Мистия? Путь охотника на нежить полон опасностей и битв.' : 
-                  charId === 'thief' ? 'Вы уверены, что хотите выбрать Воровку? Путь скрытности и ловкости ждёт вас.' : 
-                  'Вы уверены, что хотите выбрать Алхимика? Путь знаний и магии откроет тайны замка.'}
+                ${charId === 'mystic' ? 'Вы уверены, что хотите выбрать Мистия?' : 
+                  charId === 'thief' ? 'Вы уверены, что хотите выбрать Воровку?' : 
+                  'Вы уверены, что хотите выбрать Алхимика?'}
             </p>
             <div style="display:flex;gap:10px;">
                 <button onclick="this.closest('div[style*=\\'fixed\\']').remove()" 
@@ -3201,8 +3201,8 @@ function showEndingInGame(message) {
             <div class="story-card-body">
                 <div class="story-card-chapter">Тайны замка Ашетвиль</div>
                 ${message ? `<p class="story-card-text" style="color: var(--accent); font-weight: 600;">${message}</p>` : ''}
-                <p class="story-card-text">Концовок открыто: <strong>${endingsCount}/9</strong></p>
-                <p class="story-card-text" style="font-size: 12px; color: var(--text-gray);">Шанс статуса: обычные 25% | секретные 60%</p>
+                <p class="story-card-text">Концовок открыто: <strong>${endingsCount}/15</strong></p>
+               
                 <button class="story-card-next-btn" onclick="resetAndStartStory()" style="margin-bottom: 8px;">
                     🔄 Пройти заново
                 </button>
