@@ -39,7 +39,7 @@ function openPaymentModal() {
                     <p style="color: rgba(255,255,255,0.7); font-size: 13px; margin-bottom: 10px;">
                         1️⃣ Оплатите <strong>1000 ₽</strong>
                     </p>
-                    <a href="https://www.tbank.ru/cf/4QVzZbtu45" target="_blank" 
+                    <a href="https://www.tbank.ru/cf/4qQVzZbtu45" target="_blank" 
                        style="display: block; width: 100%; background: #0088cc; color: white; text-align: center; padding: 14px; border-radius: 12px; text-decoration: none; font-weight: 600; margin-bottom: 15px;">
                         💳 Перейти к оплате
                     </a>
