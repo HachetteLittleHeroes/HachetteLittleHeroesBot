@@ -2368,10 +2368,10 @@ function openStoryPreview(storyId) {
                     
                     if (hasProgress && currentCastleCard && !currentEndingClaimed) {
                         actionBtn.innerHTML = `
-                            <button class="task-submit-btn" onclick="continueStoryFromPreview()" style="width: 100%; padding: 16px; font-size: 16px; background: #34c759;">
+                            <button class="task-submit-btn" onclick="continueStoryFromPreview()" style="width: 100%; padding: 16px; font-size: 16px !important; background: #34c759; color: #ffffff !important;">
                                 ▶ Продолжить историю
                             </button>
-                            <button class="task-submit-btn" onclick="resetAndStartStory()" style="width: 100%; padding: 12px; font-size: 13px; margin-top: 10px; background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.2);">
+                            <button class="task-submit-btn" onclick="resetAndStartStory()" style="width: 100%; padding: 12px; font-size: 13px !important; margin-top: 10px; background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.7) !important; border: 1px solid rgba(255,255,255,0.2);">
                                 🔄 Начать заново
                             </button>
                         `;
@@ -2381,7 +2381,7 @@ function openStoryPreview(storyId) {
                             <div style="text-align: center; padding: 15px; background: transparent; border-radius: 12px; margin-bottom: 10px;">
                                 <div style="font-size: 14px; color: #ffffff;">🏆 Концовок открыто: ${endingsCount}/15</div>
                             </div>
-                            <button class="task-submit-btn" onclick="resetAndStartStory()" style="width: 100%; padding: 16px; font-size: 16px; background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.2);">
+                            <button class="task-submit-btn" onclick="resetAndStartStory()" style="width: 100%; padding: 16px; font-size: 16px !important; background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.7) !important; border: 1px solid rgba(255,255,255,0.2);">
                                 🔄 Пройти заново
                             </button>
                         `;
@@ -2391,10 +2391,10 @@ function openStoryPreview(storyId) {
                         if (access.thief) availableChars.push('🗡️ Воровка');
                         if (access.alchemist) availableChars.push('🔮 Алхимик');
                         
-                       actionBtn.innerHTML = `
-    <button class="task-submit-btn" onclick="startStoryFromPreview()" style="width: 100%; padding: 16px; font-size: 16px !important; background: var(--accent); color: #ffffff !important;">
-        🎮 Начать историю
-    </button>
+                        actionBtn.innerHTML = `
+                            <button class="task-submit-btn" onclick="startStoryFromPreview()" style="width: 100%; padding: 16px; font-size: 16px !important; background: var(--accent); color: #ffffff !important;">
+                                🎮 Начать историю
+                            </button>
                             <p style="text-align: center; color: rgba(255,255,255,0.7); font-size: 12px; margin-top: 8px;">
                                 Доступные персонажи: ${availableChars.join(', ')}
                             </p>
@@ -2410,7 +2410,7 @@ function openStoryPreview(storyId) {
                                 <p style="color: var(--accent); font-size: 14px; font-weight: 600; margin-bottom: 10px;">
                                     1 персонаж = 1000 ₽
                                 </p>
-                                <button class="task-submit-btn" onclick="openSupportDialog()" style="width: 100%; padding: 14px; font-size: 15px; background: var(--accent); color: #fff;">
+                                <button class="task-submit-btn" onclick="openSupportDialog()" style="width: 100%; padding: 14px; font-size: 15px !important; background: var(--accent); color: #ffffff !important;">
                                     💰 Поддержать
                                 </button>
                             </div>
@@ -2488,7 +2488,7 @@ function showCharacterSelectInGame() {
     if (!container) return;
     
     currentEndingClaimed = false;
-    kissedAdelaide = false;  // ✅ ДОБАВЛЕНО
+    kissedAdelaide = false;
     
     fetch(`${SERVER_URL}/api/castle/check_all_access?user_id=${userId}`)
         .then(r => r.json())
@@ -2519,7 +2519,7 @@ function showCharacterSelectInGame() {
             
             for (const [id, char] of Object.entries(CASTLE_CHARACTERS)) {
                 const hasAccess = access[id] || false;
-                const charImageUrl = `https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/ashetvil/${id}.jpg?t=${Date.now()}`;
+                const charImageUrl = `https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/ashetvil/${id}.jpg`;
                 const icon = id === 'mystic' ? '⚔️' : id === 'thief' ? '🗡️' : '🔮';
                 
                 charsHtml += `
@@ -2780,7 +2780,7 @@ function showCharacterSelect() {
             
             for (const [id, char] of Object.entries(CASTLE_CHARACTERS)) {
                 const hasAccess = access[id] || false;
-                const charImageUrl = `https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/ashetvil/${id}.jpg?t=${Date.now()}`;
+                const charImageUrl = `https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/ashetvil/${id}.jpg`;
                 const icon = id === 'mystic' ? '⚔️' : id === 'thief' ? '🗡️' : '🔮';
                 
                 charsHtml += `
