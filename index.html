@@ -7748,13 +7748,13 @@ function openPaymentModal() {
                 <p id="paymentResultText" style="color: #ffffff; font-size: 14px; margin-bottom: 15px;"></p>
                 <button onclick="closePaymentModal()" 
                         style="width: 100%; padding: 12px; border-radius: 14px; font-weight: 600; font-size: 14px; cursor: pointer; background: #444; color: white; border: none;">
-                    Закрыть
+                    ← Назад
                 </button>
             </div>
             
             <button onclick="closePaymentModal()" 
                     style="width: 100%; padding: 12px; border-radius: 14px; font-weight: 600; font-size: 14px; cursor: pointer; background: #444; color: white; border: none; margin-top: 10px;">
-                Отмена
+                ← Назад
             </button>
         </div>
     `;
@@ -7762,11 +7762,15 @@ function openPaymentModal() {
     modal.onclick = function(e) { if (e.target === modal) modal.remove(); };
     document.body.appendChild(modal);
 }
+
 function closePaymentModal() {
-    const modal = document.querySelector('.modal-overlay');
-    if (modal && modal.innerHTML.includes('Открыть доступ к персонажу')) {
-        modal.remove();
-    }
+    const modals = document.querySelectorAll('div[style*="z-index: 99999"]');
+    modals.forEach(m => m.remove());
+}
+function closePaymentModal() {
+    // Ищем модалку по стилям (position: fixed с z-index: 99999)
+    const modals = document.querySelectorAll('div[style*="z-index: 99999"]');
+    modals.forEach(m => m.remove());
 }
 
 function selectPaymentCharacter(characterId) {
