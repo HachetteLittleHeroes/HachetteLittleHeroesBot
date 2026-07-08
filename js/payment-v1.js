@@ -23,8 +23,8 @@ function openPaymentModal() {
     });
     
     document.getElementById('paymentModal').style.display = 'flex';
+    document.getElementById('paymentModal').style.zIndex = '100005'; // ← ДОБАВИТЬ
 }
-
 function closePaymentModal() {
     document.getElementById('paymentModal').style.display = 'none';
 }
