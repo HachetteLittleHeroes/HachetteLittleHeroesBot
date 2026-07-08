@@ -1882,43 +1882,7 @@ function getMonthlyTask() {
 function checkTimeTasksReset() {
     return;
 }
-function openCastleStoryFromStories() {
-    // Переключаемся на вкладку профиля
-    tab('profile');
-    
-    // Небольшая задержка, чтобы DOM обновился
-    setTimeout(function() {
-        // Открываем секцию замка
-        const content = document.getElementById('castleStoryContent');
-        const arrow = document.getElementById('castleStoryArrow');
-        
-        if (content) {
-            content.style.display = 'block';
-            if (arrow) arrow.style.transform = 'rotate(180deg)';
-            
-            // Загружаем прогресс и показываем замок
-            loadCastleProgress().then(function(loaded) {
-                if (loaded && currentCastleCard) {
-                    const card = CASTLE_STORY.cards[currentCastleCard];
-                    if (card && card.isEnding && currentEndingClaimed) {
-                        showEndingScreen('');
-                    } else {
-                        renderCastleCard(currentCastleCard);
-                    }
-                } else {
-                    // Если нет прогресса — показываем экран выбора персонажа
-                    startCastleStory();
-                }
-            });
-            
-            // Прокручиваем к замку
-            const castleSection = document.getElementById('castleStoryContent');
-            if (castleSection) {
-                castleSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-        }
-    }, 200);
-}
+
         function toggleAnswersBlock() {
     const content = document.getElementById('answersBlockContent');
     const arrow = document.getElementById('answersBlockArrow');
