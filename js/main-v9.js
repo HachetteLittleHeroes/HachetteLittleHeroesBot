@@ -3848,7 +3848,7 @@ async function saveAvatarToServer(avatarUrl) {
         // ВЫБОР СТАТУСА
         // ==========================================
         
-  function openStatusInfo() {
+ function openStatusInfo() {
     console.log('openStatusInfo called');
     
     const list = document.getElementById('availableStatusesList');
@@ -3905,15 +3905,7 @@ async function saveAvatarToServer(avatarUrl) {
                 rightSpan.appendChild(btn);
             }
         } else {
-            // Проверяем, статус из магазина или нет
-            const isShopStatus = shopStatuses.includes(status);
-            
-            if (isShopStatus) {
-                const shopStatus = STATUS_SHOP.find(s => s.name === status);
-                rightSpan.innerHTML = `<span style="color:var(--text-gray); font-size:12px;"><i class="fas fa-shopping-cart"></i> ${shopStatus.price} 🪙</span>`;
-            } else {
-                rightSpan.innerHTML = `<span style="color:var(--text-gray); font-size:16px;"><i class="fas fa-lock"></i></span>`;
-            }
+            rightSpan.innerHTML = `<span style="color:var(--text-gray); font-size:16px;"><i class="fas fa-lock"></i></span>`;
         }
         
         div.appendChild(leftSpan);
