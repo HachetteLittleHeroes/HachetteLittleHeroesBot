@@ -7662,6 +7662,9 @@ function openPaymentModal() {
     selectedPaymentCharacter = null;
     paymentScreenshotFile = null;
     
+    // Получаем акцентный цвет из CSS-переменной
+    const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#ff9500';
+    
     const modal = document.createElement('div');
     modal.style.cssText = 'position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; display: flex !important; align-items: center !important; justify-content: center !important; background: rgba(0,0,0,0.85) !important; z-index: 99999 !important;';
     
@@ -7707,13 +7710,13 @@ function openPaymentModal() {
             </div>
             
             <div id="paymentStep2" style="display: none;">
-                <div id="paymentSelectedChar" style="background: rgba(255,149,0,0.2); border-radius: 12px; padding: 10px; text-align: center; margin-bottom: 15px; font-weight: 600; color: #ff9500;"></div>
+                <div id="paymentSelectedChar" style="background: ${accent}22; border-radius: 12px; padding: 10px; text-align: center; margin-bottom: 15px; font-weight: 600; color: ${accent};"></div>
                 
                 <p style="color: #8e8e93; font-size: 13px; margin-bottom: 10px;">
                     1️⃣ Перейдите по ссылке и оплатите <strong style="color: #ffffff;">1000 ₽</strong>
                 </p>
                 <a href="https://www.tbank.ru/cf/4qQVzZbtu45" target="_blank" 
-                   style="display: block; width: 100%; background: #0088cc; color: white; text-align: center; padding: 14px; border-radius: 14px; text-decoration: none; font-weight: 600; font-size: 15px; margin-bottom: 15px;">
+                   style="display: block; width: 100%; background: ${accent}; color: white; text-align: center; padding: 14px; border-radius: 14px; text-decoration: none; font-weight: 600; font-size: 15px; margin-bottom: 15px;">
                     💳 Перейти к оплате
                 </a>
                 
@@ -7723,12 +7726,12 @@ function openPaymentModal() {
                 
                 <input type="file" id="paymentScreenshotInput" accept="image/*" style="display: none;" onchange="handlePaymentScreenshot(event)">
                 <button onclick="document.getElementById('paymentScreenshotInput').click()" 
-                        style="width: 100%; padding: 14px; border-radius: 14px; font-weight: 600; font-size: 14px; cursor: pointer; margin-bottom: 15px; background: #2c2c2e; color: #ffffff; border: 2px dashed #ff9500;">
+                        style="width: 100%; padding: 14px; border-radius: 14px; font-weight: 600; font-size: 14px; cursor: pointer; margin-bottom: 15px; background: #2c2c2e; color: #ffffff; border: 2px dashed ${accent};">
                     📸 Загрузить скриншот чека
                 </button>
                 
                 <div id="paymentScreenshotPreview" style="text-align: center; margin-bottom: 15px; display: none;">
-                    <img id="paymentScreenshotImg" style="width: 100%; max-height: 200px; object-fit: contain; border-radius: 12px; border: 2px solid #ff9500;">
+                    <img id="paymentScreenshotImg" style="width: 100%; max-height: 200px; object-fit: contain; border-radius: 12px; border: 2px solid ${accent};">
                 </div>
                 
                 <button id="paymentSubmitBtn" onclick="submitPayment()" disabled 
