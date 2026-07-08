@@ -3211,7 +3211,7 @@ async function claimCastleEndingInGame(cardId) {
         body: JSON.stringify({ user_id: userId, start_time: 0 })
     }).catch(e => {});
     
-    // ✅ Сначала обрабатываем награду
+    // ✅ Обрабатываем награду
     const card = CASTLE_STORY.cards[cardId];
     const reward = ENDING_REWARDS[card.endingId];
     const alreadyGot = castleCompletedEndings[card.endingId];
@@ -3219,29 +3219,71 @@ async function claimCastleEndingInGame(cardId) {
     
     let statusMessage = '';
     
+    // ✅ Статусы по персонажам для проверки лимита
+    const statusesByCharacter = {
+        mystic: [
+            'Герой Ашетвиля', 'Чемпион арены', 'Верный союзник',
+            'Король Ашетвиля', 'Проклятый король',
+            'Призрачный слуга', 'Узник замка', 'Павший воин',
+            'Возлюбленная', 'Друг мельника'
+        ],
+        thief: [
+            'Глава Гильдии', 'Королева теней', 'Свободная душа'
+        ],
+        alchemist: [
+            'Архимаг', 'Хранитель знаний', 'Познавший тайну'
+        ]
+    };
+    
+    // ✅ Определяем персонажа по карте
+    const character = card.character || selectedCastleCharacter;
+    const characterStatuses = statusesByCharacter[character] || [];
+    
+    // ✅ Считаем, сколько статусов этого персонажа уже есть
+    const unlockedForCharacter = characterStatuses.filter(s => 
+        user.unlockedStatuses.includes(s)
+    );
+    const characterStatusCount = unlockedForCharacter.length;
+    
     if (!statusAlreadyUnlocked && reward && reward.status && reward.statusChance) {
-        const chance = STATUS_DROP_CHANCE[reward.statusChance] || 0.25;
-        if (Math.random() < chance) {
-            if (!user.unlockedStatuses.includes(reward.status)) {
-                user.unlockedStatuses.push(reward.status);
-                saveUserData();
-                fetch(`${SERVER_URL}/api/sync_status`, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ user_id: userId, status: reward.status, action: 'unlock' })
-                });
+        // ✅ Проверяем лимит в 3 статуса на персонажа
+        if (characterStatusCount >= 3) {
+            const charName = character === 'mystic' ? 'Мистия' : 
+                            character === 'thief' ? 'Воровки' : 
+                            character === 'alchemist' ? 'Алхимика' : 'этого персонажа';
+            statusMessage = `🎭 Вы уже получили 3 статуса для ${charName} (максимум). Статус «${reward.status}» не выдан.`;
+        } else {
+            const chance = STATUS_DROP_CHANCE[reward.statusChance] || 0.25;
+            if (Math.random() < chance) {
+                if (!user.unlockedStatuses.includes(reward.status)) {
+                    user.unlockedStatuses.push(reward.status);
+                    saveUserData();
+                    fetch(`${SERVER_URL}/api/sync_status`, {
+                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ user_id: userId, status: reward.status, action: 'unlock' })
+                    });
+                }
+                const charName = character === 'mystic' ? 'Мистия' : 
+                                character === 'thief' ? 'Воровки' : 
+                                character === 'alchemist' ? 'Алхимика' : 'персонажа';
+                statusMessage = `✨ Статус «${reward.status}» получен! (${characterStatusCount + 1}/3 для ${charName})`;
+            } else {
+                const chancePercent = STATUS_DROP_CHANCE[reward.statusChance] * 100;
+                statusMessage = `🎲 Статус не выпал (шанс ${chancePercent}%). Попробуйте ещё раз!`;
             }
-            statusMessage = `✨ Статус «${reward.status}» получен!`;
         }
+    } else if (statusAlreadyUnlocked) {
+        statusMessage = '🏆 Статус за эту концовку уже получен!';
     }
     
     castleCompletedEndings[card.endingId] = {
-        status_unlocked: !statusAlreadyUnlocked && statusMessage !== '',
+        status_unlocked: !statusAlreadyUnlocked && statusMessage.includes('✨'),
         status_name: reward ? reward.status : ''
     };
     
     fetch(`${SERVER_URL}/api/castle/save_ending`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: userId, ending_id: card.endingId, status_unlocked: !statusAlreadyUnlocked && statusMessage !== '', status_name: reward ? reward.status : '' })
+        body: JSON.stringify({ user_id: userId, ending_id: card.endingId, status_unlocked: !statusAlreadyUnlocked && statusMessage.includes('✨'), status_name: reward ? reward.status : '' })
     }).catch(e => {});
     
     currentEndingClaimed = true;
@@ -3826,7 +3868,14 @@ async function saveAvatarToServer(avatarUrl) {
     const shopStatuses = STATUS_SHOP.map(s => s.name);
     
     // Статусы из замка
-    const castleStatuses = ['Храбрая сердцем', 'В тени', 'Заклинательница'];
+  const castleStatuses = [
+    'Герой Ашетвиля', 'Чемпион арены', 'Верный союзник',
+    'Король Ашетвиля', 'Проклятый король',
+    'Призрачный слуга', 'Узник замка', 'Павший воин',
+    'Возлюбленная', 'Друг мельника',
+    'Глава Гильдии', 'Королева теней', 'Свободная душа',
+    'Архимаг', 'Хранитель знаний', 'Познавший тайну'
+];
     
     // Объединяем все статусы
     const allStatuses = ['Без статуса', ...branchStatuses, 'Феечка', ...shopStatuses, ...castleStatuses];
@@ -10532,20 +10581,17 @@ const CASTLE_CHARACTERS = {
 '9M_L_2': { stage: 9, character: 'mystic', chapter: 'Тронный зал', text: 'А советник слабеет и гаснет, пока полностью не растворится в воздухе. Ты поднимаешь его посох и разламываешь его надвое, после чего посох также исчезает, как и его хозяин. Король благодарит тебя и произносит: "Мистий! Ты снял заклятие с нашего королевства. За твои старания забирай все, что хочешь".', nextCard: '10M_HERO_1' },
 
 // ==================== ФИНАЛЫ (ЭТАП 10) ====================
-'10M_GOOD_1': { stage: 10, character: 'mystic', isEnding: true, endingId: 'mystic_hero_new', chapter: 'Герой Ашетвиля', text: 'Поблагодарив короля, ты садишься на Лангоша, за твоей спиной огромная сумка с золотом короля. Ты отправляешься обратно к себе домой в деревню Охуху за новыми контрактами.\n\nСпасибо тебе, что погрузился в эту историю вместе с нами, ты можешь перепройти историю за мистия еще раз и попытаться выйти на другой финал или пройти историю за другого персонажа.' },
-'10M_HERO_1': { stage: 10, character: 'mystic', isEnding: true, endingId: 'mystic_hero_new', chapter: 'Герой Ашетвиля', text: 'Поблагодарив короля, ты садишься на Лангоша, за твоей спиной огромная сумка с золотом короля. Ты отправляешься обратно к себе домой в деревню Охуху за новыми контрактами.\n\nСпасибо тебе, что погрузился в эту историю вместе с нами, ты можешь перепройти историю за мистия еще раз и попытаться выйти на другой финал или пройти историю за другого персонажа.' },
-'10M_HERO_2': { stage: 10, character: 'mystic', isEnding: true, endingId: 'mystic_hero_new', chapter: 'Герой Ашетвиля', text: 'За твой подвиг король предлагает тебе взять все, что тебе захочется. Ты благодаришь короля, берешь огромную сумку с золотом, обнимаешь своего нового друга на прощание, садишься на Лангоша и отправляешься обратно к себе домой в деревню Охуху за новыми контрактами.\n\nСпасибо тебе, что погрузился в эту историю вместе с нами, ты можешь перепройти историю за мистия еще раз и попытаться выйти на другой финал или пройти историю за другого персонажа.' },
-'10M_KING_1': { stage: 10, character: 'mystic', isEnding: true, endingId: 'mystic_king_new', chapter: 'Новый король', text: 'Сам замок выбрал тебя новым королем Земель Ашетвиля.\n\nСпасибо тебе, что погрузился в эту историю вместе с нами, ты можешь перепройти историю за мистия еще раз и попытаться выйти на другой финал или пройти историю за другого персонажа.' },
-'10M_KING_2': { stage: 10, character: 'mystic', isEnding: true, endingId: 'mystic_king_new', chapter: 'Новый король', text: 'Зайдя в тронный зал, ты видишь, как тронный зал преобразился, больше нет паутины и пыли, все слуги и стражники перестали быть призраками, все они ожили, а замок озарился солнечным светом. Ты будешь мудрым и сильным правителем.\n\nСпасибо тебе, что погрузился в эту историю вместе с нами, ты можешь перепройти историю за мистия еще раз и попытаться выйти на другой финал или пройти историю за другого персонажа.' },
+'10M_GOOD_1': { stage: 10, character: 'mystic', isEnding: true, endingId: 'mystic_hero_lore', chapter: 'Герой Ашетвиля', text: 'Ловко уклонившись от посоха Советника, ты разламываешь его надвое. Проклятие снято! Поблагодарив короля, ты садишься на Лангоша, за твоей спиной огромная сумка с золотом. Ты отправляешься обратно к себе домой в деревню Охуху за новыми контрактами.\n\nСпасибо тебе, что погрузился в эту историю вместе с нами, ты можешь перепройти историю за мистия еще раз и попытаться выйти на другой финал или пройти историю за другого персонажа.' },
+'10M_HERO_1': { stage: 10, character: 'mystic', isEnding: true, endingId: 'mystic_hero_arena', chapter: 'Чемпион арены', text: 'Твоё копьё пронзает доспехи призрачного рыцаря, и фанфары возвещают о победе. Сломанный посох Советника растворяется в воздухе. За свой триумф на турнире ты получаешь щедрую награду от короля. С золотом и славой ты возвращаешься в Охуху — теперь о тебе будут слагать легенды.\n\nСпасибо тебе, что погрузился в эту историю вместе с нами, ты можешь перепройти историю за мистия еще раз и попытаться выйти на другой финал или пройти историю за другого персонажа.' },
+'10M_HERO_2': { stage: 10, character: 'mystic', isEnding: true, endingId: 'mystic_hero_ally', chapter: 'Верный союзник', text: 'Вместе с капитаном стражи вы входите в тронный зал. Король выпивает зелье — и проклятие рассеивается. За твою честность и верность король щедро награждает тебя, а капитана делает новым Советником. Ты прощаешься с новыми друзьями и уезжаешь в Охуху с полной сумкой золота и чистой совестью.\n\nСпасибо тебе, что погрузился в эту историю вместе с нами, ты можешь перепройти историю за мистия еще раз и попытаться выйти на другой финал или пройти историю за другого персонажа.' },
+'10M_KING_1': { stage: 10, character: 'mystic', isEnding: true, endingId: 'mystic_king', chapter: 'Новый король', text: 'Сам замок выбрал тебя новым королем Земель Ашетвиля.\n\nСпасибо тебе, что погрузился в эту историю вместе с нами, ты можешь перепройти историю за мистия еще раз и попытаться выйти на другой финал или пройти историю за другого персонажа.' },
+'10M_KING_2': { stage: 10, character: 'mystic', isEnding: true, endingId: 'mystic_king', chapter: 'Новый король', text: 'Зайдя в тронный зал, ты видишь, как тронный зал преобразился, больше нет паутины и пыли, все слуги и стражники перестали быть призраками, все они ожили, а замок озарился солнечным светом. Ты будешь мудрым и сильным правителем.\n\nСпасибо тебе, что погрузился в эту историю вместе с нами, ты можешь перепройти историю за мистия еще раз и попытаться выйти на другой финал или пройти историю за другого персонажа.' },
 '10M_CURSED_1': { stage: 10, character: 'mystic', isEnding: true, endingId: 'mystic_cursed', chapter: 'Проклятый король', text: 'Теперь ты король, проклятый король Земель Ашетвиль.\n\nСпасибо тебе, что погрузился в эту историю вместе с нами, ты можешь перепройти историю за мистия еще раз и попытаться выйти на другой финал или пройти историю за другого персонажа.' },
 '10M_BAD_1': { stage: 10, character: 'mystic', isEnding: true, endingId: 'mystic_servant', chapter: 'Слуга замка', text: 'Абсолютно потеряв счет во времени, ты просыпаешься в замке, и понимаешь, что тебе не удалось освободить Ашетвиль, перед тобой стоит Советник и произносит: "Ты пытался, но теперь сам стал слугой в этом замке на веки". Ты разворачиваешься и оказываешься прямо напротив зеркала, и в отражении ты видишь, что ты стал призраком.\n\nСпасибо тебе, что погрузился в эту историю вместе с нами, ты можешь перепройти историю за мистия еще раз и попытаться выйти на другой финал или пройти историю за другого персонажа.' },
 '10M_BAD_2': { stage: 10, character: 'mystic', isEnding: true, endingId: 'mystic_prisoner', chapter: 'Пленник замка', text: 'Абсолютно потеряв счет во времени, ты просыпаешься за решеткой, и понимаешь, что тебе не удалось спасти Земли Ашетвиль, теперь ты призрак, призрак, заточенный в кандалы.\n\nСпасибо тебе, что погрузился в эту историю вместе с нами, ты можешь перепройти историю за мистия еще раз и попытаться выйти на другой финал или пройти историю за другого персонажа.' },
 '10M_DEAD_1': { stage: 10, character: 'mystic', isEnding: true, endingId: 'mystic_dead', chapter: 'Конец пути', text: 'Твой путь воина окончен.\n\nСпасибо тебе, что погрузился в эту историю вместе с нами, ты можешь перепройти историю за мистия еще раз и попытаться выйти на другой финал или пройти историю за другого персонажа.' },
- '10M_LOVE_ENDING': { stage: 10, character: 'mystic', isEnding: true, endingId: 'mystic_love', chapter: 'Любовь в Ашетвиле', 
-    text: 'С золотом короля за спиной и Лангошем под седлом, ты покидаешь замок. Но не в деревню Охуху лежит твой путь — сердце зовёт тебя к реке Флайси. Ты находишь её на том же берегу, где впервые увидел. Аделаида ждала. Вы строите дом у подножия Акриловых гор, и твои дни наёмника заканчиваются. Начинается жизнь, ради которой стоило пройти через тьму замка.\n\nСпасибо тебе, что погрузился в эту историю вместе с нами, ты можешь перепройти историю за мистия еще раз и попытаться выйти на другой финал или пройти историю за другого персонажа.' }, 
-  '10M_ZIBEEF_ENDING': { stage: 10, character: 'mystic', isEnding: true, endingId: 'mystic_zibeef', chapter: 'Старый друг', 
-    text: 'С золотом короля за спиной и Лангошем под седлом, ты покидаешь замок. Но путь в деревню Охуху лежит мимо старой мельницы. Ты не можешь проехать мимо. Зибиф младший встречает тебя на пороге, Эсса радостно виляет хвостом. «Я знал, что ты вернёшься», — говорит старик. Ты высыпаешь половину золота на его стол. «За монету и за совет», — говоришь ты. Зибиф улыбается, и в его глазах блестят слёзы. Ты продолжаешь путь домой с лёгким сердцем — богатство ничего не значит, если его не с кем разделить.\n\nСпасибо тебе, что погрузился в эту историю вместе с нами, ты можешь перепройти историю за мистия еще раз и попытаться выйти на другой финал или пройти историю за другого персонажа.' 
-},      
+'10M_LOVE_ENDING': { stage: 10, character: 'mystic', isEnding: true, endingId: 'mystic_love', chapter: 'Любовь в Ашетвиле', text: 'С золотом короля за спиной и Лангошем под седлом, ты покидаешь замок. Но не в деревню Охуху лежит твой путь — сердце зовёт тебя к реке Флайси. Ты находишь её на том же берегу, где впервые увидел. Аделаида ждала. Вы строите дом у подножия Акриловых гор, и твои дни наёмника заканчиваются. Начинается жизнь, ради которой стоило пройти через тьму замка.\n\nСпасибо тебе, что погрузился в эту историю вместе с нами, ты можешь перепройти историю за мистия еще раз и попытаться выйти на другой финал или пройти историю за другого персонажа.' },
+'10M_ZIBEEF_ENDING': { stage: 10, character: 'mystic', isEnding: true, endingId: 'mystic_zibeef', chapter: 'Старый друг', text: 'С золотом короля за спиной и Лангошем под седлом, ты покидаешь замок. Но путь в деревню Охуху лежит мимо старой мельницы. Ты не можешь проехать мимо. Зибиф младший встречает тебя на пороге, Эсса радостно виляет хвостом. «Я знал, что ты вернёшься», — говорит старик. Ты высыпаешь половину золота на его стол. «За монету и за совет», — говоришь ты. Зибиф улыбается, и в его глазах блестят слёзы. Ты продолжаешь путь домой с лёгким сердцем — богатство ничего не значит, если его не с кем разделить.\n\nСпасибо тебе, что погрузился в эту историю вместе с нами, ты можешь перепройти историю за мистия еще раз и попытаться выйти на другой финал или пройти историю за другого персонажа.' },
        // ==========================================
 // ВОРОВКА (T) — 💪5 🏃13 🧠2
 // ==========================================
@@ -11491,18 +11537,33 @@ const STATUS_DROP_CHANCE = {
 
 // Награды за концовки
 const ENDING_REWARDS = {
-    'mystic_liberator': { status: 'Храбрая сердцем', statusChance: 'normal' },
-    'mystic_lord': { status: 'Храбрая сердцем', statusChance: 'normal' },
-    'mystic_true': { status: 'Храбрая сердцем', statusChance: 'secret' },
-    'mystic_love': { status: 'Храбрая сердцем', statusChance: 'normal' },
-    'mystic_zibeef': { status: 'Храбрая сердцем', statusChance: 'normal' },
-    'thief_queen': { status: 'В тени', statusChance: 'normal' },
-    'thief_shadow': { status: 'В тени', statusChance: 'normal' },
-    'thief_free': { status: 'В тени', statusChance: 'secret' },
-    'alchemist_archmage': { status: 'Заклинательница', statusChance: 'normal' },
-    'alchemist_keeper': { status: 'Заклинательница', statusChance: 'normal' },
-    'alchemist_true': { status: 'Заклинательница', statusChance: 'secret' },
-  
+    // Мистий — хорошие концовки
+    'mystic_hero_lore': { status: 'Герой Ашетвиля', statusChance: 'normal' },
+    'mystic_hero_arena': { status: 'Чемпион арены', statusChance: 'normal' },
+    'mystic_hero_ally': { status: 'Верный союзник', statusChance: 'normal' },
+    
+    // Мистий — король
+    'mystic_king': { status: 'Король Ашетвиля', statusChance: 'normal' },
+    
+    // Мистий — плохие концовки
+    'mystic_cursed': { status: 'Проклятый король', statusChance: 'normal' },
+    'mystic_servant': { status: 'Призрачный слуга', statusChance: 'normal' },
+    'mystic_prisoner': { status: 'Узник замка', statusChance: 'normal' },
+    'mystic_dead': { status: 'Павший воин', statusChance: 'normal' },
+    
+    // Мистий — особые
+    'mystic_love': { status: 'Возлюбленная', statusChance: 'secret' },
+    'mystic_zibeef': { status: 'Друг мельника', statusChance: 'normal' },
+    
+    // Воровка
+    'thief_hero': { status: 'Глава Гильдии', statusChance: 'normal' },
+    'thief_queen': { status: 'Королева теней', statusChance: 'normal' },
+    'thief_free': { status: 'Свободная душа', statusChance: 'secret' },
+    
+    // Алхимик
+    'alchemist_archmage': { status: 'Архимаг', statusChance: 'normal' },
+    'alchemist_keeper': { status: 'Хранитель знаний', statusChance: 'normal' },
+    'alchemist_true': { status: 'Познавший тайну', statusChance: 'secret' },
 };
 // ==========================================
 // ФУНКЦИИ
