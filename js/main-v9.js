@@ -3221,12 +3221,12 @@ async function claimCastleEndingInGame(cardId) {
     
     // ✅ Статусы по персонажам для проверки лимита
     const statusesByCharacter = {
-       mystic: [
-    'Герой Ашетвиля', 'Чемпион арены', 'Верный союзник',
-    'Избранный замком', 'Король по праву',
-    'Проклятый король', 'Призрачный слуга', 'Узник замка',
-    'Павший воин', 'Возлюбленная', 'Друг мельника'
-],
+        mystic: [
+            'Герой Ашетвиля', 'Чемпион арены', 'Верный союзник',
+            'Избранный замком', 'Король по праву',
+            'Проклятый король', 'Призрачный слуга', 'Узник замка',
+            'Павший воин', 'Возлюбленная', 'Друг мельника'
+        ],
         thief: [
             'Глава Гильдии', 'Королева теней', 'Свободная душа'
         ],
@@ -3253,24 +3253,19 @@ async function claimCastleEndingInGame(cardId) {
                             character === 'alchemist' ? 'Алхимика' : 'этого персонажа';
             statusMessage = `🎭 Вы уже получили 3 статуса для ${charName} (максимум). Статус «${reward.status}» не выдан.`;
         } else {
-            const chance = STATUS_DROP_CHANCE[reward.statusChance] || 0.25;
-            if (Math.random() < chance) {
-                if (!user.unlockedStatuses.includes(reward.status)) {
-                    user.unlockedStatuses.push(reward.status);
-                    saveUserData();
-                    fetch(`${SERVER_URL}/api/sync_status`, {
-                        method: 'POST', headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ user_id: userId, status: reward.status, action: 'unlock' })
-                    });
-                }
-                const charName = character === 'mystic' ? 'Мистия' : 
-                                character === 'thief' ? 'Воровки' : 
-                                character === 'alchemist' ? 'Алхимика' : 'персонажа';
-                statusMessage = `✨ Статус «${reward.status}» получен! (${characterStatusCount + 1}/3 для ${charName})`;
-            } else {
-                const chancePercent = STATUS_DROP_CHANCE[reward.statusChance] * 100;
-                statusMessage = `🎲 Статус не выпал (шанс ${chancePercent}%). Попробуйте ещё раз!`;
+            // ✅ 100% шанс — выдаём всегда
+            if (!user.unlockedStatuses.includes(reward.status)) {
+                user.unlockedStatuses.push(reward.status);
+                saveUserData();
+                fetch(`${SERVER_URL}/api/sync_status`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id: userId, status: reward.status, action: 'unlock' })
+                });
             }
+            const charName = character === 'mystic' ? 'Мистия' : 
+                            character === 'thief' ? 'Воровки' : 
+                            character === 'alchemist' ? 'Алхимика' : 'персонажа';
+            statusMessage = `✨ Статус «${reward.status}» получен! (${characterStatusCount + 1}/3 для ${charName})`;
         }
     } else if (statusAlreadyUnlocked) {
         statusMessage = '🏆 Статус за эту концовку уже получен!';
