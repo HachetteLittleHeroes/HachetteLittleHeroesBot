@@ -14348,26 +14348,18 @@ window.onload = async () => {
                 localStorage.setItem(`user_boosts_${userId}`, JSON.stringify({ active: apiBoost.active, remaining: apiBoost.remaining || 0 }));
             }
             
-            // ✅ СКИПЫ — ПРИОРИТЕТ У СЕРВЕРА, НО НЕ ТЕРЯЕМ ЛОКАЛЬНЫЕ
+            // ✅ СКИПЫ — ВСЕГДА БЕРЁМ С СЕРВЕРА
             const apiSkips = initData.skips || 0;
-            const savedSkipsLocal = parseInt(localStorage.getItem(`user_skips_${userId}`) || '0');
+            userSkips = apiSkips;
             
-            if (apiSkips > 0) {
-                userSkips = apiSkips;
-            } else if (savedSkipsLocal > 0) {
-                console.log('⚠️ Сервер вернул 0 скипов, но локально есть ' + savedSkipsLocal + '. Восстанавливаем...');
-                userSkips = savedSkipsLocal;
-                fetch(`${SERVER_URL}/api/add_skips`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ user_id: userId, amount: savedSkipsLocal })
-                }).catch(e => console.error('Restore skips error:', e));
+            // Сохраняем в localStorage только если > 0, иначе удаляем
+            if (userSkips > 0) {
+                localStorage.setItem(`user_skips_${userId}`, userSkips);
             } else {
-                userSkips = 0;
+                localStorage.removeItem(`user_skips_${userId}`);
             }
             
-            localStorage.setItem(`user_skips_${userId}`, userSkips);
-            console.log('🔄 Скипы загружены:', userSkips, '(сервер:', apiSkips, ', local:', savedSkipsLocal, ')');
+            console.log('🔄 Скипы загружены с сервера:', userSkips);
             
             // Season Pass
             claimedSeasonRewards = initData.season_rewards || { free: [], premium: [] };
@@ -14461,6 +14453,15 @@ window.onload = async () => {
         await loadUserAchievements();
         await loadColoringBooks();
         await loadCompletedPages();
+        
+        // При ошибке — пробуем загрузить скипы отдельно
+        try {
+            const skipsRes = await fetch(`${SERVER_URL}/api/init?user_id=${userId}`);
+            const skipsData = await skipsRes.json();
+            userSkips = skipsData.skips || 0;
+        } catch(e) {
+            userSkips = 0;
+        }
     }
     
     await checkBalanceStatus();
@@ -14564,9 +14565,16 @@ window.onload = async () => {
         }
     }
     
-    // ✅ Скипы — финальная проверка
+    // ✅ Скипы — финальная проверка (только если undefined)
     if (userSkips === undefined || userSkips === null) {
-        userSkips = parseInt(localStorage.getItem(`user_skips_${userId}`) || '0');
+        // Пробуем загрузить с сервера ещё раз
+        try {
+            const skipsRes = await fetch(`${SERVER_URL}/api/init?user_id=${userId}`);
+            const skipsData = await skipsRes.json();
+            userSkips = skipsData.skips || 0;
+        } catch(e) {
+            userSkips = 0;
+        }
     }
     
     if (typeof updateSkipDisplay === 'function') {
