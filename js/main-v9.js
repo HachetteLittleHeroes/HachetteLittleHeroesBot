@@ -3848,7 +3848,7 @@ async function saveAvatarToServer(avatarUrl) {
         // ВЫБОР СТАТУСА
         // ==========================================
         
-     function openStatusInfo() {
+  function openStatusInfo() {
     console.log('openStatusInfo called');
     
     const list = document.getElementById('availableStatusesList');
@@ -3863,21 +3863,20 @@ async function saveAvatarToServer(avatarUrl) {
     const shopStatuses = STATUS_SHOP.map(s => s.name);
     
     // Статусы из замка
-  const castleStatuses = [
-    'Герой Ашетвиля', 'Чемпион арены', 'Верный союзник',
-    'Избранный замком', 'Король по праву',
-    'Проклятый король', 'Призрачный слуга', 'Узник замка',
-    'Павший воин', 'Возлюбленная', 'Друг мельника',
-    'Глава Гильдии', 'Королева теней', 'Свободная душа',
-    'Архимаг', 'Хранитель знаний', 'Познавший тайну'
-];
+    const castleStatuses = [
+        'Герой Ашетвиля', 'Чемпион арены', 'Верный союзник',
+        'Избранный замком', 'Король по праву',
+        'Проклятый король', 'Призрачный слуга', 'Узник замка',
+        'Павший воин', 'Возлюбленная', 'Друг мельника',
+        'Глава Гильдии', 'Королева теней', 'Свободная душа',
+        'Архимаг', 'Хранитель знаний', 'Познавший тайну'
+    ];
     
     // Объединяем все статусы
     const allStatuses = ['Без статуса', ...branchStatuses, 'Феечка', ...shopStatuses, ...castleStatuses];
     
     console.log('allStatuses:', allStatuses);
     
-    // ... остальной код без изменений
     
     allStatuses.forEach(status => {
         const isUnlocked = user.unlockedStatuses.includes(status);
@@ -3906,13 +3905,14 @@ async function saveAvatarToServer(avatarUrl) {
                 rightSpan.appendChild(btn);
             }
         } else {
-            // Проверяем, статус из магазина или из веток
+            // Проверяем, статус из магазина или нет
             const isShopStatus = shopStatuses.includes(status);
+            
             if (isShopStatus) {
                 const shopStatus = STATUS_SHOP.find(s => s.name === status);
                 rightSpan.innerHTML = `<span style="color:var(--text-gray); font-size:12px;"><i class="fas fa-shopping-cart"></i> ${shopStatus.price} 🪙</span>`;
             } else {
-                rightSpan.innerHTML = `<span style="color:var(--text-gray); font-size:12px;"><i class="fas fa-lock"></i> Выполните все уровни ветки</span>`;
+                rightSpan.innerHTML = `<span style="color:var(--text-gray); font-size:16px;"><i class="fas fa-lock"></i></span>`;
             }
         }
         
@@ -3926,8 +3926,8 @@ async function saveAvatarToServer(avatarUrl) {
         modal.style.display = 'flex';
     }
 }
-        
-       function selectStatus(statusName) {
+
+function selectStatus(statusName) {
     console.log('selectStatus called with:', statusName);
     
     if (!user.unlockedStatuses.includes(statusName)) {
@@ -3969,12 +3969,11 @@ async function saveAvatarToServer(avatarUrl) {
     
     if (tg) tg.showAlert(`✅ Статус изменен на "${statusName}"`);
 }
-        
-        function openSupport() {
+
+function openSupport() {
     // Оставляем для обратной совместимости
     openSupportDialog();
 }
-
 function openSupportDialog() {
     const username = 'SPB_Zakharin_Sergey';
     const message = encodeURIComponent('Здравствуйте! Хочу поддержать развитие приложения. Расскажите, как это сделать?');
