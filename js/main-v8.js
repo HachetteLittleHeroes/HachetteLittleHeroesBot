@@ -3218,7 +3218,7 @@ function showEndingInGame(message) {
             <button onclick="backToStoryPreview()" style="position: fixed; top: 20px; left: 20px; z-index: 100; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; font-size: 18px;">←</button>
             
             <div style="text-align: center; padding: 60px 20px 0;">
-                <img src="https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/ashetvil/castle_ending.jpg" 
+                <img src="https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/ashetvil/castle_ending.gif" 
                      alt="Замок Ашетвиль" 
                      style="width: 100%; max-width: 300px; border-radius: 16px; margin-bottom: 20px;"
                      onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
