@@ -2489,6 +2489,7 @@ function showCharacterSelectInGame() {
     
     currentEndingClaimed = false;
     kissedAdelaide = false;
+    visitedZibeef = false;
     
     fetch(`${SERVER_URL}/api/castle/check_all_access?user_id=${userId}`)
         .then(r => r.json())
@@ -2566,7 +2567,8 @@ function resetAndStartStory() {
         castleCompletedChoices = {};
         castleApprovedChoices = {};
         metEliza = false;
-        kissedAdelaide = false;  // ✅ ДОБАВЛЕНО
+        kissedAdelaide = false;
+        visitedZibeef = false;
         currentEndingClaimed = false;
         
         // ✅ Сбрасываем таймер прохождения
@@ -2823,11 +2825,12 @@ function confirmCharacterSelection(charId) {
     selectedCastleCharacter = charId;
     userCastleStats = { ...char.stats };
     metEliza = false;
-    kissedAdelaide = false;  // ✅ ДОБАВЛЕНО
+    kissedAdelaide = false;
+    visitedZibeef = false;
     castleCompletedChoices = {};
     castleApprovedChoices = {};
     currentEndingClaimed = false;
-    // ✅ НЕ сбрасываем castleLootCache — он должен сохраняться между прохождениями
+    
     
     const prefixMap = { mystic: 'M', thief: 'V', alchemist: 'A' };
     currentCastleCard = '1' + prefixMap[charId] + '_1';
@@ -2883,6 +2886,11 @@ function renderCastleCardInGame(cardId) {
     
     currentCastleCard = cardId;
     
+    // ✅ Если игрок дошёл до мельницы Зибифа — запоминаем
+    if (cardId === '4M_V_1') {
+        visitedZibeef = true;
+    }
+    
     if (HIDDEN_REWARDS[cardId] && !card.isEnding && !card.isChoice) {
         const reward = HIDDEN_REWARDS[cardId];
         const result = giveRandomReward(reward.type, reward.lootKey);
@@ -2901,6 +2909,15 @@ function renderCastleCardInGame(cardId) {
             currentCastleCard = '10M_LOVE_ENDING';
             saveCastleProgress();
             renderCastleCardInGame('10M_LOVE_ENDING');
+            return;
+        }
+        
+        // ✅ Если Мистий посетил мельницу Зибифа — показываем концовку с мельницей
+        if (visitedZibeef && 
+            (cardId === '10M_GOOD_1' || cardId === '10M_HERO_1' || cardId === '10M_HERO_2')) {
+            currentCastleCard = '10M_ZIBEEF_ENDING';
+            saveCastleProgress();
+            renderCastleCardInGame('10M_ZIBEEF_ENDING');
             return;
         }
         
@@ -10525,7 +10542,10 @@ const CASTLE_CHARACTERS = {
 '10M_BAD_2': { stage: 10, character: 'mystic', isEnding: true, endingId: 'mystic_prisoner', chapter: 'Пленник замка', text: 'Абсолютно потеряв счет во времени, ты просыпаешься за решеткой, и понимаешь, что тебе не удалось спасти Земли Ашетвиль, теперь ты призрак, призрак, заточенный в кандалы.\n\nСпасибо тебе, что погрузился в эту историю вместе с нами, ты можешь перепройти историю за мистия еще раз и попытаться выйти на другой финал или пройти историю за другого персонажа.' },
 '10M_DEAD_1': { stage: 10, character: 'mystic', isEnding: true, endingId: 'mystic_dead', chapter: 'Конец пути', text: 'Твой путь воина окончен.\n\nСпасибо тебе, что погрузился в эту историю вместе с нами, ты можешь перепройти историю за мистия еще раз и попытаться выйти на другой финал или пройти историю за другого персонажа.' },
  '10M_LOVE_ENDING': { stage: 10, character: 'mystic', isEnding: true, endingId: 'mystic_love', chapter: 'Любовь в Ашетвиле', 
-    text: 'С золотом короля за спиной и Лангошем под седлом, ты покидаешь замок. Но не в деревню Охуху лежит твой путь — сердце зовёт тебя к реке Флайси. Ты находишь её на том же берегу, где впервые увидел. Аделаида ждала. Вы строите дом у подножия Акриловых гор, и твои дни наёмника заканчиваются. Начинается жизнь, ради которой стоило пройти через тьму замка.\n\nСпасибо тебе, что погрузился в эту историю вместе с нами, ты можешь перепройти историю за мистия еще раз и попытаться выйти на другой финал или пройти историю за другого персонажа.' },       
+    text: 'С золотом короля за спиной и Лангошем под седлом, ты покидаешь замок. Но не в деревню Охуху лежит твой путь — сердце зовёт тебя к реке Флайси. Ты находишь её на том же берегу, где впервые увидел. Аделаида ждала. Вы строите дом у подножия Акриловых гор, и твои дни наёмника заканчиваются. Начинается жизнь, ради которой стоило пройти через тьму замка.\n\nСпасибо тебе, что погрузился в эту историю вместе с нами, ты можешь перепройти историю за мистия еще раз и попытаться выйти на другой финал или пройти историю за другого персонажа.' }, 
+  '10M_ZIBEEF_ENDING': { stage: 10, character: 'mystic', isEnding: true, endingId: 'mystic_zibeef', chapter: 'Старый друг', 
+    text: 'С золотом короля за спиной и Лангошем под седлом, ты покидаешь замок. Но путь в деревню Охуху лежит мимо старой мельницы. Ты не можешь проехать мимо. Зибиф младший встречает тебя на пороге, Эсса радостно виляет хвостом. «Я знал, что ты вернёшься», — говорит старик. Ты высыпаешь половину золота на его стол. «За монету и за совет», — говоришь ты. Зибиф улыбается, и в его глазах блестят слёзы. Ты продолжаешь путь домой с лёгким сердцем — богатство ничего не значит, если его не с кем разделить.\n\nСпасибо тебе, что погрузился в эту историю вместе с нами, ты можешь перепройти историю за мистия еще раз и попытаться выйти на другой финал или пройти историю за другого персонажа.' 
+},      
        // ==========================================
 // ВОРОВКА (T) — 💪5 🏃13 🧠2
 // ==========================================
@@ -11462,6 +11482,7 @@ let castleCompletedChoices = {};
 let castleApprovedChoices = {};
 let metEliza = false;
 let kissedAdelaide = false;
+let visitedZibeef = false;
 // Шансы выпадения статуса
 const STATUS_DROP_CHANCE = {
     normal: 1.00,
@@ -11473,13 +11494,15 @@ const ENDING_REWARDS = {
     'mystic_liberator': { status: 'Храбрая сердцем', statusChance: 'normal' },
     'mystic_lord': { status: 'Храбрая сердцем', statusChance: 'normal' },
     'mystic_true': { status: 'Храбрая сердцем', statusChance: 'secret' },
+    'mystic_love': { status: 'Храбрая сердцем', statusChance: 'normal' },
+    'mystic_zibeef': { status: 'Храбрая сердцем', statusChance: 'normal' },
     'thief_queen': { status: 'В тени', statusChance: 'normal' },
     'thief_shadow': { status: 'В тени', statusChance: 'normal' },
     'thief_free': { status: 'В тени', statusChance: 'secret' },
     'alchemist_archmage': { status: 'Заклинательница', statusChance: 'normal' },
     'alchemist_keeper': { status: 'Заклинательница', statusChance: 'normal' },
     'alchemist_true': { status: 'Заклинательница', statusChance: 'secret' },
-    'mystic_love': { status: 'Храбрая сердцем', statusChance: 'normal' },
+  
 };
 // ==========================================
 // ФУНКЦИИ
@@ -11681,6 +11704,11 @@ function renderCastleCard(cardId) {
     if (!card) { alert('Карточка не найдена: ' + cardId); return; }
     currentCastleCard = cardId;
     
+    // ✅ Если игрок дошёл до мельницы Зибифа — запоминаем
+    if (cardId === '4M_V_1') {
+        visitedZibeef = true;
+    }
+    
     if (HIDDEN_REWARDS[cardId] && !card.isEnding && !card.isChoice) {
         const reward = HIDDEN_REWARDS[cardId];
         const result = giveRandomReward(reward.type, reward.lootKey);
@@ -11705,6 +11733,15 @@ function renderCastleCard(cardId) {
             currentCastleCard = '10M_LOVE_ENDING';
             saveCastleProgress();
             renderCastleCard('10M_LOVE_ENDING');
+            return;
+        }
+        
+        // ✅ Если Мистий посетил мельницу Зибифа — показываем концовку с мельницей
+        if (visitedZibeef && 
+            (cardId === '10M_GOOD_1' || cardId === '10M_HERO_1' || cardId === '10M_HERO_2')) {
+            currentCastleCard = '10M_ZIBEEF_ENDING';
+            saveCastleProgress();
+            renderCastleCard('10M_ZIBEEF_ENDING');
             return;
         }
         
@@ -11991,15 +12028,16 @@ function showEndingScreen(message) {
 
 function saveCastleProgress() {
     const progress = {
-        currentCard: currentCastleCard,
-        stats: userCastleStats,
-        character: selectedCastleCharacter,
-        metEliza: metEliza,
-        kissedAdelaide: kissedAdelaide,  // ← ДОБАВИТЬ
-        completedChoices: castleCompletedChoices,
-        approvedChoices: castleApprovedChoices,
-        endingClaimed: currentEndingClaimed
-    };
+    currentCard: currentCastleCard,
+    stats: userCastleStats,
+    character: selectedCastleCharacter,
+    metEliza: metEliza,
+    kissedAdelaide: kissedAdelaide,
+    visitedZibeef: visitedZibeef,  // ✅ ДОБАВЛЕНО
+    completedChoices: castleCompletedChoices,
+    approvedChoices: castleApprovedChoices,
+    endingClaimed: currentEndingClaimed
+};
     
     localStorage.setItem(`castle_progress_${userId}`, JSON.stringify(progress));
     
@@ -12034,7 +12072,8 @@ async function loadCastleProgress() {
             userCastleStats = data.stats || { strength: 0, agility: 0, intelligence: 0 };
             selectedCastleCharacter = data.character;
             metEliza = data.metEliza || false;
-            kissedAdelaide = data.kissedAdelaide || false; // ✅ ДОБАВЛЕНО
+            kissedAdelaide = data.kissedAdelaide || false;
+            visitedZibeef = data.visitedZibeef || false;
             castleCompletedChoices = data.completedChoices || {};
             castleApprovedChoices = data.approvedChoices || {};
             currentEndingClaimed = data.endingClaimed || false;
@@ -12056,7 +12095,8 @@ async function loadCastleProgress() {
                 userCastleStats = data.stats || { strength: 0, agility: 0, intelligence: 0 };
                 selectedCastleCharacter = data.character;
                 metEliza = data.metEliza || false;
-                kissedAdelaide = data.kissedAdelaide || false; // ✅ ДОБАВЛЕНО
+                kissedAdelaide = data.kissedAdelaide || false;
+                visitedZibeef = data.visitedZibeef || false;
                 castleCompletedChoices = data.completedChoices || {};
                 castleApprovedChoices = data.approvedChoices || {};
                 currentEndingClaimed = data.endingClaimed || false;
