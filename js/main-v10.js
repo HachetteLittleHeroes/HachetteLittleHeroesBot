@@ -11486,21 +11486,7 @@ const CASTLE_CHARACTERS = {
 },
     },
         };
-// Скрытые награды по этапам — ОТДЕЛЬНАЯ константа
-const HIDDEN_REWARDS = {
-    // Мистик
-    '2M_A_1': { type: 'random_border', lootKey: 'border', text: 'В награду путник отдал тебе все, что у него было' },
-    '3M_2_2': { type: 'random_status_bg', lootKey: 'status_bg', text: 'Вы обнаружили красивый фон для статуса.' },
-    '6M_1_3': { type: 'achetiki', lootKey: 'achetiki', text: 'Вы нашли кошелёк!' },
-    // Воровка
-    '2V_A_1': { type: 'random_status_bg', lootKey: 'status_bg', text: 'Вы наткнулись на фон для статуса.' },
-    '4V_4_1': { type: 'achetiki', lootKey: 'achetiki', text: 'В тайнике вы нашли ашетики!' },
-    '6V_1_1': { type: 'random_border', lootKey: 'border', text: 'Вы обнаружили обводку для профиля.' },
-    // Алхимик
-    '3A_4_1': { type: 'random_border', lootKey: 'border', text: 'Вы нашли обводку для профиля.' },
-    '4A_5_1': { type: 'achetiki', lootKey: 'achetiki', text: 'Вы нашли ашетики.' },
-    '6A_3_1': { type: 'random_status_bg', lootKey: 'status_bg', text: 'Вы нашли красивый фон для статуса.' }
-};
+
 // ==========================================
 // ФУНКЦИИ
 // ==========================================
