@@ -3214,19 +3214,31 @@ function showEndingInGame(message) {
     const endingsCount = Object.keys(castleCompletedEndings).length;
     
     container.innerHTML = `
-        <div class="story-card-large">
-            <div class="story-card-image">
-                <span class="image-placeholder">🏰</span>
-            </div>
-            <div class="story-card-body">
-                <div class="story-card-chapter">Тайны замка Ашетвиль</div>
-                ${message ? `<p class="story-card-text" style="color: var(--accent); font-weight: 600;">${message}</p>` : ''}
-                <p class="story-card-text">Концовок открыто: <strong>${endingsCount}/15</strong></p>
-               
-                <button class="story-card-next-btn" onclick="resetAndStartStory()" style="margin-bottom: 8px;">
+        <div style="width: 100%; min-height: 100vh; position: absolute; top: 0; left: 0; z-index: 9999; background: #1a1a2e;">
+            <button onclick="backToStoryPreview()" style="position: fixed; top: 20px; left: 20px; z-index: 100; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; font-size: 18px;">←</button>
+            
+            <div style="text-align: center; padding: 60px 20px 0;">
+                <img src="https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/ashetvil/castle_ending.jpg" 
+                     alt="Замок Ашетвиль" 
+                     style="width: 100%; max-width: 300px; border-radius: 16px; margin-bottom: 20px;"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <div style="display: none; font-size: 80px;">🏰</div>
+                
+                <h2 style="color: #d4af37; font-size: 22px; margin: 15px 0 10px;">Тайны замка Ашетвиль</h2>
+                
+                ${message ? `<p style="color: #ffffff; font-size: 16px; margin: 10px 0; font-weight: 600;">${message}</p>` : ''}
+                
+                <p style="color: rgba(255,255,255,0.8); font-size: 15px; margin: 10px 0;">
+                    Концовок открыто: <strong style="color: #d4af37;">${endingsCount}/15</strong>
+                </p>
+                
+                <button onclick="resetAndStartStory()" 
+                        style="width: 80%; padding: 16px; background: #d4af37; color: #1a1a2e; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; margin: 15px 0 10px;">
                     🔄 Пройти заново
                 </button>
-                <button class="story-card-next-btn" onclick="backToStoryPreview()" style="background: var(--card-bg); color: var(--text); border: 1px solid var(--border-color);">
+                
+                <button onclick="backToStoryPreview()" 
+                        style="width: 80%; padding: 14px; background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.8); border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; font-size: 15px; cursor: pointer; margin-bottom: 10px;">
                     ← К описанию
                 </button>
             </div>
@@ -11924,19 +11936,27 @@ function claimCastleEnding(cardId) {
 
 function showEndingScreen(message) {
     const container = document.getElementById('castleStoryContainer');
-    if (container) {
-        const endingsCount = Object.keys(castleCompletedEndings).length;
-        container.innerHTML = `
-            <div style="text-align: center; padding: 20px;">
-                <div style="font-size: 48px;">🏰</div>
-                <h3>Тайны замка Ашетвиль</h3>
-                <p style="color: var(--text-gray); margin: 15px 0;">${message || ''}</p>
-                <p style="color: var(--text-gray);">Концовок открыто: ${endingsCount}/9</p>
-                <p style="color: var(--text-gray); font-size: 12px;">Шанс статуса: обычные 25% | секретные 60%</p>
-                <button class="task-submit-btn" onclick="startCastleStory()" style="margin-top: 15px;">🔄 Пройти заново</button>
-            </div>
-        `;
-    }
+    if (!container) return;
+    
+    const endingsCount = Object.keys(castleCompletedEndings).length;
+    
+    container.innerHTML = `
+        <div style="text-align: center; padding: 20px;">
+            <img src="https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/ashetvil/castle_ending.jpg" 
+                 alt="Замок Ашетвиль" 
+                 style="width: 100%; max-width: 300px; border-radius: 16px; margin-bottom: 15px;"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+            <div style="display: none; font-size: 64px;">🏰</div>
+            
+            <h3 style="color: #d4af37;">Тайны замка Ашетвиль</h3>
+            
+            ${message ? `<p style="color: var(--text); margin: 10px 0;">${message}</p>` : ''}
+            
+            <p style="color: var(--text-gray);">Концовок открыто: <strong>${endingsCount}/15</strong></p>
+            
+            <button class="task-submit-btn" onclick="startCastleStory()" style="margin-top: 15px;">🔄 Пройти заново</button>
+        </div>
+    `;
 }
 
 function saveCastleProgress() {
