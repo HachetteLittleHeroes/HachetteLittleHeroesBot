@@ -1628,6 +1628,640 @@ const CASTLE_CHARACTERS = {
         };
 
 // ==========================================
+// ФУНКЦИИ
+// ==========================================
+
+function toggleCastleStory() {
+    const content = document.getElementById('castleStoryContent');
+    const arrow = document.getElementById('castleStoryArrow');
+    if (!content || !arrow) return;
+    
+    if (content.style.display === 'none' || content.style.display === '') {
+        content.style.display = 'block';
+        arrow.style.transform = 'rotate(180deg)';
+        loadCastleProgress().then(loaded => {
+            if (loaded && currentCastleCard) {
+                const card = CASTLE_STORY.cards[currentCastleCard];
+                if (card && card.isEnding && currentEndingClaimed) {
+                    showEndingScreen('');
+                } else {
+                    renderCastleCard(currentCastleCard);
+                }
+            }
+            // Запускаем проверку одобрений после загрузки
+            checkCastleApprovals();
+        });
+        // Запускаем периодическую проверку
+        if (!window._castleApprovalInterval) {
+            window._castleApprovalInterval = setInterval(checkCastleApprovals, 3000);
+        }
+    } else {
+        content.style.display = 'none';
+        arrow.style.transform = 'rotate(0deg)';
+        if (window._castleApprovalInterval) {
+            clearInterval(window._castleApprovalInterval);
+            window._castleApprovalInterval = null;
+        }
+    }
+}
+
+function startCastleStory() {
+    const content = document.getElementById('castleStoryContent');
+    const arrow = document.getElementById('castleStoryArrow');
+    if (content) { content.style.display = 'block'; if (arrow) arrow.style.transform = 'rotate(180deg)'; }
+    currentEndingClaimed = false;
+    showCharacterSelect();
+}
+
+function showCharacterSelect() {
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.style.display = 'flex';
+    modal.style.zIndex = '100001';
+    
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width: 450px; max-height: 90vh; overflow-y: auto;">
+            <h3 style="text-align: center;">Выберите персонажа</h3>
+            <p style="font-size: 12px; color: var(--text-gray); margin-bottom: 15px; text-align: center;">Каждый персонаж — уникальная история</p>
+            <div id="characterSelectContent" style="text-align: center; padding: 10px;">
+                <i class="fas fa-spinner fa-spin"></i> Загрузка...
+            </div>
+            <button class="modal-close-btn" onclick="this.closest('.modal-overlay').remove()" style="display: block; margin: 10px auto 0;">Отмена</button>
+        </div>
+    `;
+    modal.onclick = function(e) { if (e.target === modal) modal.remove(); };
+    document.body.appendChild(modal);
+    
+    // Загружаем доступных персонажей
+    fetch(`${SERVER_URL}/api/castle/check_all_access?user_id=${userId}`)
+        .then(r => r.json())
+        .then(data => {
+            const content = document.getElementById('characterSelectContent');
+            const access = data.access || {};
+            
+            let charsHtml = '';
+            
+            for (const [id, char] of Object.entries(CASTLE_CHARACTERS)) {
+                const hasAccess = access[id] || false;
+                const charImageUrl = `https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/ashetvil/${id}.jpg?t=${Date.now()}`;
+                const icon = id === 'mystic' ? '⚔️' : id === 'thief' ? '🗡️' : '🔮';
+                
+                charsHtml += `
+                    <div class="castle-character-card" style="cursor:pointer; background: var(--card-bg); border: 2px solid ${hasAccess ? 'var(--status-green)' : 'var(--border-color)'}; border-radius: 16px; padding: 15px; text-align: center; margin-bottom: 15px; position: relative; overflow: hidden;">
+                        ${!hasAccess ? '<div style="position: absolute; top: 10px; right: 10px; z-index: 2; background: rgba(0,0,0,0.6); border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;"><i class="fas fa-lock" style="color: white; font-size: 14px;"></i></div>' : '<div style="position: absolute; top: 10px; right: 10px; z-index: 2; background: var(--status-green); border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;"><i class="fas fa-check" style="color: white; font-size: 14px;"></i></div>'}
+                        <img src="${charImageUrl}" alt="${char.name}" style="width: 100%; max-width: 200px; height: auto; border-radius: 12px; margin-bottom: 10px; ${!hasAccess ? 'filter: blur(8px); opacity: 0.5;' : ''}" onerror="this.style.display='none'">
+                        <div style="font-size: 24px; margin-bottom: 5px;">${icon}</div>
+                        <div style="font-weight: 700; font-size: 18px; margin-bottom: 8px;">${char.name}</div>
+                        <div style="font-size: 13px; color: var(--text-gray); margin-bottom: 8px;">${char.desc}</div>
+                        <div style="font-size: 12px; color: var(--accent); margin-bottom: 10px;">💪${char.stats.strength} 🏃${char.stats.agility} 🧠${char.stats.intelligence}</div>
+                        ${hasAccess ? `
+                            <button class="task-submit-btn" onclick="selectCastleCharacter('${id}')" style="width: 100%; background: var(--status-green);">
+                                ${icon} Выбрать
+                            </button>
+                        ` : `
+                            <button class="task-submit-btn" disabled style="width: 100%; opacity: 0.5; cursor: not-allowed;">
+                                🔒 Нет доступа
+                            </button>
+                        `}
+                    </div>
+                `;
+            }
+            
+            // Кнопка поддержки
+            charsHtml += `
+                <div style="background: var(--card-bg); border-radius: 12px; padding: 15px; text-align: center; margin-top: 10px; border: 1px solid var(--border-color);">
+                    <p style="color: var(--text); font-size: 13px; margin-bottom: 5px;">🔒 Нет доступа к персонажу?</p>
+                    <p style="color: var(--text-gray); font-size: 12px; margin-bottom: 8px;">1 персонаж = 1000 ₽</p>
+                    <button class="task-submit-btn" onclick="openSupportDialog()" style="width: 100%; padding: 12px; font-size: 14px;">
+                        💰 Поддержать и открыть доступ
+                    </button>
+                </div>
+            `;
+            
+            content.innerHTML = charsHtml;
+        });
+}
+function selectCastleCharacter(charId) {
+    const char = CASTLE_CHARACTERS[charId];
+    if (!char) return;
+    selectedCastleCharacter = charId;
+    userCastleStats = { ...char.stats };
+    metEliza = false;
+    castleCompletedChoices = {};
+    castleApprovedChoices = {};
+    currentEndingClaimed = false;
+    const prefixMap = { mystic: 'M', thief: 'V', alchemist: 'A' };
+    currentCastleCard = '1' + prefixMap[charId] + '_1';
+    document.querySelectorAll('.modal-overlay').forEach(m => { if (m.innerHTML.includes('Выберите персонажа')) m.remove(); });
+    const content = document.getElementById('castleStoryContent');
+    if (content) { content.style.display = 'block'; const arrow = document.getElementById('castleStoryArrow'); if (arrow) arrow.style.transform = 'rotate(180deg)'; }
+    loadCastleLoot();
+    saveCastleProgress();
+    renderCastleCard(currentCastleCard);
+}
+async function loadCastleLoot() {
+    if (!selectedCastleCharacter || !userId) return;
+    try {
+        const resp = await fetch(`${SERVER_URL}/api/castle/get_loot?user_id=${userId}&character=${selectedCastleCharacter}`);
+        const data = await resp.json();
+        if (data && data.status === 'ok') {
+            castleLootCache = data.loot || {};
+        }
+    } catch(e) { castleLootCache = {}; }
+}
+
+function giveRandomReward(type, lootKey) {
+    if (!selectedCastleCharacter) return null;
+    if (castleLootCache[lootKey]) return null;
+    
+    let result = null;
+    
+    if (type === 'random_border') {
+        const borders = AVATAR_BORDER_SHOP.filter(b => !user.ownedBorders || !user.ownedBorders.includes(b.id));
+        if (borders.length === 0) return null;
+        const randomBorder = borders[Math.floor(Math.random() * borders.length)];
+        if (!user.ownedBorders) user.ownedBorders = [];
+        user.ownedBorders.push(randomBorder.id);
+        saveUserData();
+        fetch(`${SERVER_URL}/api/save_avatar_border`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId, border: randomBorder.css, border_id: randomBorder.id })
+        });
+        result = { name: randomBorder.name, type: 'обводка профиля' };
+    } else if (type === 'random_status_bg') {
+        const bgs = STATUS_BG_SHOP.filter(b => !user.ownedStatusBackgrounds || !user.ownedStatusBackgrounds.includes(b.id));
+        if (bgs.length === 0) return null;
+        const randomBg = bgs[Math.floor(Math.random() * bgs.length)];
+        if (!user.ownedStatusBackgrounds) user.ownedStatusBackgrounds = [];
+        user.ownedStatusBackgrounds.push(randomBg.id);
+        saveUserData();
+        fetch(`${SERVER_URL}/api/save_status_background`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId, background: randomBg.css, background_id: randomBg.id })
+        });
+        result = { name: randomBg.name, type: 'фон статуса' };
+    } else if (type === 'achetiki') {
+        const amount = Math.floor(Math.random() * 201) + 50;
+        fetch(`${SERVER_URL}/api/add_balance`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId, amount: amount, reason: 'Награда в замке' })
+        }).then(r => r.json()).then(res => {
+            if (res.new_balance) user.balance = res.new_balance;
+            updateUI();
+        });
+        result = { name: `${amount} ашетиков`, type: 'ашетики' };
+    }
+    
+    if (result && lootKey) {
+        castleLootCache[lootKey] = true;
+        fetch(`${SERVER_URL}/api/castle/save_loot`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId, character: selectedCastleCharacter, loot_type: lootKey })
+        }).catch(e => {});
+    }
+    
+    return result;
+}
+function renderCastleCard(cardId) {
+    const card = CASTLE_STORY.cards[cardId];
+    if (!card) { alert('Карточка не найдена: ' + cardId); return; }
+    currentCastleCard = cardId;
+    
+    // ✅ Если игрок дошёл до мельницы Зибифа — запоминаем
+    if (cardId === '4M_V_1') {
+        visitedZibeef = true;
+    }
+    
+    if (HIDDEN_REWARDS[cardId] && !card.isEnding && !card.isChoice) {
+        const reward = HIDDEN_REWARDS[cardId];
+        const result = giveRandomReward(reward.type, reward.lootKey);
+        if (result) {
+            setTimeout(() => {
+                alert(`🎁 ${reward.text}\n\nПолучено: ${result.name} (${result.type})`);
+            }, 500);
+        }
+    }
+    
+    saveCastleProgress();
+    const content = document.getElementById('castleStoryContent');
+    if (content && content.style.display === 'none') content.style.display = 'block';
+    const container = document.getElementById('castleStoryContainer');
+    if (!container) return;
+    const statsHtml = `<div style="display: flex; gap: 12px; justify-content: center; font-size: 12px;"><span style="color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">💪${userCastleStats.strength||0}</span><span style="color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">🏃${userCastleStats.agility||0}</span><span style="color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">🧠${userCastleStats.intelligence||0}</span><span style="color: #d4af37;">🎫${userSkips||0}</span></div>`;
+    
+    if (card.isEnding) {
+        // ✅ Если Мистий поцеловал Аделаиду — показываем романтическую концовку
+        if (kissedAdelaide && 
+            (cardId === '10M_GOOD_1' || cardId === '10M_HERO_1' || cardId === '10M_HERO_2')) {
+            currentCastleCard = '10M_LOVE_ENDING';
+            saveCastleProgress();
+            renderCastleCard('10M_LOVE_ENDING');
+            return;
+        }
+        
+        // ✅ Если Мистий посетил мельницу Зибифа — показываем концовку с мельницей
+        if (visitedZibeef && 
+            (cardId === '10M_GOOD_1' || cardId === '10M_HERO_1' || cardId === '10M_HERO_2')) {
+            currentCastleCard = '10M_ZIBEEF_ENDING';
+            saveCastleProgress();
+            renderCastleCard('10M_ZIBEEF_ENDING');
+            return;
+        }
+        
+        container.innerHTML = `<div class="castle-card" style="background: #1a1a2e; border-radius: 16px; padding: 30px 20px; text-align: center;"><div style="font-size: 64px;">${card.isSecret?'🔮':'🏆'}</div><div style="color: #d4af37; font-size: 20px; margin: 15px 0;">${card.chapter || 'Концовка'}</div><p style="color: white; font-size: 16px; line-height: 1.6;">${card.text}</p><button class="task-submit-btn" onclick="claimCastleEnding('${cardId}')" style="width: 100%; background: #d4af37; color: #1a1a2e; margin-top: 20px;">🎉 Завершить историю</button></div>`;
+        return;
+    }
+    
+    if (card.isChoice) {
+        let choicesHtml = '';
+        card.choices.forEach((choice, idx) => {
+            const choiceKey = cardId + '_choice_' + idx;
+            const isCompleted = castleCompletedChoices && castleCompletedChoices[choiceKey];
+            
+            if (isCompleted) {
+                const isApproved = castleApprovedChoices && castleApprovedChoices[choiceKey];
+                choicesHtml += isApproved ? 
+                    `<button class="task-submit-btn" style="width: 100%; text-align: left; padding: 14px 18px; background: linear-gradient(135deg, rgba(46,204,113,0.9), rgba(39,174,96,0.9)); color: white; border: 1px solid rgba(255,255,255,0.3); border-radius: 10px; margin-bottom: 8px; font-size: 15px;" onclick="proceedAfterApproval('${cardId}',${idx})">✅ ${choice.text} — ОДОБРЕНО</button>` : 
+                    `<button class="task-submit-btn" style="width: 100%; text-align: left; padding: 14px 18px; background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.4); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; margin-bottom: 8px; font-size: 15px;" disabled>⏳ ${choice.text} — Отправлено</button>`;
+                return;
+            }
+            
+            const hasSkip = choice.skipCost && choice.isPremium;
+            const reqStat = choice.requireStat;
+            let meetsReq = reqStat ? (userCastleStats[reqStat.stat]||0) >= reqStat.min : true;
+            if (choice.requireOrSkip && !meetsReq) meetsReq = (userSkips||0) >= choice.requireOrSkip;
+            if (choice.requireSkipOr === 'metEliza') meetsReq = metEliza || ((userSkips||0) >= (choice.skipCost||99));
+            const isDisabled = !meetsReq || (hasSkip && (userSkips||0) < (choice.skipCost||0));
+            
+            let costBadge = '';
+            if (hasSkip && !choice.text.includes('🎫')) costBadge = ` (🎫${choice.skipCost})`;
+            const hasTask = choice.task && choice.task !== 'null';
+            
+            choicesHtml += `
+                <button class="task-submit-btn castle-choice-btn" 
+                        style="width: 100%; text-align: left; padding: 14px 18px; 
+                               background: ${isDisabled ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.08)'}; 
+                               color: ${isDisabled ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,0.95)'}; 
+                               border: 1px solid ${isDisabled ? 'rgba(255,255,255,0.08)' : 'rgba(212,175,55,0.4)'}; 
+                               border-radius: 10px; margin-bottom: 8px; font-size: 15px;"
+                        ${isDisabled ? 'disabled' : ''}
+                        onclick="submitCastleChoice('${cardId}',${idx})">
+                    <div style="font-weight: 500;">${choice.text}${costBadge}</div>
+                    ${hasTask ? '<div style="font-size: 11px; opacity: 0.7; margin-top: 4px;">📸 ' + choice.task + '</div>' : ''}
+                </button>`;
+        });
+        
+        const cardImageUrl = `https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/ashetvil/${cardId}.jpg?t=${Date.now()}`;
+        
+        container.innerHTML = `
+            <div class="castle-card" style="background: #1a1a2e; border-radius: 16px; overflow: hidden; display: flex; flex-direction: column;">
+                <div style="position: relative; width: 100%; height: 70vh; overflow: hidden; flex-shrink: 0;">
+                    <img src="${cardImageUrl}" alt="Сцена" style="width: 100%; height: 100%; object-fit: cover; display: block;" onerror="this.style.display='none'">
+                    <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 80px; background: linear-gradient(to top, #1a1a2e, transparent);"></div>
+                    ${card.chapter ? `<div style="position: absolute; top: 20px; left: 20px; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(212,175,55,0.3);"><span style="color: white; font-size: 13px;">📖 ${card.chapter}</span></div>` : ''}
+                    <div style="position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.15); display: flex; gap: 12px;">
+                        <span style="color: white; font-size: 12px;">💪${userCastleStats.strength||0}</span>
+                        <span style="color: white; font-size: 12px;">🏃${userCastleStats.agility||0}</span>
+                        <span style="color: white; font-size: 12px;">🧠${userCastleStats.intelligence||0}</span>
+                        <span style="color: #d4af37; font-size: 12px;">🎫${userSkips||0}</span>
+                    </div>
+                </div>
+                <div style="padding: 15px 20px 25px; flex-shrink: 0;">
+                    ${card.text ? `<p style="color: rgba(255,255,255,0.9); font-size: 15px; line-height: 1.6; margin-bottom: 15px;">${card.text}</p>` : ''}
+                    <div class="castle-choices">${choicesHtml}</div>
+                </div>
+            </div>`;
+        return;
+    }
+    container.innerHTML = `<div class="castle-card">
+        ${card.chapter ? `<div style="font-weight: 700; font-size: 16px; color: var(--accent); margin-bottom: 10px;">📖 ${card.chapter}</div>` : ''}
+        <p style="line-height: 1.5;">${card.text}</p>
+        ${statsHtml}
+        <button class="task-submit-btn" onclick="renderCastleCard('${card.nextCard}')" style="width: 100%;">Далее ▶</button>
+    </div>`;
+}
+function submitCastleChoice(cardId, choiceIdx) {
+    const card = CASTLE_STORY.cards[cardId];
+    const choice = card.choices[choiceIdx];
+    if (!choice) return;
+    
+    // ✅ ОБРАБОТКА РАНДОМНОГО ПЛАТНОГО ВЫБОРА
+    if (choice.isPremium && choice.skipCost && choice.isRandom && choice.randomCards) {
+        if ((userSkips||0) < choice.skipCost) { alert('Недостаточно скипов!'); return; }
+        userSkips -= choice.skipCost;
+        localStorage.setItem(`user_skips_${userId}`, userSkips);
+        if (typeof updateSkipDisplay === 'function') updateSkipDisplay();
+        
+        const randomCard = choice.randomCards[Math.floor(Math.random() * choice.randomCards.length)];
+        applyCastleReward(choice);
+        proceedToCard(randomCard);
+        return;
+    }
+    
+    // Обычный платный выбор
+    if (choice.isPremium && choice.skipCost) {
+        if ((userSkips||0) < choice.skipCost) { alert('Недостаточно скипов!'); return; }
+        userSkips -= choice.skipCost;
+        localStorage.setItem(`user_skips_${userId}`, userSkips);
+        if (typeof updateSkipDisplay === 'function') updateSkipDisplay();
+        applyCastleReward(choice);
+        proceedToCard(choice.nextCard);
+        return;
+    }
+    
+    if (!choice.task) { applyCastleReward(choice); proceedToCard(choice.nextCard); return; }
+    
+    if (!castleCompletedChoices) castleCompletedChoices = {};
+    const choiceKey = cardId + '_choice_' + choiceIdx;
+    castleCompletedChoices[choiceKey] = true;
+    saveCastleProgress();
+    
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/*';
+    fileInput.multiple = true;
+    
+    fileInput.onchange = async function(event) {
+        const files = Array.from(event.target.files);
+        if (files.length === 0) return;
+        
+        // ✅ СРАЗУ показываем красивый индикатор загрузки
+        const container = document.getElementById('castleStoryContainer');
+        if (container) {
+            container.innerHTML = `
+                <div style="text-align:center;padding:40px;">
+                    <i class="fas fa-spinner fa-spin" style="font-size:48px;color:var(--accent);"></i>
+                    <p style="margin-top:20px;color:var(--text);font-size:16px;">📤 Отправка фото...</p>
+                    <p style="margin-top:10px;color:var(--text-gray);font-size:13px;">Пожалуйста, подождите</p>
+                </div>
+            `;
+        }
+        
+        const formData = new FormData();
+        formData.append('user', userId.toString());
+        formData.append('castle_choice_key', choiceKey);
+        formData.append('subtaskName', choice.text || 'Задание');
+        formData.append('cardId', cardId);
+        formData.append('chapter', card.chapter || '');
+        formData.append('task', choice.task || '');
+        
+        for (let i = 0; i < files.length; i++) {
+            formData.append('photos', files[i]);
+        }
+        
+        try {
+            const response = await fetch(`${SERVER_URL}/api/check_castle_task`, { method: 'POST', body: formData });
+            const result = await response.json();
+            
+            console.log('📡 Ответ сервера:', result);
+            
+            if (result && result.status === 'ok') {
+                if (tg) tg.showAlert('✅ Фото отправлено на проверку!');
+                else alert('✅ Фото отправлено на проверку! Ожидайте одобрения.');
+                renderCastleCard(cardId);
+            } else {
+                throw new Error(result?.message || 'Ошибка сервера');
+            }
+        } catch (error) {
+            console.error('❌ Ошибка отправки:', error);
+            if (tg) tg.showAlert('❌ Ошибка: ' + error.message);
+            else alert('❌ Ошибка: ' + error.message);
+            delete castleCompletedChoices[choiceKey];
+            saveCastleProgress();
+            renderCastleCard(cardId);
+        }
+    };
+    fileInput.click();
+}
+function proceedAfterApproval(cardId, choiceIdx) {
+    const card = CASTLE_STORY.cards[cardId];
+    const choice = card.choices[choiceIdx];
+    
+    if (!choice) return;
+    
+    // ✅ ПРОВЕРКА НА ПОЦЕЛУЙ С АДЕЛАИДОЙ
+    if (cardId === '4M_D_4' && choiceIdx === 0) {
+        kissedAdelaide = true;
+        saveCastleProgress();
+    }
+    
+    // ✅ ОБРАБОТКА РАНДОМНОГО ВЫБОРА
+    if (choice.isRandom && choice.randomCards) {
+        const randomCard = choice.randomCards[Math.floor(Math.random() * choice.randomCards.length)];
+        applyCastleReward(choice);
+        proceedToCard(randomCard);
+        return;
+    }
+    
+    applyCastleReward(choice);
+    proceedToCard(choice.nextCard);
+}
+function applyCastleReward(choice) {
+    if (choice.reward) {
+        for (const [stat, delta] of Object.entries(choice.reward)) {
+            if (stat === 'all') { userCastleStats.strength=(userCastleStats.strength||0)+delta; userCastleStats.agility=(userCastleStats.agility||0)+delta; userCastleStats.intelligence=(userCastleStats.intelligence||0)+delta; }
+            else userCastleStats[stat] = (userCastleStats[stat]||0) + delta;
+        }
+    }
+    saveCastleProgress();
+}
+
+function proceedToCard(nextCardId) { if (nextCardId) renderCastleCard(nextCardId); }
+
+function claimCastleEnding(cardId) {
+    const card = CASTLE_STORY.cards[cardId];
+    if (!card || !card.isEnding) return;
+    
+    if (currentEndingClaimed) return;
+    currentEndingClaimed = true;
+    
+    const reward = ENDING_REWARDS[card.endingId];
+    const alreadyGot = castleCompletedEndings[card.endingId];
+    const statusAlreadyUnlocked = alreadyGot && alreadyGot.status_unlocked;
+    
+    let message = '';
+    
+    if (statusAlreadyUnlocked) {
+        message = '🏆 Статус «' + alreadyGot.status_name + '» уже получен!';
+    } else {
+        let statusUnlocked = false;
+        if (reward && reward.status && reward.statusChance) {
+            const chance = STATUS_DROP_CHANCE[reward.statusChance] || 0.25;
+            if (Math.random() < chance) {
+                statusUnlocked = true;
+                if (!user.unlockedStatuses.includes(reward.status)) {
+                    user.unlockedStatuses.push(reward.status);
+                    saveUserData();
+                    fetch(`${SERVER_URL}/api/sync_status`, {
+                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ user_id: userId, status: reward.status, action: 'unlock' })
+                    });
+                }
+            }
+        }
+        
+        castleCompletedEndings[card.endingId] = {
+            status_unlocked: statusUnlocked,
+            status_name: reward ? reward.status : ''
+        };
+        
+        fetch(`${SERVER_URL}/api/castle/save_ending`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId, ending_id: card.endingId, status_unlocked: statusUnlocked, status_name: reward ? reward.status : '' })
+        }).catch(e => {});
+        
+        const chancePercent = reward ? STATUS_DROP_CHANCE[reward.statusChance] * 100 : 0;
+        if (statusUnlocked) {
+            message = `✨ Выпал статус «${reward.status}»! (шанс ${chancePercent}%)`;
+        } else if (reward && reward.status) {
+            message = `🎲 Статус не выпал (шанс ${chancePercent}%). Попробуйте ещё раз!`;
+        }
+    }
+    
+    // Обнуляем currentCastleCard и сохраняем
+    currentCastleCard = null;
+    saveCastleProgress();
+    // ✅ УБИРАЕМ showEndingScreen — её вызовет showEndingInGame из claimCastleEndingInGame
+}
+
+function showEndingScreen(message) {
+    const container = document.getElementById('castleStoryContainer');
+    if (!container) return;
+    
+    const endingsCount = Object.keys(castleCompletedEndings).length;
+    
+    container.innerHTML = `
+        <div style="text-align: center; padding: 20px;">
+            <img src="https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/ashetvil/castle_ending.jpg" 
+                 alt="Замок Ашетвиль" 
+                 style="width: 100%; max-width: 300px; border-radius: 16px; margin-bottom: 15px;"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+            <div style="display: none; font-size: 64px;">🏰</div>
+            
+            <h3 style="color: #d4af37;">Тайны замка Ашетвиль</h3>
+            
+            ${message ? `<p style="color: var(--text); margin: 10px 0;">${message}</p>` : ''}
+            
+            <p style="color: var(--text-gray);">Концовок открыто: <strong>${endingsCount}/15</strong></p>
+            
+            <button class="task-submit-btn" onclick="startCastleStory()" style="margin-top: 15px;">🔄 Пройти заново</button>
+        </div>
+    `;
+}
+
+function saveCastleProgress() {
+    const progress = {
+    currentCard: currentCastleCard,
+    stats: userCastleStats,
+    character: selectedCastleCharacter,
+    metEliza: metEliza,
+    kissedAdelaide: kissedAdelaide,
+    visitedZibeef: visitedZibeef,  // ✅ ДОБАВЛЕНО
+    completedChoices: castleCompletedChoices,
+    approvedChoices: castleApprovedChoices,
+    endingClaimed: currentEndingClaimed
+};
+    
+    localStorage.setItem(`castle_progress_${userId}`, JSON.stringify(progress));
+    
+    fetch(`${SERVER_URL}/api/castle/save_progress`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: userId, progress: progress })
+    }).catch(e => {});
+}
+async function loadCastleProgress() {
+    if (!userId) return false;
+    
+    // Загружаем концовки с сервера
+    try {
+        const endingsResp = await fetch(`${SERVER_URL}/api/castle/get_endings?user_id=${userId}`);
+        const endingsData = await endingsResp.json();
+        if (endingsData && endingsData.status === 'ok') {
+            castleCompletedEndings = endingsData.endings || {};
+        }
+    } catch(e) { castleCompletedEndings = {}; }
+    
+    // Загружаем прогресс
+    try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3000);
+        const response = await fetch(`${SERVER_URL}/api/castle/get_progress?user_id=${userId}`, { signal: controller.signal });
+        clearTimeout(timeoutId);
+        const result = await response.json();
+        if (result && result.status === 'ok' && result.progress && result.progress.currentCard) {
+            const data = result.progress;
+            currentCastleCard = data.currentCard;
+            userCastleStats = data.stats || { strength: 0, agility: 0, intelligence: 0 };
+            selectedCastleCharacter = data.character;
+            metEliza = data.metEliza || false;
+            kissedAdelaide = data.kissedAdelaide || false;
+            visitedZibeef = data.visitedZibeef || false;
+            castleCompletedChoices = data.completedChoices || {};
+            castleApprovedChoices = data.approvedChoices || {};
+            currentEndingClaimed = data.endingClaimed || false;
+            localStorage.setItem(`castle_progress_${userId}`, JSON.stringify(data));
+            
+            // ✅ Загружаем лут после прогресса
+            await loadCastleLoot();
+            
+            return true;
+        }
+    } catch(e) {}
+    
+    const saved = localStorage.getItem(`castle_progress_${userId}`);
+    if (saved) {
+        try {
+            const data = JSON.parse(saved);
+            if (data.currentCard) {
+                currentCastleCard = data.currentCard;
+                userCastleStats = data.stats || { strength: 0, agility: 0, intelligence: 0 };
+                selectedCastleCharacter = data.character;
+                metEliza = data.metEliza || false;
+                kissedAdelaide = data.kissedAdelaide || false;
+                visitedZibeef = data.visitedZibeef || false;
+                castleCompletedChoices = data.completedChoices || {};
+                castleApprovedChoices = data.approvedChoices || {};
+                currentEndingClaimed = data.endingClaimed || false;
+                
+                // ✅ Загружаем лут после локального прогресса
+                await loadCastleLoot();
+                
+                return true;
+            }
+        } catch(e) {}
+    }
+    return false;
+}
+function resetCastleProgress() {
+    if (!confirm('Сбросить прогресс?')) return;
+    localStorage.removeItem(`castle_progress_${userId}`);
+    currentCastleCard=null; userCastleStats={strength:0,agility:0,intelligence:0}; selectedCastleCharacter=null; castleCompletedEndings=[]; castleCompletedChoices={}; castleApprovedChoices={}; metEliza=false;
+    startCastleStory();
+}
+
+async function checkCastleApprovals() {
+    if (currentEndingClaimed) return;
+    try {
+        const response = await fetch(`${SERVER_URL}/api/get_castle_approvals?user_id=${userId}`);
+        const result = await response.json();
+        if (result && result.status === 'ok' && result.approved) {
+            let changed = false;
+            for (const [key, value] of Object.entries(result.approved)) {
+                if (value === true && !castleApprovedChoices[key]) {
+                    castleApprovedChoices[key] = true;
+                    changed = true;
+                }
+            }
+            if (changed && currentCastleCard) {
+                saveCastleProgress();
+                renderCastleCard(currentCastleCard);
+            }
+        }
+    } catch(e) {}
+}
+
+// ==========================================
 // ФУНКЦИИ ДЛЯ ВКЛАДКИ ИСТОРИИ
 // ==========================================
 
