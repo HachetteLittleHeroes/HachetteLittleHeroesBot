@@ -2391,10 +2391,10 @@ function openStoryPreview(storyId) {
                         if (access.thief) availableChars.push('🗡️ Воровка');
                         if (access.alchemist) availableChars.push('🔮 Алхимик');
                         
-                        actionBtn.innerHTML = `
-                            <button class="task-submit-btn" onclick="startStoryFromPreview()" style="width: 100%; padding: 16px; font-size: 16px; background: var(--accent); color: #fff;">
-                                🎮 Начать историю
-                            </button>
+                       actionBtn.innerHTML = `
+    <button class="task-submit-btn" onclick="startStoryFromPreview()" style="width: 100%; padding: 16px; font-size: 16px !important; background: var(--accent); color: #ffffff !important;">
+        🎮 Начать историю
+    </button>
                             <p style="text-align: center; color: rgba(255,255,255,0.7); font-size: 12px; margin-top: 8px;">
                                 Доступные персонажи: ${availableChars.join(', ')}
                             </p>
