@@ -2891,10 +2891,19 @@ function renderCastleCardInGame(cardId) {
     
     saveCastleProgress();
     
- const cardImageUrl = `https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/ashetvil/${cardId}.jpg?t=${Date.now()}`;
+    const cardImageUrl = `https://218ea43893c4-hachette-artwork.s3.ru1.storage.beget.cloud/ashetvil/${cardId}.jpg?t=${Date.now()}`;
     
     // КОНЦОВКА
     if (card.isEnding) {
+        // ✅ Если Мистий поцеловал Аделаиду — показываем романтическую концовку
+        if (kissedAdelaide && 
+            (cardId === '10M_GOOD_1' || cardId === '10M_HERO_1' || cardId === '10M_HERO_2')) {
+            currentCastleCard = '10M_LOVE_ENDING';
+            saveCastleProgress();
+            renderCastleCardInGame('10M_LOVE_ENDING');
+            return;
+        }
+        
         container.innerHTML = `
             <div style="width: 100%; min-height: 100vh; position: absolute; top: 0; left: 0; z-index: 9999; background: #1a1a2e;">
                 <button onclick="backToStoryPreview()" style="position: fixed; top: 20px; left: 20px; z-index: 100; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; font-size: 18px;">←</button>
