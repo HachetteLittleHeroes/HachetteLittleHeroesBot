@@ -3165,7 +3165,6 @@ function proceedAfterApprovalInGame(cardId, choiceIdx) {
     }, 300);
 }
 async function claimCastleEndingInGame(cardId) {
-    // ✅ Загружаем время старта с сервера
     let startTime = castleStartTime;
     
     if (!startTime) {
@@ -3178,7 +3177,6 @@ async function claimCastleEndingInGame(cardId) {
         } catch(e) {}
     }
     
-    // Если всё ещё нет — берём из localStorage
     if (!startTime) {
         const saved = localStorage.getItem(`castle_start_time_${userId}`);
         if (saved) startTime = parseInt(saved);
@@ -3187,24 +3185,56 @@ async function claimCastleEndingInGame(cardId) {
     const elapsed = startTime ? Date.now() - startTime : 0;
     const timeStr = formatTime(elapsed);
     
-    // Сбрасываем везде
     castleStartTime = null;
     localStorage.removeItem(`castle_start_time_${userId}`);
     
-    // Сбрасываем на сервере
     fetch(`${SERVER_URL}/api/castle/save_start_time`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_id: userId, start_time: 0 })
     }).catch(e => {});
     
-    claimCastleEnding(cardId);
+    // ✅ Сначала обрабатываем награду
+    const card = CASTLE_STORY.cards[cardId];
+    const reward = ENDING_REWARDS[card.endingId];
+    const alreadyGot = castleCompletedEndings[card.endingId];
+    const statusAlreadyUnlocked = alreadyGot && alreadyGot.status_unlocked;
     
-    setTimeout(() => {
-        if (storyGameActive) {
-            showEndingInGame(`⏱ Пройдено за: ${timeStr}`);
+    let statusMessage = '';
+    
+    if (!statusAlreadyUnlocked && reward && reward.status && reward.statusChance) {
+        const chance = STATUS_DROP_CHANCE[reward.statusChance] || 0.25;
+        if (Math.random() < chance) {
+            if (!user.unlockedStatuses.includes(reward.status)) {
+                user.unlockedStatuses.push(reward.status);
+                saveUserData();
+                fetch(`${SERVER_URL}/api/sync_status`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id: userId, status: reward.status, action: 'unlock' })
+                });
+            }
+            statusMessage = `✨ Статус «${reward.status}» получен!`;
         }
-    }, 300);
+    }
+    
+    castleCompletedEndings[card.endingId] = {
+        status_unlocked: !statusAlreadyUnlocked && statusMessage !== '',
+        status_name: reward ? reward.status : ''
+    };
+    
+    fetch(`${SERVER_URL}/api/castle/save_ending`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: userId, ending_id: card.endingId, status_unlocked: !statusAlreadyUnlocked && statusMessage !== '', status_name: reward ? reward.status : '' })
+    }).catch(e => {});
+    
+    currentEndingClaimed = true;
+    currentCastleCard = null;
+    saveCastleProgress();
+    
+    // ✅ Показываем финальный экран
+    if (storyGameActive) {
+        showEndingInGame(`⏱ Пройдено за: ${timeStr}${statusMessage ? '\n' + statusMessage : ''}`);
+    }
 }
 // Обновляем экран концовки
 function showEndingInGame(message) {
@@ -11931,7 +11961,7 @@ function claimCastleEnding(cardId) {
     // Обнуляем currentCastleCard и сохраняем
     currentCastleCard = null;
     saveCastleProgress();
-    showEndingScreen(message);
+    // ✅ УБИРАЕМ showEndingScreen — её вызовет showEndingInGame из claimCastleEndingInGame
 }
 
 function showEndingScreen(message) {
