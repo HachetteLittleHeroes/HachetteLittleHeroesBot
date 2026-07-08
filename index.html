@@ -7668,69 +7668,97 @@ function openPaymentModal() {
     const charNames = { mystic: '⚔️ Мистий', thief: '🗡️ Воровка', alchemist: '🔮 Алхимик' };
     
     modal.innerHTML = `
-        <div class="modal-content" style="max-width: 400px;">
-            <h3>💰 Открыть доступ к персонажу</h3>
+        <div style="
+            background: #1e1e1e !important; 
+            color: #ffffff !important; 
+            width: 100%; 
+            max-width: 400px; 
+            border-radius: 24px; 
+            padding: 25px; 
+            border: 1px solid rgba(255,255,255,0.1); 
+            max-height: 80vh; 
+            overflow-y: auto;
+        ">
+            <h3 style="color: #ffffff; text-align: center; margin: 0 0 20px 0;">
+                💰 Открыть доступ к персонажу
+            </h3>
             
             <div id="paymentStep1">
-                <p style="color: var(--text-gray); font-size: 13px; margin-bottom: 15px;">
+                <p style="color: #8e8e93; font-size: 13px; margin-bottom: 15px; text-align: center;">
                     Выберите персонажа, которого хотите открыть:
                 </p>
                 ${Object.entries(charNames).map(([id, name]) => `
-                    <button class="modal-action-btn" onclick="selectPaymentCharacter('${id}')" 
-                            style="margin-bottom: 10px; background: var(--card-bg); color: var(--text); border: 2px solid var(--border-color);">
+                    <button onclick="selectPaymentCharacter('${id}')" 
+                            style="
+                                width: 100%; 
+                                padding: 14px; 
+                                border-radius: 14px; 
+                                font-weight: 600; 
+                                font-size: 15px; 
+                                cursor: pointer; 
+                                margin-bottom: 10px; 
+                                background: #2c2c2e; 
+                                color: #ffffff; 
+                                border: 2px solid rgba(255,255,255,0.1);
+                            ">
                         ${name} — 1000 ₽
                     </button>
                 `).join('')}
             </div>
             
             <div id="paymentStep2" style="display: none;">
-                <div id="paymentSelectedChar" style="background: rgba(255,149,0,0.1); border-radius: 12px; padding: 10px; text-align: center; margin-bottom: 15px; font-weight: 600; color: var(--accent);"></div>
+                <div id="paymentSelectedChar" style="background: rgba(255,149,0,0.2); border-radius: 12px; padding: 10px; text-align: center; margin-bottom: 15px; font-weight: 600; color: #ff9500;"></div>
                 
-                <p style="color: var(--text-gray); font-size: 13px; margin-bottom: 10px;">
-                    1️⃣ Перейдите по ссылке и оплатите <strong>1000 ₽</strong>
+                <p style="color: #8e8e93; font-size: 13px; margin-bottom: 10px;">
+                    1️⃣ Перейдите по ссылке и оплатите <strong style="color: #ffffff;">1000 ₽</strong>
                 </p>
                 <a href="https://www.tbank.ru/cf/4qQVzZbtu45" target="_blank" 
-                   style="display: block; width: 100%; background: #0088cc; color: white; text-align: center; padding: 14px; border-radius: 12px; text-decoration: none; font-weight: 600; margin-bottom: 15px;">
+                   style="display: block; width: 100%; background: #0088cc; color: white; text-align: center; padding: 14px; border-radius: 14px; text-decoration: none; font-weight: 600; font-size: 15px; margin-bottom: 15px;">
                     💳 Перейти к оплате
                 </a>
                 
-                <p style="color: var(--text-gray); font-size: 13px; margin-bottom: 10px;">
+                <p style="color: #8e8e93; font-size: 13px; margin-bottom: 10px;">
                     2️⃣ После оплаты загрузите скриншот чека
                 </p>
                 
                 <input type="file" id="paymentScreenshotInput" accept="image/*" style="display: none;" onchange="handlePaymentScreenshot(event)">
-                <button class="modal-action-btn" onclick="document.getElementById('paymentScreenshotInput').click()" 
-                        style="background: var(--card-bg); color: var(--text); border: 2px dashed var(--accent); margin-bottom: 15px;">
+                <button onclick="document.getElementById('paymentScreenshotInput').click()" 
+                        style="width: 100%; padding: 14px; border-radius: 14px; font-weight: 600; font-size: 14px; cursor: pointer; margin-bottom: 15px; background: #2c2c2e; color: #ffffff; border: 2px dashed #ff9500;">
                     📸 Загрузить скриншот чека
                 </button>
                 
                 <div id="paymentScreenshotPreview" style="text-align: center; margin-bottom: 15px; display: none;">
-                    <img id="paymentScreenshotImg" style="width: 100%; max-height: 200px; object-fit: contain; border-radius: 12px; border: 2px solid var(--accent);">
+                    <img id="paymentScreenshotImg" style="width: 100%; max-height: 200px; object-fit: contain; border-radius: 12px; border: 2px solid #ff9500;">
                 </div>
                 
-                <button class="modal-action-btn" id="paymentSubmitBtn" onclick="submitPayment()" disabled 
-                        style="background: var(--status-green); color: white;">
+                <button id="paymentSubmitBtn" onclick="submitPayment()" disabled 
+                        style="width: 100%; padding: 14px; border-radius: 14px; font-weight: 600; font-size: 14px; cursor: pointer; background: #34c759; color: white; border: none; margin-bottom: 10px;">
                     ✅ Отправить на проверку
                 </button>
-                <p style="color: var(--text-gray); font-size: 11px; margin-top: 8px; text-align: center;">
+                <p style="color: #8e8e93; font-size: 11px; text-align: center;">
                     После проверки: доступ + 2000 ашетиков
                 </p>
             </div>
             
             <div id="paymentStep3" style="display: none; text-align: center;">
                 <div id="paymentResultIcon" style="font-size: 48px; margin-bottom: 10px;"></div>
-                <p id="paymentResultText" style="color: var(--text); font-size: 14px; margin-bottom: 15px;"></p>
-                <button class="modal-close-btn" onclick="closePaymentModal()">Закрыть</button>
+                <p id="paymentResultText" style="color: #ffffff; font-size: 14px; margin-bottom: 15px;"></p>
+                <button onclick="closePaymentModal()" 
+                        style="width: 100%; padding: 12px; border-radius: 14px; font-weight: 600; font-size: 14px; cursor: pointer; background: #444; color: white; border: none;">
+                    Закрыть
+                </button>
             </div>
             
-            <button class="modal-close-btn" onclick="closePaymentModal()" style="margin-top: 10px;">Отмена</button>
+            <button onclick="closePaymentModal()" 
+                    style="width: 100%; padding: 12px; border-radius: 14px; font-weight: 600; font-size: 14px; cursor: pointer; background: #444; color: white; border: none; margin-top: 10px;">
+                Отмена
+            </button>
         </div>
     `;
     
     modal.onclick = function(e) { if (e.target === modal) modal.remove(); };
     document.body.appendChild(modal);
 }
-
 function closePaymentModal() {
     const modal = document.querySelector('.modal-overlay');
     if (modal && modal.innerHTML.includes('Открыть доступ к персонажу')) {
