@@ -6,82 +6,77 @@ let selectedPaymentCharacter = null;
 let paymentScreenshotFile = null;
 
 function openPaymentModal() {
-    // Закрываем все открытые модалки
-    document.querySelectorAll('.modal-overlay').forEach(m => m.remove());
+    const container = document.getElementById('storyGameContainer');
+    if (!container) return;
     
     selectedPaymentCharacter = null;
     paymentScreenshotFile = null;
     
-    const modal = document.createElement('div');
-    modal.className = 'modal-overlay';
-    modal.style.display = 'flex';
-    modal.style.zIndex = '100005';
-    modal.id = 'paymentModalDynamic';
-    
     const charNames = { mystic: '⚔️ Мистий', thief: '🗡️ Воровка', alchemist: '🔮 Алхимик' };
     
-    modal.innerHTML = `
-        <div class="modal-content" style="max-width: 400px;">
-            <h3>💰 Открыть доступ к персонажу</h3>
+    container.innerHTML = `
+        <div style="padding: 20px; background: #1a1a2e; min-height: 100vh;">
+            <button onclick="backToStoryPreview()" style="position: fixed; top: 20px; left: 20px; z-index: 100; background: rgba(0,0,0,0.6); border-radius: 50%; width: 40px; height: 40px; border: 1px solid rgba(255,255,255,0.2); color: white; font-size: 18px; cursor: pointer;">←</button>
             
-            <div id="paymentStep1">
-                <p style="color: var(--text-gray); font-size: 13px; margin-bottom: 15px;">
-                    Выберите персонажа, которого хотите открыть:
-                </p>
-                <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px;">
+            <div style="max-width: 400px; margin: 60px auto 0;">
+                <h3 style="color: #ffffff; text-align: center;">💰 Открыть доступ к персонажу</h3>
+                
+                <div id="paymentStep1">
+                    <p style="color: rgba(255,255,255,0.7); font-size: 13px; margin-bottom: 15px; text-align: center;">
+                        Выберите персонажа, которого хотите открыть:
+                    </p>
                     ${Object.entries(charNames).map(([id, name]) => `
                         <button class="task-submit-btn" onclick="selectPaymentCharacter('${id}')" 
-                                style="background: var(--card-bg); color: var(--text); border: 2px solid var(--border-color);">
+                                style="width: 100%; background: rgba(255,255,255,0.1); color: #ffffff; border: 2px solid rgba(255,255,255,0.2); margin-bottom: 10px;">
                             ${name} — 1000 ₽
                         </button>
                     `).join('')}
                 </div>
-            </div>
-            
-            <div id="paymentStep2" style="display: none;">
-                <div id="paymentSelectedChar" style="background: rgba(255,149,0,0.1); border-radius: 12px; padding: 10px; text-align: center; margin-bottom: 15px; font-weight: 600; color: var(--accent);"></div>
                 
-                <p style="color: var(--text-gray); font-size: 13px; margin-bottom: 10px;">
-                    1️⃣ Перейдите по ссылке и оплатите <strong>1000 ₽</strong>
-                </p>
-                <a href="https://www.tbank.ru/cf/4QVzZbtu45" target="_blank" 
-                   style="display: block; width: 100%; background: #0088cc; color: white; text-align: center; padding: 12px; border-radius: 12px; text-decoration: none; font-weight: 600; margin-bottom: 15px;">
-                    💳 Перейти к оплате
-                </a>
-                
-                <p style="color: var(--text-gray); font-size: 13px; margin-bottom: 10px;">
-                    2️⃣ После оплаты загрузите скриншот чека
-                </p>
-                
-                <input type="file" id="paymentScreenshotInput" accept="image/*" style="display: none;" onchange="handlePaymentScreenshot(event)">
-                <button class="task-submit-btn" onclick="document.getElementById('paymentScreenshotInput').click()" style="background: var(--card-bg); color: var(--text); border: 2px dashed var(--accent); margin-bottom: 15px;">
-                    📸 Загрузить скриншот чека
-                </button>
-                
-                <div id="paymentScreenshotPreview" style="text-align: center; margin-bottom: 15px; display: none;">
-                    <img id="paymentScreenshotImg" style="width: 100%; max-height: 200px; object-fit: contain; border-radius: 12px; border: 2px solid var(--accent);">
+                <div id="paymentStep2" style="display: none;">
+                    <div id="paymentSelectedChar" style="background: rgba(255,149,0,0.2); border-radius: 12px; padding: 10px; text-align: center; margin-bottom: 15px; font-weight: 600; color: #ff9500;"></div>
+                    
+                    <p style="color: rgba(255,255,255,0.7); font-size: 13px; margin-bottom: 10px;">
+                        1️⃣ Оплатите <strong>1000 ₽</strong>
+                    </p>
+                    <a href="https://www.tbank.ru/cf/4QVzZbtu45" target="_blank" 
+                       style="display: block; width: 100%; background: #0088cc; color: white; text-align: center; padding: 14px; border-radius: 12px; text-decoration: none; font-weight: 600; margin-bottom: 15px;">
+                        💳 Перейти к оплате
+                    </a>
+                    
+                    <p style="color: rgba(255,255,255,0.7); font-size: 13px; margin-bottom: 10px;">
+                        2️⃣ Загрузите скриншот чека
+                    </p>
+                    
+                    <input type="file" id="paymentScreenshotInput" accept="image/*" style="display: none;" onchange="handlePaymentScreenshot(event)">
+                    <button class="task-submit-btn" onclick="document.getElementById('paymentScreenshotInput').click()" 
+                            style="width: 100%; background: rgba(255,255,255,0.1); color: #ffffff; border: 2px dashed #ff9500; margin-bottom: 15px;">
+                        📸 Загрузить скриншот чека
+                    </button>
+                    
+                    <div id="paymentScreenshotPreview" style="text-align: center; margin-bottom: 15px; display: none;">
+                        <img id="paymentScreenshotImg" style="width: 100%; max-height: 200px; object-fit: contain; border-radius: 12px; border: 2px solid #ff9500;">
+                    </div>
+                    
+                    <button class="task-submit-btn" id="paymentSubmitBtn" onclick="submitPayment()" disabled 
+                            style="width: 100%; background: #34c759; color: white; margin-bottom: 15px;">
+                        ✅ Отправить на проверку
+                    </button>
+                    <p style="color: rgba(255,255,255,0.5); font-size: 11px; text-align: center;">
+                        После проверки: доступ + 2000 ашетиков
+                    </p>
                 </div>
                 
-                <button class="task-submit-btn" id="paymentSubmitBtn" onclick="submitPayment()" disabled style="background: var(--status-green);">
-                    ✅ Отправить на проверку
-                </button>
-                <p style="color: var(--text-gray); font-size: 11px; margin-top: 8px; text-align: center;">
-                    После проверки чека доступ откроется автоматически, а на счёт будет начислено <strong>2000 ашетиков</strong>
-                </p>
+                <div id="paymentStep3" style="display: none; text-align: center;">
+                    <div id="paymentResultIcon" style="font-size: 48px; margin-bottom: 10px;"></div>
+                    <p id="paymentResultText" style="color: #ffffff; font-size: 14px; margin-bottom: 15px;"></p>
+                    <button class="task-submit-btn" onclick="backToStoryPreview()" style="width: 100%; background: #ff9500; color: white;">
+                        ← Назад
+                    </button>
+                </div>
             </div>
-            
-            <div id="paymentStep3" style="display: none; text-align: center;">
-                <div id="paymentResultIcon" style="font-size: 48px; margin-bottom: 10px;"></div>
-                <p id="paymentResultText" style="color: var(--text); font-size: 14px; margin-bottom: 15px;"></p>
-                <button class="modal-close-btn" onclick="closePaymentModal()">Закрыть</button>
-            </div>
-            
-            <button class="modal-close-btn" onclick="closePaymentModal()" style="margin-top: 10px;">Отмена</button>
         </div>
     `;
-    
-    modal.onclick = function(e) { if (e.target === modal) modal.remove(); };
-    document.body.appendChild(modal);
 }
 
 function closePaymentModal() {
@@ -93,22 +88,13 @@ function selectPaymentCharacter(characterId) {
     selectedPaymentCharacter = characterId;
     
     const charNames = { mystic: '⚔️ Мистий', thief: '🗡️ Воровка', alchemist: '🔮 Алхимик' };
-    document.getElementById('paymentSelectedChar').innerText = charNames[characterId] || characterId;
+    const nameEl = document.getElementById('paymentSelectedChar');
+    if (nameEl) nameEl.innerText = charNames[characterId] || characterId;
     
-    // Подсвечиваем выбранную кнопку
-    document.querySelectorAll('#paymentCharacterSelect button').forEach(btn => {
-        btn.style.borderColor = 'var(--border-color)';
-        btn.style.background = 'var(--card-bg)';
-    });
-    
-    const selectedBtn = document.querySelector(`#paymentCharacterSelect button[onclick*="${characterId}"]`);
-    if (selectedBtn) {
-        selectedBtn.style.borderColor = 'var(--status-green)';
-        selectedBtn.style.background = 'rgba(52,199,89,0.1)';
-    }
-    
-    document.getElementById('paymentStep1').style.display = 'none';
-    document.getElementById('paymentStep2').style.display = 'block';
+    const step1 = document.getElementById('paymentStep1');
+    const step2 = document.getElementById('paymentStep2');
+    if (step1) step1.style.display = 'none';
+    if (step2) step2.style.display = 'block';
 }
 
 function handlePaymentScreenshot(event) {
@@ -164,6 +150,11 @@ async function submitPayment() {
             user.balance = result.new_balance;
             saveUserData();
             updateUI();
+            
+            // ✅ Через 3 секунды возвращаем на предпросмотр истории
+            setTimeout(() => {
+                backToStoryPreview();
+            }, 3000);
             
         } else {
             document.getElementById('paymentResultIcon').innerHTML = '❌';
