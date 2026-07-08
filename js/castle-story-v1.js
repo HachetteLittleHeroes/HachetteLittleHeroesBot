@@ -3180,54 +3180,17 @@ async function claimCastleEndingInGame(cardId) {
     
     let statusMessage = '';
     
-    // ✅ Статусы по персонажам для проверки лимита
-    const statusesByCharacter = {
-        mystic: [
-            'Герой Ашетвиля', 'Чемпион арены', 'Верный союзник',
-            'Избранный замком', 'Король по праву',
-            'Проклятый король', 'Призрачный слуга', 'Узник замка',
-            'Павший воин', 'Возлюбленная', 'Друг мельника'
-        ],
-        thief: [
-            'Глава Гильдии', 'Королева теней', 'Свободная душа'
-        ],
-        alchemist: [
-            'Архимаг', 'Хранитель знаний', 'Познавший тайну'
-        ]
-    };
-    
-    // ✅ Определяем персонажа по карте
-    const character = card.character || selectedCastleCharacter;
-    const characterStatuses = statusesByCharacter[character] || [];
-    
-    // ✅ Считаем, сколько статусов этого персонажа уже есть
-    const unlockedForCharacter = characterStatuses.filter(s => 
-        user.unlockedStatuses.includes(s)
-    );
-    const characterStatusCount = unlockedForCharacter.length;
-    
     if (!statusAlreadyUnlocked && reward && reward.status && reward.statusChance) {
-        // ✅ Проверяем лимит в 3 статуса на персонажа
-        if (characterStatusCount >= 3) {
-            const charName = character === 'mystic' ? 'Мистия' : 
-                            character === 'thief' ? 'Воровки' : 
-                            character === 'alchemist' ? 'Алхимика' : 'этого персонажа';
-            statusMessage = `🎭 Вы уже получили 3 статуса для ${charName} (максимум). Статус «${reward.status}» не выдан.`;
-        } else {
-            // ✅ 100% шанс — выдаём всегда
-            if (!user.unlockedStatuses.includes(reward.status)) {
-                user.unlockedStatuses.push(reward.status);
-                saveUserData();
-                fetch(`${SERVER_URL}/api/sync_status`, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ user_id: userId, status: reward.status, action: 'unlock' })
-                });
-            }
-            const charName = character === 'mystic' ? 'Мистия' : 
-                            character === 'thief' ? 'Воровки' : 
-                            character === 'alchemist' ? 'Алхимика' : 'персонажа';
-            statusMessage = `✨ Статус «${reward.status}» получен! (${characterStatusCount + 1}/3 для ${charName})`;
+        // ✅ 100% шанс — выдаём всегда, без лимита
+        if (!user.unlockedStatuses.includes(reward.status)) {
+            user.unlockedStatuses.push(reward.status);
+            saveUserData();
+            fetch(`${SERVER_URL}/api/sync_status`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_id: userId, status: reward.status, action: 'unlock' })
+            });
         }
+        statusMessage = `✨ Статус «${reward.status}» получен!`;
     } else if (statusAlreadyUnlocked) {
         statusMessage = '🏆 Статус за эту концовку уже получен!';
     }
