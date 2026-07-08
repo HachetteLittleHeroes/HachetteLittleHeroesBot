@@ -2488,6 +2488,7 @@ function showCharacterSelectInGame() {
     if (!container) return;
     
     currentEndingClaimed = false;
+    kissedAdelaide = false;  // ✅ ДОБАВЛЕНО
     
     fetch(`${SERVER_URL}/api/castle/check_all_access?user_id=${userId}`)
         .then(r => r.json())
@@ -2565,6 +2566,7 @@ function resetAndStartStory() {
         castleCompletedChoices = {};
         castleApprovedChoices = {};
         metEliza = false;
+        kissedAdelaide = false;  // ✅ ДОБАВЛЕНО
         currentEndingClaimed = false;
         
         // ✅ Сбрасываем таймер прохождения
@@ -2821,6 +2823,7 @@ function confirmCharacterSelection(charId) {
     selectedCastleCharacter = charId;
     userCastleStats = { ...char.stats };
     metEliza = false;
+    kissedAdelaide = false;  // ✅ ДОБАВЛЕНО
     castleCompletedChoices = {};
     castleApprovedChoices = {};
     currentEndingClaimed = false;
@@ -3122,8 +3125,16 @@ function proceedAfterApprovalInGame(cardId, choiceIdx) {
     const card = CASTLE_STORY.cards[cardId];
     const choice = card.choices[choiceIdx];
     
+    if (!choice) return;
+    
+    // ✅ ПРОВЕРКА НА ПОЦЕЛУЙ С АДЕЛАИДОЙ
+    if (cardId === '4M_D_4' && choiceIdx === 0) {
+        kissedAdelaide = true;
+        saveCastleProgress();
+    }
+    
     // ✅ ОБРАБОТКА РАНДОМНОГО ВЫБОРА
-    if (choice && choice.isRandom && choice.randomCards) {
+    if (choice.isRandom && choice.randomCards) {
         const randomCard = choice.randomCards[Math.floor(Math.random() * choice.randomCards.length)];
         applyCastleReward(choice);
         proceedToCard(randomCard);
@@ -10462,6 +10473,8 @@ const CASTLE_CHARACTERS = {
 '10M_BAD_1': { stage: 10, character: 'mystic', isEnding: true, endingId: 'mystic_servant', chapter: 'Слуга замка', text: 'Абсолютно потеряв счет во времени, ты просыпаешься в замке, и понимаешь, что тебе не удалось освободить Ашетвиль, перед тобой стоит Советник и произносит: "Ты пытался, но теперь сам стал слугой в этом замке на веки". Ты разворачиваешься и оказываешься прямо напротив зеркала, и в отражении ты видишь, что ты стал призраком.\n\nСпасибо тебе, что погрузился в эту историю вместе с нами, ты можешь перепройти историю за мистия еще раз и попытаться выйти на другой финал или пройти историю за другого персонажа.' },
 '10M_BAD_2': { stage: 10, character: 'mystic', isEnding: true, endingId: 'mystic_prisoner', chapter: 'Пленник замка', text: 'Абсолютно потеряв счет во времени, ты просыпаешься за решеткой, и понимаешь, что тебе не удалось спасти Земли Ашетвиль, теперь ты призрак, призрак, заточенный в кандалы.\n\nСпасибо тебе, что погрузился в эту историю вместе с нами, ты можешь перепройти историю за мистия еще раз и попытаться выйти на другой финал или пройти историю за другого персонажа.' },
 '10M_DEAD_1': { stage: 10, character: 'mystic', isEnding: true, endingId: 'mystic_dead', chapter: 'Конец пути', text: 'Твой путь воина окончен.\n\nСпасибо тебе, что погрузился в эту историю вместе с нами, ты можешь перепройти историю за мистия еще раз и попытаться выйти на другой финал или пройти историю за другого персонажа.' },
+ '10M_LOVE_ENDING': { stage: 10, character: 'mystic', isEnding: true, endingId: 'mystic_love', chapter: 'Любовь в Ашетвиле', 
+    text: 'С золотом короля за спиной и Лангошем под седлом, ты покидаешь замок. Но не в деревню Охуху лежит твой путь — сердце зовёт тебя к реке Флайси. Ты находишь её на том же берегу, где впервые увидел. Аделаида ждала. Вы строите дом у подножия Акриловых гор, и твои дни наёмника заканчиваются. Начинается жизнь, ради которой стоило пройти через тьму замка.\n\nСпасибо тебе, что погрузился в эту историю вместе с нами, ты можешь перепройти историю за мистия еще раз и попытаться выйти на другой финал или пройти историю за другого персонажа.' },       
        // ==========================================
 // ВОРОВКА (T) — 💪5 🏃13 🧠2
 // ==========================================
@@ -11397,6 +11410,7 @@ let castleCompletedEndings = [];
 let castleCompletedChoices = {};
 let castleApprovedChoices = {};
 let metEliza = false;
+let kissedAdelaide = false;
 // Шансы выпадения статуса
 const STATUS_DROP_CHANCE = {
     normal: 1.00,
@@ -11413,7 +11427,8 @@ const ENDING_REWARDS = {
     'thief_free': { status: 'В тени', statusChance: 'secret' },
     'alchemist_archmage': { status: 'Заклинательница', statusChance: 'normal' },
     'alchemist_keeper': { status: 'Заклинательница', statusChance: 'normal' },
-    'alchemist_true': { status: 'Заклинательница', statusChance: 'secret' }
+    'alchemist_true': { status: 'Заклинательница', statusChance: 'secret' },
+    'mystic_love': { status: 'Храбрая сердцем', statusChance: 'normal' },
 };
 // ==========================================
 // ФУНКЦИИ
@@ -11633,6 +11648,15 @@ function renderCastleCard(cardId) {
     const statsHtml = `<div style="display: flex; gap: 12px; justify-content: center; font-size: 12px;"><span style="color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">💪${userCastleStats.strength||0}</span><span style="color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">🏃${userCastleStats.agility||0}</span><span style="color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">🧠${userCastleStats.intelligence||0}</span><span style="color: #d4af37;">🎫${userSkips||0}</span></div>`;
     
     if (card.isEnding) {
+        // ✅ Если Мистий поцеловал Аделаиду — показываем романтическую концовку
+        if (kissedAdelaide && 
+            (cardId === '10M_GOOD_1' || cardId === '10M_HERO_1' || cardId === '10M_HERO_2')) {
+            currentCastleCard = '10M_LOVE_ENDING';
+            saveCastleProgress();
+            renderCastleCard('10M_LOVE_ENDING');
+            return;
+        }
+        
         container.innerHTML = `<div class="castle-card" style="background: #1a1a2e; border-radius: 16px; padding: 30px 20px; text-align: center;"><div style="font-size: 64px;">${card.isSecret?'🔮':'🏆'}</div><div style="color: #d4af37; font-size: 20px; margin: 15px 0;">${card.chapter || 'Концовка'}</div><p style="color: white; font-size: 16px; line-height: 1.6;">${card.text}</p><button class="task-submit-btn" onclick="claimCastleEnding('${cardId}')" style="width: 100%; background: #d4af37; color: #1a1a2e; margin-top: 20px;">🎉 Завершить историю</button></div>`;
         return;
     }
@@ -11801,18 +11825,23 @@ function submitCastleChoice(cardId, choiceIdx) {
 function proceedAfterApproval(cardId, choiceIdx) {
     const card = CASTLE_STORY.cards[cardId];
     const choice = card.choices[choiceIdx];
+    
     if (!choice) return;
+    
+    // ✅ ПРОВЕРКА НА ПОЦЕЛУЙ С АДЕЛАИДОЙ
+    if (cardId === '4M_D_4' && choiceIdx === 0) {
+        kissedAdelaide = true;
+        saveCastleProgress();
+    }
     
     // ✅ ОБРАБОТКА РАНДОМНОГО ВЫБОРА
     if (choice.isRandom && choice.randomCards) {
         const randomCard = choice.randomCards[Math.floor(Math.random() * choice.randomCards.length)];
-        if (cardId.includes('4M_4')||cardId.includes('5M_4')||cardId.includes('7M_3')||cardId.includes('4V_4')||cardId.includes('5V_4')||cardId.includes('7V_3')||cardId.includes('4A_4')||cardId.includes('5A_4')||cardId.includes('7A_3')) metEliza = true;
         applyCastleReward(choice);
         proceedToCard(randomCard);
         return;
     }
     
-    if (cardId.includes('4M_4')||cardId.includes('5M_4')||cardId.includes('7M_3')||cardId.includes('4V_4')||cardId.includes('5V_4')||cardId.includes('7V_3')||cardId.includes('4A_4')||cardId.includes('5A_4')||cardId.includes('7A_3')) metEliza = true;
     applyCastleReward(choice);
     proceedToCard(choice.nextCard);
 }
@@ -11907,9 +11936,10 @@ function saveCastleProgress() {
         stats: userCastleStats,
         character: selectedCastleCharacter,
         metEliza: metEliza,
+        kissedAdelaide: kissedAdelaide,  // ← ДОБАВИТЬ
         completedChoices: castleCompletedChoices,
         approvedChoices: castleApprovedChoices,
-        endingClaimed: currentEndingClaimed  // ← ВОТ ЭТО
+        endingClaimed: currentEndingClaimed
     };
     
     localStorage.setItem(`castle_progress_${userId}`, JSON.stringify(progress));
@@ -11945,6 +11975,7 @@ async function loadCastleProgress() {
             userCastleStats = data.stats || { strength: 0, agility: 0, intelligence: 0 };
             selectedCastleCharacter = data.character;
             metEliza = data.metEliza || false;
+            kissedAdelaide = data.kissedAdelaide || false; // ✅ ДОБАВЛЕНО
             castleCompletedChoices = data.completedChoices || {};
             castleApprovedChoices = data.approvedChoices || {};
             currentEndingClaimed = data.endingClaimed || false;
@@ -11966,6 +11997,7 @@ async function loadCastleProgress() {
                 userCastleStats = data.stats || { strength: 0, agility: 0, intelligence: 0 };
                 selectedCastleCharacter = data.character;
                 metEliza = data.metEliza || false;
+                kissedAdelaide = data.kissedAdelaide || false; // ✅ ДОБАВЛЕНО
                 castleCompletedChoices = data.completedChoices || {};
                 castleApprovedChoices = data.approvedChoices || {};
                 currentEndingClaimed = data.endingClaimed || false;
