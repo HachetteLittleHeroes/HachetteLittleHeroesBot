@@ -7662,13 +7662,10 @@ function openPaymentModal() {
     selectedPaymentCharacter = null;
     paymentScreenshotFile = null;
     
-    // Получаем акцентный цвет из CSS-переменной
     const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#ff9500';
     
     const modal = document.createElement('div');
     modal.style.cssText = 'position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; display: flex !important; align-items: center !important; justify-content: center !important; background: rgba(0,0,0,0.85) !important; z-index: 99999 !important;';
-    
-    const charNames = { mystic: '⚔️ Мистий', thief: '🗡️ Воровка', alchemist: '🔮 Алхимик' };
     
     modal.innerHTML = `
         <div style="
@@ -7688,25 +7685,8 @@ function openPaymentModal() {
             
             <div id="paymentStep1">
                 <p style="color: #8e8e93; font-size: 13px; margin-bottom: 15px; text-align: center;">
-                    Выберите персонажа, которого хотите открыть:
+                    Загрузка...
                 </p>
-                ${Object.entries(charNames).map(([id, name]) => `
-                    <button onclick="selectPaymentCharacter('${id}')" 
-                            style="
-                                width: 100%; 
-                                padding: 14px; 
-                                border-radius: 14px; 
-                                font-weight: 600; 
-                                font-size: 15px; 
-                                cursor: pointer; 
-                                margin-bottom: 10px; 
-                                background: #2c2c2e; 
-                                color: #ffffff; 
-                                border: 2px solid rgba(255,255,255,0.1);
-                            ">
-                        ${name} — 1000 ₽
-                    </button>
-                `).join('')}
             </div>
             
             <div id="paymentStep2" style="display: none;">
@@ -7761,6 +7741,64 @@ function openPaymentModal() {
     
     modal.onclick = function(e) { if (e.target === modal) modal.remove(); };
     document.body.appendChild(modal);
+    
+    // ✅ Загружаем доступ и обновляем кнопки
+    const charNames = { mystic: '⚔️ Мистий', thief: '🗡️ Воровка', alchemist: '🔮 Алхимик' };
+    
+    fetch(`${SERVER_URL}/api/castle/check_all_access?user_id=${userId}`)
+        .then(r => r.json())
+        .then(data => {
+            const access = data.access || {};
+            
+            let buttonsHtml = '';
+            for (const [id, name] of Object.entries(charNames)) {
+                if (access[id]) {
+                    buttonsHtml += `
+                        <button disabled
+                                style="
+                                    width: 100%; 
+                                    padding: 14px; 
+                                    border-radius: 14px; 
+                                    font-weight: 600; 
+                                    font-size: 15px; 
+                                    margin-bottom: 10px; 
+                                    background: rgba(52,199,89,0.2); 
+                                    color: #34c759; 
+                                    border: 2px solid rgba(52,199,89,0.3);
+                                    cursor: not-allowed;
+                                    opacity: 0.7;
+                                ">
+                            ✅ ${name} — Уже открыт
+                        </button>
+                    `;
+                } else {
+                    buttonsHtml += `
+                        <button onclick="selectPaymentCharacter('${id}')" 
+                                style="
+                                    width: 100%; 
+                                    padding: 14px; 
+                                    border-radius: 14px; 
+                                    font-weight: 600; 
+                                    font-size: 15px; 
+                                    cursor: pointer; 
+                                    margin-bottom: 10px; 
+                                    background: #2c2c2e; 
+                                    color: #ffffff; 
+                                    border: 2px solid rgba(255,255,255,0.1);
+                                ">
+                            ${name} — 1000 ₽
+                        </button>
+                    `;
+                }
+            }
+            
+            document.getElementById('paymentStep1').innerHTML = `
+                <p style="color: #8e8e93; font-size: 13px; margin-bottom: 15px; text-align: center;">
+                    Выберите персонажа, которого хотите открыть:
+                </p>
+                ${buttonsHtml}
+            `;
+        });
 }
 
 function closePaymentModal() {
