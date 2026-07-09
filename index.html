@@ -7748,7 +7748,28 @@ function openPaymentModal() {
             
             let buttonsHtml = '';
             for (const [id, name] of Object.entries(charNames)) {
-                if (access[id]) {
+                // ✅ Воровка и Алхимик временно недоступны
+                const isComingSoon = (id === 'thief' || id === 'alchemist');
+                
+                if (isComingSoon) {
+                    buttonsHtml += `
+                        <button disabled
+                                style="
+                                    width: 100%; 
+                                    padding: 14px; 
+                                    border-radius: 14px; 
+                                    font-weight: 600; 
+                                    font-size: 15px; 
+                                    margin-bottom: 10px; 
+                                    background: rgba(255,255,255,0.05); 
+                                    color: rgba(255,255,255,0.3); 
+                                    border: 2px solid rgba(255,255,255,0.05);
+                                    cursor: not-allowed;
+                                ">
+                            ${name} — Скоро
+                        </button>
+                    `;
+                } else if (access[id]) {
                     buttonsHtml += `
                         <button disabled
                                 style="
@@ -7796,7 +7817,6 @@ function openPaymentModal() {
             `;
         });
 }
-
 function closePaymentModal() {
     const modals = document.querySelectorAll('div[style*="z-index: 99999"]');
     modals.forEach(m => m.remove());
